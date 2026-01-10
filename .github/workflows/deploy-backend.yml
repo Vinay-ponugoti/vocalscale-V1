@@ -1,0 +1,57 @@
+name: Deploy Backend to VM
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**' # <--- This ensures it only runs when backend files change
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. Setup Node.js (Only if your backend is Node.js/Express)
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # Change this to match your backend version
+
+    # 3. Install Dependencies & Build (if needed)
+    - name: Install and Build Backend
+      run: |
+        cd backend
+        npm ci
+        npm run build # Remove this line if you don't have a build script
+
+    # 4. Deploy to VM via SSH
+    - name: Deploy to Server
+      uses: easingthemes/ssh-deploy@v4
+      with:
+        # REMOTE SERVER INFO
+        SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+        REMOTE_HOST: ${{ secrets.VM_HOST_IP }}
+        REMOTE_USER: ${{ secrets.VM_USER }}
+
+        # DEPLOYMENT SETTINGS
+        SOURCE: "backend/" # The local folder to send
+        TARGET: "/home/ubuntu/vocalscale-backend" # The folder on your VM
+        EXCLUDE: "/node_modules/, /.git/, /npm-debug.log" # Don't send heavy folders
+        
+    # 5. Restart the application on the VM
+    - name: Restart Backend Service
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.VM_HOST_IP }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/ubuntu/vocalscale-backend
+          npm install --production
+          pm2 restart vocalscale-backend || pm2 start npm --name "vocalscale-backend" -- start
