@@ -41,50 +41,50 @@ export function Features() {
   ];
 
   return (
-    <section id="features" className="py-40 px-6 relative overflow-hidden bg-white">
+    <section id="features" className="py-24 md:py-40 px-6 relative overflow-hidden bg-white">
       {/* --- Minimalist Background --- */}
       <div className="absolute inset-0 z-0 bg-grid-warm [mask-image:linear-gradient(to_bottom,transparent,black,transparent)] opacity-30"></div>
       
       {/* Subtle Glows */}
-      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-brand-electric/5 blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] rounded-full bg-blue-electric/5 blur-[100px] pointer-events-none"></div>
+      <div className="absolute top-[20%] right-[-10%] w-[60%] md:w-[40%] h-[40%] rounded-full bg-brand-electric/5 blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[20%] left-[-10%] w-[50%] md:w-[30%] h-[30%] rounded-full bg-blue-electric/5 blur-[100px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-8 md:gap-12">
           <div className="max-w-2xl animate-fade-in">
-            <span className="text-brand-electric font-black text-[13px] uppercase tracking-[0.4em] mb-6 block">
+            <span className="text-brand-electric font-black text-[11px] md:text-[13px] uppercase tracking-[0.3em] md:tracking-[0.4em] mb-4 md:mb-6 block">
               The Platform
             </span>
-            <h2 className="font-serif text-5xl sm:text-7xl text-brand-ink leading-[0.95] tracking-tight">
-              Powerful tools for <br />
+            <h2 className="font-serif text-4xl sm:text-6xl md:text-7xl text-brand-ink leading-[1.1] md:leading-[0.95] tracking-tight">
+              Powerful tools for <br className="hidden sm:block" />
               <span className="italic">every business.</span>
             </h2>
           </div>
-          <p className="text-lg text-brand-muted max-w-sm mb-2 font-medium leading-relaxed animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <p className="text-base md:text-lg text-brand-muted max-w-sm mb-2 font-medium leading-relaxed animate-fade-in" style={{ animationDelay: '200ms' }}>
             We’ve built everything you need to scale your customer interaction without losing the human touch.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1px bg-brand-ink/5 border border-brand-ink/5 rounded-[48px] overflow-hidden shadow-2xl shadow-brand-ink/5 animate-slide-up">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1px bg-brand-ink/5 border border-brand-ink/5 rounded-[32px] md:rounded-[48px] overflow-hidden shadow-2xl shadow-brand-ink/5 animate-slide-up">
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="group relative p-12 bg-white hover:bg-brand-warm transition-all duration-700 cursor-pointer overflow-hidden"
+              className="group relative p-8 md:p-12 bg-white hover:bg-brand-warm transition-all duration-700 cursor-pointer overflow-hidden"
             >
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-brand-ink/5 flex items-center justify-center mb-10 group-hover:bg-brand-electric group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
-                  <feature.icon className="w-8 h-8 text-brand-ink group-hover:text-white transition-colors" />
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-brand-ink/5 flex items-center justify-center mb-8 md:mb-10 group-hover:bg-brand-electric group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
+                  <feature.icon className="w-7 h-7 md:w-8 md:h-8 text-brand-ink group-hover:text-white transition-colors" />
                 </div>
                 
-                <span className="text-[10px] font-black text-brand-electric uppercase tracking-[0.3em] mb-4 block">
+                <span className="text-[9px] md:text-[10px] font-black text-brand-electric uppercase tracking-[0.2em] md:tracking-[0.3em] mb-3 md:mb-4 block">
                   {feature.psychology}
                 </span>
                 
-                <h3 className="text-2xl font-black text-brand-ink mb-6 tracking-tight group-hover:text-brand-electric transition-colors">
+                <h3 className="text-xl md:text-2xl font-black text-brand-ink mb-4 md:mb-6 tracking-tight group-hover:text-brand-electric transition-colors">
                   {feature.title}
                 </h3>
                 
-                <p className="text-brand-muted font-medium leading-relaxed text-[15px] group-hover:text-brand-ink transition-colors duration-500">
+                <p className="text-brand-muted font-medium leading-relaxed text-sm md:text-[15px] group-hover:text-brand-ink transition-colors duration-500">
                   {feature.description}
                 </p>
               </div>

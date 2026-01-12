@@ -198,15 +198,15 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <div className="bg-white/90 backdrop-blur-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white rounded-[2rem] w-full max-w-[440px] p-8 md:p-10 flex flex-col items-center text-center transition-colors duration-300">
+      <div className="bg-white/90 backdrop-blur-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white rounded-[1.5rem] md:rounded-[2rem] w-full max-w-[440px] p-6 md:p-10 flex flex-col items-center text-center transition-colors duration-300">
 
-        {/* Icon */}
-        <div className="mb-6 bg-sky-50 p-3 rounded-2xl shadow-sm border border-sky-100">
+        {/* Icon - Hidden on Mobile */}
+        <div className="hidden md:flex mb-6 bg-sky-50 p-3 rounded-2xl shadow-sm border border-sky-100">
           <LogIn className="text-[#0ea5e9] w-8 h-8" />
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-bold text-slate-800 mb-3">
+        <h1 className="text-xl md:text-2xl font-bold text-slate-800 mb-2 md:mb-3">
           Sign in to your Voice Agent
         </h1>
 
@@ -218,7 +218,7 @@ const Login = () => {
         )}
 
         {/* Subtitle */}
-        <p className="text-sm text-slate-500 mb-8 leading-relaxed max-w-xs">
+        <p className="text-xs md:text-sm text-slate-500 mb-6 md:mb-8 leading-relaxed max-w-xs">
           Manage calls, phone numbers, and AI voice agents for your business.
         </p>
 

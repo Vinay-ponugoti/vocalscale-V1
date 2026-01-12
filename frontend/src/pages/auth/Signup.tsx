@@ -199,14 +199,14 @@ const Signup = () => {
         Card with max-h-[90vh] ensures it never goes outside the screen. 
         overflow-y-auto handles scrolling on small phones.
       */}
-      <div className="bg-white/90 backdrop-blur-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white rounded-[2rem] w-full max-w-[440px] p-8 md:p-10 flex flex-col items-center text-center transition-colors duration-300 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div className="bg-white/90 backdrop-blur-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white rounded-[1.5rem] md:rounded-[2rem] w-full max-w-[440px] p-6 md:p-10 flex flex-col items-center text-center transition-colors duration-300 max-h-[90vh] overflow-y-auto no-scrollbar">
         
-        {/* Icon */}
-        <div className="mb-6 bg-sky-50 p-3 rounded-2xl shadow-sm border border-sky-100">
+        {/* Icon - Hidden on Mobile */}
+        <div className="hidden md:flex mb-6 bg-sky-50 p-3 rounded-2xl shadow-sm border border-sky-100">
           <UserPlus className="text-[#0ea5e9] w-8 h-8" />
         </div>
 
-        <h1 className="text-2xl font-bold text-slate-800 mb-3">Create account</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-slate-800 mb-2 md:mb-3">Create account</h1>
         
         {securityMessage && (
           <div className="mb-4 flex items-center gap-2 text-xs font-medium text-sky-600 animate-pulse bg-sky-50 px-3 py-1.5 rounded-full border border-sky-100">
@@ -215,7 +215,7 @@ const Signup = () => {
           </div>
         )}
 
-        <p className="text-sm text-slate-500 mb-8 leading-relaxed max-w-xs">
+        <p className="text-xs md:text-sm text-slate-500 mb-6 md:mb-8 leading-relaxed max-w-xs">
           Start your Vocal Scale journey today. For free.
         </p>
 
