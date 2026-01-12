@@ -182,9 +182,8 @@ const Login = () => {
     }
 
     try {
-      // Call Python backend to get the secure Google OAuth URL
       const redirectUrl = `${window.location.origin}/auth/callback`;
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
+      const response = await fetch(`${env.API_URL}/v1/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
       if (!response.ok) throw new Error('Failed to get auth URL');
       
       const { url } = await response.json();
