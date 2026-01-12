@@ -55,7 +55,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => (
       </header>
 
       {/* 7. Center content (min-h-[calc(100vh-4rem)] prevents footer-jump on short pages) */}
-      <main className="flex flex-1 items-center justify-center px-4 sm:px-6 min-h-[calc(100vh-4rem)]">
+      <main className="flex flex-1 items-start md:items-center justify-center px-4 sm:px-6 pt-24 pb-8">
         {children}
       </main>
     </div>
