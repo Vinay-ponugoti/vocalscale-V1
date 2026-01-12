@@ -199,7 +199,7 @@ const Signup = () => {
         Card with max-h-[90vh] ensures it never goes outside the screen. 
         overflow-y-auto handles scrolling on small phones.
       */}
-      <div className="bg-white/90 backdrop-blur-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white rounded-[1.5rem] md:rounded-[2rem] w-full max-w-[440px] p-6 md:p-10 flex flex-col items-center text-center transition-colors duration-300 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div className="bg-white/95 md:bg-white/90 backdrop-blur-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white rounded-[1.5rem] md:rounded-[2rem] w-full max-w-[440px] p-6 md:p-10 flex flex-col items-center text-center transition-colors duration-300 max-h-[90vh] overflow-y-auto no-scrollbar">
         
         {/* Icon - Hidden on Mobile */}
         <div className="hidden md:flex mb-6 bg-sky-50 p-3 rounded-2xl shadow-sm border border-sky-100">
