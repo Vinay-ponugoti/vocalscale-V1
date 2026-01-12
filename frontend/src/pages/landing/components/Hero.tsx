@@ -2,7 +2,7 @@ import { ArrowRight, Play, Sparkles } from 'lucide-react';
 
 export function Hero() {
   return (
-    <section className="relative pt-48 pb-32 px-6 overflow-hidden bg-brand-warm">
+    <section className="relative pt-32 sm:pt-48 pb-20 sm:pb-32 px-6 overflow-hidden bg-brand-warm">
       {/* --- Minimalist Background --- */}
       
       {/* 1. Subtle Grid Pattern */}
@@ -25,26 +25,26 @@ export function Hero() {
           </div>
 
           <h1 className="text-center mb-10 max-w-5xl">
-            <span className="block text-[13px] font-black uppercase tracking-[0.4em] text-brand-electric mb-6 animate-slide-up">
+            <span className="block text-[11px] sm:text-[13px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-brand-electric mb-6 animate-slide-up">
               Voice AI for Modern Business
             </span>
-            <span className="font-serif text-6xl sm:text-7xl md:text-[92px] text-brand-ink leading-[0.95] tracking-tight animate-slide-up block">
-              Give your front desk <br />
+            <span className="font-serif text-4xl sm:text-7xl md:text-[92px] text-brand-ink leading-[1.1] sm:leading-[0.95] tracking-tight animate-slide-up block">
+              Give your front desk <br className="hidden sm:block" />
               <span className="italic bg-gradient-to-r from-brand-electric via-blue-electric to-brand-electric bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-flow">superpowers.</span>
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-brand-muted max-w-2xl text-center mb-14 leading-relaxed animate-fade-in font-medium" style={{ animationDelay: '200ms' }}>
+          <p className="text-base sm:text-lg md:text-xl text-brand-muted max-w-2xl text-center mb-10 sm:mb-14 leading-relaxed animate-fade-in font-medium" style={{ animationDelay: '200ms' }}>
             Vocal Scale automates your customer calls with human-like intelligence. 
             Answer questions, schedule bookings, and grow your business while you sleep.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-24 animate-fade-in" style={{ animationDelay: '400ms' }}>
-            <button className="group px-10 py-5 bg-brand-electric text-white rounded-full font-black text-lg hover:shadow-[0_20px_40px_-10px_rgba(45,91,255,0.4)] transition-all duration-500 hover:-translate-y-1 active:scale-[0.98] flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16 sm:mb-24 animate-fade-in w-full sm:w-auto" style={{ animationDelay: '400ms' }}>
+            <button className="w-full sm:w-auto group px-10 py-4 sm:py-5 bg-brand-electric text-white rounded-full font-black text-base sm:text-lg hover:shadow-[0_20px_40px_-10px_rgba(45,91,255,0.4)] transition-all duration-500 hover:-translate-y-1 active:scale-[0.98] flex items-center justify-center gap-3">
               Start Free Trial
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             </button>
-            <button className="group px-10 py-5 bg-transparent text-brand-ink border-2 border-brand-ink/10 rounded-full font-black text-lg hover:bg-brand-ink hover:text-white hover:border-brand-ink transition-all duration-500 flex items-center gap-3">
+            <button className="w-full sm:w-auto group px-10 py-4 sm:py-5 bg-transparent text-brand-ink border-2 border-brand-ink/10 rounded-full font-black text-base sm:text-lg hover:bg-brand-ink hover:text-white hover:border-brand-ink transition-all duration-500 flex items-center justify-center gap-3">
               <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" />
               Watch Demo
             </button>

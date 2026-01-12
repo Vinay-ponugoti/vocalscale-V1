@@ -25,11 +25,11 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 flex items-center justify-center bg-brand-ink rounded-2xl shadow-lg group-hover:bg-brand-electric transition-all duration-500 group-hover:-rotate-6 group-hover:scale-110">
-              <img src="/logo-icon1.2.png" alt="Vocal Scale Logo" className="w-7 h-7 object-contain brightness-0 invert" />
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center bg-brand-ink rounded-xl sm:rounded-2xl shadow-lg group-hover:bg-brand-electric transition-all duration-500 group-hover:-rotate-6 group-hover:scale-110">
+              <img src="/logo-icon1.2.png" alt="Vocal Scale Logo" className="w-5 h-5 sm:w-7 sm:h-7 object-contain brightness-0 invert" />
             </div>
-            <span className="text-xl font-black text-brand-ink tracking-tight group-hover:text-brand-electric transition-colors uppercase">
+            <span className="text-lg sm:text-xl font-black text-brand-ink tracking-tight group-hover:text-brand-electric transition-colors uppercase whitespace-nowrap">
               Vocal Scale
             </span>
           </Link>
@@ -49,16 +49,16 @@ export function Navbar() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3 sm:gap-5">
             <Link 
               to="/login" 
-              className="hidden sm:block text-brand-muted hover:text-brand-ink font-black transition-colors text-[12px] uppercase tracking-[0.2em]"
+              className="hidden lg:block text-brand-muted hover:text-brand-ink font-black transition-colors text-[12px] uppercase tracking-[0.2em]"
             >
               Sign In
             </Link>
             <Link 
               to="/signup" 
-              className="px-8 py-3 bg-brand-ink hover:bg-brand-electric text-white rounded-full font-black transition-all duration-500 hover:shadow-2xl hover:shadow-brand-electric/30 active:scale-95 text-[12px] uppercase tracking-[0.2em]"
+              className="hidden sm:flex px-8 py-3 bg-brand-ink hover:bg-brand-electric text-white rounded-full font-black transition-all duration-500 hover:shadow-2xl hover:shadow-brand-electric/30 active:scale-95 text-[12px] uppercase tracking-[0.2em]"
             >
               Get Started
             </Link>
@@ -77,29 +77,38 @@ export function Navbar() {
 
       {/* Mobile Menu - Overlay */}
       <div 
-        className={`md:hidden absolute top-full left-0 right-0 bg-white border-b border-white-light transition-all duration-300 overflow-hidden ${
-          isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        className={`md:hidden absolute top-full left-0 right-0 bg-white border-b border-brand-ink/5 transition-all duration-500 ease-in-out overflow-hidden shadow-2xl ${
+          isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="flex flex-col p-6 gap-6">
+        <div className="flex flex-col p-8 gap-6">
           {['Features', 'How it Works', 'Pricing', 'Testimonials'].map((item) => (
             <a 
               key={item}
               href={`#${item.toLowerCase().replace(/\s+/g, '-')}`} 
-              className="text-charcoal-medium hover:text-blue-electric font-medium text-lg"
+              className="text-brand-muted hover:text-brand-electric font-black text-[13px] uppercase tracking-[0.2em] transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               {item}
             </a>
           ))}
-          <hr className="border-white-light" />
-          <Link 
-            to="/login" 
-            className="text-charcoal-medium font-medium text-lg"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Sign In
-          </Link>
+          <div className="h-px bg-brand-ink/5 w-full" />
+          <div className="flex flex-col gap-4">
+            <Link 
+              to="/login" 
+              className="text-brand-muted hover:text-brand-ink font-black text-[13px] uppercase tracking-[0.2em] transition-colors py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Sign In
+            </Link>
+            <Link 
+              to="/signup" 
+              className="w-full py-4 bg-brand-ink text-white rounded-full font-black text-[13px] uppercase tracking-[0.2em] text-center hover:bg-brand-electric transition-all duration-300"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Get Started
+            </Link>
+          </div>
         </div>
       </div>
     </nav>

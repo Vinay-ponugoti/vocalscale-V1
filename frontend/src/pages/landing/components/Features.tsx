@@ -41,7 +41,7 @@ export function Features() {
   ];
 
   return (
-    <section id="features" className="py-40 px-6 relative overflow-hidden bg-white">
+    <section id="features" className="py-24 sm:py-40 px-6 relative overflow-hidden bg-white">
       {/* --- Minimalist Background --- */}
       <div className="absolute inset-0 z-0 bg-grid-warm [mask-image:linear-gradient(to_bottom,transparent,black,transparent)] opacity-30"></div>
       
@@ -50,30 +50,30 @@ export function Features() {
       <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] rounded-full bg-blue-electric/5 blur-[100px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 sm:mb-24 gap-8 sm:gap-12">
           <div className="max-w-2xl animate-fade-in">
-            <span className="text-brand-electric font-black text-[13px] uppercase tracking-[0.4em] mb-6 block">
+            <span className="text-brand-electric font-black text-[11px] sm:text-[13px] uppercase tracking-[0.3em] sm:tracking-[0.4em] mb-4 sm:mb-6 block">
               The Platform
             </span>
-            <h2 className="font-serif text-5xl sm:text-7xl text-brand-ink leading-[0.95] tracking-tight">
-              Powerful tools for <br />
+            <h2 className="font-serif text-4xl sm:text-7xl text-brand-ink leading-[1.1] sm:leading-[0.95] tracking-tight">
+              Powerful tools for <br className="hidden sm:block" />
               <span className="italic">every business.</span>
             </h2>
           </div>
-          <p className="text-lg text-brand-muted max-w-sm mb-2 font-medium leading-relaxed animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <p className="text-base sm:text-lg text-brand-muted max-w-sm mb-2 font-medium leading-relaxed animate-fade-in" style={{ animationDelay: '200ms' }}>
             We’ve built everything you need to scale your customer interaction without losing the human touch.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1px bg-brand-ink/5 border border-brand-ink/5 rounded-[48px] overflow-hidden shadow-2xl shadow-brand-ink/5 animate-slide-up">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1px bg-brand-ink/5 border border-brand-ink/5 rounded-[32px] sm:rounded-[48px] overflow-hidden shadow-2xl shadow-brand-ink/5 animate-slide-up">
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="group relative p-12 bg-white hover:bg-brand-warm transition-all duration-700 cursor-pointer overflow-hidden"
+              className="group relative p-8 sm:p-12 bg-white hover:bg-brand-warm transition-all duration-700 cursor-pointer overflow-hidden"
             >
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-brand-ink/5 flex items-center justify-center mb-10 group-hover:bg-brand-electric group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
-                  <feature.icon className="w-8 h-8 text-brand-ink group-hover:text-white transition-colors" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-brand-ink/5 flex items-center justify-center mb-8 sm:mb-10 group-hover:bg-brand-electric group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
+                  <feature.icon className="w-6 h-6 sm:w-8 sm:h-8 text-brand-ink group-hover:text-white transition-colors" />
                 </div>
                 
                 <span className="text-[10px] font-black text-brand-electric uppercase tracking-[0.3em] mb-4 block">
