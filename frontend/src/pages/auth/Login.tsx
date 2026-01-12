@@ -41,7 +41,7 @@ const Login = () => {
     try {
       // Check backend reachability first
       try {
-        const pingResponse = await fetch(`${env.API_URL}/health`, { 
+        const pingResponse = await fetch(`${import.meta.env.VITE_API_URL}/health`, { 
           method: 'GET',
           headers: { 'ngrok-skip-browser-warning': 'true' }
         }).catch(() => null);
@@ -56,7 +56,7 @@ const Login = () => {
 
       // Call Python backend for login
       console.log('Attempting login via backend:', email);
-      const response = await fetch(`${env.API_URL}/auth/login`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -183,7 +183,8 @@ const Login = () => {
 
     try {
       const redirectUrl = `${window.location.origin}/auth/callback`;
-      const response = await fetch(`${env.API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
+           if (!response.ok) throw new Error('Failed to get auth URL');
       if (!response.ok) throw new Error('Failed to get auth URL');
       
       const { url } = await response.json();
