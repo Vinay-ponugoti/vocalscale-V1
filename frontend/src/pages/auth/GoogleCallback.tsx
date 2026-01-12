@@ -14,27 +14,21 @@ const GoogleCallback = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Supabase OAuth returns tokens in the hash fragment
         const hash = window.location.hash;
-        if (!hash) {
+        const search = window.location.search;
+        const params = new URLSearchParams(hash ? hash.substring(1) : search);
+        
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
+        const expiresIn = params.get('expires_in');
+
+        if (!accessToken) {
           // Check if there are error parameters in the query string
-          const params = new URLSearchParams(window.location.search);
           const error = params.get('error_description') || params.get('error');
           if (error) {
             throw new Error(error);
           }
           throw new Error('No authentication data received');
-        }
-
-        // Parse hash fragment
-        // Remove the '#' and split by '&'
-        const hashParams = new URLSearchParams(hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
-        const expiresIn = hashParams.get('expires_in');
-
-        if (!accessToken) {
-          throw new Error('Access token not found in response');
         }
 
         // We need the user data as well. Supabase usually doesn't include the full user object in the hash.
