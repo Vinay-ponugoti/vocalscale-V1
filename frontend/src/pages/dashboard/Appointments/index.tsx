@@ -401,7 +401,6 @@ const FullScreenAppointments: React.FC = () => {
   };
 
   const selectedApptData = appointments.find(a => a.id === selectedAppointment);
-  const todayAppts = getDayAppointments(new Date());
 
   // ============ EDIT HANDLERS ============
   const handleStartEdit = () => {
@@ -720,7 +719,7 @@ const FullScreenAppointments: React.FC = () => {
           
           {/* Time Column */}
           <div className="border-r sticky left-0 z-10 flex flex-col h-full" style={{ backgroundColor: DS.surface, borderColor: DS.border }}>
-            {hours.map((hour) => {
+            {hours.map((hour, hourIndex) => {
               const isNightHour = hour < 7 || hour >= 21;
               const isLastHour = hourIndex === hours.length - 1;
               return (
@@ -728,7 +727,7 @@ const FullScreenAppointments: React.FC = () => {
                   key={hour} 
                   className={`${getRowHeight()} flex items-start justify-end pr-2 md:pr-3 pt-2.5 border-b overflow-hidden ${
                     isNightHour ? 'bg-slate-50/50' : ''
-                  }`}
+                  } ${isLastHour ? 'mb-20' : ''}`}
                   style={{ borderColor: '#CBD5E1' }}
                 >
                   <span className={`text-[10px] md:text-xs font-bold tracking-tight ${
