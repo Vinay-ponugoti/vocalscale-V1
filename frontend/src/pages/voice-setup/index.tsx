@@ -11,8 +11,7 @@ import {
   Settings2, 
   ArrowUpRight,
   X,
-  Loader2,
-  MoreVertical
+  Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePhoneNumbers } from '../../hooks/usePhoneNumbers';
