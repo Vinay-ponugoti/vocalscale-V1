@@ -495,148 +495,125 @@ const FullScreenAppointments: React.FC = () => {
       <div className="w-full h-full flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
       
         {/* ============ HEADER ============ */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 py-4 border-b bg-white" style={{ borderColor: DS.border }}>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-sm">
-                <CalendarIcon className="w-5 h-5 text-indigo-600" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-                  Appointments
-                  {isPlaceholderData && (
-                    <div className="inline-flex items-center gap-1.5 ml-3 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 animate-pulse">
-                      <Clock size={10} className="animate-spin-slow" />
-                      <span className="text-[8px] font-bold uppercase tracking-wider">Syncing...</span>
-                    </div>
-                  )}
-                </h1>
-                <p className="text-slate-500 text-xs font-medium">
-                  {viewMode === 'day' ? format(currentDate, 'EEEE, MMMM d, yyyy') : format(currentDate, 'MMMM yyyy')}
-                </p>
-              </div>
-            </div>
-
-            {isMobile && (
-              <button 
-                onClick={() => setIsNewModalOpen(true)}
-                className="p-2.5 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-100 active:scale-95"
-              >
-                <Plus size={18} />
-              </button>
-            )}
-          </div>
-
+        <div className="flex items-center justify-between px-6 py-4 md:py-8 bg-white border-b" style={{ borderColor: DS.border }}>
           <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setIsNewModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-indigo-700 transition-all duration-300 shadow-lg shadow-indigo-100 active:scale-95"
-            >
-              <Plus size={14} />
-              New Appointment
-            </button>
+            <div className="hidden sm:p-2.5 rounded-xl bg-white border border-slate-200 shadow-sm">
+              <CalendarIcon className="w-5 h-5 text-indigo-600" />
+            </div>
+            <div>
+              <p className="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-0.5">
+                {viewMode === 'day' ? format(currentDate, 'EEEE, MMMM d, yyyy') : format(currentDate, 'MMMM yyyy')}
+              </p>
+              <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                Appointments
+                {isPlaceholderData && (
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 animate-pulse">
+                    <Clock size={10} className="animate-spin-slow" />
+                    <span className="text-[8px] font-bold uppercase tracking-wider">Syncing...</span>
+                  </div>
+                )}
+              </h1>
+            </div>
           </div>
+
+          <button 
+            onClick={() => setIsNewModalOpen(true)}
+            className="flex items-center gap-2 px-3 md:px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-[10px] md:text-[11px] uppercase tracking-widest hover:bg-indigo-700 transition-all duration-300 shadow-lg shadow-indigo-100 active:scale-95"
+          >
+            <Plus size={14} />
+            <span className="hidden sm:inline">New Appointment</span>
+            <span className="sm:hidden">New</span>
+          </button>
         </div>
 
           {/* Controls Wrapper */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3 bg-slate-50/50 border-b" style={{ borderColor: DS.border }}>
-            <div className="flex flex-col sm:flex-row items-center gap-3">
-              {/* View Toggle */}
-              <div className="flex p-1 rounded-xl bg-white border shadow-sm" style={{ borderColor: DS.border }}>
-              {(['day', 'week'] as const).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  className={`flex-1 sm:flex-none px-5 py-1.5 text-xs font-bold rounded-lg transition-all capitalize ${
-                    viewMode === mode 
-                      ? 'bg-white shadow-sm' 
-                      : 'hover:bg-gray-100'
-                  }`}
-                  style={{ color: viewMode === mode ? DS.electric : DS.stone }}
-                >
-                  {mode}
-                </button>
-              ))}
-            </div>
+          <div className="px-4 py-3 bg-slate-50/50 border-b" style={{ borderColor: DS.border }}>
+            <div className="flex items-center justify-between gap-2">
+              {/* View Toggle - Left on mobile */}
+              <div className="flex p-1 rounded-xl bg-white border shadow-sm shrink-0" style={{ borderColor: DS.border }}>
+                {(['day', 'week'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    className={`px-3 sm:px-5 py-1 text-[10px] sm:text-xs font-bold rounded-lg transition-all capitalize ${
+                      viewMode === mode 
+                        ? 'bg-white shadow-sm' 
+                        : 'hover:bg-gray-100'
+                    }`}
+                    style={{ color: viewMode === mode ? DS.electric : DS.stone }}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
 
-            {/* Navigation */}
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setCurrentDate(toZonedTime(new Date(), timezone))}
-                className="px-4 py-2 text-xs font-bold rounded-xl transition-all"
-                style={{ color: DS.charcoal, backgroundColor: DS.offWhite }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = DS.border}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.offWhite}
-              >
-                Today
-              </button>
-              <div className="flex items-center rounded-xl overflow-hidden" style={{ backgroundColor: DS.offWhite }}>
+              {/* Navigation - Right on mobile */}
+              <div className="flex items-center gap-1 sm:gap-2">
                 <button 
-                  onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? -1 : -7))} 
-                  className="p-2 transition-colors hover:bg-gray-200"
+                  onClick={() => setCurrentDate(toZonedTime(new Date(), timezone))}
+                  className="hidden sm:block px-4 py-2 text-xs font-bold rounded-xl transition-all"
+                  style={{ color: DS.charcoal, backgroundColor: DS.offWhite }}
                 >
-                  <ChevronLeft className="w-4 h-4" style={{ color: DS.charcoal }} />
+                  Today
                 </button>
-                <span className="px-4 text-xs font-bold min-w-[120px] text-center" style={{ color: DS.ink }}>
-                  {viewMode === 'day' 
-                    ? format(currentDate, 'MMM d') 
-                    : `${format(weekStart, 'MMM d')} - ${format(addDays(weekStart, 6), 'MMM d')}`
-                  }
-                </span>
-                <button 
-                  onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? 1 : 7))} 
-                  className="p-2 transition-colors hover:bg-gray-200"
+                <div className="flex items-center rounded-xl overflow-hidden bg-white border shadow-sm" style={{ borderColor: DS.border }}>
+                  <button 
+                    onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? -1 : -7))} 
+                    className="p-1.5 sm:p-2 transition-colors hover:bg-gray-50 border-r"
+                    style={{ borderColor: DS.border }}
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color: DS.charcoal }} />
+                  </button>
+                  <span className="px-2 sm:px-4 text-[10px] sm:text-xs font-bold min-w-[70px] sm:min-w-[120px] text-center" style={{ color: DS.ink }}>
+                    {viewMode === 'day' 
+                      ? format(currentDate, 'MMM d') 
+                      : `${format(weekStart, 'MMM d')} - ${format(addDays(weekStart, 6), 'MMM d')}`
+                    }
+                  </span>
+                  <button 
+                    onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? 1 : 7))} 
+                    className="p-1.5 sm:p-2 transition-colors hover:bg-gray-50 border-l"
+                    style={{ borderColor: DS.border }}
+                  >
+                    <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color: DS.charcoal }} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Desktop Options */}
+              <div className="hidden md:flex items-center gap-2">
+                <button
+                  onClick={() => setShow24Hours(!show24Hours)}
+                  title={show24Hours ? "Switch to Day View" : "Switch to 24h View"}
+                  className={`flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-xl transition-colors ${
+                    show24Hours ? 'bg-indigo-50 text-indigo-700' : 'bg-white border border-slate-200 hover:bg-gray-50'
+                  }`}
                 >
-                  <ChevronRight className="w-4 h-4" style={{ color: DS.charcoal }} />
+                  {show24Hours ? <Moon size={16} /> : <Sun size={16} />}
                 </button>
+
+                <button
+                  onClick={() => setTimeFormat(f => f === '12h' ? '24h' : '12h')}
+                  title={`Switch to ${timeFormat === '12h' ? '24h' : '12h'} format`}
+                  className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-slate-200 hover:bg-gray-50"
+                >
+                  <Clock size={16} />
+                </button>
+
+                {viewMode === 'week' && (
+                  <button
+                    onClick={() => setShowWeekend(!showWeekend)}
+                    title={showWeekend ? "Hide Weekends" : "Show Weekends"}
+                    className={`flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-xl transition-colors ${
+                      showWeekend ? 'hover:bg-gray-200' : 'bg-orange-50 text-orange-700'
+                    }`}
+                  >
+                    <Layers size={16} />
+                  </button>
+                )}
               </div>
             </div>
-
-            {/* Options */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShow24Hours(!show24Hours)}
-                title={show24Hours ? "Switch to Day View" : "Switch to 24h View"}
-                className={`flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl transition-colors ${
-                  show24Hours ? 'text-indigo-700' : 'hover:bg-gray-200'
-                }`}
-                style={{ backgroundColor: show24Hours ? '#EEF2FF' : DS.offWhite, color: show24Hours ? '#4338CA' : DS.charcoal }}
-              >
-                {show24Hours ? <Moon size={18} /> : <Sun size={18} />}
-              </button>
-
-              <button
-                onClick={() => setTimeFormat(f => f === '12h' ? '24h' : '12h')}
-                title={`Switch to ${timeFormat === '12h' ? '24h' : '12h'} format`}
-                className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl transition-colors hover:bg-gray-200"
-                style={{ backgroundColor: DS.offWhite, color: DS.charcoal }}
-              >
-                <Clock size={18} />
-              </button>
-
-              {viewMode === 'week' && (
-                <button
-                  onClick={() => setShowWeekend(!showWeekend)}
-                  title={showWeekend ? "Hide Weekends" : "Show Weekends"}
-                  className={`flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl transition-colors ${
-                    showWeekend ? 'hover:bg-gray-200' : 'text-orange-700'
-                  }`}
-                  style={{ backgroundColor: showWeekend ? DS.offWhite : '#FFEDD5', color: showWeekend ? DS.charcoal : '#C2410C' }}
-                >
-                  <Layers size={18} />
-                </button>
-              )}
-
-              <button 
-                onClick={() => setIsNewModalOpen(true)}
-                className="hidden lg:flex flex-shrink-0 items-center justify-center w-10 h-10 text-white rounded-xl shadow-lg transition-all active:scale-95"
-                style={{ backgroundColor: DS.electric, boxShadow: `0 10px 15px -3px ${DS.electric}33` }}
-              >
-                <Plus size={20} />
-              </button>
-            </div>
           </div>
-        </div>
 
         {/* ============ CALENDAR GRID ============ */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
