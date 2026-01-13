@@ -109,8 +109,8 @@ const GoogleCallback = () => {
           ...prefetchOptions
         });
 
-        // Use window.location.href to force a full reload and let AuthContext initialize with the new session
-        window.location.href = '/dashboard';
+        // Use window.location.origin to ensure we stay on the same domain
+        window.location.href = `${window.location.origin}/dashboard`;
       } catch (e) {
         console.error('Google callback error:', e);
         const message = e instanceof Error ? e.message : 'Authentication failed';
