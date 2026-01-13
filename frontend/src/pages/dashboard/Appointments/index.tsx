@@ -87,7 +87,9 @@ const FullScreenAppointments: React.FC = () => {
   const [viewMode, setViewMode] = useState<'week' | 'day'>(isMobile ? 'day' : 'week');
 
   useEffect(() => {
-    setViewMode(isMobile ? 'day' : 'week');
+    if (isMobile) {
+      setViewMode('day');
+    }
   }, [isMobile]);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -494,136 +496,142 @@ const FullScreenAppointments: React.FC = () => {
       <div className="w-full h-full flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
       
         {/* ============ HEADER ============ */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 py-4 border-b bg-white" style={{ borderColor: DS.border }}>
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-4 md:px-6 py-4 border-b bg-white" style={{ borderColor: DS.border }}>
+          <div className="flex items-center justify-between w-full md:w-auto">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-sm">
-                <CalendarIcon className="w-5 h-5 text-indigo-600" />
+              <div className="p-2 md:p-2.5 rounded-xl bg-white border border-slate-200 shadow-sm">
+                <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 text-indigo-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-                  Appointments
+                <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                  {isMobile ? 'Today' : 'Appointments'}
                   {isPlaceholderData && (
-                    <div className="inline-flex items-center gap-1.5 ml-3 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 animate-pulse">
+                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 animate-pulse">
                       <Clock size={10} className="animate-spin-slow" />
                       <span className="text-[9px] font-bold uppercase tracking-wider">Syncing...</span>
                     </div>
                   )}
                 </h1>
-                <p className="text-slate-500 text-xs font-medium">
-                  {viewMode === 'day' ? format(currentDate, 'EEEE, MMMM d, yyyy') : format(currentDate, 'MMMM yyyy')}
+                <p className="text-slate-500 text-[10px] md:text-xs font-medium">
+                  {viewMode === 'day' ? format(currentDate, 'EEEE, MMM d') : format(currentDate, 'MMMM yyyy')}
                 </p>
               </div>
             </div>
+
+            {isMobile && (
+              <button 
+                onClick={() => setIsNewModalOpen(true)}
+                className="p-2.5 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-100 active:scale-95"
+              >
+                <Plus size={18} />
+              </button>
+            )}
           </div>
 
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setIsNewModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-indigo-700 transition-all duration-300 shadow-lg shadow-indigo-100 active:scale-95"
-            >
-              <Plus size={14} />
-              New Appointment
-            </button>
-          </div>
+          {!isMobile && (
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsNewModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-indigo-700 transition-all duration-300 shadow-lg shadow-indigo-100 active:scale-95"
+              >
+                <Plus size={14} />
+                New Appointment
+              </button>
+            </div>
+          )}
         </div>
 
           {/* Controls Wrapper */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3 bg-slate-50/50 border-b" style={{ borderColor: DS.border }}>
-            <div className="flex flex-col sm:flex-row items-center gap-3">
-              {/* View Toggle */}
-              <div className="flex p-1 rounded-xl bg-white border shadow-sm" style={{ borderColor: DS.border }}>
-              {(['day', 'week'] as const).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  className={`flex-1 sm:flex-none px-5 py-1.5 text-xs font-bold rounded-lg transition-all capitalize ${
-                    viewMode === mode 
-                      ? 'bg-white shadow-sm' 
-                      : 'hover:bg-gray-100'
-                  }`}
-                  style={{ color: viewMode === mode ? DS.electric : DS.stone }}
-                >
-                  {mode}
-                </button>
-              ))}
-            </div>
+          <div className="flex flex-row items-center justify-between gap-4 px-4 md:px-6 py-3 bg-slate-50/50 border-b" style={{ borderColor: DS.border }}>
+            <div className="flex items-center gap-2 md:gap-3">
+              {/* View Toggle - Hidden on mobile */}
+              {!isMobile && (
+                <div className="flex p-1 rounded-xl bg-white border shadow-sm" style={{ borderColor: DS.border }}>
+                  {(['day', 'week'] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setViewMode(mode)}
+                      className={`px-5 py-1.5 text-xs font-bold rounded-lg transition-all capitalize ${
+                        viewMode === mode 
+                          ? 'bg-white shadow-sm' 
+                          : 'hover:bg-gray-100'
+                      }`}
+                      style={{ color: viewMode === mode ? DS.electric : DS.stone }}
+                    >
+                      {mode}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-            {/* Navigation */}
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setCurrentDate(toZonedTime(new Date(), timezone))}
-                className="px-4 py-2 text-xs font-bold rounded-xl transition-all"
-                style={{ color: DS.charcoal, backgroundColor: DS.offWhite }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = DS.border}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.offWhite}
-              >
-                Today
-              </button>
-              <div className="flex items-center rounded-xl overflow-hidden" style={{ backgroundColor: DS.offWhite }}>
+              {/* Navigation */}
+              <div className="flex items-center gap-2">
                 <button 
-                  onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? -1 : -7))} 
-                  className="p-2 transition-colors hover:bg-gray-200"
+                  onClick={() => setCurrentDate(toZonedTime(new Date(), timezone))}
+                  className="px-3 md:px-4 py-2 text-[10px] md:text-xs font-bold rounded-xl transition-all"
+                  style={{ color: DS.charcoal, backgroundColor: DS.offWhite }}
                 >
-                  <ChevronLeft className="w-4 h-4" style={{ color: DS.charcoal }} />
+                  Today
                 </button>
-                <span className="px-4 text-xs font-bold min-w-[120px] text-center" style={{ color: DS.ink }}>
-                  {viewMode === 'day' 
-                    ? format(currentDate, 'MMM d') 
-                    : `${format(weekStart, 'MMM d')} - ${format(addDays(weekStart, 6), 'MMM d')}`
-                  }
-                </span>
-                <button 
-                  onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? 1 : 7))} 
-                  className="p-2 transition-colors hover:bg-gray-200"
-                >
-                  <ChevronRight className="w-4 h-4" style={{ color: DS.charcoal }} />
-                </button>
+                <div className="flex items-center rounded-xl overflow-hidden" style={{ backgroundColor: DS.offWhite }}>
+                  <button 
+                    onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? -1 : -7))} 
+                    className="p-1.5 md:p-2 transition-colors hover:bg-gray-200"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5 md:w-4 md:h-4" style={{ color: DS.charcoal }} />
+                  </button>
+                  <span className="px-2 md:px-4 text-[10px] md:text-xs font-bold min-w-[80px] md:min-w-[120px] text-center" style={{ color: DS.ink }}>
+                    {viewMode === 'day' 
+                      ? format(currentDate, isMobile ? 'MMM d' : 'MMM d, yyyy') 
+                      : `${format(weekStart, 'MMM d')} - ${format(addDays(weekStart, 6), 'MMM d')}`
+                    }
+                  </span>
+                  <button 
+                    onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? 1 : 7))} 
+                    className="p-1.5 md:p-2 transition-colors hover:bg-gray-200"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5 md:w-4 md:h-4" style={{ color: DS.charcoal }} />
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Options */}
-            <div className="flex items-center gap-2">
+            {/* Options - More compact on mobile */}
+            <div className="flex items-center gap-1 md:gap-2">
               <button
                 onClick={() => setShow24Hours(!show24Hours)}
-                title={show24Hours ? "Switch to Day View" : "Switch to 24h View"}
-                className={`flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl transition-colors ${
+                className={`flex-shrink-0 flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-xl transition-colors ${
                   show24Hours ? 'text-indigo-700' : 'hover:bg-gray-200'
                 }`}
                 style={{ backgroundColor: show24Hours ? '#EEF2FF' : DS.offWhite, color: show24Hours ? '#4338CA' : DS.charcoal }}
               >
-                {show24Hours ? <Moon size={18} /> : <Sun size={18} />}
+                {show24Hours ? <Moon size={16} /> : <Sun size={16} />}
               </button>
 
-              <button
-                onClick={() => setTimeFormat(f => f === '12h' ? '24h' : '12h')}
-                title={`Switch to ${timeFormat === '12h' ? '24h' : '12h'} format`}
-                className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl transition-colors hover:bg-gray-200"
-                style={{ backgroundColor: DS.offWhite, color: DS.charcoal }}
-              >
-                <Clock size={18} />
-              </button>
+              {!isMobile && (
+                <>
+                  <button
+                    onClick={() => setTimeFormat(f => f === '12h' ? '24h' : '12h')}
+                    title={`Switch to ${timeFormat === '12h' ? '24h' : '12h'} format`}
+                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl transition-colors hover:bg-gray-200"
+                    style={{ backgroundColor: DS.offWhite, color: DS.charcoal }}
+                  >
+                    <Clock size={18} />
+                  </button>
 
-              {viewMode === 'week' && (
-                <button
-                  onClick={() => setShowWeekend(!showWeekend)}
-                  title={showWeekend ? "Hide Weekends" : "Show Weekends"}
-                  className={`flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl transition-colors ${
-                    showWeekend ? 'hover:bg-gray-200' : 'text-orange-700'
-                  }`}
-                  style={{ backgroundColor: showWeekend ? DS.offWhite : '#FFEDD5', color: showWeekend ? DS.charcoal : '#C2410C' }}
-                >
-                  <Layers size={18} />
-                </button>
+                  {viewMode === 'week' && (
+                    <button
+                      onClick={() => setShowWeekend(!showWeekend)}
+                      title={showWeekend ? "Hide Weekends" : "Show Weekends"}
+                      className={`flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl transition-colors ${
+                        showWeekend ? 'hover:bg-gray-200' : 'text-orange-700'
+                      }`}
+                      style={{ backgroundColor: showWeekend ? DS.offWhite : '#FFEDD5', color: showWeekend ? DS.charcoal : '#C2410C' }}
+                    >
+                      <Layers size={18} />
+                    </button>
+                  )}
+                </>
               )}
-
-              <button 
-                onClick={() => setIsNewModalOpen(true)}
-                className="hidden lg:flex flex-shrink-0 items-center justify-center w-10 h-10 text-white rounded-xl shadow-lg transition-all active:scale-95"
-                style={{ backgroundColor: DS.electric, boxShadow: `0 10px 15px -3px ${DS.electric}33` }}
-              >
-                <Plus size={20} />
-              </button>
             </div>
           </div>
         </div>
@@ -636,8 +644,8 @@ const FullScreenAppointments: React.FC = () => {
           className="flex-shrink-0 grid border-b-2"
           style={{ 
             gridTemplateColumns: viewMode === 'day' && !isMobile
-              ? `${isMobile ? '50px' : '60px'} repeat(${weekDays.length}, 1fr) 320px`
-              : `${isMobile ? '50px' : '60px'} repeat(${weekDays.length}, 1fr)`,
+              ? `${isMobile ? '50px' : '65px'} repeat(${weekDays.length}, 1fr) 320px`
+              : `${isMobile ? '50px' : '65px'} repeat(${weekDays.length}, 1fr)`,
             borderColor: DS.border,
             backgroundColor: DS.surface
           }}
@@ -653,32 +661,34 @@ const FullScreenAppointments: React.FC = () => {
             return (
               <div
                 key={i}
-                className={`flex flex-col items-center justify-center py-2 border-r transition-colors ${
+                className={`flex flex-col items-center justify-center py-2 md:py-3 border-r transition-colors ${
                   isToday ? 'bg-blue-50/50' : ''
                 }`}
                 style={{ borderColor: DS.border }}
               >
-                <div className="flex items-center gap-1">
-                  <span className={`text-xs font-bold uppercase tracking-wider ${
-                    isToday ? DS.electric : DS.stone
-                  }`}>
-                    {format(day, 'EEE')}
-                  </span>
-                  {hasNightAppts && !show24Hours && (
-                    <Moon className="w-3 h-3 text-indigo-400" />
-                  )}
-                </div>
-                <div className="flex items-center gap-1 mt-2">
-                  <span className={`text-lg font-bold ${
+                {!isMobile && (
+                  <div className="flex items-center gap-1">
+                    <span className={`text-[10px] md:text-xs font-bold uppercase tracking-wider ${
+                      isToday ? DS.electric : DS.stone
+                    }`}>
+                      {format(day, 'EEE')}
+                    </span>
+                    {hasNightAppts && !show24Hours && (
+                      <Moon className="w-3 h-3 text-indigo-400" />
+                    )}
+                  </div>
+                )}
+                <div className="flex items-center gap-2 mt-1 md:mt-2">
+                  <span className={`font-bold transition-all duration-300 ${
                     isToday 
-                      ? 'text-white bg-blue-600 w-8 h-8 flex items-center justify-center rounded-full' 
-                      : DS.ink
+                      ? 'text-white bg-blue-600 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full text-sm md:text-lg shadow-lg shadow-blue-200 ring-2 ring-blue-100' 
+                      : `${DS.ink} text-sm md:text-lg hover:text-blue-600`
                   }`}>
                     {format(day, 'd')}
                   </span>
                   {dayAppts.length > 0 && (
-                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
-                      isToday ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-600'
+                    <span className={`text-[9px] md:text-[10px] font-bold px-2 md:px-2.5 py-0.5 md:py-1 rounded-full shadow-sm transition-all ${
+                      isToday ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-200' : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'
                     }`}>
                       {dayAppts.length}
                     </span>
@@ -700,25 +710,25 @@ const FullScreenAppointments: React.FC = () => {
           className="flex-1 grid overflow-hidden relative"
           style={{ 
             gridTemplateColumns: viewMode === 'day' && !isMobile
-              ? `${isMobile ? '50px' : '60px'} repeat(${weekDays.length}, 1fr) 320px`
-              : `${isMobile ? '50px' : '60px'} repeat(${weekDays.length}, 1fr)`
+              ? `${isMobile ? '50px' : '65px'} repeat(${weekDays.length}, 1fr) 320px`
+              : `${isMobile ? '50px' : '65px'} repeat(${weekDays.length}, 1fr)`
           }}
         >
           
           {/* Time Column */}
-          <div className="border-r sticky left-0 z-10 flex flex-col h-full" style={{ backgroundColor: DS.surface, borderColor: DS.border }}>
+          <div className="border-r sticky left-0 z-10 flex flex-col h-full shadow-[2px_0_8px_rgba(0,0,0,0.02)]" style={{ backgroundColor: DS.surface, borderColor: DS.border, width: isMobile ? '50px' : '65px' }}>
             {hours.map((hour) => {
               const isNightHour = hour < 7 || hour >= 21;
               return (
                 <div 
                   key={hour} 
-                  className={`${getRowHeight()} flex items-start justify-end pr-2 pt-2 border-b overflow-hidden ${
+                  className={`${getRowHeight()} flex items-start justify-end pr-2 md:pr-3 pt-2.5 border-b overflow-hidden ${
                     isNightHour ? 'bg-slate-50/50' : ''
                   }`}
-                  style={{ borderColor: '#CBD5E1' }}
+                  style={{ borderColor: '#E2E8F0' }}
                 >
-                  <span className={`text-[10px] font-semibold ${
-                    isNightHour ? 'text-indigo-400' : DS.subtleText
+                  <span className={`text-[10px] md:text-xs font-bold tracking-tight ${
+                    isNightHour ? 'text-indigo-400' : 'text-slate-400'
                   }`}>
                     {formatHour(hour)}
                   </span>
@@ -839,8 +849,8 @@ const FullScreenAppointments: React.FC = () => {
                       onDragStart={(e) => handleDragStart(e, appt)}
                       onDragEnd={handleDragEnd}
                       className={`absolute ${colors.bg} ${colors.hover} ${colors.text} 
-                        rounded-xl shadow-md cursor-grab active:cursor-grabbing 
-                        transition-all duration-300 group overflow-hidden border-l-[4px] ${colors.border}
+                        rounded-xl md:rounded-xl shadow-md cursor-grab active:cursor-grabbing 
+                        transition-all duration-300 group overflow-hidden border-l-[4px] md:border-l-[4px] ${colors.border}
                         backdrop-blur-sm
                         hover:shadow-2xl hover:z-30 hover:scale-[1.02] hover:-translate-y-0.5
                         ${isSelected ? `ring-2 ring-offset-2 ring-${DS.electric} z-40 scale-[1.04] shadow-2xl translate-z-10` : 'z-20'}
@@ -851,7 +861,7 @@ const FullScreenAppointments: React.FC = () => {
                         height: pos.height,
                         left: pos.left,
                         width: pos.width,
-                        minHeight: '28px'
+                        minHeight: isMobile ? '32px' : '28px'
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -868,15 +878,17 @@ const FullScreenAppointments: React.FC = () => {
 
                       {/* Night Indicator */}
                       {isNight && (
-                        <div className="absolute top-1.5 right-1.5 z-10">
-                          <Moon className="w-3.5 h-3.5 text-white/70" />
+                        <div className="absolute top-1 md:top-1.5 right-1 md:right-1.5 z-10">
+                          <Moon className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-white/70" />
                         </div>
                       )}
                       
-                      {/* Drag Handle */}
-                      <div className="absolute top-1 left-0.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab z-10">
-                        <GripVertical className="w-3.5 h-3.5 text-white/50" />
-                      </div>
+                      {/* Drag Handle - Hidden on mobile */}
+                      {!isMobile && (
+                        <div className="absolute top-1 left-0.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab z-10">
+                          <GripVertical className="w-3.5 h-3.5 text-white/50" />
+                        </div>
+                      )}
                       
                       {/* Partial visibility indicators */}
                       {pos.isBeforeVisible && (
@@ -886,29 +898,29 @@ const FullScreenAppointments: React.FC = () => {
                         <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-6 h-1 bg-white/40 rounded-full z-10" />
                       )}
 
-                      <div className="px-3 py-2.5 h-full flex flex-col justify-start relative z-0">
-                        <div className="flex items-center justify-between gap-1.5 mb-0.5 min-w-0">
-                          <p className={`font-bold truncate leading-tight flex-1 ${isMobile ? 'text-sm' : 'text-xs'}`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                      <div className={`h-full flex flex-col justify-start relative z-0 ${isMobile ? 'px-2 py-1.5' : 'px-3 py-2.5'}`}>
+                        <div className="flex items-center justify-between gap-1 mb-0.5 min-w-0">
+                          <p className={`font-bold truncate leading-tight flex-1 ${isMobile ? 'text-[11px]' : 'text-xs'}`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
                             {appt.customer_name}
                           </p>
-                          {appt.status === 'Confirmed' && !isMobile && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] animate-pulse flex-shrink-0" />
+                          {appt.status === 'Confirmed' && (
+                            <div className={`rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] animate-pulse flex-shrink-0 ${isMobile ? 'w-1 h-1' : 'w-1.5 h-1.5'}`} />
                           )}
                         </div>
 
-                        {pos.rawHeight > 3.5 && (
+                        {pos.rawHeight > (isMobile ? 2.5 : 3.5) && (
                           <div className="flex items-center gap-1 opacity-95 mt-0.5 min-w-0" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.2)' }}>
-                            <Clock className="w-2.5 h-2.5 flex-shrink-0" />
-                            <p className={`truncate font-semibold ${isMobile ? 'text-xs' : 'text-[10px]'}`}>
+                            <Clock className={`${isMobile ? 'w-2 h-2' : 'w-2.5 h-2.5'} flex-shrink-0`} />
+                            <p className={`truncate font-semibold ${isMobile ? 'text-[9px]' : 'text-[10px]'}`}>
                               {formatTime(getZonedTime(appt.start_time))}
                             </p>
                           </div>
                         )}
                         
-                        {pos.rawHeight > 6 && (
+                        {pos.rawHeight > (isMobile ? 5 : 6) && (
                           <div className="mt-1 flex items-center gap-1 min-w-0" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.2)' }}>
                             <div className="w-1 h-1 rounded-full bg-white/60 flex-shrink-0" />
-                            <p className={`opacity-90 truncate font-medium ${isMobile ? 'text-xs' : 'text-[10px]'}`}>
+                            <p className={`opacity-90 truncate font-medium ${isMobile ? 'text-[9px]' : 'text-[10px]'}`}>
                               {appt.title}
                             </p>
                           </div>
