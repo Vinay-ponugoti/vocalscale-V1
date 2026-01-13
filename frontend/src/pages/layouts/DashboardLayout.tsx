@@ -205,7 +205,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     <>
       <NavigationGuard isAuthenticated={!!user} />
       {/* Main Container - Using DS OffWhite for background */}
-      <div className="h-screen flex font-sans overflow-hidden" style={{ backgroundColor: DS.offWhite }}>
+      <div className="h-screen h-[100dvh] flex font-sans overflow-hidden" style={{ backgroundColor: DS.offWhite }}>
 
       {/* SIDEBAR - Using DS White for surface */}
       <aside
