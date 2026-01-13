@@ -1,11 +1,5 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
-    {
-      "source": "/(favicon.*|apple-touch-icon.*|android-chrome.*|site\\.webmanifest|logo-icon.*|logos/.*)",
-      "destination": "/$1"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
