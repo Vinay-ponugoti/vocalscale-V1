@@ -1,4 +1,4 @@
-import { Settings, TrendingUp, TrendingDown, MoreHorizontal } from 'lucide-react';
+import { Settings, TrendingUp, TrendingDown, MoreHorizontal, RefreshCw } from 'lucide-react';
 import { StarRating } from '../../../../components/ui/StarRating';
 import {
   Card,
@@ -10,6 +10,8 @@ import {
 import { Button } from '../../../../components/ui/Button';
 import { Badge } from '../../../../components/ui/Badge';
 import { Progress } from '../../../../components/ui/Progress';
+import { useAuth } from '../../../../context/AuthContext';
+import { useToast } from '../../../../hooks/useToast';
 import {
   BarChart,
   Bar,
@@ -41,6 +43,34 @@ const sentimentData = [
 ];
 
 export const ReviewOverview = () => {
+  const { isConfigured } = useAuth();
+  const { showToast } = useToast();
+
+  const handleSyncGoogle = async () => {
+    if (!isConfigured) {
+      showToast('Service unavailable.', 'error');
+      return;
+    }
+
+    try {
+      // Redirect URL for the callback
+      const redirectUrl = `${window.location.origin}/auth/callback`;
+      
+      // Get the Google Auth URL from backend with necessary business permissions
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}&scope=business_profile`);
+      
+      if (!response.ok) throw new Error('Failed to get auth URL');
+      
+      const { url } = await response.json();
+      
+      // Redirect the user to Google
+      window.location.href = url;
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'An error occurred during Google sync.';
+      showToast(message, 'error');
+    }
+  };
+
   return (
     <div className="space-y-6 2xl:space-y-10">
       {/* Header */}
@@ -59,7 +89,14 @@ export const ReviewOverview = () => {
             <Settings className="w-4 h-4 mr-2" />
             Settings
           </Button>
-          <Button size="sm" className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-10 px-4">Export Report</Button>
+          <Button 
+            size="sm" 
+            onClick={handleSyncGoogle}
+            className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-10 px-4 flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Sync Google
+          </Button>
         </div>
       </div>
 
