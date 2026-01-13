@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { 
   Plus, 
@@ -20,8 +20,32 @@ import { getAuthHeader } from '../../lib/api';
 
 import type { PhoneNumber } from '../../types/voice';
 
+// ============ CUSTOM HOOKS ============
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowSize;
+};
+
 const VoiceSetup = () => {
   const navigate = useNavigate();
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
   const { numbers, loading, error, refetch, updateLocalNumber, setNumbers } = usePhoneNumbers();
   
   const [editingNumber, setEditingNumber] = useState<PhoneNumber | null>(null);
@@ -105,12 +129,12 @@ const VoiceSetup = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
+      <div className={`w-full ${isMobile ? 'p-3' : 'p-4 md:p-8 2xl:p-12'} space-y-4 md:space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full`}>
         
         {/* Header Section */}
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Phone Numbers</h1>
-          <p className="text-slate-500 font-medium">Manage your Twilio numbers and provision new lines.</p>
+        <div className={`flex flex-col ${isMobile ? 'gap-1' : 'gap-2'}`}>
+          <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-black text-slate-900 tracking-tight`}>Phone Numbers</h1>
+          <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-slate-500 font-medium`}>Manage your Twilio numbers and provision new lines.</p>
         </div>
 
         {error && (
@@ -133,47 +157,47 @@ const VoiceSetup = () => {
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
           
           {/* Tabs */}
-          <div className="flex border-b border-slate-100 px-2 pt-2 shrink-0 bg-slate-50/30">
-            <button className="flex items-center gap-3 px-6 py-4 text-sm font-bold border-b-2 border-indigo-600 bg-white text-indigo-700 shadow-sm rounded-t-lg transition-colors mb-[-1px]">
-              <Smartphone className="w-4 h-4" />
+          <div className="flex border-b border-slate-100 px-1 md:px-2 pt-1 md:pt-2 shrink-0 bg-slate-50/30 overflow-x-auto scrollbar-hide">
+            <button className={`flex items-center gap-2 md:gap-3 ${isMobile ? 'px-4 py-3 text-xs' : 'px-6 py-4 text-sm'} font-bold border-b-2 border-indigo-600 bg-white text-indigo-700 shadow-sm rounded-t-lg transition-colors mb-[-1px] whitespace-nowrap`}>
+              <Smartphone className={`${isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
               My Numbers
-              <span className="ml-2 bg-indigo-50 text-indigo-600 text-xs py-0.5 px-2.5 rounded-full border border-indigo-100">{numbers.length}</span>
+              <span className={`ml-1 md:ml-2 bg-indigo-50 text-indigo-600 ${isMobile ? 'text-[10px]' : 'text-xs'} py-0.5 px-2 rounded-full border border-indigo-100`}>{numbers.length}</span>
             </button>
             <button
               onClick={() => navigate('/dashboard/voice-setup/setup-subaccount')}
-              className="flex items-center gap-3 px-6 py-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm rounded-t-lg transition-all"
+              className={`flex items-center gap-2 md:gap-3 ${isMobile ? 'px-4 py-3 text-xs' : 'px-6 py-4 text-sm'} font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm rounded-t-lg transition-all whitespace-nowrap`}
             >
-              <PlusCircle className="w-4 h-4" />
+              <PlusCircle className={`${isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
               Get New Number
             </button>
           </div>
 
           {/* Toolbar */}
-          <div className="p-4 border-b border-slate-100 flex flex-col xl:flex-row xl:items-center justify-between gap-4 shrink-0 bg-white">
+          <div className={`${isMobile ? 'p-3' : 'p-4'} border-b border-slate-100 flex flex-col xl:flex-row xl:items-center justify-between gap-3 md:gap-4 shrink-0 bg-white`}>
             <div className="relative w-full xl:w-[400px] group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
               </div>
               <input 
-                className="block w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl leading-5 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm" 
+                className={`block w-full pl-10 pr-4 ${isMobile ? 'py-2' : 'py-2.5'} border border-slate-200 rounded-xl leading-5 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm`} 
                 placeholder="Search numbers..." 
                 type="text"
               />
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className={`flex ${isMobile ? 'grid grid-cols-2' : 'flex-wrap'} gap-2 md:gap-3`}>
               <button 
                 onClick={() => navigate('/dashboard/voice-setup/existing')}
-                className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 bg-white rounded-xl text-sm font-bold text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md transition-all group"
+                className={`flex items-center justify-center gap-2 ${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2.5 text-sm'} border border-slate-200 bg-white rounded-xl font-bold text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md transition-all group`}
               >
                 <LinkIcon className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
-                Add Existing
+                {isMobile ? 'Add' : 'Add Existing'}
               </button>
               <div className="h-9 w-px bg-slate-200 hidden xl:block"></div>
-              <button className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 bg-white rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
+              <button className={`flex items-center justify-center gap-2 ${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2.5 text-sm'} border border-slate-200 bg-white rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm`}>
                 <Filter className="w-4 h-4" />
                 Filter
               </button>
-              <button className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 bg-white rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
+              <button className={`flex items-center justify-center gap-2 ${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2.5 text-sm'} border border-slate-200 bg-white rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm ${isMobile ? 'hidden' : ''}`}>
                 <Download className="w-4 h-4" />
                 Export
               </button>
@@ -181,83 +205,116 @@ const VoiceSetup = () => {
           </div>
 
           {/* Content Area */}
-          <div className="p-6 flex flex-col bg-white min-h-[400px]">
+          <div className={`${isMobile ? 'p-3' : 'p-6'} flex flex-col bg-white min-h-[400px]`}>
             
             {loading ? (
                <div className="flex flex-col gap-4">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="grid grid-cols-12 px-6 py-5 items-center rounded-2xl border border-slate-100 bg-slate-50/50">
-                      <div className="col-span-4 flex items-center gap-4">
+                    <div key={i} className={`${isMobile ? 'flex flex-col gap-3 p-4' : 'grid grid-cols-12 px-6 py-5 items-center'} rounded-2xl border border-slate-100 bg-slate-50/50`}>
+                      <div className={`${isMobile ? 'w-full' : 'col-span-4'} flex items-center gap-4`}>
                         <div className="w-12 h-12 rounded-full bg-slate-200 animate-pulse" />
                         <div className="flex flex-col gap-2.5">
                            <div className="h-4 w-32 bg-slate-200 rounded animate-pulse" />
                            <div className="h-3.5 w-24 bg-slate-200 rounded animate-pulse" />
                         </div>
                       </div>
-                      <div className="col-span-3">
-                         <div className="h-7 w-20 bg-slate-200 rounded-full animate-pulse" />
-                      </div>
-                      <div className="col-span-3 flex gap-2">
-                         <div className="h-6 w-16 bg-slate-200 rounded animate-pulse" />
-                         <div className="h-6 w-16 bg-slate-200 rounded animate-pulse" />
-                      </div>
-                      <div className="col-span-2" />
+                      {!isMobile && (
+                        <>
+                          <div className="col-span-3">
+                             <div className="h-7 w-20 bg-slate-200 rounded-full animate-pulse" />
+                          </div>
+                          <div className="col-span-3 flex gap-2">
+                             <div className="h-6 w-16 bg-slate-200 rounded animate-pulse" />
+                             <div className="h-6 w-16 bg-slate-200 rounded animate-pulse" />
+                          </div>
+                          <div className="col-span-2" />
+                        </>
+                      )}
                     </div>
                   ))}
                </div>
             ) : numbers.length > 0 ? (
               <div className="flex flex-col gap-3">
-                {/* Header Row */}
-                <div className="grid grid-cols-12 px-6 py-3 text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
-                  <div className="col-span-4">Number Details</div>
-                  <div className="col-span-3">Status</div>
-                  <div className="col-span-3">Capabilities</div>
-                  <div className="col-span-2 text-right">Actions</div>
-                </div>
+                {/* Header Row - Hide on mobile */}
+                {!isMobile && (
+                  <div className="grid grid-cols-12 px-6 py-3 text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                    <div className="col-span-4">Number Details</div>
+                    <div className="col-span-3">Status</div>
+                    <div className="col-span-3">Capabilities</div>
+                    <div className="col-span-2 text-right">Actions</div>
+                  </div>
+                )}
                 
                 {/* Items */}
                 {numbers.map((num: PhoneNumber, idx) => (
-                  <div key={idx} className="group grid grid-cols-12 px-6 py-5 items-center rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all bg-white">
-                    <div className="col-span-4 flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shrink-0">
-                        <Smartphone className="w-5 h-5" />
+                  <div key={idx} className={`group ${isMobile ? 'flex flex-col p-4 gap-4' : 'grid grid-cols-12 px-6 py-5 items-center'} rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all bg-white`}>
+                    <div className={`${isMobile ? 'w-full' : 'col-span-4'} flex items-center justify-between`}>
+                      <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shrink-0`}>
+                          <Smartphone className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm md:text-base font-mono">{num.phone_number || num.phoneNumber || '(415) 555-0123'}</p>
+                          <p className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wide mt-0.5">{num.number || 'Main Business Line'}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-bold text-slate-900 text-sm font-mono">{num.phone_number || num.phoneNumber || '(415) 555-0123'}</p>
-                        <p className="text-xs text-slate-500 font-bold uppercase tracking-wide mt-0.5">{num.number || 'Main Business Line'}</p>
-                      </div>
+                      {isMobile && (
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleEditClick(num)}
+                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
+                          >
+                            <Settings2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    <div className="col-span-3 flex items-center">
-                      <button
-                        onClick={() => handleStatusChange(num.id, num.status || 'inactive')}
-                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${num.status === 'active' ? 'bg-indigo-600' : 'bg-slate-200'}`}
-                        role="switch"
-                        aria-checked={num.status === 'active'}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${num.status === 'active' ? 'translate-x-5' : 'translate-x-0'}`}
-                        />
-                      </button>
-                      <span className={`ml-3 text-xs font-black uppercase tracking-wide ${num.status === 'active' ? 'text-indigo-600' : 'text-slate-400'}`}>
-                        {num.status === 'active' ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    <div className="col-span-3 flex items-center gap-2">
-                      <span className="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg text-[10px] font-bold uppercase border border-slate-200">Voice</span>
-                      <span className="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg text-[10px] font-bold uppercase border border-slate-200">SMS</span>
-                    </div>
-                    <div className="col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => handleEditClick(num)}
-                        className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
+
+                    <div className={`${isMobile ? 'flex items-center justify-between w-full pt-3 border-t border-slate-50' : 'col-span-3 flex items-center'}`}>
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => handleStatusChange(num.id, num.status || 'inactive')}
+                          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${num.status === 'active' ? 'bg-indigo-600' : 'bg-slate-200'}`}
+                          role="switch"
+                          aria-checked={num.status === 'active'}
                         >
-                        <Settings2 className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors">
-                        <ArrowUpRight className="w-4 h-4" />
-                      </button>
+                          <span
+                            aria-hidden="true"
+                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${num.status === 'active' ? 'translate-x-5' : 'translate-x-0'}`}
+                          />
+                        </button>
+                        <span className={`ml-3 text-[10px] md:text-xs font-black uppercase tracking-wide ${num.status === 'active' ? 'text-indigo-600' : 'text-slate-400'}`}>
+                          {num.status === 'active' ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
+
+                      {isMobile && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-2 py-0.5 bg-slate-50 text-slate-600 rounded-md text-[9px] font-bold uppercase border border-slate-200">Voice</span>
+                          <span className="px-2 py-0.5 bg-slate-50 text-slate-600 rounded-md text-[9px] font-bold uppercase border border-slate-200">SMS</span>
+                        </div>
+                      )}
                     </div>
+
+                    {!isMobile && (
+                      <>
+                        <div className="col-span-3 flex items-center gap-2">
+                          <span className="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg text-[10px] font-bold uppercase border border-slate-200">Voice</span>
+                          <span className="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg text-[10px] font-bold uppercase border border-slate-200">SMS</span>
+                        </div>
+                        <div className="col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => handleEditClick(num)}
+                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
+                            >
+                            <Settings2 className="w-4 h-4" />
+                          </button>
+                          <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors">
+                            <ArrowUpRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
@@ -283,13 +340,13 @@ const VoiceSetup = () => {
           </div>
 
           {/* Pagination Footer */}
-          <div className="flex flex-col sm:flex-row items-center justify-between border-t border-slate-100 p-4 shrink-0 bg-slate-50/30">
-            <p className="text-xs text-slate-500 mb-4 sm:mb-0 font-medium">
+          <div className={`flex flex-col sm:flex-row items-center justify-between border-t border-slate-100 ${isMobile ? 'p-3' : 'p-4'} shrink-0 bg-slate-50/30`}>
+            <p className="text-[10px] md:text-xs text-slate-500 mb-3 sm:mb-0 font-medium">
               Showing <span className="font-bold text-slate-900">{numbers.length > 0 ? 1 : 0}</span> to <span className="font-bold text-slate-900">{numbers.length}</span> of <span className="font-bold text-slate-900">{numbers.length}</span> results
             </p>
-            <div className="flex gap-2 w-full sm:w-auto">
-              <button disabled className="flex-1 sm:flex-none px-4 py-2.5 text-xs border border-slate-200 rounded-xl bg-white text-slate-400 cursor-not-allowed font-bold">Previous</button>
-              <button disabled className="flex-1 sm:flex-none px-4 py-2.5 text-xs border border-slate-200 rounded-xl bg-white text-slate-400 cursor-not-allowed font-bold">Next</button>
+            <div className={`flex gap-2 ${isMobile ? 'w-full' : 'w-auto'}`}>
+              <button disabled className={`${isMobile ? 'flex-1 py-2' : 'px-4 py-2.5'} text-[10px] md:text-xs border border-slate-200 rounded-xl bg-white text-slate-400 cursor-not-allowed font-bold`}>Previous</button>
+              <button disabled className={`${isMobile ? 'flex-1 py-2' : 'px-4 py-2.5'} text-[10px] md:text-xs border border-slate-200 rounded-xl bg-white text-slate-400 cursor-not-allowed font-bold`}>Next</button>
             </div>
           </div>
         </div>

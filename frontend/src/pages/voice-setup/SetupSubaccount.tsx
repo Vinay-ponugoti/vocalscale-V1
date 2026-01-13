@@ -14,8 +14,31 @@ import { getAuthHeader } from '../../lib/api';
 
 import type { Subaccount } from '../../types/voice';
 
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowSize;
+};
+
 const SetupSubaccount = () => {
   const navigate = useNavigate();
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
   const [businessName, setBusinessName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,26 +132,26 @@ const SetupSubaccount = () => {
 
   return (
     <DashboardLayout>
-      <div className="pt-6 lg:pt-12 pb-4 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto h-[calc(100vh-64px)] flex flex-col items-center">
+      <div className={`${isMobile ? 'pt-4 pb-4' : 'pt-6 lg:pt-12 pb-4'} px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto min-h-[calc(100vh-64px)] flex flex-col items-center`}>
         <div className="w-full max-w-5xl">
           {/* Header Section */}
-          <div className="mb-6 lg:mb-10 flex flex-col items-center text-center">
-          <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200 mb-3 lg:mb-4 ring-4 ring-indigo-50">
-            <Building2 className="w-6 h-6 lg:w-7 lg:h-7" />
+          <div className={`${isMobile ? 'mb-6' : 'mb-6 lg:mb-10'} flex flex-col items-center text-center`}>
+          <div className={`${isMobile ? 'w-10 h-10' : 'w-12 h-12 lg:w-14 lg:h-14'} rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200 mb-3 lg:mb-4 ring-4 ring-indigo-50`}>
+            <Building2 className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6 lg:w-7 lg:h-7'}`} />
           </div>
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight mb-1 lg:mb-2">Set Up Business Account</h1>
-          <p className="text-slate-500 text-xs md:text-sm lg:text-base font-medium max-w-lg mx-auto px-4">
+          <h1 className={`${isMobile ? 'text-lg' : 'text-xl md:text-2xl lg:text-3xl'} font-black text-slate-900 tracking-tight mb-1 lg:mb-2`}>Set Up Business Account</h1>
+          <p className="text-slate-500 text-[10px] md:text-sm lg:text-base font-medium max-w-lg mx-auto px-4">
             Create your dedicated Twilio subaccount to manage your business communications.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-8 items-stretch">
           {/* Left Column: Info & Tips */}
           <div className="lg:col-span-2 flex flex-col gap-4 lg:gap-6">
-            <div className="bg-indigo-50/50 rounded-2xl lg:rounded-3xl p-5 lg:p-6 border border-indigo-100 relative overflow-hidden flex-1">
+            <div className={`bg-indigo-50/50 rounded-2xl lg:rounded-3xl ${isMobile ? 'p-4' : 'p-5 lg:p-6'} border border-indigo-100 relative overflow-hidden flex-1`}>
               <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/50 rounded-full blur-2xl -mr-12 -mt-12"></div>
               <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-4 lg:mb-5">
+                <div className={`flex items-center gap-2 ${isMobile ? 'mb-3' : 'mb-4 lg:mb-5'}`}>
                   <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-indigo-100 shadow-sm">
                     <Info className="w-4 h-4 text-indigo-600" />
                   </div>
@@ -167,7 +190,7 @@ const SetupSubaccount = () => {
               </div>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-4 lg:p-5 border border-slate-200">
+            <div className={`bg-slate-50 rounded-2xl ${isMobile ? 'p-3' : 'p-4 lg:p-5'} border border-slate-200`}>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Status</p>
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${existingSubaccount ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`}></div>
@@ -181,13 +204,13 @@ const SetupSubaccount = () => {
           {/* Right Column: Setup Form / Success State */}
           <div className="lg:col-span-3">
             {success ? (
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 lg:p-8 text-center h-full flex flex-col justify-center overflow-hidden relative">
+              <div className={`bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 ${isMobile ? 'p-5' : 'p-6 lg:p-8'} text-center h-full flex flex-col justify-center overflow-hidden relative`}>
                 <div className="absolute top-0 inset-x-0 h-1 bg-emerald-500"></div>
-                <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-4 lg:mb-6 shadow-sm">
-                  <CheckCircle className="w-8 h-8 text-emerald-500" />
+                <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-4 lg:mb-6 shadow-sm`}>
+                  <CheckCircle className={`${isMobile ? 'w-6 h-6' : 'w-8 h-8'} text-emerald-500`} />
                 </div>
-                <h3 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight mb-2">Setup Complete!</h3>
-                <p className="text-sm font-medium text-slate-500 mb-6 lg:mb-8 max-w-xs mx-auto">
+                <h3 className={`${isMobile ? 'text-lg' : 'text-xl lg:text-2xl'} font-black text-slate-900 tracking-tight mb-2`}>Setup Complete!</h3>
+                <p className="text-[10px] md:text-sm font-medium text-slate-500 mb-6 lg:mb-8 max-w-xs mx-auto">
                   Redirecting you to pick a phone number...
                 </p>
                 <div className="flex flex-col items-center gap-4">
@@ -202,18 +225,18 @@ const SetupSubaccount = () => {
                 </div>
               </div>
             ) : existingSubaccount ? (
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 lg:p-8 h-full flex flex-col overflow-hidden relative">
+              <div className={`bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 ${isMobile ? 'p-5' : 'p-6 lg:p-8'} h-full flex flex-col overflow-hidden relative`}>
                 <div className="absolute top-0 inset-x-0 h-1 bg-indigo-600"></div>
-                <div className="mb-6 lg:mb-8">
-                  <h3 className="text-lg lg:text-xl font-black text-slate-900 tracking-tight mb-1">Existing Account Found</h3>
+                <div className={`${isMobile ? 'mb-4' : 'mb-6 lg:mb-8'}`}>
+                  <h3 className={`${isMobile ? 'text-base' : 'text-lg lg:text-xl'} font-black text-slate-900 tracking-tight mb-1`}>Existing Account Found</h3>
                   <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">Everything is ready to go</p>
                 </div>
 
-                <div className="bg-slate-50 rounded-2xl p-5 lg:p-6 border border-slate-100 mb-6 lg:mb-8 flex-1">
+                <div className={`bg-slate-50 rounded-2xl ${isMobile ? 'p-4' : 'p-5 lg:p-6'} border border-slate-100 ${isMobile ? 'mb-4' : 'mb-6 lg:mb-8'} flex-1`}>
                   <div className="flex flex-col gap-4">
                     <div>
                       <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Subaccount Name</p>
-                      <p className="text-base lg:text-lg font-black text-slate-900">{existingSubaccount.friendly_name}</p>
+                      <p className={`${isMobile ? 'text-sm' : 'text-base lg:text-lg'} font-black text-slate-900`}>{existingSubaccount.friendly_name}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">SID</p>
@@ -231,10 +254,10 @@ const SetupSubaccount = () => {
                 </button>
               </div>
             ) : (
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 lg:p-8 h-full flex flex-col overflow-hidden relative">
+              <div className={`bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 ${isMobile ? 'p-5' : 'p-6 lg:p-8'} h-full flex flex-col overflow-hidden relative`}>
                 <div className="absolute top-0 inset-x-0 h-1 bg-indigo-600"></div>
-                <div className="mb-6 lg:mb-8">
-                  <h3 className="text-lg lg:text-xl font-black text-slate-900 tracking-tight mb-1">Initialize Account</h3>
+                <div className={`${isMobile ? 'mb-4' : 'mb-6 lg:mb-8'}`}>
+                  <h3 className={`${isMobile ? 'text-base' : 'text-lg lg:text-xl'} font-black text-slate-900 tracking-tight mb-1`}>Initialize Account</h3>
                   <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">Enter your business details</p>
                 </div>
 
@@ -270,7 +293,7 @@ const SetupSubaccount = () => {
                 <button
                   onClick={handleCreateSubaccount}
                   disabled={loading || !businessName.trim()}
-                  className="mt-6 lg:mt-8 w-full flex items-center justify-center gap-3 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white font-black uppercase tracking-widest text-[10px] lg:text-xs rounded-xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-1"
+                  className={`${isMobile ? 'mt-4' : 'mt-6 lg:mt-8'} w-full flex items-center justify-center gap-3 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white font-black uppercase tracking-widest text-[10px] lg:text-xs rounded-xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-1`}
                 >
                   {loading ? (
                     <>
@@ -291,7 +314,7 @@ const SetupSubaccount = () => {
 
         </div>
 
-        <div className="mt-6 text-center">
+        <div className={`${isMobile ? 'mt-4' : 'mt-6'} text-center`}>
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
             <CheckCircle className="w-3 h-3 text-emerald-500" />
             Secure & Encrypted Data Storage
