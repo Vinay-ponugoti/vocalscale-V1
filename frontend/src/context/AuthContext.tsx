@@ -15,6 +15,7 @@ interface AuthContextType {
   isConfigured: boolean;
   refreshSession: () => Promise<void>;
   validateSession: () => Promise<void>;
+  setAuthSession: (session: Session) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({ 
@@ -25,7 +26,8 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   isConfigured: true,
   refreshSession: async () => {},
-  validateSession: async () => {}
+  validateSession: async () => {},
+  setAuthSession: () => {}
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -185,6 +187,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
+  const setAuthSession = useCallback((newSession: Session) => {
+    if (mounted.current) {
+      setSession(newSession);
+      setUser(newSession.user ?? null);
+      storeSession(newSession);
+      setLoading(false);
+      setSecurityMessage(null);
+    }
+  }, []);
+
   return (
     <AuthContext.Provider value={{ 
       session, 
@@ -194,7 +206,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signOut, 
       isConfigured: true, 
       refreshSession, 
-      validateSession 
+      validateSession,
+      setAuthSession
     }}>
       {children}
     </AuthContext.Provider>

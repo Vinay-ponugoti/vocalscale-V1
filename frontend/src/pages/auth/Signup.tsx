@@ -11,7 +11,7 @@ import { env } from '../../config/env';
 const Signup = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { isConfigured, securityMessage } = useAuth();
+  const { isConfigured, securityMessage, setAuthSession } = useAuth();
   const { showToast } = useToast();
 
   const [loading, setLoading] = useState(false);
@@ -105,7 +105,8 @@ const Signup = () => {
       const { session } = responseData;
 
       if (session) {
-        storeSession(session);
+        // Update auth context immediately
+        setAuthSession(session);
         
         // Prefetch critical dashboard data immediately after signup
         const now = new Date();
@@ -156,8 +157,8 @@ const Signup = () => {
 
         showToast('Account created successfully!', 'success');
         
-        // Use window.location.href to force a full reload and let AuthContext initialize
-        window.location.href = '/dashboard';
+        // Use navigate for smoother transition
+        navigate('/dashboard', { replace: true });
       } else {
         showToast('Account created! Please check your email for verification.', 'info');
         navigate('/login');

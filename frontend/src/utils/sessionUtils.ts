@@ -35,6 +35,32 @@ export const getAuthToken = (): string | null => {
   return session?.access_token || null;
 };
 
+export const fetchUserProfile = async (accessToken: string): Promise<any> => {
+  try {
+    const response = await fetch(`${env.API_URL}/auth/validate`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'ngrok-skip-browser-warning': 'true'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user profile: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      id: data.user_id,
+      email: data.email || '',
+      full_name: data.user_metadata?.full_name || '',
+      avatar_url: data.user_metadata?.avatar_url || data.user_metadata?.picture || '',
+    };
+  } catch (e) {
+    console.error('Error fetching user profile:', e);
+    return null;
+  }
+};
+
 export const validateSession = async (): Promise<SessionValidationResult> => {
   const session = getStoredSession();
 

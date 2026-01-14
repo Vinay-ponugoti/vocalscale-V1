@@ -1,15 +1,17 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 import { useToast } from '../../hooks/useToast';
-import { storeSession } from '../../utils/sessionUtils';
 import { useQueryClient } from '@tanstack/react-query';
 import { env } from '../../config/env';
+import { useAuth } from '../../context/AuthContext';
+import { PageLoader } from '../../components/ui/PageLoader';
+import { fetchUserProfile } from '../../utils/sessionUtils';
 
 const GoogleCallback = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const { setAuthSession } = useAuth();
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -37,9 +39,8 @@ const GoogleCallback = () => {
           throw new Error('Access token not found in response');
         }
 
-        // We need the user data as well. Supabase usually doesn't include the full user object in the hash.
-        // However, we can construct a minimal session and let the AuthContext/sessionUtils validate it.
-        // Or better yet, we can fetch the user details using the access token.
+        // Fetch user profile immediately
+        const user = await fetchUserProfile(accessToken);
 
         const session = {
           access_token: accessToken,
@@ -47,11 +48,11 @@ const GoogleCallback = () => {
           expires_in: parseInt(expiresIn || '3600'),
           expires_at: Math.floor(Date.now() / 1000) + parseInt(expiresIn || '3600'),
           token_type: 'bearer',
-          user: null // Will be populated by the backend validation or AuthContext
+          user: user || { id: 'unknown', email: '' } // Fallback to avoid null if fetch fails
         };
 
-        // Store session and redirect
-        storeSession(session as Parameters<typeof storeSession>[0]);
+        // Update auth context immediately so we don't see loading screens on the next page
+        setAuthSession(session);
         
         // --- Sync with Backend ---
         // Send the refresh token to our backend so we can access Google Business API later
@@ -109,8 +110,8 @@ const GoogleCallback = () => {
           ...prefetchOptions
         });
 
-        // Use window.location.origin to ensure we stay on the same domain
-        window.location.href = `${window.location.origin}/dashboard`;
+        // Use navigate instead of window.location.href for a smoother transition
+        navigate('/dashboard', { replace: true });
       } catch (e) {
         console.error('Google callback error:', e);
         const message = e instanceof Error ? e.message : 'Authentication failed';
@@ -120,17 +121,9 @@ const GoogleCallback = () => {
     };
 
     handleCallback();
-  }, [navigate, showToast, queryClient]);
+  }, [navigate, showToast, queryClient, setAuthSession]);
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="text-center">
-        <Loader2 className="w-12 h-12 animate-spin text-[#0ea5e9] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-slate-800">Completing your sign in...</h2>
-        <p className="text-sm text-slate-500 mt-2">Please wait while we authenticate your account</p>
-      </div>
-    </div>
-  );
+  return <PageLoader />;
 };
 
 export default GoogleCallback;
