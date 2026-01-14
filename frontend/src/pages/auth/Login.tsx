@@ -12,7 +12,7 @@ import { env } from '../../config/env';
 const Login = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { isConfigured, securityMessage, session } = useAuth();
+  const { isConfigured, securityMessage, session, setAuthSession } = useAuth();
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -86,8 +86,8 @@ const Login = () => {
       if (session && (session.access_token || session.refresh_token)) {
         console.log('Storing session and navigating...');
         
-        // Store session locally
-        storeSession(session);
+        // Update auth context immediately
+        setAuthSession(session);
         
         // Prefetch critical dashboard data immediately after login
         const now = new Date();
@@ -154,9 +154,9 @@ const Login = () => {
 
         showToast('Login successful!', 'success');
         
-        // Force navigate to dashboard every time for production consistency
+        // Use navigate for smoother transition
         console.log('Redirecting to dashboard...');
-        window.location.href = '/dashboard';
+        navigate('/dashboard', { replace: true });
       } else {
         console.warn('Login successful but no valid session/token received');
         const msg = 'Login successful, but session could not be established. Please try again.';
