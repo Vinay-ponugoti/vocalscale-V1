@@ -65,7 +65,7 @@ const VoiceSetup = () => {
       const headers = await getAuthHeader();
 
       const response = await fetch(`${env.API_URL}/phone-numbers/${editingNumber.id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           ...headers,
           'Content-Type': 'application/json'
@@ -109,7 +109,7 @@ const VoiceSetup = () => {
       const headers = await getAuthHeader();
 
       const response = await fetch(`${env.API_URL}/phone-numbers/${id}/status`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: { 
             ...headers,
             'Content-Type': 'application/json',

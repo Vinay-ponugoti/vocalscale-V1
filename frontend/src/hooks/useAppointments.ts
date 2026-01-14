@@ -71,7 +71,7 @@ export function useAppointments() {
       };
 
       const response = await fetch(`${env.API_URL}/dashboard/appointments/${id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           ...headers,
           'Content-Type': 'application/json'

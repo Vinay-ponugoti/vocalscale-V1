@@ -99,7 +99,7 @@ class BusinessSetupAPI {
   // Update business details only
   async updateBusinessDetails(data: Partial<BusinessDetails>): Promise<BusinessDetails> {
     return this.request('/business-details', {
-      method: 'PATCH',
+      method: 'PUT',
       body: JSON.stringify(data),
     });
   }
