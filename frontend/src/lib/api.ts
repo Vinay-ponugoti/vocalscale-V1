@@ -196,7 +196,7 @@ export const api = {
   async updateVoiceSettings(updates: Record<string, unknown>) {
     const headers = await getAuthHeader();
     const response = await fetchWithTimeout(`${API_BASE}/voice-settings`, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         ...headers,
