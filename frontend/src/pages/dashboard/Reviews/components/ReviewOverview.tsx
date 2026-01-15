@@ -74,25 +74,25 @@ export const ReviewOverview = () => {
   return (
     <div className="space-y-6 2xl:space-y-10">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm ring-1 ring-indigo-500/10">
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Review Analytics</h2>
-            <p className="text-sm text-slate-500 font-medium">Monitor your review performance and trends</p>
+            <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">Review Analytics</h2>
+            <p className="text-xs md:text-sm text-slate-500 font-medium">Monitor performance and trends</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="rounded-xl border-slate-200 font-bold text-slate-600 h-10 px-4">
+          <Button variant="outline" size="sm" className="flex-1 sm:flex-none rounded-xl border-slate-200 font-bold text-slate-600 h-10 px-4">
             <Settings className="w-4 h-4 mr-2" />
             Settings
           </Button>
           <Button 
             size="sm" 
             onClick={handleSyncGoogle}
-            className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-10 px-4 flex items-center gap-2"
+            className="flex-1 sm:flex-none rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-10 px-4 flex items-center gap-2"
           >
             <RefreshCw className="w-4 h-4" />
             Sync Google
@@ -108,11 +108,11 @@ export const ReviewOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <span className="text-4xl font-bold text-slate-900">4.6</span>
+              <span className="text-4xl font-bold text-slate-900">0.0</span>
               <div>
-                <StarRating rating={4.6} />
-                <Badge variant="secondary" className="mt-1 bg-emerald-100 text-emerald-700">
-                  Excellent
+                <StarRating rating={0} />
+                <Badge variant="secondary" className="mt-1 bg-slate-100 text-slate-500">
+                  No Rating
                 </Badge>
               </div>
             </div>
@@ -125,10 +125,10 @@ export const ReviewOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <span className="text-4xl font-bold text-slate-900">328</span>
-              <div className="flex items-center text-emerald-600 text-sm font-medium">
+              <span className="text-4xl font-bold text-slate-900">0</span>
+              <div className="flex items-center text-slate-400 text-sm font-medium">
                 <TrendingUp className="w-4 h-4 mr-1" />
-                +12%
+                0%
               </div>
             </div>
             <p className="text-xs text-slate-500 mt-1">vs last month</p>
@@ -141,13 +141,13 @@ export const ReviewOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <span className="text-4xl font-bold text-slate-900">94%</span>
-              <div className="flex items-center text-emerald-600 text-sm font-medium">
+              <span className="text-4xl font-bold text-slate-900">0%</span>
+              <div className="flex items-center text-slate-400 text-sm font-medium">
                 <TrendingUp className="w-4 h-4 mr-1" />
-                +5%
+                0%
               </div>
             </div>
-            <Progress value={94} className="mt-2 h-2" />
+            <Progress value={0} className="mt-2 h-2" />
           </CardContent>
         </Card>
 
@@ -157,10 +157,10 @@ export const ReviewOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <span className="text-4xl font-bold text-slate-900">2.4h</span>
-              <div className="flex items-center text-red-500 text-sm font-medium">
+              <span className="text-4xl font-bold text-slate-900">0h</span>
+              <div className="flex items-center text-slate-400 text-sm font-medium">
                 <TrendingDown className="w-4 h-4 mr-1" />
-                +0.3h
+                0h
               </div>
             </div>
             <p className="text-xs text-slate-500 mt-1">Target: under 2h</p>
@@ -173,19 +173,19 @@ export const ReviewOverview = () => {
         {/* Review Volume Chart */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <CardTitle>Review Volume</CardTitle>
+                <CardTitle className="text-lg font-bold">Review Volume</CardTitle>
                 <CardDescription>Daily reviews over the past week</CardDescription>
               </div>
-              <div className="flex gap-1">
-                <Button variant="outline" size="sm" className="h-8">
+              <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
+                <Button variant="outline" size="sm" className="h-8 text-xs px-3">
                   Daily
                 </Button>
-                <Button variant="ghost" size="sm" className="h-8">
+                <Button variant="ghost" size="sm" className="h-8 text-xs px-3">
                   Weekly
                 </Button>
-                <Button variant="ghost" size="sm" className="h-8">
+                <Button variant="ghost" size="sm" className="h-8 text-xs px-3">
                   Monthly
                 </Button>
               </div>
