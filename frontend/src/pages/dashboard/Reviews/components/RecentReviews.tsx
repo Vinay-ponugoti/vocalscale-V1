@@ -25,38 +25,52 @@ interface Review {
 export const RecentReviews = ({ reviews }: { reviews: Review[] }) => {
   return (
     <div className="space-y-6 2xl:space-y-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm ring-1 ring-indigo-500/10">
+          <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm ring-1 ring-indigo-500/10 shrink-0">
             <Layers className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Recent Feedback</h2>
-            <p className="text-sm text-slate-500 font-medium">Real-time customer responses</p>
+            <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">Recent Feedback</h2>
+            <p className="text-xs md:text-sm text-slate-500 font-medium">Real-time customer responses</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="relative group">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="relative group flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
             <input 
-              className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/40 transition-all w-64 shadow-sm" 
+              className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/40 transition-all w-full sm:w-64 shadow-sm" 
               placeholder="Filter reviews..." 
               type="text"
             />
           </div>
-          <Button variant="outline" size="sm" className="rounded-xl border-slate-200 font-bold text-slate-600 h-10 px-4">
-            <Filter className="w-4 h-4 mr-2" />
-            Filters
-          </Button>
-          <Button variant="default" size="sm" className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-10 px-4">
-            View All
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="flex-1 sm:flex-none rounded-xl border-slate-200 font-bold text-slate-600 h-10 px-4">
+              <Filter className="w-4 h-4 mr-2" />
+              Filters
+            </Button>
+            <Button variant="default" size="sm" className="flex-1 sm:flex-none rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-10 px-4">
+              View All
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 2xl:gap-10">
         <div className="lg:col-span-8 2xl:col-span-9 space-y-4 2xl:space-y-6">
-          {reviews.map(review => (
+          {reviews.length === 0 ? (
+            <Card className="border-dashed border-slate-200 bg-slate-50/50">
+              <CardContent className="py-12 sm:py-20 flex flex-col items-center justify-center text-center">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                  <Layers className="w-6 h-6 sm:w-8 sm:h-8 text-slate-300" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900">No feedback yet</h3>
+                <p className="text-slate-500 max-w-[240px] sm:max-w-xs mt-1 text-xs sm:text-sm">
+                  Once your customers start leaving reviews, they'll appear here for you to manage.
+                </p>
+              </CardContent>
+            </Card>
+          ) : reviews.map(review => (
             <Card key={review.id} className="group border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all duration-300">
               <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
                 <div className="flex items-center gap-4">
@@ -168,18 +182,18 @@ export const RecentReviews = ({ reviews }: { reviews: Review[] }) => {
               </CardHeader>
               <CardContent className="relative z-10">
                 <p className="text-[15px] text-indigo-50 font-bold leading-relaxed mb-6">
-                  Your AI agent is currently responding to 84% of reviews within 15 minutes.
+                  Your AI agent is currently responding to 0% of reviews within 15 minutes.
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-[10px] font-black text-indigo-200 uppercase tracking-widest">
                     <span>Response Rate</span>
-                    <span>84%</span>
+                    <span>0%</span>
                   </div>
-                  <Progress value={84} className="h-1.5 bg-white/20" />
+                  <Progress value={0} className="h-1.5 bg-white/20" />
                 </div>
                 <p className="text-[10px] text-indigo-200 font-bold uppercase mt-6 tracking-widest flex items-center gap-2">
                   <span className="w-1 h-1 rounded-full bg-indigo-200"></span>
-                  25% increase in retention
+                  0% increase in retention
                 </p>
               </CardContent>
             </Card>

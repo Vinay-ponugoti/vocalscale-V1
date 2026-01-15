@@ -6,13 +6,13 @@ import { Card, CardContent } from '../../../../components/ui/Card';
 export const AISummary = () => {
   return (
     <Card className="bg-white border-slate-200 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300">
-      <CardContent className="p-8">
-        <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none transform group-hover:scale-110 duration-700">
-          <Sparkles className="w-48 h-48 text-indigo-600" />
+      <CardContent className="p-6 sm:p-8">
+        <div className="absolute top-0 right-0 p-8 sm:p-12 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none transform group-hover:scale-110 duration-700">
+          <Sparkles className="w-32 h-32 sm:w-48 sm:h-48 text-indigo-600" />
         </div>
-        <div className="flex items-center justify-between mb-10 relative z-10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 sm:mb-10 relative z-10">
           <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm ring-1 ring-indigo-500/10">
+            <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm ring-1 ring-indigo-500/10 shrink-0">
               <Sparkles className="w-5 h-5" />
             </div>
             <div className="flex items-center gap-3">
@@ -24,12 +24,12 @@ export const AISummary = () => {
               </Badge>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="rounded-xl border-slate-200 font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 h-10 px-4">
+          <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-xl border-slate-200 font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 h-10 px-4">
             <RefreshCw className="w-4 h-4 mr-2" strokeWidth={2.5} /> 
             Regenerate
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 relative z-10">
           <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100">
             <h3 className="text-sm font-black text-slate-900 mb-5 flex items-center gap-3 uppercase tracking-widest">
               <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
@@ -61,15 +61,9 @@ export const AISummary = () => {
             </h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-4">
-                <div className="w-1.5 h-1.5 mt-2.5 bg-orange-500 rounded-full flex-shrink-0 shadow-sm shadow-orange-200"></div>
-                <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                  Wait times on <strong className="text-slate-900 font-bold">Saturday evenings</strong> are exceeding expectations, often cited as &gt;45 mins.
-                </p>
-              </li>
-              <li className="flex items-start gap-4">
-                <div className="w-1.5 h-1.5 mt-2.5 bg-orange-500 rounded-full flex-shrink-0 shadow-sm shadow-orange-200"></div>
-                <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                  Several mentions of <strong className="text-slate-900 font-bold">noise levels</strong> making conversation difficult during peak hours.
+                <div className="w-1.5 h-1.5 mt-2.5 bg-slate-300 rounded-full flex-shrink-0"></div>
+                <p className="text-sm text-slate-400 font-medium leading-relaxed italic">
+                  No areas for improvement identified yet.
                 </p>
               </li>
             </ul>
