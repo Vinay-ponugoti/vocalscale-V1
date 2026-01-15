@@ -1,5 +1,5 @@
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
-import { Mic, Radio, MessageSquare, ShieldCheck, Sparkles } from 'lucide-react';
+import { Mic, MessageSquare, ShieldCheck, Sparkles } from 'lucide-react';
 
 interface Message {
   role: 'ai' | 'user';
@@ -17,23 +17,6 @@ export const LivePreview = () => {
 
   return (
     <div className="w-full flex flex-col h-full group">
-      {/* Label Section */}
-      <div className="flex items-center justify-between mb-3 px-1">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-indigo-50 rounded-lg">
-            <Radio className="w-3 h-3 text-indigo-600 animate-pulse" />
-          </div>
-          <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.15em]">Live Preview</h3>
-        </div>
-        <div className="flex items-center gap-2 bg-emerald-50/50 px-2 py-1 rounded-full border border-emerald-100/50">
-          <span className="flex h-1.5 w-1.5 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-          </span>
-          <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Agent Ready</span>
-        </div>
-      </div>
-
       {/* Main Preview Card */}
       <div className="relative bg-white rounded-2xl shadow-xl shadow-indigo-100/50 border border-slate-100 flex flex-col flex-1 overflow-hidden transition-all duration-500 group-hover:border-indigo-200/50">
         
