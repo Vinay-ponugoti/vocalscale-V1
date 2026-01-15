@@ -18,17 +18,17 @@ import {
 
 // Sample data for charts
 const sentimentData = [
-  { name: 'Positive', value: 78, color: '#10B981' },
-  { name: 'Neutral', value: 15, color: '#3B82F6' },
-  { name: 'Negative', value: 7, color: '#EF4444' },
+  { name: 'Positive', value: 0, color: '#10B981' },
+  { name: 'Neutral', value: 0, color: '#3B82F6' },
+  { name: 'Negative', value: 0, color: '#EF4444' },
 ];
 
 const ratingDistribution = [
-  { stars: 5, count: 194, percent: 59 },
-  { stars: 4, count: 89, percent: 27 },
-  { stars: 3, count: 26, percent: 8 },
-  { stars: 2, count: 13, percent: 4 },
-  { stars: 1, count: 6, percent: 2 },
+  { stars: 5, count: 0, percent: 0 },
+  { stars: 4, count: 0, percent: 0 },
+  { stars: 3, count: 0, percent: 0 },
+  { stars: 2, count: 0, percent: 0 },
+  { stars: 1, count: 0, percent: 0 },
 ];
 
 const ReviewStats = () => {
@@ -41,19 +41,19 @@ const ReviewStats = () => {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-xl font-black text-charcoal tracking-tight">Overall Sentiment</CardTitle>
-                <CardDescription className="font-medium text-charcoal-light">Based on 328 recent reviews</CardDescription>
+                <CardDescription className="font-medium text-charcoal-light">Based on 0 recent reviews</CardDescription>
               </div>
               <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 border-emerald-100 font-bold px-3 py-1">
-                98% Positive
+                0% Positive
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="pt-8">
             <div className="flex flex-col md:flex-row items-center gap-10">
               <div className="flex flex-col items-center bg-white-light/50 rounded-3xl p-8 border border-white-light/50 w-full md:w-auto">
-                <span className="text-7xl font-black text-charcoal leading-none tracking-tighter">4.6</span>
+                <span className="text-7xl font-black text-charcoal leading-none tracking-tighter">0.0</span>
                 <div className="mt-6">
-                  <StarRating rating={4.6} size={28} />
+                  <StarRating rating={0} size={28} />
                 </div>
                 <p className="mt-4 text-xs font-black text-charcoal-light uppercase tracking-[0.2em]">Verified Rating</p>
               </div>
@@ -122,7 +122,7 @@ const ReviewStats = () => {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-3xl font-black text-charcoal leading-none">78%</span>
+                  <span className="text-3xl font-black text-charcoal leading-none">0%</span>
                   <span className="text-[10px] font-black text-charcoal-light uppercase tracking-widest mt-1">Positive</span>
                 </div>
               </div>
