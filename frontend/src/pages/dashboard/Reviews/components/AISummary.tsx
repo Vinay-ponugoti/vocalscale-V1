@@ -66,7 +66,7 @@ export const AISummary = ({ summary, loading, onRegenerate, isRegenerating }: AI
               Positives
             </h3>
             <ul className="space-y-4">
-              {summary?.positives.length ? summary.positives.map((text, i) => (
+              {(summary?.positives || []).length > 0 ? summary?.positives.map((text, i) => (
                 <li key={i} className="flex items-start gap-4">
                   <div className="w-1.5 h-1.5 mt-2.5 bg-emerald-500 rounded-full flex-shrink-0 shadow-sm shadow-emerald-200"></div>
                   <p className="text-sm text-slate-600 font-medium leading-relaxed">
@@ -91,7 +91,7 @@ export const AISummary = ({ summary, loading, onRegenerate, isRegenerating }: AI
               Areas for Improvement
             </h3>
             <ul className="space-y-4">
-              {summary?.improvements.length ? summary.improvements.map((text, i) => (
+              {(summary?.improvements || []).length > 0 ? summary?.improvements.map((text, i) => (
                 <li key={i} className="flex items-start gap-4">
                   <div className="w-1.5 h-1.5 mt-2.5 bg-orange-500 rounded-full flex-shrink-0"></div>
                   <p className="text-sm text-slate-600 font-medium leading-relaxed">

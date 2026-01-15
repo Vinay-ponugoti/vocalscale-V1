@@ -116,7 +116,7 @@ export const ReviewOverview = ({ stats, loading }: ReviewOverviewProps) => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <span className="text-4xl font-bold text-slate-900">{stats?.overallRating.toFixed(1) || '0.0'}</span>
+              <span className="text-4xl font-bold text-slate-900">{stats?.overallRating?.toFixed(1) || '0.0'}</span>
               <div>
                 <StarRating rating={stats?.overallRating || 0} />
                 <Badge variant="secondary" className="mt-1 bg-slate-100 text-slate-500">
