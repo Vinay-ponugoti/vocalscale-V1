@@ -57,7 +57,7 @@ class BusinessSetupAPI {
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     const headers = await getAuthHeader();
-    
+
     const config: RequestInit = {
       ...options,
       headers: {
@@ -68,7 +68,7 @@ class BusinessSetupAPI {
     };
 
     const response = await fetch(url, config);
-    
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
       throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
@@ -134,6 +134,16 @@ class BusinessSetupAPI {
       method: 'PUT',
       body: JSON.stringify({ booking_requirements: requirements }),
     });
+  }
+
+  // Google Places Search
+  async searchGooglePlaces(query: string): Promise<any[]> {
+    return this.request(`/google-places/search?query=${encodeURIComponent(query)}`);
+  }
+
+  // Google Places Details
+  async getGooglePlaceDetails(placeId: string): Promise<any> {
+    return this.request(`/google-places/details?place_id=${placeId}`);
   }
 }
 
