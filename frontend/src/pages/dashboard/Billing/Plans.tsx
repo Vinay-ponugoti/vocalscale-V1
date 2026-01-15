@@ -58,11 +58,11 @@ const Plans: React.FC = () => {
 
   const getDisplayPlans = () => {
     const currentPlanId = subscription?.plans?.id;
-    
+
     if (plansData.length > 0) {
       // Group plans by name to handle monthly/annual pairs
       const groupedPlans: Record<string, any> = {};
-      
+
       plansData.forEach(plan => {
         if (!groupedPlans[plan.name]) {
           groupedPlans[plan.name] = {
@@ -77,7 +77,7 @@ const Plans: React.FC = () => {
             current: false,
           };
         }
-        
+
         if (plan.interval === 'month') {
           groupedPlans[plan.name].monthlyPrice = plan.price_amount / 100;
           groupedPlans[plan.name].monthlyPriceId = plan.stripe_price_id;
@@ -85,7 +85,7 @@ const Plans: React.FC = () => {
           groupedPlans[plan.name].annualPrice = (plan.price_amount / 100) / 12; // Display as per month
           groupedPlans[plan.name].annualPriceId = plan.stripe_price_id;
         }
-        
+
         if (plan.id === currentPlanId) {
           groupedPlans[plan.name].current = true;
           groupedPlans[plan.name].currentInterval = plan.interval;
@@ -101,7 +101,7 @@ const Plans: React.FC = () => {
         annualPrice: plan.annualPrice || plan.monthlyPrice * 0.8,
       }));
     }
-    
+
     // Fallback to hardcoded plans if API fails or is empty
     return [
       {
@@ -212,7 +212,7 @@ const Plans: React.FC = () => {
   return (
     <DashboardLayout fullWidth>
       <div className="w-full p-4 md:p-6 2xl:p-10 flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full bg-slate-50/30">
-        
+
         {isFetching ? (
           <div className="flex-1 flex items-center justify-center">
             <Loader2 size={40} className="text-blue-600 animate-spin" />
@@ -230,7 +230,7 @@ const Plans: React.FC = () => {
                     <p className="text-red-600/80 text-xs font-medium">{error}</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => setError(null)}
                   className="p-2 hover:bg-red-100 rounded-xl transition-colors text-red-400 hover:text-red-600"
                 >
@@ -240,169 +240,151 @@ const Plans: React.FC = () => {
             )}
 
             {/* Header */}
-        <div className="flex flex-col gap-3">
-          <button 
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors w-fit group"
-          >
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-xs font-bold">Back to Billing</span>
-          </button>
-          
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Subscription Plans</h1>
-              <p className="text-slate-500 text-xs font-medium mt-0.5">Scale your business with the right AI capabilities.</p>
-            </div>
-
-            {/* Toggle */}
-            <div className="inline-flex items-center gap-1.5 p-1 bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div className="flex flex-col gap-5">
               <button
-                onClick={() => setIsAnnual(false)}
-                className={`px-4 py-1.5 rounded-lg transition-all duration-300 text-[10px] font-black uppercase tracking-wider ${
-                  !isAnnual
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors w-fit group"
               >
-                Monthly
+                <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                <span className="text-xs font-bold uppercase tracking-widest">Back</span>
               </button>
-              <button
-                onClick={() => setIsAnnual(true)}
-                className={`px-4 py-1.5 rounded-lg transition-all duration-300 text-[10px] font-black uppercase tracking-wider flex items-center gap-2 ${
-                  isAnnual
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                Annual
-                <span className={`px-1 py-0.5 rounded-md text-[9px] font-black ${isAnnual ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'}`}>
-                  -20%
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
 
-        {/* Plans Grid */}
-        <div className="grid lg:grid-cols-3 gap-6 items-stretch">
-          {plans.map((plan, index) => (
-            <div
-              key={plan.name}
-              className={`group relative flex flex-col p-7 rounded-[32px] transition-all duration-500 border-2 ${
-                plan.current 
-                  ? 'bg-white border-blue-600 shadow-2xl shadow-blue-100 ring-8 ring-blue-50/50' 
-                  : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-lg shadow-sm'
-              }`}
-            >
-              {plan.current && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg z-20">
-                  Active Plan
-                </div>
-              )}
-
-              {/* Removed Most Popular badge */}
-
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
                 <div>
-                  <span className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 block ${
-                    plan.current ? 'text-blue-600' : 'text-slate-400'
-                  }`}>
-                    {plan.psychology}
-                  </span>
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">
-                    {plan.name}
-                  </h3>
+                  <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Select Plan</h1>
+                  <p className="text-slate-500 text-sm font-medium mt-1">Upgrade your AI capabilities instantly.</p>
                 </div>
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${
-                  plan.current 
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' 
-                    : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
-                }`}>
-                  <plan.icon size={24} />
-                </div>
-              </div>
 
-              <div className="flex items-baseline gap-1.5 mb-5">
-                <span className="text-5xl font-black text-slate-900 tracking-tighter">
-                  ${Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
-                </span>
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold text-slate-400">/mo</span>
-                  {isAnnual && (
-                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-tighter">Billed Yearly</span>
-                  )}
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-500 font-medium leading-relaxed mb-8">
-                {plan.description}
-              </p>
-
-              <div className="space-y-4 mb-10 flex-1">
-                {plan.features.map((feature) => (
-                  <div key={feature} className="flex items-start gap-3">
-                    <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-500 ${
-                      plan.current 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'
-                    }`}>
-                      <Check size={12} strokeWidth={3} />
-                    </div>
-                    <span className="text-[13px] font-semibold text-slate-600 tracking-tight leading-snug">
-                      {feature}
+                {/* Toggle */}
+                <div className="inline-flex items-center p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
+                  <button
+                    onClick={() => setIsAnnual(false)}
+                    className={`px-5 py-2.5 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest ${!isAnnual
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    onClick={() => setIsAnnual(true)}
+                    className={`px-5 py-2.5 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 ${isAnnual
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                  >
+                    Annual
+                    <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-black ${isAnnual ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-200 text-slate-500'}`}>
+                      -20%
                     </span>
-                  </div>
-                ))}
-              </div>
-
-              <button 
-                disabled={plan.current || loading === plan.name}
-                onClick={() => handleUpgrade(plan.stripe_price_id, plan.name)}
-                className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 ${
-                  plan.current 
-                    ? 'bg-slate-100 text-slate-400 cursor-default' 
-                    : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-200 active:scale-95'
-                }`}
-              >
-                {loading === plan.name && <Loader2 size={16} className="animate-spin" />}
-                {plan.cta}
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* Footer info - Improved Enterprise Section */}
-        <div className="mt-2 group relative overflow-hidden rounded-[24px] bg-slate-900 p-6 transition-all duration-500 hover:shadow-2xl hover:shadow-slate-200">
-          <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl transition-all duration-700 group-hover:bg-blue-500/20" />
-          <div className="absolute -bottom-10 -left-10 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl transition-all duration-700 group-hover:bg-indigo-500/20" />
-          
-          <div className="relative z-10 flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-white shadow-inner backdrop-blur-sm transition-transform duration-500 group-hover:scale-110">
-                <Shield size={24} className="text-blue-400" />
-              </div>
-              <div className="text-center md:text-left">
-                <div className="flex items-center justify-center gap-2 md:justify-start">
-                  <h4 className="text-lg font-black tracking-tight text-white">Enterprise Security & Scale</h4>
-                  <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-blue-400 border border-blue-500/30">Custom</span>
+                  </button>
                 </div>
-                <p className="mt-1 max-w-lg text-xs font-medium leading-relaxed text-slate-400">
-                  Need custom minutes, dedicated hardware, or on-premise solutions? Our enterprise team can build a custom package for you.
+              </div>
+            </div>
+
+            {/* Plans Grid */}
+            <div className="grid lg:grid-cols-3 gap-6 items-stretch pt-4">
+              {plans.map((plan, index) => (
+                <div
+                  key={plan.name}
+                  className={`group relative flex flex-col p-8 rounded-[32px] transition-all duration-500 border-2 ${plan.current
+                      ? 'bg-white border-blue-600 shadow-xl shadow-blue-100 ring-4 ring-blue-50'
+                      : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1'
+                    }`}
+                >
+                  {plan.current && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg z-20">
+                      Current Active Plan
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <span className={`text-[10px] font-black uppercase tracking-widest mb-2 block ${plan.current ? 'text-blue-600' : 'text-slate-400'
+                        }`}>
+                        {plan.psychology}
+                      </span>
+                      <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+                        {plan.name}
+                      </h3>
+                    </div>
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${plan.current
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
+                      }`}>
+                      <plan.icon size={22} strokeWidth={2.5} />
+                    </div>
+                  </div>
+
+                  <div className="flex items-baseline gap-1.5 mb-6">
+                    <span className="text-5xl font-black text-slate-900 tracking-tighter">
+                      ${Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
+                    </span>
+                    <div className="flex flex-col leading-none">
+                      <span className="text-xs font-bold text-slate-400">/mo</span>
+                      {isAnnual && (
+                        <span className="text-[9px] font-black text-emerald-500 uppercase tracking-tight mt-0.5">Billed Yearly</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+                    {plan.description}
+                  </p>
+
+                  <div className="space-y-4 mb-10 flex-1">
+                    {plan.features.map((feature) => (
+                      <div key={feature} className="flex items-start gap-3">
+                        <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-500 ${plan.current
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
+                          }`}>
+                          <Check size={10} strokeWidth={4} />
+                        </div>
+                        <span className="text-[13px] font-semibold text-slate-600 tracking-tight leading-snug">
+                          {feature}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    disabled={plan.current || loading === plan.name}
+                    onClick={() => handleUpgrade(plan.stripe_price_id, plan.name)}
+                    className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${plan.current
+                        ? 'bg-slate-100 text-slate-400 cursor-default shadow-none'
+                        : 'bg-slate-900 text-white hover:bg-blue-600 hover:shadow-blue-200 hover:scale-[1.02]'
+                      }`}
+                  >
+                    {loading === plan.name && <Loader2 size={16} className="animate-spin" />}
+                    {plan.cta}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Enterprise Section - Clean */}
+            <div className="mt-8 rounded-[32px] bg-slate-50 border border-slate-200 p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8 group hover:border-slate-300 transition-all">
+              <div className="flex flex-col gap-2 max-w-2xl">
+                <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                  <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100 text-indigo-600">
+                    <Shield size={20} />
+                  </div>
+                  <h4 className="text-xl font-black tracking-tight text-slate-900">Enterprise Scale</h4>
+                </div>
+                <p className="text-sm font-medium text-slate-500 leading-relaxed">
+                  Need a custom solution? We offer dedicated infrastructure, volume discounts, and white-glove onboarding for large agencies.
                 </p>
               </div>
+
+              <button className="px-8 py-4 rounded-2xl bg-white border border-slate-200 text-slate-900 font-black text-xs uppercase tracking-widest hover:border-indigo-200 hover:text-indigo-600 hover:shadow-lg hover:shadow-indigo-50 transition-all whitespace-nowrap">
+                Contact Enterprise Sales
+              </button>
             </div>
-            
-            <button className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-[11px] font-black uppercase tracking-widest text-slate-900 transition-all duration-300 hover:bg-blue-50 hover:shadow-xl hover:shadow-white/10 active:scale-95 whitespace-nowrap">
-              Contact Sales
-              <Zap size={14} className="text-blue-600" />
-            </button>
-          </div>
-        </div>
-      </>
-    )}
-  </div>
-</DashboardLayout>
+          </>
+        )}
+      </div>
+    </DashboardLayout>
   );
 };
 

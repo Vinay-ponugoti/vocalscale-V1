@@ -86,47 +86,49 @@ const Billing: React.FC = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full custom-scrollbar">
-        
-        {success && (
-          <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm">
-            <div className="flex items-center gap-3">
-              <CheckCircle2 size={20} className="text-emerald-500" />
-              <span className="text-sm font-bold">
-                {isPolling 
-                  ? `Payment received! Checking subscription status (attempt ${pollCount + 1}/10)...`
-                  : subscribed
-                  ? "Subscription activated successfully!"
-                  : "Payment received. Please check back in a few minutes."
-                }
-              </span>
+      <div className="w-full min-h-full bg-white">
+        <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+          {success && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 size={20} className="text-emerald-500" />
+                <span className="text-sm font-bold">
+                  {isPolling
+                    ? `Payment received! Checking subscription status (attempt ${pollCount + 1}/10)...`
+                    : subscribed
+                      ? "Subscription activated successfully!"
+                      : "Payment received. Please check back in a few minutes."
+                  }
+                </span>
+              </div>
+              {isPolling && <Loader2 size={18} className="text-emerald-500 animate-spin" />}
             </div>
-            {isPolling && <Loader2 size={18} className="text-emerald-500 animate-spin" />}
-          </div>
-        )}
+          )}
 
-        {canceled && (
-          <div className="bg-amber-50 border border-amber-200 text-amber-700 px-6 py-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm">
-            <XCircle size={20} className="text-amber-500" />
-            <span className="text-sm font-bold">Payment canceled. No changes were made to your plan.</span>
-          </div>
-        )}
-
-        <BillingHeader />
-
-        <div className="flex flex-col gap-8 2xl:gap-12 pb-10">
-          <PlanOverview />
-
-          <UsageBreakdown />
-
-          <div className="grid gap-8 2xl:gap-12 lg:grid-cols-3 2xl:grid-cols-4">
-            <div className="lg:col-span-2 2xl:col-span-3">
-              <BillingHistory />
+          {canceled && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-700 px-6 py-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm">
+              <XCircle size={20} className="text-amber-500" />
+              <span className="text-sm font-bold">Payment canceled. No changes were made to your plan.</span>
             </div>
+          )}
 
-            <div className="flex flex-col gap-8">
-              <PaymentMethod />
-              <UpsellCard />
+          <BillingHeader />
+
+          <div className="flex flex-col gap-10 pb-10">
+            <PlanOverview />
+
+            <UsageBreakdown />
+
+            <div className="grid gap-8 lg:grid-cols-3">
+              <div className="lg:col-span-2">
+                <BillingHistory />
+              </div>
+
+              <div className="flex flex-col gap-8">
+                <PaymentMethod />
+                <UpsellCard />
+              </div>
             </div>
           </div>
         </div>
