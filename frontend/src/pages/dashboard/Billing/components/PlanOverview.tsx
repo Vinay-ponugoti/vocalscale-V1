@@ -38,11 +38,11 @@ const PlanOverview: React.FC = () => {
     );
   }
 
-  const hasSubscription = subscription && subscription.status === 'active' && subscription.plans;
-  const plan = hasSubscription ? subscription.plans : { name: 'NO ACTIVE PLAN', price_amount: 0, limits: { ai_minutes: 0 } };
+  const hasSubscription = subscription && subscription.status === 'active';
+  const plan = subscription?.plan || { name: 'NO ACTIVE PLAN', price_amount: 0, limits: { ai_minutes: 0 } };
   const status = subscription?.status || 'inactive';
   const renewalDate = subscription?.current_period_end
-    ? new Date(subscription.current_period_end * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    ? new Date(subscription.current_period_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'N/A';
 
   const totalMinutes = hasSubscription ? (usage?.total_minutes || plan.limits?.ai_minutes || 0) : 0;
