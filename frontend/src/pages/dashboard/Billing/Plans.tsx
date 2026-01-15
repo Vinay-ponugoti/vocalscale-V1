@@ -211,7 +211,7 @@ const Plans: React.FC = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-6 2xl:p-10 flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full bg-slate-50/30">
+      <div className="w-full p-4 md:p-6 2xl:p-10 flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-slate-50/30">
 
         {isFetching ? (
           <div className="flex-1 flex items-center justify-center">
@@ -260,8 +260,8 @@ const Plans: React.FC = () => {
                   <button
                     onClick={() => setIsAnnual(false)}
                     className={`px-5 py-2.5 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest ${!isAnnual
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-700'
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-700'
                       }`}
                   >
                     Monthly
@@ -269,8 +269,8 @@ const Plans: React.FC = () => {
                   <button
                     onClick={() => setIsAnnual(true)}
                     className={`px-5 py-2.5 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 ${isAnnual
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-700'
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-700'
                       }`}
                   >
                     Annual
@@ -288,8 +288,8 @@ const Plans: React.FC = () => {
                 <div
                   key={plan.name}
                   className={`group relative flex flex-col p-8 rounded-[32px] transition-all duration-500 border-2 ${plan.current
-                      ? 'bg-white border-blue-600 shadow-xl shadow-blue-100 ring-4 ring-blue-50'
-                      : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1'
+                    ? 'bg-white border-blue-600 shadow-xl shadow-blue-100 ring-4 ring-blue-50'
+                    : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1'
                     }`}
                 >
                   {plan.current && (
@@ -309,8 +309,8 @@ const Plans: React.FC = () => {
                       </h3>
                     </div>
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${plan.current
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
                       }`}>
                       <plan.icon size={22} strokeWidth={2.5} />
                     </div>
@@ -336,8 +336,8 @@ const Plans: React.FC = () => {
                     {plan.features.map((feature) => (
                       <div key={feature} className="flex items-start gap-3">
                         <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-500 ${plan.current
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
                           }`}>
                           <Check size={10} strokeWidth={4} />
                         </div>
@@ -352,8 +352,8 @@ const Plans: React.FC = () => {
                     disabled={plan.current || loading === plan.name}
                     onClick={() => handleUpgrade(plan.stripe_price_id, plan.name)}
                     className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${plan.current
-                        ? 'bg-slate-100 text-slate-400 cursor-default shadow-none'
-                        : 'bg-slate-900 text-white hover:bg-blue-600 hover:shadow-blue-200 hover:scale-[1.02]'
+                      ? 'bg-slate-100 text-slate-400 cursor-default shadow-none'
+                      : 'bg-slate-900 text-white hover:bg-blue-600 hover:shadow-blue-200 hover:scale-[1.02]'
                       }`}
                   >
                     {loading === plan.name && <Loader2 size={16} className="animate-spin" />}
