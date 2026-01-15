@@ -93,7 +93,22 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
                     <div className="mt-1 flex items-center gap-2">
                       <StarRating rating={review.rating} />
                       <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                      <span className="text-xs font-bold text-slate-400">{review.time}</span>
+                      <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
+                        {review.time}
+                        {review.original_timestamp && (
+                          <>
+                            <span className="w-0.5 h-0.5 rounded-full bg-slate-300 mx-1"></span>
+                            <span className="font-medium text-slate-400/80">
+                              {new Date(review.original_timestamp).toLocaleDateString([], {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </>
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
