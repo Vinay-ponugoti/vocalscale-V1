@@ -12,6 +12,7 @@ interface BusinessDetails {
   email?: string;
   website?: string;
   timezone?: string;
+  place_id?: string;
 }
 
 interface BusinessHour {
@@ -99,12 +100,12 @@ function businessSetupReducer(state: BusinessSetupState, action: BusinessSetupAc
     case 'SET_ERROR':
       return { ...state, error: action.payload, loading: false };
     case 'SET_DATA':
-      return { 
-        ...state, 
-        data: action.payload, 
-        loading: false, 
-        error: null, 
-        isDirty: false 
+      return {
+        ...state,
+        data: action.payload,
+        loading: false,
+        error: null,
+        isDirty: false
       };
     case 'UPDATE_BUSINESS':
       return {
@@ -185,31 +186,31 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const saveData = useCallback(async (showToast?: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void): Promise<boolean> => {
     const currentState = stateRef.current;
-    
+
     if (!currentState.isDirty) {
       showToast?.('No changes to save', 'info');
       return true;
     }
-    
+
     dispatch({ type: 'SET_SAVING', payload: true });
-    
+
     try {
       await businessSetupAPI.saveBusinessSetup(currentState.data);
-      
+
       dispatch({ type: 'SET_DIRTY', payload: false });
       dispatch({ type: 'SET_ERROR', payload: null });
-      
+
       showToast?.('Changes saved successfully!', 'success');
       return true;
-      
+
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to save data';
       console.error('Save failed:', error);
-      
+
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       showToast?.(errorMessage, 'error');
       return false;
-      
+
     } finally {
       dispatch({ type: 'SET_SAVING', payload: false });
     }
