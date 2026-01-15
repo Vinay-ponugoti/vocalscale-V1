@@ -2,18 +2,30 @@ import { AISummary } from './components/AISummary';
 import { RecentReviews } from './components/RecentReviews';
 import { ReviewOverview } from './components/ReviewOverview';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
-
-const reviewsData = [];
+import { useReviews } from '../../../hooks/useReviews';
 
 const Reviews = () => {
+  const { stats, reviews, summary } = useReviews();
+
   return (
     <DashboardLayout fullWidth>
       <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
-        <ReviewOverview />
-        
-        <AISummary />
+        <ReviewOverview
+          stats={stats.data}
+          loading={stats.loading}
+        />
 
-        <RecentReviews reviews={reviewsData} />
+        <AISummary
+          summary={summary.data}
+          loading={summary.loading}
+          onRegenerate={summary.regenerate}
+          isRegenerating={summary.isRegenerating}
+        />
+
+        <RecentReviews
+          reviews={reviews.data}
+          loading={reviews.loading}
+        />
       </div>
     </DashboardLayout>
   );
