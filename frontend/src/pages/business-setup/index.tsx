@@ -122,6 +122,15 @@ const BusinessSetupContent = () => {
               title="Live Preview"
               subtitle="See how your changes affect the AI's personality in real-time."
               icon={<Eye size={20} />}
+              action={
+                <div className="flex items-center gap-2 bg-emerald-50/50 px-3 py-1.5 rounded-full border border-emerald-100/50">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Agent Ready</span>
+                </div>
+              }
               isLast
             >
               <LivePreview />
