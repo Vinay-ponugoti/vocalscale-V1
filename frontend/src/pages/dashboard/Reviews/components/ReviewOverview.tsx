@@ -24,25 +24,14 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import type { ReviewStats } from '../../../../types/review';
 
-// Sample data for charts
-const reviewVolumeData = [
-  { day: 'Mon', reviews: 12, positive: 10, negative: 2 },
-  { day: 'Tue', reviews: 19, positive: 16, negative: 3 },
-  { day: 'Wed', reviews: 15, positive: 12, negative: 3 },
-  { day: 'Thu', reviews: 25, positive: 22, negative: 3 },
-  { day: 'Fri', reviews: 22, positive: 18, negative: 4 },
-  { day: 'Sat', reviews: 30, positive: 26, negative: 4 },
-  { day: 'Sun', reviews: 28, positive: 24, negative: 4 },
-];
+interface ReviewOverviewProps {
+  stats?: ReviewStats;
+  loading?: boolean;
+}
 
-const sentimentData = [
-  { name: 'Positive', value: 78, color: '#10B981' },
-  { name: 'Neutral', value: 15, color: '#6366F1' },
-  { name: 'Negative', value: 7, color: '#EF4444' },
-];
-
-export const ReviewOverview = () => {
+export const ReviewOverview = ({ stats, loading }: ReviewOverviewProps) => {
   const { isConfigured } = useAuth();
   const { showToast } = useToast();
 
@@ -55,14 +44,14 @@ export const ReviewOverview = () => {
     try {
       // Redirect URL for the callback
       const redirectUrl = `${window.location.origin}/auth/callback`;
-      
+
       // Get the Google Auth URL from backend with necessary business permissions
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}&scope=business_profile`);
-      
+
       if (!response.ok) throw new Error('Failed to get auth URL');
-      
+
       const { url } = await response.json();
-      
+
       // Redirect the user to Google
       window.location.href = url;
     } catch (e) {
@@ -70,6 +59,25 @@ export const ReviewOverview = () => {
       showToast(message, 'error');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="h-10 bg-slate-100 rounded-xl w-48 mb-4"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-slate-50 rounded-2xl border border-slate-100"></div>)}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 h-80 bg-slate-50 rounded-2xl border border-slate-100"></div>
+          <div className="h-80 bg-slate-50 rounded-2xl border border-slate-100"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const reviewVolumeData = stats?.reviewVolume || [];
+  const sentimentData = stats?.sentiment || [];
+  const trends = stats?.trends || { rating: 0, reviews: 0, responseRate: 0, responseTime: 0 };
 
   return (
     <div className="space-y-6 2xl:space-y-10">
@@ -89,8 +97,8 @@ export const ReviewOverview = () => {
             <Settings className="w-4 h-4 mr-2" />
             Settings
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             onClick={handleSyncGoogle}
             className="flex-1 sm:flex-none rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-10 px-4 flex items-center gap-2"
           >
@@ -108,11 +116,11 @@ export const ReviewOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <span className="text-4xl font-bold text-slate-900">0.0</span>
+              <span className="text-4xl font-bold text-slate-900">{stats?.overallRating.toFixed(1) || '0.0'}</span>
               <div>
-                <StarRating rating={0} />
+                <StarRating rating={stats?.overallRating || 0} />
                 <Badge variant="secondary" className="mt-1 bg-slate-100 text-slate-500">
-                  No Rating
+                  {stats?.totalReviews ? 'Verified' : 'No Rating'}
                 </Badge>
               </div>
             </div>
@@ -125,10 +133,10 @@ export const ReviewOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <span className="text-4xl font-bold text-slate-900">0</span>
-              <div className="flex items-center text-slate-400 text-sm font-medium">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                0%
+              <span className="text-4xl font-bold text-slate-900">{stats?.totalReviews || 0}</span>
+              <div className={`flex items-center ${trends.reviews >= 0 ? 'text-emerald-600' : 'text-rose-600'} text-sm font-medium`}>
+                {trends.reviews >= 0 ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
+                {Math.abs(trends.reviews)}%
               </div>
             </div>
             <p className="text-xs text-slate-500 mt-1">vs last month</p>
@@ -141,13 +149,13 @@ export const ReviewOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <span className="text-4xl font-bold text-slate-900">0%</span>
-              <div className="flex items-center text-slate-400 text-sm font-medium">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                0%
+              <span className="text-4xl font-bold text-slate-900">{stats?.responseRate || 0}%</span>
+              <div className={`flex items-center ${trends.responseRate >= 0 ? 'text-emerald-600' : 'text-rose-600'} text-sm font-medium`}>
+                {trends.responseRate >= 0 ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
+                {Math.abs(trends.responseRate)}%
               </div>
             </div>
-            <Progress value={0} className="mt-2 h-2" />
+            <Progress value={stats?.responseRate || 0} className="mt-2 h-2" />
           </CardContent>
         </Card>
 
@@ -157,10 +165,10 @@ export const ReviewOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <span className="text-4xl font-bold text-slate-900">0h</span>
-              <div className="flex items-center text-slate-400 text-sm font-medium">
-                <TrendingDown className="w-4 h-4 mr-1" />
-                0h
+              <span className="text-4xl font-bold text-slate-900">{stats?.avgResponseTime || 0}h</span>
+              <div className={`flex items-center ${trends.responseTime <= 0 ? 'text-emerald-600' : 'text-rose-600'} text-sm font-medium`}>
+                {trends.responseTime <= 0 ? <TrendingDown className="w-4 h-4 mr-1" /> : <TrendingUp className="w-4 h-4 mr-1" />}
+                {Math.abs(trends.responseTime)}h
               </div>
             </div>
             <p className="text-xs text-slate-500 mt-1">Target: under 2h</p>
@@ -284,4 +292,5 @@ export const ReviewOverview = () => {
     </div>
   );
 };
+
 export default ReviewOverview;

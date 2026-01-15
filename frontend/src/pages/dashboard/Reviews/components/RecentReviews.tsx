@@ -9,20 +9,31 @@ import {
 import { Badge } from '../../../../components/ui/Badge';
 import { Button } from '../../../../components/ui/Button';
 import { Progress } from '../../../../components/ui/Progress';
+import type { Review } from '../../../../types/review';
 
-interface Review {
-  id: number;
-  name: string;
-  initials: string;
-  color: string;
-  rating: number;
-  time: string;
-  text: string;
-  replied: boolean;
-  critical?: boolean;
+interface RecentReviewsProps {
+  reviews: Review[];
+  loading?: boolean;
 }
 
-export const RecentReviews = ({ reviews }: { reviews: Review[] }) => {
+export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="h-10 bg-slate-100 rounded-xl w-64 mb-4 animate-pulse"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 space-y-4">
+            {[1, 2, 3].map(i => <div key={i} className="h-48 bg-slate-50 rounded-2xl border border-slate-100 animate-pulse"></div>)}
+          </div>
+          <div className="lg:col-span-4 space-y-4">
+            <div className="h-64 bg-slate-50 rounded-2xl border border-slate-100 animate-pulse"></div>
+            <div className="h-48 bg-indigo-50 rounded-2xl border border-indigo-100 animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 2xl:space-y-10">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -38,9 +49,9 @@ export const RecentReviews = ({ reviews }: { reviews: Review[] }) => {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative group flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
-            <input 
-              className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/40 transition-all w-full sm:w-64 shadow-sm" 
-              placeholder="Filter reviews..." 
+            <input
+              className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/40 transition-all w-full sm:w-64 shadow-sm"
+              placeholder="Filter reviews..."
               type="text"
             />
           </div>
@@ -101,7 +112,7 @@ export const RecentReviews = ({ reviews }: { reviews: Review[] }) => {
                 <p className="text-slate-600 font-medium text-[15px] leading-relaxed mb-6">
                   {review.text}
                 </p>
-                
+
                 <div className="flex items-center justify-between pt-6 border-t border-slate-50">
                   {review.replied ? (
                     <div className="flex items-center gap-3">
@@ -123,7 +134,7 @@ export const RecentReviews = ({ reviews }: { reviews: Review[] }) => {
                       </Button>
                     </div>
                   )}
-                  
+
                   {!review.replied && review.critical && (
                     <button className="text-[11px] font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-wider">
                       Escalate
@@ -134,7 +145,7 @@ export const RecentReviews = ({ reviews }: { reviews: Review[] }) => {
             </Card>
           ))}
         </div>
-        
+
         <div className="hidden lg:block lg:col-span-4">
           <div className="sticky top-6 space-y-4">
             <Card className="border-slate-100 shadow-sm overflow-hidden">
@@ -161,13 +172,13 @@ export const RecentReviews = ({ reviews }: { reviews: Review[] }) => {
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]"></div>
                   </div>
                 ))}
-                
+
                 <Button variant="outline" className="w-full mt-4 border-dashed border-slate-200 rounded-xl text-[11px] font-bold text-slate-400 uppercase tracking-widest h-11 hover:bg-slate-50 hover:text-slate-600 transition-all">
                   Connect New Source +
                 </Button>
               </CardContent>
             </Card>
-            
+
             <Card className="border-none bg-indigo-600 shadow-xl shadow-indigo-100 overflow-hidden relative group">
               <div className="absolute -right-8 -bottom-8 opacity-10 transform group-hover:scale-125 transition-transform duration-1000">
                 <Sparkles className="w-48 h-48 text-white" />
