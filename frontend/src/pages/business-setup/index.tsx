@@ -60,7 +60,7 @@ const BusinessSetupContent = () => {
   return (
     <DashboardLayout fullWidth>
       <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
-        
+
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
           <div>
             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Business Profile</h1>
@@ -70,11 +70,10 @@ const BusinessSetupContent = () => {
             <button
               onClick={handleSave}
               disabled={saving || !isDirty}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all duration-300 shadow-lg ${
-                saving || !isDirty
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all duration-300 shadow-lg ${saving || !isDirty
                   ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 shadow-none'
                   : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100 hover:-translate-y-0.5'
-              }`}
+                }`}
             >
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
               {saving ? 'Saving...' : 'Save Changes'}
@@ -83,10 +82,10 @@ const BusinessSetupContent = () => {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 2xl:gap-12 items-start">
-          
+
           {/* Main Content Column (Left) */}
           <div className="xl:col-span-8 space-y-8 2xl:space-y-12">
-            
+
             {/* Section 1: Business Identity */}
             <SectionCard
               title="Business Identity"
@@ -117,37 +116,20 @@ const BusinessSetupContent = () => {
           </div>
 
           {/* Sidebar Column (Right) */}
-          <div className="xl:col-span-4 sticky top-0 space-y-8 2xl:space-y-12">
-            <SectionCard
-              title="Live Preview"
-              subtitle="See how your changes affect the AI's personality in real-time."
-              icon={<Eye size={20} />}
-              action={
-                <div className="flex items-center gap-2 bg-emerald-50/50 px-3 py-1.5 rounded-full border border-emerald-100/50">
-                  <span className="flex h-2 w-2 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Agent Ready</span>
-                </div>
-              }
-              isLast
-            >
-              <LivePreview />
-            </SectionCard>
+          <div className="xl:col-span-4 sticky top-0 h-full">
+            <LivePreview />
           </div>
         </div>
 
         {/* Sticky Save Action for Mobile/Tablet */}
         <div className="lg:hidden sticky bottom-4 z-20">
-          <button 
+          <button
             onClick={handleSave}
             disabled={saving || !isDirty}
-            className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all duration-300 shadow-2xl ${
-              saving || !isDirty
+            className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all duration-300 shadow-2xl ${saving || !isDirty
                 ? 'bg-slate-100 text-slate-400 border border-slate-200 shadow-none'
                 : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'
-            }`}
+              }`}
           >
             {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
             {saving ? 'Saving Progress...' : 'Save Business Profile'}
