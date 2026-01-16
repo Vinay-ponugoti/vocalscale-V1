@@ -9,19 +9,27 @@ class BillingAPI {
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     const headers = await getAuthHeader();
+    const method = options.method || 'GET';
 
-    // Create unique request key for cancellation
-    const requestKey = `${options.method || 'GET'}-${endpoint}`;
+    // Only cancel duplicate POST/PUT/DELETE requests, not GET requests
+    // Multiple components can safely fetch the same GET endpoint in parallel
+    const shouldCancelDuplicates = method !== 'GET';
+    const requestKey = `${method}-${endpoint}`;
 
-    // Abort any previous request for same key
-    const existingController = this.controllers.get(requestKey);
-    if (existingController) {
-      existingController.abort();
+    let controller: AbortController;
+
+    if (shouldCancelDuplicates) {
+      // Abort any previous mutating request for same key
+      const existingController = this.controllers.get(requestKey);
+      if (existingController) {
+        existingController.abort();
+      }
+      controller = new AbortController();
+      this.controllers.set(requestKey, controller);
+    } else {
+      // For GET requests, create a standalone controller (no cancellation)
+      controller = new AbortController();
     }
-
-    // Create new controller for this request
-    const controller = new AbortController();
-    this.controllers.set(requestKey, controller);
 
     const config: RequestInit = {
       ...options,
@@ -37,8 +45,10 @@ class BillingAPI {
     try {
       const response = await fetch(url, config);
 
-      // Clean up controller after response
-      this.controllers.delete(requestKey);
+      // Clean up controller after response (only for tracked requests)
+      if (shouldCancelDuplicates) {
+        this.controllers.delete(requestKey);
+      }
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
