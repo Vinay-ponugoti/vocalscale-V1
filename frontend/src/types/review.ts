@@ -28,6 +28,11 @@ export interface ReviewStats {
     value: number;
     color: string;
   }[];
+  ratingDistribution: {
+    stars: number;
+    count: number;
+    percent: number;
+  }[];
   trends: {
     rating: number;
     reviews: number;
