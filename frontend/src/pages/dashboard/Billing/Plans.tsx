@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Check, Zap, Star, Shield, ArrowLeft, Crown, Loader2, AlertCircle, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { billingApi } from '../../../api/billing';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from '../../../components/ui/Card';
+import { Badge } from '../../../components/ui/Badge';
 
 const Plans: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false);
@@ -41,7 +50,6 @@ const Plans: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error creating checkout session:', error);
-      // Enhanced error handling (Phase 1 Rule 4)
       const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout. Please try again.';
       setError(errorMessage);
     } finally {
@@ -49,7 +57,6 @@ const Plans: React.FC = () => {
     }
   };
 
-  // Static design info for the plans (icons, psychology labels, etc.)
   const planDesignInfo: Record<string, any> = {
     'Starter': { icon: Zap, psychology: 'Essential' },
     'Professional': { icon: Star, psychology: 'Standard' },
@@ -60,7 +67,6 @@ const Plans: React.FC = () => {
     const currentPlanId = subscription?.plans?.id;
 
     if (plansData.length > 0) {
-      // Group plans by name to handle monthly/annual pairs
       const groupedPlans: Record<string, any> = {};
 
       plansData.forEach(plan => {
@@ -82,7 +88,7 @@ const Plans: React.FC = () => {
           groupedPlans[plan.name].monthlyPrice = plan.price_amount / 100;
           groupedPlans[plan.name].monthlyPriceId = plan.stripe_price_id;
         } else if (plan.interval === 'year') {
-          groupedPlans[plan.name].annualPrice = (plan.price_amount / 100) / 12; // Display as per month
+          groupedPlans[plan.name].annualPrice = (plan.price_amount / 100) / 12;
           groupedPlans[plan.name].annualPriceId = plan.stripe_price_id;
         }
 
@@ -96,13 +102,11 @@ const Plans: React.FC = () => {
         ...plan,
         cta: plan.current ? 'Current Plan' : `Upgrade to ${plan.name}`,
         stripe_price_id: isAnnual ? (plan.annualPriceId || plan.monthlyPriceId) : (plan.monthlyPriceId || plan.annualPriceId),
-        // Fallback pricing if one is missing
         monthlyPrice: plan.monthlyPrice || plan.annualPrice * 1.2,
         annualPrice: plan.annualPrice || plan.monthlyPrice * 0.8,
       }));
     }
 
-    // Fallback to hardcoded plans if API fails or is empty
     return [
       {
         name: 'Starter',
@@ -211,178 +215,173 @@ const Plans: React.FC = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-6 2xl:p-10 flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-slate-50/30">
+      <div className="w-full h-full overflow-y-auto bg-white">
+        <div className="max-w-7xl mx-auto p-6 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-        {isFetching ? (
-          <div className="flex-1 flex items-center justify-center">
-            <Loader2 size={40} className="text-blue-600 animate-spin" />
-          </div>
-        ) : (
-          <>
-            {error && (
-              <div className="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-2xl animate-in fade-in slide-in-from-top-4 duration-300">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-red-100 rounded-xl">
+          {isFetching ? (
+            <div className="flex-1 flex items-center justify-center min-h-[60vh]">
+              <Loader2 size={32} className="text-charcoal animate-spin" />
+            </div>
+          ) : (
+            <>
+              {error && (
+                <div className="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-xl">
+                  <div className="flex items-center gap-3">
                     <AlertCircle size={20} className="text-red-600" />
+                    <p className="text-red-700 text-sm font-medium">{error}</p>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-black text-red-900 tracking-tight">Checkout Error</h4>
-                    <p className="text-red-600/80 text-xs font-medium">{error}</p>
-                  </div>
+                  <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700">
+                    <X size={16} />
+                  </button>
                 </div>
+              )}
+
+              {/* Header */}
+              <div className="flex flex-col gap-6">
                 <button
-                  onClick={() => setError(null)}
-                  className="p-2 hover:bg-red-100 rounded-xl transition-colors text-red-400 hover:text-red-600"
+                  onClick={() => navigate(-1)}
+                  className="flex items-center gap-2 text-charcoal-light hover:text-charcoal transition-colors w-fit group"
                 >
-                  <X size={16} />
+                  <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                  <span className="text-xs font-black uppercase tracking-widest">Back</span>
                 </button>
-              </div>
-            )}
 
-            {/* Header */}
-            <div className="flex flex-col gap-5">
-              <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors w-fit group"
-              >
-                <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                <span className="text-xs font-bold uppercase tracking-widest">Back</span>
-              </button>
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                  <div>
+                    <h1 className="text-3xl font-black text-charcoal tracking-tight">Select Plan</h1>
+                    <p className="text-charcoal-light text-sm font-medium mt-2">Upgrade your AI capabilities instantly.</p>
+                  </div>
 
-              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Select Plan</h1>
-                  <p className="text-slate-500 text-sm font-medium mt-1">Upgrade your AI capabilities instantly.</p>
-                </div>
-
-                {/* Toggle */}
-                <div className="inline-flex items-center p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
-                  <button
-                    onClick={() => setIsAnnual(false)}
-                    className={`px-5 py-2.5 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest ${!isAnnual
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
-                      }`}
-                  >
-                    Monthly
-                  </button>
-                  <button
-                    onClick={() => setIsAnnual(true)}
-                    className={`px-5 py-2.5 rounded-xl transition-all duration-300 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 ${isAnnual
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
-                      }`}
-                  >
-                    Annual
-                    <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-black ${isAnnual ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-200 text-slate-500'}`}>
-                      -20%
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Plans Grid */}
-            <div className="grid lg:grid-cols-3 gap-6 items-stretch pt-4">
-              {plans.map((plan, index) => (
-                <div
-                  key={plan.name}
-                  className={`group relative flex flex-col p-8 rounded-[32px] transition-all duration-500 border-2 ${plan.current
-                    ? 'bg-white border-blue-600 shadow-xl shadow-blue-100 ring-4 ring-blue-50'
-                    : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1'
-                    }`}
-                >
-                  {plan.current && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg z-20">
-                      Current Active Plan
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <span className={`text-[10px] font-black uppercase tracking-widest mb-2 block ${plan.current ? 'text-blue-600' : 'text-slate-400'
+                  {/* Toggle */}
+                  <div className="inline-flex items-center p-1 bg-white-light rounded-xl border border-white-light/50">
+                    <button
+                      onClick={() => setIsAnnual(false)}
+                      className={`px-6 py-2 rounded-lg transition-all duration-300 text-[11px] font-black uppercase tracking-widest ${!isAnnual
+                          ? 'bg-white text-charcoal shadow-sm'
+                          : 'text-charcoal-light hover:text-charcoal'
+                        }`}
+                    >
+                      Monthly
+                    </button>
+                    <button
+                      onClick={() => setIsAnnual(true)}
+                      className={`px-6 py-2 rounded-lg transition-all duration-300 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 ${isAnnual
+                          ? 'bg-white text-charcoal shadow-sm'
+                          : 'text-charcoal-light hover:text-charcoal'
+                        }`}
+                    >
+                      Annual
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-black ${isAnnual ? 'bg-emerald-50 text-emerald-600' : 'bg-charcoal/5 text-charcoal-light'
                         }`}>
-                        {plan.psychology}
+                        -20%
                       </span>
-                      <h3 className="text-2xl font-black text-slate-900 tracking-tight">
-                        {plan.name}
-                      </h3>
-                    </div>
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${plan.current
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
-                      }`}>
-                      <plan.icon size={22} strokeWidth={2.5} />
-                    </div>
+                    </button>
                   </div>
-
-                  <div className="flex items-baseline gap-1.5 mb-6">
-                    <span className="text-5xl font-black text-slate-900 tracking-tighter">
-                      ${Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
-                    </span>
-                    <div className="flex flex-col leading-none">
-                      <span className="text-xs font-bold text-slate-400">/mo</span>
-                      {isAnnual && (
-                        <span className="text-[9px] font-black text-emerald-500 uppercase tracking-tight mt-0.5">Billed Yearly</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
-                    {plan.description}
-                  </p>
-
-                  <div className="space-y-4 mb-10 flex-1">
-                    {plan.features.map((feature) => (
-                      <div key={feature} className="flex items-start gap-3">
-                        <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-500 ${plan.current
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
-                          }`}>
-                          <Check size={10} strokeWidth={4} />
-                        </div>
-                        <span className="text-[13px] font-semibold text-slate-600 tracking-tight leading-snug">
-                          {feature}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <button
-                    disabled={plan.current || loading === plan.name}
-                    onClick={() => handleUpgrade(plan.stripe_price_id, plan.name)}
-                    className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${plan.current
-                      ? 'bg-slate-100 text-slate-400 cursor-default shadow-none'
-                      : 'bg-slate-900 text-white hover:bg-blue-600 hover:shadow-blue-200 hover:scale-[1.02]'
-                      }`}
-                  >
-                    {loading === plan.name && <Loader2 size={16} className="animate-spin" />}
-                    {plan.cta}
-                  </button>
                 </div>
-              ))}
-            </div>
-
-            {/* Enterprise Section - Clean */}
-            <div className="mt-8 rounded-[32px] bg-slate-50 border border-slate-200 p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8 group hover:border-slate-300 transition-all">
-              <div className="flex flex-col gap-2 max-w-2xl">
-                <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                  <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100 text-indigo-600">
-                    <Shield size={20} />
-                  </div>
-                  <h4 className="text-xl font-black tracking-tight text-slate-900">Enterprise Scale</h4>
-                </div>
-                <p className="text-sm font-medium text-slate-500 leading-relaxed">
-                  Need a custom solution? We offer dedicated infrastructure, volume discounts, and white-glove onboarding for large agencies.
-                </p>
               </div>
 
-              <button className="px-8 py-4 rounded-2xl bg-white border border-slate-200 text-slate-900 font-black text-xs uppercase tracking-widest hover:border-indigo-200 hover:text-indigo-600 hover:shadow-lg hover:shadow-indigo-50 transition-all whitespace-nowrap">
-                Contact Enterprise Sales
-              </button>
-            </div>
-          </>
-        )}
+              {/* Plans Grid */}
+              <div className="grid lg:grid-cols-3 gap-6 pt-4">
+                {plans.map((plan) => (
+                  <Card
+                    key={plan.name}
+                    className={`flex flex-col border-none shadow-xl transition-all duration-300 ${plan.current
+                        ? 'shadow-charcoal/10 ring-2 ring-charcoal'
+                        : 'shadow-charcoal/5 hover:shadow-charcoal/10 hover:-translate-y-1'
+                      }`}
+                  >
+                    <CardHeader className="pb-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <Badge
+                          variant={plan.current ? "secondary" : "outline"}
+                          className={`font-bold px-2.5 py-1 text-[10px] uppercase tracking-wider ${plan.current ? 'bg-charcoal text-white' : 'text-charcoal-light'
+                            }`}
+                        >
+                          {plan.psychology}
+                        </Badge>
+                        {plan.current && (
+                          <div className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5">
+                            <Check size={12} strokeWidth={4} /> Current
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-xl bg-white-light/50 ${plan.current ? 'text-charcoal' : 'text-charcoal-light'}`}>
+                            <plan.icon size={20} strokeWidth={2.5} />
+                          </div>
+                          <CardTitle className="text-xl font-black text-charcoal tracking-tight">
+                            {plan.name}
+                          </CardTitle>
+                        </div>
+
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-4xl font-black text-charcoal tracking-tighter">
+                            ${Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
+                          </span>
+                          <span className="text-xs font-bold text-charcoal-light">/mo</span>
+                        </div>
+
+                        <CardDescription className="text-sm font-medium leading-relaxed">
+                          {plan.description}
+                        </CardDescription>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="flex-1 pb-8">
+                      <div className="space-y-3.5">
+                        {plan.features.map((feature: string) => (
+                          <div key={feature} className="flex items-start gap-3 group">
+                            <div className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${plan.current ? 'bg-charcoal text-white' : 'bg-white-light text-charcoal-light group-hover:text-charcoal'
+                              }`}>
+                              <Check size={8} strokeWidth={4} />
+                            </div>
+                            <span className="text-[13px] font-medium text-charcoal-medium leading-snug">
+                              {feature}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+
+                    <CardFooter className="pt-0">
+                      <button
+                        disabled={plan.current || loading === plan.name}
+                        onClick={() => handleUpgrade(plan.stripe_price_id, plan.name)}
+                        className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 ${plan.current
+                            ? 'bg-white-light text-charcoal-light cursor-default'
+                            : 'bg-charcoal text-white hover:bg-charcoal-dark shadow-lg shadow-charcoal/20 hover:shadow-charcoal/30'
+                          }`}
+                      >
+                        {loading === plan.name ? <Loader2 size={16} className="animate-spin" /> : plan.cta}
+                      </button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Enterprise Section - Compact */}
+              <Card className="mt-8 border-none shadow-xl shadow-charcoal/5 bg-gradient-to-br from-charcoal to-charcoal-dark text-white">
+                <div className="p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="flex flex-col gap-3 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-3">
+                      <Shield size={20} className="text-white/80" />
+                      <h4 className="text-lg font-black tracking-tight">Enterprise Scale</h4>
+                    </div>
+                    <p className="text-sm font-medium text-white/70 max-w-xl leading-relaxed">
+                      Need custom infrastructure, volume discounts, or white-glove onboarding? We built dedicated solutions for large agencies.
+                    </p>
+                  </div>
+
+                  <button className="px-8 py-3.5 rounded-xl bg-white text-charcoal font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg whitespace-nowrap">
+                    Contact Sales
+                  </button>
+                </div>
+              </Card>
+            </>
+          )}
+        </div>
       </div>
     </DashboardLayout>
   );
