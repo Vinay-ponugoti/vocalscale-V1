@@ -9,20 +9,20 @@ class BillingAPI {
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     const headers = await getAuthHeader();
-    
+
     // Create unique request key for cancellation
     const requestKey = `${options.method || 'GET'}-${endpoint}`;
-    
+
     // Abort any previous request for same key
     const existingController = this.controllers.get(requestKey);
     if (existingController) {
       existingController.abort();
     }
-    
+
     // Create new controller for this request
     const controller = new AbortController();
     this.controllers.set(requestKey, controller);
-    
+
     const config: RequestInit = {
       ...options,
       headers: {
@@ -30,15 +30,16 @@ class BillingAPI {
         ...headers,
         ...options.headers,
       },
+      credentials: 'include', // Required for cross-origin requests with authentication
       signal: controller.signal,
     };
 
     try {
       const response = await fetch(url, config);
-      
+
       // Clean up controller after response
       this.controllers.delete(requestKey);
-      
+
       if (!response.ok) {
         const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
         throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
