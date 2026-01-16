@@ -64,7 +64,7 @@ class BillingAPI {
   }
 
   async getUsage() {
-    return this.request('/billing/usage');
+    return this.request('/subscription/usage');
   }
 
   async getInvoices() {
