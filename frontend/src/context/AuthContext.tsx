@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import type { Session, User } from '../types/auth';
-import { 
-  validateSession as validateSessionUtil, 
-  storeSession 
+import {
+  validateSession as validateSessionUtil,
+  storeSession
 } from '../utils/sessionUtils';
 import { env } from '../config/env';
+import { identifyUser, resetUser, analytics } from '../lib/posthog';
 
 interface AuthContextType {
   session: Session | null;
@@ -18,16 +19,16 @@ interface AuthContextType {
   setAuthSession: (session: Session) => void;
 }
 
-const AuthContext = createContext<AuthContextType>({ 
-  session: null, 
-  user: null, 
-  loading: true, 
+const AuthContext = createContext<AuthContextType>({
+  session: null,
+  user: null,
+  loading: true,
   securityMessage: null,
-  signOut: async () => {},
+  signOut: async () => { },
   isConfigured: true,
-  refreshSession: async () => {},
-  validateSession: async () => {},
-  setAuthSession: () => {}
+  refreshSession: async () => { },
+  validateSession: async () => { },
+  setAuthSession: () => { }
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -41,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setSecurityMessage("Refreshing security session...");
     try {
       const { isValid, session: validatedSession, backendReachable } = await validateSessionUtil();
-      
+
       if (mounted.current) {
         if (isValid && validatedSession && backendReachable) {
           setSession(validatedSession);
@@ -75,11 +76,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSecurityMessage("Verifying security credentials...");
       try {
         const { isValid, session: validatedSession, backendReachable } = await validateSessionUtil();
-        
+
         if (mounted.current) {
           if (isValid && validatedSession && backendReachable) {
             setSession(validatedSession);
             setUser(validatedSession.user ?? null);
+            // Identify user in PostHog
+            if (validatedSession.user?.id) {
+              identifyUser(validatedSession.user.id, {
+                email: validatedSession.user.email,
+                name: validatedSession.user.full_name,
+              });
+            }
             console.log("Auth initialized successfully with backend validation");
           } else {
             setSession(null);
@@ -118,7 +126,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
           // Verify with backend directly
           const { isValid, backendReachable } = await validateSessionUtil();
-          
+
           if (mounted.current && (!isValid || !backendReachable)) {
             console.warn('Security heartbeat failed. Logging out.');
             setSession(null);
@@ -151,6 +159,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(null);
         setUser(null);
         storeSession(null);
+        // Reset PostHog user
+        resetUser();
+        analytics.userLoggedOut();
       }
     } catch (error) {
       console.error('Error signing out:', error);
@@ -166,7 +177,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setSecurityMessage("Verifying session...");
     try {
       const { isValid, session: validatedSession, backendReachable } = await validateSessionUtil();
-      
+
       if (mounted.current) {
         if (!isValid || !validatedSession || !backendReachable) {
           setSession(null);
@@ -198,14 +209,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ 
-      session, 
-      user, 
-      loading, 
+    <AuthContext.Provider value={{
+      session,
+      user,
+      loading,
       securityMessage,
-      signOut, 
-      isConfigured: true, 
-      refreshSession, 
+      signOut,
+      isConfigured: true,
+      refreshSession,
       validateSession,
       setAuthSession
     }}>
