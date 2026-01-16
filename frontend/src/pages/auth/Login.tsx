@@ -41,11 +41,11 @@ const Login = () => {
     try {
       // Check backend reachability first
       try {
-        const pingResponse = await fetch(`${import.meta.env.VITE_API_URL}/health`, { 
+        const pingResponse = await fetch(`${import.meta.env.VITE_API_URL}/health`, {
           method: 'GET',
           headers: { 'ngrok-skip-browser-warning': 'true' }
         }).catch(() => null);
-        
+
         if (!pingResponse || !pingResponse.ok) {
           throw new Error('Backend is currently offline. Please try again later.');
         }
@@ -85,16 +85,16 @@ const Login = () => {
 
       if (session && (session.access_token || session.refresh_token)) {
         console.log('Storing session and navigating...');
-        
+
         // Update auth context immediately
         setAuthSession(session);
-        
+
         // Prefetch critical dashboard data immediately after login
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
-        const authHeaders = { 
+        const authHeaders = {
           'Authorization': `Bearer ${session.access_token}`,
-          'ngrok-skip-browser-warning': 'true' 
+          'ngrok-skip-browser-warning': 'true'
         };
 
         // 1. Dashboard Stats
@@ -153,7 +153,7 @@ const Login = () => {
         });
 
         showToast('Login successful!', 'success');
-        
+
         // Use navigate for smoother transition
         console.log('Redirecting to dashboard...');
         navigate('/dashboard', { replace: true });
@@ -184,9 +184,9 @@ const Login = () => {
     try {
       const redirectUrl = `${window.location.origin}/auth/callback`;
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
-           if (!response.ok) throw new Error('Failed to get auth URL');
       if (!response.ok) throw new Error('Failed to get auth URL');
-      
+      if (!response.ok) throw new Error('Failed to get auth URL');
+
       const { url } = await response.json();
       window.location.href = url;
     } catch (e) {
@@ -266,12 +266,12 @@ const Login = () => {
 
           {/* Forgot password */}
           <div className="flex justify-end w-full pt-1">
-            <a
-              href="#"
+            <Link
+              to="/forgot-password"
               className="text-xs font-medium text-slate-500 hover:text-[#0ea5e9]"
             >
               Forgot your password?
-            </a>
+            </Link>
           </div>
 
           {/* Submit */}

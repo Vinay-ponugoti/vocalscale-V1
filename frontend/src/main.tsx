@@ -22,6 +22,9 @@ const queryClient = new QueryClient({
   },
 });
 
+// Make queryClient globally accessible for logout cleanup
+(window as any).__reactQueryClient = queryClient;
+
 // Initialize Sentry
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
