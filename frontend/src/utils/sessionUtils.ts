@@ -75,8 +75,8 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
   // Backend validation - enforce backend dependency
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // Short timeout for backend check
-    
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout for backend check (increased from 2s)
+
     const response = await fetch(`${env.API_URL}/auth/validate`, {
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
@@ -105,10 +105,10 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
         backendReachable: response.status !== 502 && response.status !== 503 && response.status !== 504
       };
     }
-    
+
     // Parse the validation response to get user data
     const validationData = await response.json();
-    
+
     // If session is valid, ensure user object is populated
     if (validationData.user_id) {
       session.user = {
@@ -121,20 +121,20 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
       // Update local storage with the user data
       storeSession(session);
     }
-    
+
     // If it's valid, check local expiry just in case
     const now = Math.floor(Date.now() / 1000);
     const expiresAt = session.expires_at;
 
     if (expiresAt && now >= expiresAt) {
-        // Here we would normally refresh the session via backend
-        // For now, let's just mark it invalid if expired
-        storeSession(null);
-        return {
-          isValid: false,
-          session: null,
-          error: 'Session expired locally'
-        };
+      // Here we would normally refresh the session via backend
+      // For now, let's just mark it invalid if expired
+      storeSession(null);
+      return {
+        isValid: false,
+        session: null,
+        error: 'Session expired locally'
+      };
     }
 
     return {
@@ -145,10 +145,12 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
 
   } catch (e: unknown) {
     console.error('Backend unreachable during session validation:', e);
+    // CRITICAL FIX: Keep session alive if backend is temporarily unreachable
+    // This prevents logout on fast refresh/back button when backend is slow
     return {
-      isValid: false,
-      session: null,
-      error: 'Backend unreachable',
+      isValid: true,  // Changed from false - trust local session if backend offline
+      session,        // Return existing session
+      error: 'Backend unreachable (session kept alive)',
       backendReachable: false
     };
   }
