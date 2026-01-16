@@ -12,6 +12,7 @@ import { WebVitalsTracking } from './components/WebVitalsTracking';
 // Lazy Load Pages
 const Login = lazy(() => import('./pages/auth/Login'));
 const Signup = lazy(() => import('./pages/auth/Signup'));
+const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
 const GoogleCallback = lazy(() => import('./pages/auth/GoogleCallback'));
 
 // Setup Pages
@@ -50,49 +51,50 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/callback" element={<GoogleCallback />} />
 
             {/* Protected Setup Routes */}
             <Route element={<ProtectedRoute />}>
-            
-            {/* Dashboard Routes */}
-            <Route element={
-              <BusinessSetupProvider>
-                <SearchProvider>
-                  <Outlet />
-                </SearchProvider>
-              </BusinessSetupProvider>
-            }>
-              <Route path="/dashboard" element={<DashboardHome />} />
-              <Route path="/dashboard/calls" element={<CallLogs />} />
-              <Route path="/dashboard/calls/:callId" element={<CallLogs />} />
-              <Route path="/dashboard/appointments" element={<Appointments />} />
-              <Route path="/dashboard/reviews" element={<Reviews />} />
-              <Route path="/dashboard/settings" element={<Settings />} />
-              <Route path="/dashboard/billing" element={<Billing />} />
-              <Route path="/dashboard/billing/plans" element={<Plans />} />
-              <Route path="/dashboard/help" element={<HelpCenter />} />
-              <Route path="/dashboard/voice-setup" element={<VoiceSetup />} />
-              <Route path="/dashboard/voice-setup/setup-subaccount" element={<SetupSubaccount />} />
-              <Route path="/dashboard/voice-setup/buy" element={<GetNewNumber />} />
-              <Route path="/dashboard/voice-setup/existing" element={<UseExistingNumber />} />
-              <Route path="/dashboard/business-details" element={<BusinessSetup />} />
 
-              {/* Voice Model Setup Routes (Moved inside Dashboard) */}
-              <Route path="/dashboard/voice-model/*" element={
-                <SetupProvider>
-                  <Routes>
-                    <Route path="method" element={<Method />} />
-                    <Route path="record" element={<Record />} />
-                    <Route path="upload" element={<Upload />} /> 
-                    <Route path="processing" element={<Processing />} />
-                    <Route path="preview" element={<Preview />} />
-                  </Routes>
-                </SetupProvider>
-              } />
+              {/* Dashboard Routes */}
+              <Route element={
+                <BusinessSetupProvider>
+                  <SearchProvider>
+                    <Outlet />
+                  </SearchProvider>
+                </BusinessSetupProvider>
+              }>
+                <Route path="/dashboard" element={<DashboardHome />} />
+                <Route path="/dashboard/calls" element={<CallLogs />} />
+                <Route path="/dashboard/calls/:callId" element={<CallLogs />} />
+                <Route path="/dashboard/appointments" element={<Appointments />} />
+                <Route path="/dashboard/reviews" element={<Reviews />} />
+                <Route path="/dashboard/settings" element={<Settings />} />
+                <Route path="/dashboard/billing" element={<Billing />} />
+                <Route path="/dashboard/billing/plans" element={<Plans />} />
+                <Route path="/dashboard/help" element={<HelpCenter />} />
+                <Route path="/dashboard/voice-setup" element={<VoiceSetup />} />
+                <Route path="/dashboard/voice-setup/setup-subaccount" element={<SetupSubaccount />} />
+                <Route path="/dashboard/voice-setup/buy" element={<GetNewNumber />} />
+                <Route path="/dashboard/voice-setup/existing" element={<UseExistingNumber />} />
+                <Route path="/dashboard/business-details" element={<BusinessSetup />} />
+
+                {/* Voice Model Setup Routes (Moved inside Dashboard) */}
+                <Route path="/dashboard/voice-model/*" element={
+                  <SetupProvider>
+                    <Routes>
+                      <Route path="method" element={<Method />} />
+                      <Route path="record" element={<Record />} />
+                      <Route path="upload" element={<Upload />} />
+                      <Route path="processing" element={<Processing />} />
+                      <Route path="preview" element={<Preview />} />
+                    </Routes>
+                  </SetupProvider>
+                } />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
+          </Routes>
         </Suspense>
       </LazyMotion>
     </Router>

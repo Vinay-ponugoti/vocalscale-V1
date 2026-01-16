@@ -44,7 +44,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { isValid, session: validatedSession, backendReachable } = await validateSessionUtil();
 
       if (mounted.current) {
-        if (isValid && validatedSession && backendReachable) {
+        // Keep session if valid, regardless of backend reachability
+        if (isValid && validatedSession) {
           setSession(validatedSession);
           setUser(validatedSession.user ?? null);
           storeSession(validatedSession);
@@ -78,7 +79,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { isValid, session: validatedSession, backendReachable } = await validateSessionUtil();
 
         if (mounted.current) {
-          if (isValid && validatedSession && backendReachable) {
+          // CRITICAL FIX: Keep session if valid, even if backend temporarily unreachable
+          // This prevents logout on fast refresh when backend is slow to respond
+          if (isValid && validatedSession) {
             setSession(validatedSession);
             setUser(validatedSession.user ?? null);
             // Identify user in PostHog
@@ -88,8 +91,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 name: validatedSession.user.full_name,
               });
             }
-            console.log("Auth initialized successfully with backend validation");
+            console.log("Auth initialized successfully");
           } else {
+            // Only clear session if explicitly invalid (401 from backend)
             setSession(null);
             setUser(null);
             storeSession(null);
@@ -127,8 +131,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           // Verify with backend directly
           const { isValid, backendReachable } = await validateSessionUtil();
 
-          if (mounted.current && (!isValid || !backendReachable)) {
-            console.warn('Security heartbeat failed. Logging out.');
+          // Only logout if session is explicitly invalid (not just unreachable)
+          if (mounted.current && !isValid && backendReachable) {
+            console.warn('Security heartbeat detected invalid session. Logging out.');
             setSession(null);
             setUser(null);
             storeSession(null);
@@ -146,25 +151,52 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     setSecurityMessage("Signing out safely...");
     try {
+      const token = session?.access_token;
+
       // Call backend to invalidate session if needed
-      await fetch(`${env.API_URL}/auth/logout`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session?.access_token}`,
-          'ngrok-skip-browser-warning': 'true'
-        }
-      }).catch(() => null);
+      if (token) {
+        await fetch(`${env.API_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true'
+          }
+        }).catch(() => null);
+      }
 
       if (mounted.current) {
+        // 1. Clear React state
         setSession(null);
         setUser(null);
-        storeSession(null);
-        // Reset PostHog user
+
+        // 2. Clear ALL localStorage (complete wipe for fresh login)
+        localStorage.clear();
+
+        // 3. Clear sessionStorage as well
+        sessionStorage.clear();
+
+        // 4. Clear React Query cache completely
+        const queryClient = (window as any).__reactQueryClient;
+        if (queryClient) {
+          queryClient.clear();
+          console.log('✅ React Query cache cleared');
+        }
+
+        // 5. Reset PostHog user
         resetUser();
         analytics.userLoggedOut();
+
+        console.log('✅ Logout complete - all data cleared');
       }
     } catch (error) {
       console.error('Error signing out:', error);
+      // Still clear data even on error
+      if (mounted.current) {
+        localStorage.clear();
+        sessionStorage.clear();
+        setSession(null);
+        setUser(null);
+      }
     } finally {
       if (mounted.current) {
         setLoading(false);
