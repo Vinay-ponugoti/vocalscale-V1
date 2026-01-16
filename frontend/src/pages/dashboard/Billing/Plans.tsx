@@ -257,8 +257,8 @@ const Plans: React.FC = () => {
                     <button
                       onClick={() => setIsAnnual(false)}
                       className={`px-6 py-2 rounded-lg transition-all duration-300 text-[11px] font-black uppercase tracking-widest ${!isAnnual
-                          ? 'bg-white text-charcoal shadow-sm'
-                          : 'text-charcoal-light hover:text-charcoal'
+                        ? 'bg-white text-charcoal shadow-sm'
+                        : 'text-charcoal-light hover:text-charcoal'
                         }`}
                     >
                       Monthly
@@ -266,8 +266,8 @@ const Plans: React.FC = () => {
                     <button
                       onClick={() => setIsAnnual(true)}
                       className={`px-6 py-2 rounded-lg transition-all duration-300 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 ${isAnnual
-                          ? 'bg-white text-charcoal shadow-sm'
-                          : 'text-charcoal-light hover:text-charcoal'
+                        ? 'bg-white text-charcoal shadow-sm'
+                        : 'text-charcoal-light hover:text-charcoal'
                         }`}
                     >
                       Annual
@@ -286,8 +286,8 @@ const Plans: React.FC = () => {
                   <Card
                     key={plan.name}
                     className={`flex flex-col border-none shadow-xl transition-all duration-300 ${plan.current
-                        ? 'shadow-charcoal/10 ring-2 ring-charcoal'
-                        : 'shadow-charcoal/5 hover:shadow-charcoal/10 hover:-translate-y-1'
+                      ? 'shadow-charcoal/10 ring-2 ring-charcoal'
+                      : 'shadow-charcoal/5 hover:shadow-charcoal/10 hover:-translate-y-1'
                       }`}
                   >
                     <CardHeader className="pb-6">
@@ -350,8 +350,8 @@ const Plans: React.FC = () => {
                         disabled={plan.current || loading === plan.name}
                         onClick={() => handleUpgrade(plan.stripe_price_id, plan.name)}
                         className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 ${plan.current
-                            ? 'bg-white-light text-charcoal-light cursor-default'
-                            : 'bg-charcoal text-white hover:bg-charcoal-dark shadow-lg shadow-charcoal/20 hover:shadow-charcoal/30'
+                          ? 'bg-white-light text-charcoal-light cursor-default'
+                          : 'bg-charcoal text-white hover:bg-charcoal-dark shadow-lg shadow-charcoal/20 hover:shadow-charcoal/30'
                           }`}
                       >
                         {loading === plan.name ? <Loader2 size={16} className="animate-spin" /> : plan.cta}
@@ -382,7 +382,6 @@ const Plans: React.FC = () => {
             </>
           )}
         </div>
-      </div>
     </DashboardLayout>
   );
 };
