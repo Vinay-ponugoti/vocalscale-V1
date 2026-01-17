@@ -1,6 +1,6 @@
 import React from 'react';
-import { 
-  AlertCircle, Globe, Save, PhoneForwarded 
+import {
+  AlertCircle, Globe, Save, PhoneForwarded
 } from 'lucide-react';
 import { Toggle } from '../../components/SettingsComponents';
 import type { NotificationSettingsProps } from '../../../../types/settings';
@@ -14,7 +14,7 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
       {/* Basic Toggles */}
       <div className="space-y-3 2xl:space-y-5">
         <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 px-1">Delivery Channels</h3>
-        
+
         {/* Urgent Call Alerts */}
         <div className="flex items-center justify-between p-5 bg-slate-50/50 rounded-2xl hover:bg-white hover:border-indigo-100 transition-all duration-300 border border-slate-100 group">
           <div className="flex items-center gap-4">
@@ -26,9 +26,9 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">Receive SMS immediately for emergency mentions</p>
             </div>
           </div>
-          <Toggle 
-            active={settings.urgent_call_alerts} 
-            onChange={() => onChange({ urgent_call_alerts: !settings.urgent_call_alerts })} 
+          <Toggle
+            active={settings.urgent_call_alerts}
+            onChange={() => onChange({ urgent_call_alerts: !settings.urgent_call_alerts })}
           />
         </div>
 
@@ -43,9 +43,9 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">Email notification for new calendar bookings</p>
             </div>
           </div>
-          <Toggle 
-            active={settings.booking_confirmations} 
-            onChange={() => onChange({ booking_confirmations: !settings.booking_confirmations })} 
+          <Toggle
+            active={settings.booking_confirmations}
+            onChange={() => onChange({ booking_confirmations: !settings.booking_confirmations })}
           />
         </div>
 
@@ -60,9 +60,9 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">Digest of all missed calls and bookings</p>
             </div>
           </div>
-          <Toggle 
-            active={settings.missed_call_alerts} 
-            onChange={() => onChange({ missed_call_alerts: !settings.missed_call_alerts })} 
+          <Toggle
+            active={settings.missed_call_alerts}
+            onChange={() => onChange({ missed_call_alerts: !settings.missed_call_alerts })}
           />
         </div>
       </div>
@@ -84,15 +84,18 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
               <div className="flex-1">
                 <h4 className="text-[11px] font-black text-slate-900 mb-0.5 uppercase tracking-wider">Urgent Transfer</h4>
                 <p className="text-[10px] font-bold text-slate-400 mb-4">Route here when AI detects an emergency.</p>
-                
-                <div className="flex items-center gap-3 px-3 py-2 bg-slate-50/50 rounded-xl border border-slate-100 focus-within:border-rose-200 transition-colors">
+
+                <div className="flex items-center gap-3 px-3 py-2 bg-slate-50/50 rounded-xl border border-slate-100 transition-colors">
                   <span className="text-sm">📱</span>
                   <input
                     type="tel"
                     value={settings.transfer_number || ''}
-                    onChange={(e) => onChange({ transfer_number: e.target.value })}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9+()-\s]/g, '');
+                      onChange({ transfer_number: value });
+                    }}
                     placeholder="+1 (555) 000-0000"
-                    className="w-full bg-transparent border-none p-0 text-slate-900 font-mono text-xs font-black tracking-tight focus:ring-0 placeholder:text-slate-300"
+                    className="w-full bg-transparent border-none p-0 text-slate-900 font-mono text-xs font-black tracking-tight focus:ring-0 focus:outline-none placeholder:text-slate-300"
                   />
                 </div>
               </div>
@@ -108,15 +111,18 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
               <div className="flex-1">
                 <h4 className="text-[11px] font-black text-slate-900 mb-0.5 uppercase tracking-wider">Standard Transfer</h4>
                 <p className="text-[10px] font-bold text-slate-400 mb-4">Route here for non-escalated requests.</p>
-                
-                <div className="flex items-center gap-3 px-3 py-2 bg-slate-50/50 rounded-xl border border-slate-100 focus-within:border-indigo-200 transition-colors">
+
+                <div className="flex items-center gap-3 px-3 py-2 bg-slate-50/50 rounded-xl border border-slate-100 transition-colors">
                   <span className="text-sm">📱</span>
                   <input
                     type="tel"
                     value={settings.standard_transfer_number || ''}
-                    onChange={(e) => onChange({ standard_transfer_number: e.target.value })}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9+()-\s]/g, '');
+                      onChange({ standard_transfer_number: value });
+                    }}
                     placeholder="+1 (555) 000-0000"
-                    className="w-full bg-transparent border-none p-0 text-slate-900 font-mono text-xs font-black tracking-tight focus:ring-0 placeholder:text-slate-300"
+                    className="w-full bg-transparent border-none p-0 text-slate-900 font-mono text-xs font-black tracking-tight focus:ring-0 focus:outline-none placeholder:text-slate-300"
                   />
                 </div>
               </div>
