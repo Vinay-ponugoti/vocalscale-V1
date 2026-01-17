@@ -1,11 +1,11 @@
 import React from 'react';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
@@ -75,17 +75,16 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
                 <button
                   key={range}
                   onClick={() => setTimeRange(range)}
-                  className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${
-                    timeRange === range
+                  className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${timeRange === range
                       ? 'bg-white text-blue-electric shadow-sm scale-100 ring-1 ring-charcoal/5'
                       : 'text-charcoal-light hover:text-charcoal-medium hover:bg-white/50 scale-95 hover:scale-100'
-                  }`}
+                    }`}
                 >
                   {range.toUpperCase()}
                 </button>
               ))}
             </div>
-            
+
             <div className="h-8 w-px bg-white-light hidden sm:block" />
 
             <div className="flex items-center gap-3">
@@ -94,9 +93,8 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
                 <p className="text-sm font-black text-charcoal">{peakCalls}</p>
               </div>
               {trend && (
-                <Badge variant="secondary" className={`${
-                  trend.isPositive ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-rose-50 text-rose-600 hover:bg-rose-100'
-                } font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-lg border-none`}>
+                <Badge variant="secondary" className={`${trend.isPositive ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-rose-50 text-rose-600 hover:bg-rose-100'
+                  } font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-lg border-none`}>
                   {trend.isPositive ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
                   {trend.isPositive ? '+' : '-'}{trend.value}%
                 </Badge>
@@ -105,37 +103,37 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-2">
         <div className="h-[300px] w-full min-h-[300px]">
           <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
             <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="callGradient" x1="0" y1="0" x2="0" y2="100%">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15}/>
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F5F7FA" />
-              <XAxis 
-                dataKey="day" 
+              <XAxis
+                dataKey="day"
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 700 }}
                 dy={10}
               />
-              <YAxis 
+              <YAxis
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 700 }}
               />
               <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#3B82F6', strokeWidth: 1, strokeDasharray: '4 4' }} />
-              <Area 
-                type="monotone" 
-                dataKey="calls" 
-                stroke="#3B82F6" 
+              <Area
+                type="monotone"
+                dataKey="calls"
+                stroke="#3B82F6"
                 strokeWidth={3}
-                fillOpacity={1} 
+                fillOpacity={1}
                 fill="url(#callGradient)"
                 animationDuration={2000}
                 activeDot={{ r: 6, fill: '#3B82F6', stroke: '#fff', strokeWidth: 2 }}
@@ -144,7 +142,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
           </ResponsiveContainer>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white-light">
+        <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-white-light">
           <div className="space-y-1">
             <p className="text-[10px] font-black text-charcoal-light uppercase tracking-widest">Daily Average</p>
             <p className="text-xl font-black text-charcoal tracking-tight">{avgCalls}</p>
@@ -152,13 +150,6 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
           <div className="space-y-1">
             <p className="text-[10px] font-black text-charcoal-light uppercase tracking-widest">Total Handling</p>
             <p className="text-xl font-black text-charcoal tracking-tight">{totalCalls}</p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Efficiency</p>
-            <div className="flex items-center gap-2">
-              <p className="text-xl font-black text-emerald-600 tracking-tight">98%</p>
-              <ArrowUpRight className="w-4 h-4 text-emerald-600" />
-            </div>
           </div>
         </div>
       </CardContent>
