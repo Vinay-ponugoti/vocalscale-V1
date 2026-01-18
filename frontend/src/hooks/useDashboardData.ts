@@ -13,8 +13,8 @@ interface Call {
 }
 
 interface Appointment {
-  id: number;
-  scheduled_time: string;
+  id: string | number;
+  scheduled_at: string;
   customer_name: string;
   service_type: string;
 }
