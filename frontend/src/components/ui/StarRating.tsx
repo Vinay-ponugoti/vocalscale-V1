@@ -9,17 +9,18 @@ interface StarRatingProps {
   className?: string;
 }
 
-export const StarRating: React.FC<StarRatingProps> = ({ 
-  rating, 
-  maxRating = 5, 
+export const StarRating: React.FC<StarRatingProps> = ({
+  rating,
+  maxRating = 5,
   size = 14,
   className = ""
 }) => {
   const id = React.useId();
   const gradientId = `halfStarGrad-${id.replace(/:/g, '')}`;
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.3 && rating % 1 < 0.8; // Standardize half star threshold
-  const actualFullStars = rating % 1 >= 0.8 ? fullStars + 1 : fullStars;
+  const safeRating = Number.isFinite(rating) ? Math.max(0, Math.min(maxRating, rating)) : 0;
+  const fullStars = Math.floor(safeRating);
+  const hasHalfStar = safeRating % 1 >= 0.3 && safeRating % 1 < 0.8;
+  const actualFullStars = safeRating % 1 >= 0.8 ? fullStars + 1 : fullStars;
   const showHalfStar = hasHalfStar && actualFullStars < maxRating;
 
   return (
