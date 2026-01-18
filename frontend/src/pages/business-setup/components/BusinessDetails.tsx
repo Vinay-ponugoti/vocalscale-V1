@@ -162,13 +162,30 @@ export const BusinessDetails: React.FC = () => {
     try {
       const details = await businessSetupAPI.getGooglePlaceDetails(placeId);
 
+      // Map Google types to our categories
+      const mapCategory = (types: string[]): string => {
+        if (!types || types.length === 0) return 'other';
+        const primary = types[0];
+        
+        if (primary.includes('health') || primary.includes('doctor') || primary.includes('dentist') || primary.includes('hospital') || primary.includes('pharmacy') || primary.includes('physiotherapist')) return 'healthcare';
+        if (primary.includes('real_estate') || primary.includes('moving_company')) return 'realestate';
+        if (primary.includes('lawyer') || primary.includes('courthouse')) return 'legal';
+        if (primary.includes('store') || primary.includes('shopping') || primary.includes('clothing') || primary.includes('electronics') || primary.includes('furniture')) return 'retail';
+        if (primary.includes('lodging') || primary.includes('hotel') || primary.includes('restaurant') || primary.includes('cafe') || primary.includes('bar')) return 'hospitality';
+        if (primary.includes('car') || primary.includes('automotive')) return 'automotive';
+        if (primary.includes('software') || primary.includes('tech')) return 'saas';
+        if (primary.includes('agency') || primary.includes('consulting') || primary.includes('insurance_agency') || primary.includes('travel_agency')) return 'agency';
+        
+        return 'other';
+      };
+
       // Auto-populate fields
       actions.updateBusiness({
         business_name: details.name,
         address: details.formatted_address,
         phone: details.formatted_phone_number || details.international_phone_number,
         website: details.website,
-        category: details.types?.[0] || 'other',
+        category: mapCategory(details.types),
         place_id: details.place_id
       });
 
