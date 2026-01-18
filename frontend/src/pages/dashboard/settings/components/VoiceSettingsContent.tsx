@@ -25,11 +25,19 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
   availableVoices,
   onChange,
 }) => {
-  // Get voices for currently selected language using provider_voice_id
+  // Get voices for currently selected language
   const languageVoices = availableVoices.filter(voice => {
+    // If voice has an explicit accent/language field that matches
+    if (voice.accent && voice.accent.toLowerCase().includes(settings.language.toLowerCase().split('-')[0])) {
+      return true;
+    }
+    
+    // Fallback to provider_voice_id pattern matching
     const providerVoiceId = voice.provider_voice_id?.toLowerCase() || '';
     const selectedLang = settings.language.toLowerCase().split('-')[0];
-    return providerVoiceId.includes('-' + selectedLang) || providerVoiceId.startsWith('aura-2-' + selectedLang);
+    return providerVoiceId.includes('-' + selectedLang) || 
+           providerVoiceId.startsWith('aura-2-' + selectedLang) ||
+           providerVoiceId.includes(selectedLang);
   });
 
   // Handle language change - automatically select default voice for that language
@@ -45,7 +53,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
     // Update both language and voice_id (use database ID)
     onChange({
       language: newLanguage,
-      voice_id: defaultVoiceForLanguage?.id || ''
+      voice_id: defaultVoiceForLanguage?.id || '',
+      model_name: defaultVoiceForLanguage?.name || ''
     });
   };
 
@@ -64,7 +73,13 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             <select
               className="w-full appearance-none bg-slate-50 border border-slate-100 text-slate-900 text-[13px] font-bold py-3 px-4 rounded-xl focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 focus:bg-white focus:outline-none transition-all cursor-pointer hover:border-slate-200 shadow-sm"
               value={settings.voice_id}
-              onChange={(e) => onChange({ voice_id: e.target.value })}
+              onChange={(e) => {
+                const selectedVoice = languageVoices.find(v => v.id === e.target.value);
+                onChange({ 
+                  voice_id: e.target.value,
+                  model_name: selectedVoice?.name || ''
+                });
+              }}
             >
               <option value="" disabled>Select a persona</option>
               {languageVoices.map(voice => (

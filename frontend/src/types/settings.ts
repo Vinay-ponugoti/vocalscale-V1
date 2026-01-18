@@ -14,6 +14,7 @@ export interface Voice {
 export interface VoiceSettings {
   id?: string;
   voice_id: string;
+  model_name?: string;
   speaking_speed: number;
   conversation_tone: string;
   custom_greeting: string;
