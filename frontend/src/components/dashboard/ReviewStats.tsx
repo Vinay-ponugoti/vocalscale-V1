@@ -46,7 +46,7 @@ const ReviewStats = () => {
     return null;
   }
 
-  const positiveSentiment = stats.sentiment.find(s => s.name === 'Positive')?.value || 0;
+  const positiveSentiment = stats.sentiment?.find(s => s.name === 'Positive')?.value || 0;
 
   return (
     <div className="space-y-6 2xl:space-y-10">
@@ -75,7 +75,7 @@ const ReviewStats = () => {
               </div>
 
               <div className="flex-1 w-full space-y-4">
-                {stats.ratingDistribution.map((item) => (
+                {(stats.ratingDistribution || []).map((item) => (
                   <div key={item.stars} className="flex items-center gap-4 group">
                     <div className="flex items-center gap-1.5 w-12">
                       <span className="text-sm font-bold text-charcoal-medium">{item.stars}</span>
@@ -105,7 +105,7 @@ const ReviewStats = () => {
                 <CardDescription className="font-medium text-charcoal-light">Review tone breakdown</CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                {stats.sentiment.map((item) => (
+                {(stats.sentiment || []).map((item) => (
                   <Badge key={item.name} variant="outline" className="font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider" style={{ color: item.color, borderColor: `${item.color}20`, backgroundColor: `${item.color}08` }}>
                     {item.name}: {item.value}%
                   </Badge>
@@ -128,7 +128,7 @@ const ReviewStats = () => {
                       dataKey="value"
                       stroke="none"
                     >
-                      {stats.sentiment.map((entry, index) => (
+                      {(stats.sentiment || []).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -144,7 +144,7 @@ const ReviewStats = () => {
               </div>
 
               <div className="flex-1 w-full space-y-6">
-                {stats.sentiment.map((item) => (
+                {(stats.sentiment || []).map((item) => (
                   <div key={item.name} className="space-y-2 group">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
