@@ -186,7 +186,8 @@ export const BusinessDetails: React.FC = () => {
         phone: details.formatted_phone_number || details.international_phone_number,
         website: details.website,
         category: mapCategory(details.types),
-        place_id: details.place_id
+        place_id: details.place_id,
+        rating: details.rating
       });
 
       // Clear search

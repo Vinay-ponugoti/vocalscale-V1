@@ -4,6 +4,8 @@ import { businessSetupAPI } from '../api/businessSetup';
 
 // Import types directly inline to avoid module issues
 interface BusinessDetails {
+  id?: string;
+  user_id?: string;
   business_name: string;
   category?: string;
   phone?: string;
@@ -13,6 +15,7 @@ interface BusinessDetails {
   website?: string;
   timezone?: string;
   place_id?: string;
+  rating?: number;
 }
 
 interface BusinessHour {
