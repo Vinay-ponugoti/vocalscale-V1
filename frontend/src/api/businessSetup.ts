@@ -85,12 +85,12 @@ class BusinessSetupAPI {
     urgent_call_rules: UrgentCallRule[];
     booking_requirements: BookingRequirement[];
   }> {
-    return this.request('/business-setup');
+    return this.request('/business');
   }
 
   // Save complete business setup
   async saveBusinessSetup(data: BusinessSetupData): Promise<{ success: boolean; business_id?: string }> {
-    return this.request('/business-setup', {
+    return this.request('/business', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -98,7 +98,7 @@ class BusinessSetupAPI {
 
   // Update business details only
   async updateBusinessDetails(data: Partial<BusinessDetails>): Promise<BusinessDetails> {
-    return this.request('/business-details', {
+    return this.request('/business/details', {
       method: 'PUT',
       body: JSON.stringify(data),
     });
@@ -106,7 +106,7 @@ class BusinessSetupAPI {
 
   // Update business hours
   async updateBusinessHours(hours: BusinessHour[]): Promise<{ success: boolean }> {
-    return this.request('/business-hours', {
+    return this.request('/business/hours', {
       method: 'PUT',
       body: JSON.stringify(hours),
     });
