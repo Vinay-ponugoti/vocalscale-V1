@@ -21,7 +21,7 @@ interface RawAppointment {
   id: string | number;
   service_type: string;
   customer_name: string;
-  scheduled_time: string;
+  scheduled_at: string;
   status: string;
   notes?: string;
 }
@@ -44,12 +44,12 @@ export function useAppointments() {
       const rawData = await response.json();
       return (rawData.items || []).map((appt: RawAppointment) => ({
         id: appt.id.toString(),
-        title: `${appt.service_type}: ${appt.customer_name}`,
-        customer_name: appt.customer_name,
-        start_time: appt.scheduled_time,
-        end_time: addHours(parseISO(appt.scheduled_time), 1).toISOString(),
+        title: `${appt.service_type || 'Appointment'}: ${appt.customer_name || 'Customer'}`,
+        customer_name: appt.customer_name || 'Customer',
+        start_time: appt.scheduled_at,
+        end_time: appt.scheduled_at ? addHours(parseISO(appt.scheduled_at), 1).toISOString() : new Date().toISOString(),
         status: appt.status || 'Scheduled',
-        type: appt.service_type,
+        type: appt.service_type || 'Appointment',
         notes: appt.notes
       }));
     },
