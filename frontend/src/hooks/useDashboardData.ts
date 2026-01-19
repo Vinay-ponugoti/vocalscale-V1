@@ -31,7 +31,7 @@ interface StatTrend {
 }
 
 interface DashboardData {
-  stats: { 
+  stats: {
     total: number;
     totalTrend?: StatTrend;
     urgent: number;
@@ -49,7 +49,7 @@ interface DashboardData {
 
 export const useDashboardData = (selectedDate: Date, days: number = 7, timezone: string = 'America/New_York') => {
   const dateStr = selectedDate.toISOString().split('T')[0];
-  
+
   const { data, isLoading, isPlaceholderData, error } = useQuery<DashboardData>({
     queryKey: ['dashboard', dateStr, days, timezone],
     queryFn: async () => {
@@ -65,9 +65,9 @@ export const useDashboardData = (selectedDate: Date, days: number = 7, timezone:
       const rawData = await response.json();
       return {
         stats: rawData.stats,
-        recentCalls: (rawData.recentCalls as Call[]).slice(0, 6),
-        appointments: (rawData.appointments as Appointment[]).slice(0, 8),
-        chartData: rawData.chartData
+        recentCalls: Array.isArray(rawData.recentCalls) ? (rawData.recentCalls as Call[]).slice(0, 6) : [],
+        appointments: Array.isArray(rawData.appointments) ? (rawData.appointments as Appointment[]).slice(0, 8) : [],
+        chartData: Array.isArray(rawData.chartData) ? rawData.chartData : []
       };
     },
     staleTime: 60000, // 1 minute
@@ -78,10 +78,10 @@ export const useDashboardData = (selectedDate: Date, days: number = 7, timezone:
   return {
     loading: isLoading,
     isPlaceholderData,
-    stats: data?.stats || { 
-      total: 0, 
-      urgent: 0, 
-      handled: 0, 
+    stats: data?.stats || {
+      total: 0,
+      urgent: 0,
+      handled: 0,
       minutesSaved: 0,
       totalTrend: { value: 0, isPositive: true },
       urgentTrend: { value: 0, isPositive: true },
