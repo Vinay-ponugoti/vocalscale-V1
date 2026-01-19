@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  Upload, Plus, Trash2, Edit2, 
+import {
+  Upload, Plus, Trash2, Edit2,
   FileText, Check, ChevronDown, Loader2,
   FileUp
 } from 'lucide-react';
 import { m, AnimatePresence } from 'framer-motion';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
+import { useToast } from '../../../hooks/useToast';
+import { businessSetupAPI } from '../../../api/businessSetup';
 import type { Service as GlobalService } from '../../../types/business';
 
 // --- Styled Components to match previous pages ---
@@ -36,9 +38,10 @@ interface Service extends Omit<GlobalService, 'price'> {
 
 export const Services: React.FC = () => {
   const { state, actions } = useBusinessSetup();
+  const { showToast } = useToast();
   const [localServices, setLocalServices] = useState<Service[]>([]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  
+
   // Interaction States
   const [isProcessing, setIsProcessing] = useState(false);
   const lastSyncedRef = React.useRef<string>('');
@@ -47,7 +50,7 @@ export const Services: React.FC = () => {
   React.useEffect(() => {
     const incomingServices = state.data.services || [];
     const incomingString = JSON.stringify(incomingServices);
-    
+
     // Only update local if global data changed and it's not from our own last sync
     if (incomingString !== lastSyncedRef.current && !state.loading) {
       const newLocal = incomingServices.map((s: GlobalService, idx: number) => {
@@ -75,7 +78,7 @@ export const Services: React.FC = () => {
       price: s.amount,
       description: s.description
     }));
-    
+
     const globalString = JSON.stringify(globalServices);
     if (globalString !== lastSyncedRef.current) {
       lastSyncedRef.current = globalString;
@@ -93,7 +96,7 @@ export const Services: React.FC = () => {
 
   const toggleExpand = (id: string) => {
     setLocalServices(prev => {
-      const updated = prev.map(s => 
+      const updated = prev.map(s =>
         s.id === id ? { ...s, isExpanded: !s.isExpanded } : s
       );
       // Immediate sync on collapse to ensure data is captured
@@ -106,7 +109,7 @@ export const Services: React.FC = () => {
   };
 
   const updateService = <K extends keyof Service>(id: string, field: K, value: Service[K]) => {
-    setLocalServices(prev => prev.map(s => 
+    setLocalServices(prev => prev.map(s =>
       s.id === id ? { ...s, [field]: value } : s
     ));
     // syncToGlobal is handled by the debounced useEffect
@@ -118,50 +121,105 @@ export const Services: React.FC = () => {
     syncToGlobal(updated);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validate file type
+    const validTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/csv'
+    ];
+
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    const validExtensions = ['pdf', 'docx', 'pptx', 'xlsx', 'csv'];
+
+    if (!validTypes.includes(file.type) && !validExtensions.includes(extension || '')) {
+      showToast('Invalid file type. Please upload PDF, Word, PowerPoint, Excel, or CSV.', 'error');
+      return;
+    }
+
     setIsProcessing(true);
-    // Simulate File Processing
-    setTimeout(() => {
-      const newServiceId = `service-${Date.now()}`;
-      const newServices: Service[] = [
-        {
-          id: newServiceId,
-          name: "Consultation Service",
-          amount: 100,
-          priceType: 'flat',
-          duration: "45 min",
-          description: "Extracted from " + file.name,
-          isExpanded: true
+    showToast('Uploading document... Please wait.', 'info');
+
+    try {
+      // 1. Initiate Upload (Async)
+      const uploadRes = await businessSetupAPI.uploadKnowledgeDocument(file);
+      const taskId = uploadRes.task_id;
+
+      showToast('Document queued. Processing...', 'info');
+
+      // 2. Poll for Status
+      const pollInterval = 2000; // 2 seconds
+      const maxAttempts = 60; // 2 minutes max wait
+      let attempts = 0;
+
+      const checkStatus = async () => {
+        if (attempts >= maxAttempts) {
+          setIsProcessing(false);
+          showToast('Processing timeout. The file is being processed in background.', 'warning');
+          return;
         }
-      ];
-      
-      const updated = [...localServices, ...newServices];
-      setLocalServices(updated);
-      syncToGlobal(updated);
+
+        try {
+          const statusRes = await businessSetupAPI.getTaskStatus(taskId);
+
+          if (statusRes.status === 'SUCCESS') {
+            setIsProcessing(false);
+            const chunks = statusRes.result?.chunks_count || 0;
+            showToast(`Successfully processed ${file.name}! ${chunks} knowledge chunks added.`, 'success');
+          } else if (statusRes.status === 'FAILURE') {
+            setIsProcessing(false);
+            showToast('Processing failed. Please try again.', 'error');
+          } else {
+            // Still pending/started, retrying...
+            attempts++;
+            setTimeout(checkStatus, pollInterval);
+          }
+        } catch (err) {
+          // Network error during polling
+          console.error('Polling error', err);
+          setIsProcessing(false);
+        }
+      };
+
+      // Start polling
+      setTimeout(checkStatus, 1000);
+
+    } catch (error: any) {
+      console.error('Upload failed:', error);
       setIsProcessing(false);
+
+      // Handle "Duplicate File" (409) or other errors
+      if (error.message?.includes("409")) {
+        showToast(`File '${file.name}' has already been processed.`, 'warning');
+      } else {
+        showToast(error instanceof Error ? error.message : 'Failed to process document', 'error');
+      }
+    } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
-    }, 2000);
+    }
   };
 
   return (
     <div className="space-y-6">
-      
+
       {/* Hidden File Input */}
-      <input 
+      <input
         type="file"
         ref={fileInputRef}
         onChange={handleFileUpload}
         className="hidden"
-        accept=".pdf,.doc,.docx,.txt,image/*"
+        accept=".pdf,.docx,.pptx,.xlsx,.csv"
       />
 
       {/* Upload & Add Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* File Upload Action */}
-        <div 
+        <div
           onClick={() => fileInputRef.current?.click()}
           className="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-indigo-300 hover:bg-indigo-50/30 transition-all cursor-pointer group"
         >
@@ -170,14 +228,14 @@ export const Services: React.FC = () => {
               {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-slate-900">Upload Price List</h4>
-              <p className="text-xs text-slate-500 mt-0.5">Upload a PDF, document, or image to extract services.</p>
+              <h4 className="text-sm font-semibold text-slate-900">Upload Knowledge Base</h4>
+              <p className="text-xs text-slate-500 mt-0.5">Upload PDFs, Docs, or Spreadsheets to train your AI.</p>
             </div>
           </div>
         </div>
 
         {/* Manual Entry Action */}
-        <div 
+        <div
           onClick={() => {
             const newServiceId = `service-${Date.now()}`;
             const newService: Service = {
@@ -219,7 +277,7 @@ export const Services: React.FC = () => {
 
         <AnimatePresence mode="popLayout">
           {localServices.length === 0 ? (
-            <m.div 
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-center py-12 bg-white rounded-xl border border-slate-200 shadow-sm"
@@ -239,12 +297,11 @@ export const Services: React.FC = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className={`bg-white border rounded-xl overflow-hidden transition-all ${
-                    service.isExpanded ? 'border-indigo-200 shadow-md ring-1 ring-indigo-100' : 'border-slate-200 shadow-sm hover:border-slate-300'
-                  }`}
+                  className={`bg-white border rounded-xl overflow-hidden transition-all ${service.isExpanded ? 'border-indigo-200 shadow-md ring-1 ring-indigo-100' : 'border-slate-200 shadow-sm hover:border-slate-300'
+                    }`}
                 >
                   {/* Card Header */}
-                  <div 
+                  <div
                     onClick={() => toggleExpand(service.id)}
                     className="p-4 flex items-center justify-between cursor-pointer group"
                   >
@@ -257,9 +314,9 @@ export const Services: React.FC = () => {
                           {service.name || 'New Service Item'}
                         </h4>
                         <div className="flex items-center gap-2 mt-0.5">
-                           {service.duration && (
+                          {service.duration && (
                             <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
-                                {service.duration}
+                              {service.duration}
                             </span>
                           )}
                           <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
@@ -270,18 +327,18 @@ export const Services: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                       <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           removeService(service.id);
                         }}
                         className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                       >
-                         <Trash2 size={16} />
-                       </button>
-                       <div className={`p-1 text-slate-400 transition-transform duration-300 ${service.isExpanded ? 'rotate-180' : ''}`}>
-                         <ChevronDown size={16} />
-                       </div>
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                      <div className={`p-1 text-slate-400 transition-transform duration-300 ${service.isExpanded ? 'rotate-180' : ''}`}>
+                        <ChevronDown size={16} />
+                      </div>
                     </div>
                   </div>
 
@@ -298,7 +355,7 @@ export const Services: React.FC = () => {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Service Name</label>
-                              <Input 
+                              <Input
                                 value={service.name}
                                 onChange={(e) => updateService(service.id, 'name', e.target.value)}
                                 placeholder="e.g. Premium Haircut"
@@ -307,7 +364,7 @@ export const Services: React.FC = () => {
                             <div className="grid grid-cols-2 gap-3">
                               <div>
                                 <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Price ($)</label>
-                                <Input 
+                                <Input
                                   type="number"
                                   value={service.amount}
                                   onChange={(e) => updateService(service.id, 'amount', parseFloat(e.target.value))}
@@ -316,7 +373,7 @@ export const Services: React.FC = () => {
                               </div>
                               <div>
                                 <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Duration</label>
-                                <Input 
+                                <Input
                                   value={service.duration || ''}
                                   onChange={(e) => updateService(service.id, 'duration', e.target.value)}
                                   placeholder="e.g. 30 min"
@@ -326,7 +383,7 @@ export const Services: React.FC = () => {
                           </div>
                           <div>
                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Description</label>
-                            <TextArea 
+                            <TextArea
                               value={service.description || ''}
                               onChange={(e) => updateService(service.id, 'description', e.target.value)}
                               placeholder="Briefly describe what's included..."
