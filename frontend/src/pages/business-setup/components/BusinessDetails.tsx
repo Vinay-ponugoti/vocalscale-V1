@@ -144,12 +144,12 @@ export const BusinessDetails: React.FC = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(true);
 
-  // Auto-hide success message after 2 seconds
+  // Auto-hide success message immediately after setup
   useEffect(() => {
     if (data.business.auto_setup && showSuccessMessage) {
       const timer = setTimeout(() => {
         setShowSuccessMessage(false);
-      }, 2000);
+      }, 0); // Hide immediately
       return () => clearTimeout(timer);
     }
   }, [data.business.auto_setup, showSuccessMessage]);
