@@ -399,7 +399,7 @@ export const BusinessDetails: React.FC = () => {
                 <span className="text-xs font-black text-emerald-700 uppercase tracking-wider">✓ Connected</span>
               </div>
             </div>
-          ) : null
+          )
         ) : null}
 
         <div className="space-y-8">
@@ -593,7 +593,7 @@ export const BusinessDetails: React.FC = () => {
           border-radius: 10px;
         }
       `}</style>
-    </div>
+    </div >
   );
 };
 
