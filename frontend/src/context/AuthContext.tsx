@@ -5,7 +5,6 @@ import {
   storeSession
 } from '../utils/sessionUtils';
 import { env } from '../config/env';
-import { identifyUser, resetUser, analytics } from '../lib/posthog';
 
 interface AuthContextType {
   session: Session | null;
@@ -84,13 +83,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (isValid && validatedSession) {
             setSession(validatedSession);
             setUser(validatedSession.user ?? null);
-            // Identify user in PostHog
-            if (validatedSession.user?.id) {
-              identifyUser(validatedSession.user.id, {
-                email: validatedSession.user.email,
-                name: validatedSession.user.full_name,
-              });
-            }
+
             console.log("Auth initialized successfully");
           } else {
             // Only clear session if explicitly invalid (401 from backend)
@@ -182,9 +175,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.log('✅ React Query cache cleared');
         }
 
-        // 5. Reset PostHog user
-        resetUser();
-        analytics.userLoggedOut();
+
 
         console.log('✅ Logout complete - all data cleared');
       }
