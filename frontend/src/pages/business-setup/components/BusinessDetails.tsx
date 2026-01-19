@@ -166,7 +166,7 @@ export const BusinessDetails: React.FC = () => {
       const mapCategory = (types: string[]): string => {
         if (!types || types.length === 0) return 'other';
         const primary = types[0];
-        
+
         if (primary.includes('health') || primary.includes('doctor') || primary.includes('dentist') || primary.includes('hospital') || primary.includes('pharmacy') || primary.includes('physiotherapist')) return 'healthcare';
         if (primary.includes('real_estate') || primary.includes('moving_company')) return 'realestate';
         if (primary.includes('lawyer') || primary.includes('courthouse')) return 'legal';
@@ -175,11 +175,11 @@ export const BusinessDetails: React.FC = () => {
         if (primary.includes('car') || primary.includes('automotive')) return 'automotive';
         if (primary.includes('software') || primary.includes('tech')) return 'saas';
         if (primary.includes('agency') || primary.includes('consulting') || primary.includes('insurance_agency') || primary.includes('travel_agency')) return 'agency';
-        
+
         return 'other';
       };
 
-      // Auto-populate fields
+      // Auto-populate fields and mark setup as complete
       actions.updateBusiness({
         business_name: details.name,
         address: details.formatted_address,
@@ -187,8 +187,12 @@ export const BusinessDetails: React.FC = () => {
         website: details.website,
         category: mapCategory(details.types),
         place_id: details.place_id,
-        rating: details.rating
+        rating: details.rating,
+        auto_setup: true  // Mark AI setup as complete
       });
+
+      // Auto-save to backend
+      await actions.saveData();
 
       // Clear search
       setShowSearch(false);
@@ -279,39 +283,111 @@ export const BusinessDetails: React.FC = () => {
 
       <div className="space-y-10">
 
-        {/* Smart Search Section */}
-        <div className="bg-indigo-50/50 rounded-3xl p-6 sm:p-8 border-2 border-dashed border-indigo-200 group hover:border-indigo-600 hover:bg-indigo-50 transition-all duration-500">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-100 shrink-0">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-lg font-black text-slate-900 tracking-tight leading-none mb-1">AI Smart Connect</h4>
-              <p className="text-slate-500 text-xs font-medium">Auto-populate your profile using Google Places.</p>
-            </div>
-          </div>
+        {/* AI Smart Connect Section - Only show if not set up */}
+        {!data.business.auto_setup ? (
+          <div className="relative bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-3xl p-8 border-2 border-indigo-200 overflow-hidden group hover:border-indigo-400 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-indigo-100">
+            {/* Animated background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-100/50 via-purple-100/50 to-pink-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1 group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Search business name (e.g. Willio Autoparts)"
-                className="w-full pl-11 pr-4 py-4 bg-white border-2 border-transparent rounded-2xl text-sm font-medium text-slate-900 focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 transition-all placeholder:text-slate-300 shadow-sm"
-              />
+            {/* Decorative elements */}
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-200/30 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-200/30 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
+
+            <div className="relative z-10">
+              {/* Header with badges */}
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform duration-300">
+                    <Sparkles className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black text-slate-900 tracking-tight leading-none mb-2">AI Smart Connect</h4>
+                    <p className="text-slate-600 text-sm font-medium">Auto-populate your profile in seconds</p>
+                  </div>
+                </div>
+
+                {/* Badges */}
+                <div className="flex flex-col gap-2">
+                  <div className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-200 flex items-center gap-1.5 animate-pulse">
+                    <Zap className="w-3 h-3" />
+                    NEW
+                  </div>
+                  <div className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 flex items-center gap-1.5">
+                    <Zap className="w-3 h-3" />
+                    Low Latency
+                  </div>
+                </div>
+              </div>
+
+              {/* Features list */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-indigo-100">
+                  <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <span className="text-xs font-bold text-slate-700">Google Places</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-purple-100">
+                  <CheckCircle2 className="w-4 h-4 text-purple-600 shrink-0" />
+                  <span className="text-xs font-bold text-slate-700">Auto-Fill Data</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-pink-100">
+                  <CheckCircle2 className="w-4 h-4 text-pink-600 shrink-0" />
+                  <span className="text-xs font-bold text-slate-700">One-Click Setup</span>
+                </div>
+              </div>
+
+              {/* Search input */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1 group/input">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within/input:text-indigo-600 transition-colors" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    placeholder="Search your business name..."
+                    className="w-full pl-12 pr-4 py-4 bg-white/80 backdrop-blur-sm border-2 border-white rounded-2xl text-sm font-semibold text-slate-900 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 transition-all placeholder:text-slate-400 shadow-sm hover:shadow-md"
+                  />
+                </div>
+                <button
+                  onClick={handleSearch}
+                  disabled={isSearching || !searchQuery.trim()}
+                  className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all hover:scale-105 hover:shadow-2xl hover:shadow-indigo-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-xl flex items-center justify-center gap-2 min-w-[140px]"
+                >
+                  {isSearching ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Searching
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      Connect AI
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Helper text */}
+              <p className="mt-4 text-xs text-slate-500 font-medium text-center">
+                Powered by Google Places • Instant setup • No manual entry required
+              </p>
             </div>
-            <button
-              onClick={handleSearch}
-              disabled={isSearching || !searchQuery.trim()}
-              className="px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:bg-slate-200 disabled:cursor-not-allowed shadow-xl shadow-slate-200/50"
-            >
-              {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Find Business'}
-            </button>
           </div>
-        </div>
+        ) : (
+          /* Success State - Show when setup is complete */
+          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-emerald-200 flex items-center gap-4 shadow-lg">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+              <h4 className="text-lg font-black text-slate-900 tracking-tight mb-1">AI Setup Complete!</h4>
+              <p className="text-sm text-slate-600 font-medium">Your business profile has been automatically configured.</p>
+            </div>
+            <div className="px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-emerald-200">
+              <span className="text-xs font-black text-emerald-700 uppercase tracking-wider">✓ Connected</span>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-8">
           {/* Business Name Section */}
