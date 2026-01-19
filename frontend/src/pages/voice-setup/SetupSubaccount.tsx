@@ -54,6 +54,7 @@ const SetupSubaccount = () => {
       const apiUrl = env.API_URL;
       const headers = await getAuthHeader();
 
+      console.log('🔍 Checking for existing subaccount...');
       const response = await fetch(`${apiUrl}/subaccounts`, {
         method: 'GET',
         headers: {
@@ -64,20 +65,32 @@ const SetupSubaccount = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ Subaccount data received:', data);
 
         // Check if subaccount exists in profile
         if (data.has_subaccount && data.subaccount) {
-          if (data.subaccount.status === 'active') {
+          const status = data.subaccount.status?.toLowerCase();
+          if (status === 'active' || status === 'suspended') {
             setExistingSubaccount(data.subaccount);
             setBusinessName(data.subaccount.friendly_name || '');
-            setSuccess(true);
+
+            if (status === 'active') {
+              console.log('🚀 Active subaccount found, preparring redirect...');
+              setSuccess(true);
+              // Auto-redirect after a short delay
+              setTimeout(() => {
+                navigate('/dashboard/voice-setup/buy');
+              }, 2000);
+            }
           } else {
             setError(`Your account status is "${data.subaccount.status}". Please contact support.`);
           }
         }
+      } else {
+        console.log('⚠️ Failed to fetch subaccount info:', response.status);
       }
     } catch (err) {
-      console.error('Error checking subaccount:', err);
+      console.error('❌ Error checking subaccount:', err);
     }
   };
 
@@ -106,13 +119,23 @@ const SetupSubaccount = () => {
         }),
       });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.detail || 'Failed to create subaccount');
+      const data = await response.json().catch(() => ({}));
+
+      if (response.status === 409) {
+        // Handle conflict - account already exists
+        setError(data.detail || 'A business account already exists for your profile.');
+        if (data.sid) {
+          // If we got the SID, we can technically proceed
+          checkExistingSubaccount();
+        }
+        return;
       }
 
-      const result = await response.json();
-      setExistingSubaccount(result);
+      if (!response.ok) {
+        throw new Error(data.detail || data.error || 'Failed to create subaccount');
+      }
+
+      setExistingSubaccount(data);
       setSuccess(true);
 
       setTimeout(() => {
@@ -120,7 +143,7 @@ const SetupSubaccount = () => {
       }, 1500);
 
     } catch (err: unknown) {
-      console.error(err);
+      console.error('❌ Create subaccount error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to create subaccount. Please try again.';
       setError(errorMessage);
     } finally {
