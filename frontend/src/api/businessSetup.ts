@@ -185,6 +185,30 @@ class BusinessSetupAPI {
 
     return response.json();
   }
+
+  // Get List of Knowledge Files
+  async getKnowledgeFiles(): Promise<Array<{
+    id: string;
+    filename: string;
+    status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+    upload_timestamp: string;
+    chunks_count?: number;
+    error?: string;
+  }>> {
+    const url = `${API_BASE_URL}/knowledge/files`;
+    const headers = await getAuthHeader();
+
+    const response = await fetch(url, {
+      headers: { ...headers },
+    });
+
+    if (!response.ok) {
+      // Fail gracefully (return empty) if endpoint doesn't exist yet or fails
+      console.warn('Failed to fetch knowledge files');
+      return [];
+    }
+    return response.json();
+  }
 }
 
 export const businessSetupAPI = new BusinessSetupAPI();
