@@ -16,6 +16,7 @@ interface BusinessDetails {
   timezone?: string;
   place_id?: string;
   rating?: number;
+  auto_setup?: boolean;
 }
 
 interface BusinessHour {
