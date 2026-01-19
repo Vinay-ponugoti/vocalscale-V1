@@ -51,9 +51,10 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
 };
 
 const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setTimeRange, trend }) => {
-  const totalCalls = data.reduce((sum, d) => sum + d.calls, 0);
-  const avgCalls = data.length > 0 ? (totalCalls / data.length).toFixed(1) : 0;
-  const peakCalls = Math.max(...data.map(d => d.calls));
+  const safeData = Array.isArray(data) ? data : [];
+  const totalCalls = safeData.reduce((sum, d) => sum + d.calls, 0);
+  const avgCalls = safeData.length > 0 ? (totalCalls / safeData.length).toFixed(1) : 0;
+  const peakCalls = safeData.length > 0 ? Math.max(...safeData.map(d => d.calls)) : 0;
 
   return (
     <Card className="border-white-light shadow-sm overflow-hidden group">
@@ -76,8 +77,8 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
                   key={range}
                   onClick={() => setTimeRange(range)}
                   className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${timeRange === range
-                      ? 'bg-white text-blue-electric shadow-sm scale-100 ring-1 ring-charcoal/5'
-                      : 'text-charcoal-light hover:text-charcoal-medium hover:bg-white/50 scale-95 hover:scale-100'
+                    ? 'bg-white text-blue-electric shadow-sm scale-100 ring-1 ring-charcoal/5'
+                    : 'text-charcoal-light hover:text-charcoal-medium hover:bg-white/50 scale-95 hover:scale-100'
                     }`}
                 >
                   {range.toUpperCase()}
@@ -107,7 +108,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
       <CardContent className="pt-2">
         <div className="h-[300px] w-full min-h-[300px]">
           <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-            <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={safeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="callGradient" x1="0" y1="0" x2="0" y2="100%">
                   <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15} />

@@ -5,6 +5,7 @@ import AuthLayout from '../layouts/AuthLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
 import { storeSession } from '../../utils/sessionUtils';
+import { checkBackendHealthWithRetry } from '../../utils/retryUtils';
 import { useQueryClient } from '@tanstack/react-query';
 import { env } from '../../config/env';
 
@@ -56,26 +57,21 @@ const Signup = () => {
 
     // Basic frontend validation
     if (formData.password.length < 8) {
-        const msg = 'Password must be at least 8 characters long';
-        setError(msg);
-        showToast(msg, 'error');
-        return;
+      const msg = 'Password must be at least 8 characters long';
+      setError(msg);
+      showToast(msg, 'error');
+      return;
     }
 
     setLoading(true);
     try {
-      // Check backend reachability first
+      // Check backend reachability with retry logic
       try {
-        const pingResponse = await fetch(`${import.meta.env.VITE_API_URL}/health`, { 
-          method: 'GET',
-          headers: { 'ngrok-skip-browser-warning': 'true' }
-        }).catch(() => null);
-        
-        if (!pingResponse || !pingResponse.ok) {
-          throw new Error('Backend is currently offline. Please try again later.');
-        }
+        await checkBackendHealthWithRetry(import.meta.env.VITE_API_URL, 3);
       } catch (e: unknown) {
-        const message = e instanceof Error ? e.message : 'Service unavailable. Backend is down.';
+        const message = e instanceof Error
+          ? e.message
+          : 'Backend is currently offline. Please try again later.';
         throw new Error(message);
       }
 
@@ -107,13 +103,13 @@ const Signup = () => {
       if (session) {
         // Update auth context immediately
         setAuthSession(session);
-        
+
         // Prefetch critical dashboard data immediately after signup
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
-        const authHeaders = { 
+        const authHeaders = {
           'Authorization': `Bearer ${session.access_token}`,
-          'ngrok-skip-browser-warning': 'true' 
+          'ngrok-skip-browser-warning': 'true'
         };
 
         // Priority Loading: Prefetch critical queries
@@ -156,7 +152,7 @@ const Signup = () => {
         });
 
         showToast('Account created successfully!', 'success');
-        
+
         // Use navigate for smoother transition
         navigate('/dashboard', { replace: true });
       } else {
@@ -184,7 +180,7 @@ const Signup = () => {
       const redirectUrl = `${window.location.origin}/auth/callback`;
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
       if (!response.ok) throw new Error('Failed to get auth URL');
-      
+
       const { url } = await response.json();
       window.location.href = url;
     } catch (e) {
@@ -201,14 +197,14 @@ const Signup = () => {
         overflow-y-auto handles scrolling on small phones.
       */}
       <div className="bg-white/95 md:bg-white/90 backdrop-blur-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white rounded-[1.5rem] md:rounded-[2rem] w-full max-w-[440px] p-6 md:p-10 flex flex-col items-center text-center transition-colors duration-300 max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar">
-        
+
         {/* Icon - Hidden on Mobile */}
         <div className="hidden md:flex mb-6 bg-sky-50 p-3 rounded-2xl shadow-sm border border-sky-100">
           <UserPlus className="text-[#0ea5e9] w-8 h-8" />
         </div>
 
         <h1 className="text-xl md:text-2xl font-bold text-slate-800 mb-2 md:mb-3">Create account</h1>
-        
+
         {securityMessage && (
           <div className="mb-4 flex items-center gap-2 text-xs font-medium text-sky-600 animate-pulse bg-sky-50 px-3 py-1.5 rounded-full border border-sky-100">
             <Loader2 className="w-3 h-3 animate-spin" />
@@ -227,12 +223,12 @@ const Signup = () => {
         )}
 
         <form className="w-full space-y-4" onSubmit={handleSignup}>
-          
+
           <div className="relative group">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <User className="text-slate-400 w-5 h-5" />
             </div>
-            <input 
+            <input
               type="text" name="full_name" value={formData.full_name} onChange={handleChange}
               placeholder="Full Name" required disabled={loading}
               className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 focus:border-sky-400 focus:bg-white focus:ring-0 rounded-xl text-sm text-slate-700 placeholder-slate-400 transition-all duration-200 shadow-sm"
@@ -243,18 +239,18 @@ const Signup = () => {
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Mail className="text-slate-400 w-5 h-5" />
             </div>
-            <input 
+            <input
               type="email" name="email" value={formData.email} onChange={handleChange}
               placeholder="Email" required disabled={loading}
               className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 focus:border-sky-400 focus:bg-white focus:ring-0 rounded-xl text-sm text-slate-700 placeholder-slate-400 transition-all duration-200 shadow-sm"
             />
           </div>
-          
+
           <div className="relative group">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Lock className="text-slate-400 w-5 h-5" />
             </div>
-            <input 
+            <input
               type="password" name="password" value={formData.password} onChange={handleChange}
               placeholder="Password" required disabled={loading}
               className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 focus:border-sky-400 focus:bg-white focus:ring-0 rounded-xl text-sm text-slate-700 placeholder-slate-400 transition-all duration-200 shadow-sm"
@@ -262,7 +258,7 @@ const Signup = () => {
           </div>
 
           <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-             <div className={`h-full ${passwordStrength.color} transition-all duration-300`} style={{ width: `${passwordStrength.score * 25}%` }} />
+            <div className={`h-full ${passwordStrength.color} transition-all duration-300`} style={{ width: `${passwordStrength.score * 25}%` }} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -270,18 +266,18 @@ const Signup = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Phone className="text-slate-400 w-4.5 h-4.5" />
               </div>
-              <input 
+              <input
                 type="tel" name="phone" value={formData.phone} onChange={handleChange}
                 placeholder="Phone" disabled={loading}
                 className="w-full pl-10 pr-3 py-3 bg-white border border-slate-200 focus:border-sky-400 focus:bg-white focus:ring-0 rounded-xl text-sm text-slate-700 placeholder-slate-400 transition-all duration-200 shadow-sm"
               />
             </div>
-            
+
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Building className="text-slate-400 w-4.5 h-4.5" />
               </div>
-              <select 
+              <select
                 name="businessType" value={formData.businessType} onChange={handleChange}
                 disabled={loading}
                 className="w-full pl-10 pr-8 py-3 bg-white border border-slate-200 focus:border-sky-400 focus:bg-white focus:ring-0 rounded-xl text-sm text-slate-700 appearance-none cursor-pointer transition-all duration-200 shadow-sm"
@@ -294,7 +290,7 @@ const Signup = () => {
             </div>
           </div>
 
-          <button 
+          <button
             type="submit"
             disabled={loading}
             className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-medium py-3 rounded-xl shadow-lg shadow-sky-200 transition-all duration-200 transform active:scale-[0.98] mt-2 flex justify-center"

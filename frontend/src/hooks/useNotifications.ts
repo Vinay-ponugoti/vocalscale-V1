@@ -25,7 +25,8 @@ export function useNotifications() {
         throw new Error(`API error: ${response.status}`);
       }
 
-      return response.json();
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
     },
     staleTime: 30000, // 30 seconds
     refetchInterval: 30000, // Poll every 30 seconds
@@ -42,7 +43,7 @@ export function useNotifications() {
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
       }
-      
+
       // Invalidate and refetch
       refetch();
     } catch (error) {

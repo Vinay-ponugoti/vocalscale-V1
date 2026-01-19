@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useCallback } from 'react';
-import { 
-  X, 
-  Check, 
+import {
+  X,
+  Check,
   CheckCheck,
-  Calendar, 
-  AlertTriangle, 
+  Calendar,
+  AlertTriangle,
   Bell,
   BellOff,
   Clock,
@@ -33,7 +33,8 @@ const formatDateGroup = (dateString: string): string => {
 
 // Group notifications by date
 const groupByDate = (notifications: NotificationCall[]) => {
-  return notifications.reduce((groups, notif) => {
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
+  return safeNotifications.reduce((groups, notif) => {
     const dateKey = format(parseISO(notif.created_at), 'yyyy-MM-dd');
     if (!groups[dateKey]) {
       groups[dateKey] = [];
@@ -43,10 +44,10 @@ const groupByDate = (notifications: NotificationCall[]) => {
   }, {} as Record<string, NotificationCall[]>);
 };
 
-const NotificationPanel: React.FC<NotificationPanelProps> = ({ 
-  isOpen, 
-  onClose, 
-  notifications, 
+const NotificationPanel: React.FC<NotificationPanelProps> = ({
+  isOpen,
+  onClose,
+  notifications,
   onDismiss,
   onDismissAll,
   onSelect,
@@ -73,7 +74,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
-    
+
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
     }
@@ -94,9 +95,9 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
     <>
       {/* Backdrop for mobile */}
       <div className="fixed inset-0 bg-black/20 z-40 md:hidden" onClick={onClose} />
-      
+
       {/* Panel */}
-      <div 
+      <div
         ref={panelRef}
         role="dialog"
         aria-label="Notifications"
@@ -131,8 +132,8 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
                   Notifications
                 </h2>
                 <p className="text-xs text-gray-500">
-                  {notifications.length === 0 
-                    ? 'No new notifications' 
+                  {notifications.length === 0
+                    ? 'No new notifications'
                     : `${notifications.length} unread`
                   }
                 </p>
@@ -142,7 +143,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
             {/* Actions */}
             <div className="flex items-center gap-2">
               {notifications.length > 0 && onDismissAll && (
-                <button 
+                <button
                   onClick={onDismissAll}
                   className="
                     flex items-center gap-1.5 
@@ -159,7 +160,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
                   <span className="hidden sm:inline">Clear all</span>
                 </button>
               )}
-              <button 
+              <button
                 onClick={onClose}
                 className="
                   p-2 
@@ -180,7 +181,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
             CONTENT
         ═══════════════════════════════════════════════════════════ */}
         <div className="overflow-y-auto flex-1 overscroll-contain">
-          
+
           {/* Loading State */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
@@ -264,15 +265,15 @@ interface NotificationCardProps {
   onDismiss: (id: string) => void;
 }
 
-const NotificationCard: React.FC<NotificationCardProps> = React.memo(({ 
-  notification, 
-  onSelect, 
-  onDismiss 
+const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
+  notification,
+  onSelect,
+  onDismiss
 }) => {
   const isBooking = notification.category === 'Booking';
 
   return (
-    <div 
+    <div
       onClick={() => onSelect(notification.id)}
       className="
         group 
@@ -298,14 +299,14 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
           rounded-xl 
           flex items-center justify-center
           transition-transform group-hover:scale-105
-          ${isBooking 
-            ? 'bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600' 
+          ${isBooking
+            ? 'bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600'
             : 'bg-gradient-to-br from-orange-50 to-orange-100 text-orange-600'
           }
         `}>
           {isBooking ? <Calendar size={20} /> : <AlertTriangle size={20} />}
         </div>
-        
+
         {/* Content */}
         <div className="flex-1 min-w-0">
           {/* Title Row */}
@@ -317,8 +318,8 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
                 </h4>
                 <span className={`
                   text-[10px] font-bold uppercase px-2 py-0.5 rounded-full
-                  ${isBooking 
-                    ? 'bg-blue-100 text-blue-700' 
+                  ${isBooking
+                    ? 'bg-blue-100 text-blue-700'
                     : 'bg-orange-100 text-orange-700'
                   }
                 `}>
@@ -338,12 +339,12 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
               </span>
             </div>
           </div>
-          
+
           {/* Phone */}
           <p className="text-xs text-gray-500 mt-1">
             📞 {notification.caller_phone}
           </p>
-          
+
           {/* Notes */}
           {(notification.notes || notification.summary) && (
             <div className="
@@ -374,7 +375,7 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
         </div>
 
         {/* Dismiss Button */}
-        <button 
+        <button
           onClick={(e) => {
             e.stopPropagation();
             onDismiss(notification.id);
