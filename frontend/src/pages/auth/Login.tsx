@@ -5,7 +5,6 @@ import AuthLayout from '../layouts/AuthLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
 import { storeSession } from '../../utils/sessionUtils';
-import { checkBackendHealthWithRetry } from '../../utils/retryUtils';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { env } from '../../config/env';
@@ -40,16 +39,6 @@ const Login = () => {
 
     setLoading(true);
     try {
-      // Check backend reachability with retry logic
-      try {
-        await checkBackendHealthWithRetry(import.meta.env.VITE_API_URL, 3);
-      } catch (e: unknown) {
-        const message = e instanceof Error
-          ? e.message
-          : 'Backend is currently offline. Please try again later.';
-        throw new Error(message);
-      }
-
       // Call Python backend for login
       console.log('Attempting login via backend:', email);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
