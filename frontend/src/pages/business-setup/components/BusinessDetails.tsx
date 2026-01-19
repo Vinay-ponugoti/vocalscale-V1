@@ -345,95 +345,55 @@ export const BusinessDetails: React.FC = () => {
 
       <div className="space-y-10">
 
-        {/* AI Smart Connect Section - Only show if not set up */}
+        {/* AI Smart Connect Section - Simple Design */}
         {!data.business.auto_setup || (data.business.auto_setup && showSuccessMessage) ? (
           !data.business.auto_setup ? (
-            <div className="relative bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-3xl p-8 border-2 border-indigo-200 overflow-hidden group hover:border-indigo-400 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-indigo-100">
-              {/* Animated background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-100/50 via-purple-100/50 to-pink-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-              {/* Decorative elements */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-200/30 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-200/30 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
-
+            <div className="bg-white rounded-lg p-6 border border-slate-200 shadow-sm">
               <div className="relative z-10">
-                {/* Header with badges */}
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform duration-300">
-                      <Sparkles className="w-7 h-7" />
+                {/* Simple Header */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-sky-500 flex items-center justify-center text-white">
+                      <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-black text-slate-900 tracking-tight leading-none mb-2">AI Smart Connect</h4>
-                      <p className="text-slate-600 text-sm font-medium">Auto-populate your profile in seconds</p>
+                      <h4 className="text-base font-semibold text-slate-900">AI Smart Connect</h4>
+                      <p className="text-sm text-slate-500">Auto-fill from Google Places</p>
                     </div>
-                  </div>
-
-                  {/* Badges */}
-                  <div className="flex flex-col gap-2">
-                    <div className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-200 flex items-center gap-1.5 animate-pulse">
-                      <Zap className="w-3 h-3" />
-                      NEW
-                    </div>
-                    <div className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 flex items-center gap-1.5">
-                      <Zap className="w-3 h-3" />
-                      Low Latency
-                    </div>
-                  </div>
-                </div>
-
-                {/* Features list */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-                  <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-indigo-100">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                    <span className="text-xs font-bold text-slate-700">Google Places</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-purple-100">
-                    <CheckCircle2 className="w-4 h-4 text-purple-600 shrink-0" />
-                    <span className="text-xs font-bold text-slate-700">Auto-Fill Data</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-pink-100">
-                    <CheckCircle2 className="w-4 h-4 text-pink-600 shrink-0" />
-                    <span className="text-xs font-bold text-slate-700">One-Click Setup</span>
                   </div>
                 </div>
 
                 {/* Search input */}
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="relative flex-1 group/input">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within/input:text-indigo-600 transition-colors" />
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                       placeholder="Search your business name..."
-                      className="w-full pl-12 pr-4 py-4 bg-white/80 backdrop-blur-sm border-2 border-white rounded-2xl text-sm font-semibold text-slate-900 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 transition-all placeholder:text-slate-400 shadow-sm hover:shadow-md"
+                      className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all placeholder:text-slate-400"
                     />
                   </div>
                   <button
                     onClick={handleSearch}
                     disabled={isSearching || !searchQuery.trim()}
-                    className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all hover:scale-105 hover:shadow-2xl hover:shadow-indigo-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-xl flex items-center justify-center gap-2 min-w-[140px]"
+                    className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {isSearching ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Searching
+                        <span className="hidden sm:inline">Searching</span>
                       </>
                     ) : (
                       <>
                         <Sparkles className="w-4 h-4" />
-                        Connect AI
+                        <span className="hidden sm:inline">Connect</span>
                       </>
                     )}
                   </button>
                 </div>
-
-                {/* Helper text */}
-                <p className="mt-4 text-xs text-slate-500 font-medium text-center">
-                  Powered by Google Places • Instant setup • No manual entry required
-                </p>
               </div>
             </div>
           ) : (

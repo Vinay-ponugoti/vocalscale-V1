@@ -38,7 +38,7 @@ export async function checkBackendHealth(apiUrl: string): Promise<boolean> {
     const response = await fetch(`${apiUrl}/health`, {
         method: 'GET',
         headers: { 'ngrok-skip-browser-warning': 'true' },
-        signal: AbortSignal.timeout(5000) // 5 second timeout
+        signal: AbortSignal.timeout(3000) // Reduced from 5s to 3s
     });
 
     if (!response.ok) {
@@ -56,7 +56,7 @@ export async function checkBackendHealth(apiUrl: string): Promise<boolean> {
  */
 export async function checkBackendHealthWithRetry(
     apiUrl: string,
-    maxRetries: number = 3
+    maxRetries: number = 1  // Reduced from 3 to prevent excessive checking
 ): Promise<boolean> {
     return retryWithBackoff(
         () => checkBackendHealth(apiUrl),
