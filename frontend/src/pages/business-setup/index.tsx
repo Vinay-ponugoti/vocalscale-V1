@@ -61,24 +61,19 @@ const BusinessSetupContent = () => {
     <DashboardLayout fullWidth>
       <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
-          <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Business Profile</h1>
-            <p className="text-slate-500 mt-1 text-sm font-medium">Configure how your AI agent represents your brand.</p>
-          </div>
-          <div className="hidden lg:flex items-center gap-3">
-            <button
-              onClick={handleSave}
-              disabled={saving || !isDirty}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all duration-300 shadow-lg ${saving || !isDirty
-                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 shadow-none'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100 hover:-translate-y-0.5'
-                }`}
-            >
-              {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
+        {/* Save Button - Moved to top */}
+        <div className="flex justify-end">
+          <button
+            onClick={handleSave}
+            disabled={saving || !isDirty}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm transition-all ${saving || !isDirty
+                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                : 'bg-sky-500 text-white hover:bg-sky-600 hover:shadow-md active:scale-95'
+              }`}
+          >
+            {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            {saving ? 'Saving...' : 'Save Changes'}
+          </button>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 2xl:gap-12 items-start">
@@ -127,8 +122,8 @@ const BusinessSetupContent = () => {
             onClick={handleSave}
             disabled={saving || !isDirty}
             className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all duration-300 shadow-2xl ${saving || !isDirty
-                ? 'bg-slate-100 text-slate-400 border border-slate-200 shadow-none'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'
+              ? 'bg-slate-100 text-slate-400 border border-slate-200 shadow-none'
+              : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'
               }`}
           >
             {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
