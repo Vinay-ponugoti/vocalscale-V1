@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/|assets/|favicon.*|android-chrome.*|apple-touch-icon\\.png|site\\.webmanifest|logo-icon.*|logos/).*)",
       "destination": "/index.html"
     }
   ],
@@ -27,7 +27,7 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(self), geolocation=(), interest-cohort=()"
+          "value": "camera=(), microphone=(self), geolocation=()"
         },
         {
           "key": "Strict-Transport-Security",
@@ -35,7 +35,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://api.vocalscale.com https://billing.vocalscale.com https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://api.vocalscale.com https://billing.vocalscale.com https://*.supabase.co wss://*.supabase.co https://static.cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
         }
       ]
     },
