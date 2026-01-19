@@ -154,6 +154,49 @@ export const BusinessDetails: React.FC = () => {
     }
   }, [data.business.auto_setup, showSuccessMessage]);
 
+  // Helper function to parse Google Places hours
+  const parseGoogleHours = (openingHours: any) => {
+    if (!openingHours?.periods) return [];
+
+    const dayMap: { [key: number]: any } = {};
+
+    openingHours.periods.forEach((period: any) => {
+      const day = period.open.day; // 0=Sunday, 1=Monday, etc.
+      const openTime = formatGoogleTime(period.open.time);
+      const closeTime = period.close ? formatGoogleTime(period.close.time) : '';
+
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayName = dayNames[day];
+
+      dayMap[day] = {
+        day_of_week: dayName,
+        open_time: openTime,
+        close_time: closeTime,
+        enabled: true
+      };
+    });
+
+    // Return all 7 days in order (Monday-Sunday)
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const dayNumbers: { [key: string]: number } = {
+      'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3,
+      'thursday': 4, 'friday': 5, 'saturday': 6
+    };
+
+    return days.map(day => dayMap[dayNumbers[day]] || {
+      day_of_week: day,
+      open_time: '',
+      close_time: '',
+      enabled: false
+    });
+  };
+
+  // Helper to format Google time (0900 -> 09:00)
+  const formatGoogleTime = (time: string): string => {
+    if (!time || time.length !== 4) return '';
+    return `${time.slice(0, 2)}:${time.slice(2)}`;
+  };
+
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     setIsSearching(true);
@@ -190,7 +233,7 @@ export const BusinessDetails: React.FC = () => {
         return 'other';
       };
 
-      // Auto-populate fields and mark setup as complete
+      // Auto-populate business fields and mark setup as complete
       actions.updateBusiness({
         business_name: details.name,
         address: details.formatted_address,
@@ -201,6 +244,14 @@ export const BusinessDetails: React.FC = () => {
         rating: details.rating,
         auto_setup: true  // Mark AI setup as complete
       });
+
+      // Parse and update business hours if available
+      if (details.opening_hours) {
+        const businessHours = parseGoogleHours(details.opening_hours);
+        if (businessHours.length > 0) {
+          actions.updateBusinessHours(businessHours);
+        }
+      }
 
       // Auto-save to backend
       await actions.saveData();
