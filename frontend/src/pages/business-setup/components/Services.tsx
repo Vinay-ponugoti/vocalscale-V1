@@ -124,6 +124,86 @@ export const Services: React.FC = () => {
     syncToGlobal(updated);
   };
 
+  // Persistent State Keys
+  const STORAGE_KEY_TASK_ID = 'vocalscale_knowledge_task_id';
+  const STORAGE_KEY_FILE_NAME = 'vocalscale_knowledge_file_name';
+
+  // Poll for Status (Reusable)
+  const pollTaskStatus = React.useCallback(async (taskId: string, fileName: string) => {
+
+    // Set active state
+    setProcessingStatus('processing');
+    setProgressMessage('Processing document content...');
+
+    const pollInterval = 2000;
+    const maxAttempts = 60;
+    let attempts = 0;
+
+    const checkStatus = async () => {
+      if (attempts >= maxAttempts) {
+        setProcessingStatus('error');
+        setErrorMessage('Processing timeout. System is busy.');
+        showToast('Processing timeout.', 'warning');
+        cleanupStorage();
+        return;
+      }
+
+      try {
+        const statusRes = await businessSetupAPI.getTaskStatus(taskId);
+        console.log('Poll status:', statusRes.status);
+
+        if (statusRes.status === 'SUCCESS') {
+          setProcessingStatus('success');
+          const chunks = statusRes.result?.chunks_count || 0;
+          setProgressMessage(`Done! Added ${chunks} chunks.`);
+          showToast(`Successfully processed ${fileName}!`, 'success');
+          cleanupStorage();
+
+          // Reset after delay
+          setTimeout(() => {
+            setProcessingStatus('idle');
+            setProgressMessage('');
+          }, 3000);
+
+        } else if (statusRes.status === 'FAILURE') {
+          setProcessingStatus('error');
+          setErrorMessage('Processing failed on server.');
+          showToast('Processing failed.', 'error');
+          cleanupStorage();
+        } else {
+          // Still pending/started, retrying...
+          attempts++;
+          setTimeout(checkStatus, pollInterval);
+        }
+      } catch (err) {
+        console.error('Polling error', err);
+        attempts++;
+        setTimeout(checkStatus, pollInterval);
+      }
+    };
+
+    // Start the loop
+    checkStatus();
+  }, []);
+
+  const cleanupStorage = () => {
+    localStorage.removeItem(STORAGE_KEY_TASK_ID);
+    localStorage.removeItem(STORAGE_KEY_FILE_NAME);
+  };
+
+  // Check for active upload on mount
+  React.useEffect(() => {
+    const saveTaskId = localStorage.getItem(STORAGE_KEY_TASK_ID);
+    const saveFileName = localStorage.getItem(STORAGE_KEY_FILE_NAME);
+
+    if (saveTaskId && saveFileName) {
+      console.log('Found active upload session, resuming...', saveTaskId);
+      // Resume polling
+      pollTaskStatus(saveTaskId, saveFileName);
+    }
+  }, [pollTaskStatus]);
+
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -158,67 +238,24 @@ export const Services: React.FC = () => {
       const taskId = uploadRes.task_id;
 
       console.log('Upload successful, task ID:', taskId);
-      setProcessingStatus('processing');
-      setProgressMessage('Processing document content...');
 
-      // 2. Poll for Status
-      const pollInterval = 2000; // 2 seconds
-      const maxAttempts = 60; // 2 minutes max wait
-      let attempts = 0;
+      // 2. Persist State
+      localStorage.setItem(STORAGE_KEY_TASK_ID, taskId);
+      localStorage.setItem(STORAGE_KEY_FILE_NAME, file.name);
 
-      const checkStatus = async () => {
-        if (attempts >= maxAttempts) {
-          setProcessingStatus('error');
-          setErrorMessage('Processing timeout. System is busy.');
-          showToast('Processing timeout.', 'warning');
-          return;
-        }
-
-        try {
-          const statusRes = await businessSetupAPI.getTaskStatus(taskId);
-          console.log('Poll status:', statusRes.status);
-
-          if (statusRes.status === 'SUCCESS') {
-            setProcessingStatus('success');
-            const chunks = statusRes.result?.chunks_count || 0;
-            setProgressMessage(`Done! Added ${chunks} chunks.`);
-            showToast(`Successfully processed ${file.name}!`, 'success');
-
-            // Reset after delay
-            setTimeout(() => {
-              setProcessingStatus('idle');
-              setProgressMessage('');
-            }, 3000);
-
-          } else if (statusRes.status === 'FAILURE') {
-            setProcessingStatus('error');
-            setErrorMessage('Processing failed on server.');
-            showToast('Processing failed.', 'error');
-          } else {
-            // Still pending/started, retrying...
-            attempts++;
-            setTimeout(checkStatus, pollInterval);
-          }
-        } catch (err) {
-          console.error('Polling error', err);
-          // Don't fail immediately on network blip, just retry
-          attempts++;
-          setTimeout(checkStatus, pollInterval);
-        }
-      };
-
-      // Start polling
-      setTimeout(checkStatus, 1000);
+      // 3. Start Polling
+      pollTaskStatus(taskId, file.name);
 
     } catch (error: any) {
       console.error('Upload Process Failed:', error);
       setProcessingStatus('error');
+      cleanupStorage();
 
       // Detailed Error Handling
       let msg = 'Failed to process document';
       if (error.message?.includes("409")) {
         msg = `File '${file.name}' has already been processed.`;
-        setProcessingStatus('success'); // Treat duplicate as "done" visually but with warning
+        setProcessingStatus('success');
         showToast(msg, 'warning');
       } else if (error.message?.includes("Failed to fetch")) {
         msg = "Cannot reach server. Check your connection.";
@@ -250,13 +287,13 @@ export const Services: React.FC = () => {
         {/* File Upload Action - CONDITIONAL RENDER */}
         {processingStatus !== 'idle' ? (
           <div className={`p-4 border rounded-xl transition-all ${processingStatus === 'error' ? 'bg-red-50 border-red-200' :
-              processingStatus === 'success' ? 'bg-green-50 border-green-200' :
-                'bg-indigo-50 border-indigo-200'
+            processingStatus === 'success' ? 'bg-green-50 border-green-200' :
+              'bg-indigo-50 border-indigo-200'
             }`}>
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${processingStatus === 'error' ? 'bg-white text-red-500' :
-                  processingStatus === 'success' ? 'bg-white text-green-500' :
-                    'bg-white text-indigo-500'
+                processingStatus === 'success' ? 'bg-white text-green-500' :
+                  'bg-white text-indigo-500'
                 }`}>
                 {processingStatus === 'uploading' || processingStatus === 'processing' ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -282,8 +319,8 @@ export const Services: React.FC = () => {
                 {/* Progress Bar Track */}
                 <div className="w-full bg-white/50 rounded-full h-1.5 overflow-hidden">
                   <div className={`h-full rounded-full transition-all duration-500 ${processingStatus === 'error' ? 'bg-red-400 w-full' :
-                      processingStatus === 'success' ? 'bg-green-400 w-full' :
-                        'bg-indigo-500 w-2/3 animate-pulse'
+                    processingStatus === 'success' ? 'bg-green-400 w-full' :
+                      'bg-indigo-500 w-2/3 animate-pulse'
                     }`} />
                 </div>
 
