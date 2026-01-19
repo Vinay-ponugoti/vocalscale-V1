@@ -145,6 +145,46 @@ class BusinessSetupAPI {
   async getGooglePlaceDetails(placeId: string): Promise<any> {
     return this.request(`/google-places/details?place_id=${placeId}`);
   }
+
+  // Upload Knowledge Document for processing
+  async uploadKnowledgeDocument(file: File): Promise<{ task_id: string; status: string; message: string }> {
+    const url = `${API_BASE_URL}/knowledge/upload`;
+    const headers = await getAuthHeader();
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...headers,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Upload failed' }));
+      throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  // Poll Task Status
+  async getTaskStatus(taskId: string): Promise<{ task_id: string; status: string; result?: any }> {
+    const url = `${API_BASE_URL}/knowledge/tasks/${taskId}`;
+    const headers = await getAuthHeader();
+
+    const response = await fetch(url, {
+      headers: { ...headers },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to check task status');
+    }
+
+    return response.json();
+  }
 }
 
 export const businessSetupAPI = new BusinessSetupAPI();
