@@ -43,7 +43,10 @@ export const Services: React.FC = () => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Interaction States
-  const [isProcessing, setIsProcessing] = useState(false);
+  type ProcessingStatus = 'idle' | 'uploading' | 'processing' | 'success' | 'error';
+  const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>('idle');
+  const [progressMessage, setProgressMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const lastSyncedRef = React.useRef<string>('');
 
   // Sync with Global State (Incoming)
@@ -125,6 +128,11 @@ export const Services: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Reset State
+    setProcessingStatus('uploading');
+    setProgressMessage('Uploading document...');
+    setErrorMessage('');
+
     // Validate file type
     const validTypes = [
       'application/pdf',
@@ -139,18 +147,19 @@ export const Services: React.FC = () => {
 
     if (!validTypes.includes(file.type) && !validExtensions.includes(extension || '')) {
       showToast('Invalid file type. Please upload PDF, Word, PowerPoint, Excel, or CSV.', 'error');
+      setProcessingStatus('idle');
       return;
     }
 
-    setIsProcessing(true);
-    showToast('Uploading document... Please wait.', 'info');
-
     try {
       // 1. Initiate Upload (Async)
+      console.log('Starting upload request...');
       const uploadRes = await businessSetupAPI.uploadKnowledgeDocument(file);
       const taskId = uploadRes.task_id;
 
-      showToast('Document queued. Processing...', 'info');
+      console.log('Upload successful, task ID:', taskId);
+      setProcessingStatus('processing');
+      setProgressMessage('Processing document content...');
 
       // 2. Poll for Status
       const pollInterval = 2000; // 2 seconds
@@ -159,30 +168,42 @@ export const Services: React.FC = () => {
 
       const checkStatus = async () => {
         if (attempts >= maxAttempts) {
-          setIsProcessing(false);
-          showToast('Processing timeout. The file is being processed in background.', 'warning');
+          setProcessingStatus('error');
+          setErrorMessage('Processing timeout. System is busy.');
+          showToast('Processing timeout.', 'warning');
           return;
         }
 
         try {
           const statusRes = await businessSetupAPI.getTaskStatus(taskId);
+          console.log('Poll status:', statusRes.status);
 
           if (statusRes.status === 'SUCCESS') {
-            setIsProcessing(false);
+            setProcessingStatus('success');
             const chunks = statusRes.result?.chunks_count || 0;
-            showToast(`Successfully processed ${file.name}! ${chunks} knowledge chunks added.`, 'success');
+            setProgressMessage(`Done! Added ${chunks} chunks.`);
+            showToast(`Successfully processed ${file.name}!`, 'success');
+
+            // Reset after delay
+            setTimeout(() => {
+              setProcessingStatus('idle');
+              setProgressMessage('');
+            }, 3000);
+
           } else if (statusRes.status === 'FAILURE') {
-            setIsProcessing(false);
-            showToast('Processing failed. Please try again.', 'error');
+            setProcessingStatus('error');
+            setErrorMessage('Processing failed on server.');
+            showToast('Processing failed.', 'error');
           } else {
             // Still pending/started, retrying...
             attempts++;
             setTimeout(checkStatus, pollInterval);
           }
         } catch (err) {
-          // Network error during polling
           console.error('Polling error', err);
-          setIsProcessing(false);
+          // Don't fail immediately on network blip, just retry
+          attempts++;
+          setTimeout(checkStatus, pollInterval);
         }
       };
 
@@ -190,15 +211,22 @@ export const Services: React.FC = () => {
       setTimeout(checkStatus, 1000);
 
     } catch (error: any) {
-      console.error('Upload failed:', error);
-      setIsProcessing(false);
+      console.error('Upload Process Failed:', error);
+      setProcessingStatus('error');
 
-      // Handle "Duplicate File" (409) or other errors
+      // Detailed Error Handling
+      let msg = 'Failed to process document';
       if (error.message?.includes("409")) {
-        showToast(`File '${file.name}' has already been processed.`, 'warning');
+        msg = `File '${file.name}' has already been processed.`;
+        setProcessingStatus('success'); // Treat duplicate as "done" visually but with warning
+        showToast(msg, 'warning');
+      } else if (error.message?.includes("Failed to fetch")) {
+        msg = "Cannot reach server. Check your connection.";
       } else {
-        showToast(error instanceof Error ? error.message : 'Failed to process document', 'error');
+        msg = error instanceof Error ? error.message : msg;
       }
+      setErrorMessage(msg);
+      if (!error.message?.includes("409")) showToast(msg, 'error');
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
@@ -219,20 +247,68 @@ export const Services: React.FC = () => {
       {/* Upload & Add Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* File Upload Action */}
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          className="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-indigo-300 hover:bg-indigo-50/30 transition-all cursor-pointer group"
-        >
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-white border border-slate-200 rounded-lg text-indigo-600 group-hover:border-indigo-500 transition-all shadow-sm">
-              {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold text-slate-900">Upload Knowledge Base</h4>
-              <p className="text-xs text-slate-500 mt-0.5">Upload PDFs, Docs, or Spreadsheets to train your AI.</p>
+        {/* File Upload Action - CONDITIONAL RENDER */}
+        {processingStatus !== 'idle' ? (
+          <div className={`p-4 border rounded-xl transition-all ${processingStatus === 'error' ? 'bg-red-50 border-red-200' :
+              processingStatus === 'success' ? 'bg-green-50 border-green-200' :
+                'bg-indigo-50 border-indigo-200'
+            }`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${processingStatus === 'error' ? 'bg-white text-red-500' :
+                  processingStatus === 'success' ? 'bg-white text-green-500' :
+                    'bg-white text-indigo-500'
+                }`}>
+                {processingStatus === 'uploading' || processingStatus === 'processing' ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : processingStatus === 'success' ? (
+                  <Check size={18} />
+                ) : (
+                  <FileText size={18} />
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-center mb-1">
+                  <h4 className={`text-sm font-semibold ${processingStatus === 'error' ? 'text-red-700' : 'text-slate-900'
+                    }`}>
+                    {processingStatus === 'error' ? 'Upload Failed' : 'Processing Knowledge'}
+                  </h4>
+                  <span className="text-xs font-medium text-slate-500">
+                    {processingStatus === 'uploading' ? '10%' :
+                      processingStatus === 'processing' ? 'Thinking...' :
+                        processingStatus === 'success' ? '100%' : 'Failed'}
+                  </span>
+                </div>
+
+                {/* Progress Bar Track */}
+                <div className="w-full bg-white/50 rounded-full h-1.5 overflow-hidden">
+                  <div className={`h-full rounded-full transition-all duration-500 ${processingStatus === 'error' ? 'bg-red-400 w-full' :
+                      processingStatus === 'success' ? 'bg-green-400 w-full' :
+                        'bg-indigo-500 w-2/3 animate-pulse'
+                    }`} />
+                </div>
+
+                <p className="text-xs text-slate-500 mt-1.5">
+                  {errorMessage || progressMessage}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-indigo-300 hover:bg-indigo-50/30 transition-all cursor-pointer group"
+          >
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-white border border-slate-200 rounded-lg text-indigo-600 group-hover:border-indigo-500 transition-all shadow-sm">
+                <Upload size={18} />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-slate-900">Upload Knowledge Base</h4>
+                <p className="text-xs text-slate-500 mt-0.5">Upload PDFs, Docs, or Spreadsheets to train your AI.</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Manual Entry Action */}
         <div
