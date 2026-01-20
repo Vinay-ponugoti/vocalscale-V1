@@ -1,78 +1,108 @@
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
-import { Mic, Sparkles, CheckCircle2, Clock, Phone } from 'lucide-react';
+import { Mic, CheckCircle2, Phone, GripVertical, Wifi, Battery, Signal } from 'lucide-react';
 
 export const LivePreview = () => {
   const { state } = useBusinessSetup();
   const businessName = state.data.business.business_name || "Your Business";
 
   return (
-    <div className="w-full flex flex-col gap-5 lg:h-[calc(100vh-14rem)] lg:sticky lg:top-8 animate-in slide-in-from-right-8 duration-700">
+    <div className="w-full flex flex-col gap-6 lg:h-[calc(100vh-14rem)] lg:sticky lg:top-8 animate-in slide-in-from-right-8 duration-700">
 
-      {/* Header Card */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/30 overflow-hidden">
+      {/* Device Mockup Container */}
+      <div className="relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-2xl flex flex-col overflow-hidden">
 
-        {/* Title */}
-        <div className="p-5 border-b border-slate-50 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
-              <Mic size={18} strokeWidth={2.5} />
-            </div>
-            <div>
-              <h2 className="text-sm font-black text-slate-900 tracking-tight">AI Voice Preview</h2>
-              <p className="text-[10px] text-slate-400 font-semibold">What your callers will hear</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wide">Active</span>
+        {/* Notch & Status Bar */}
+        <div className="absolute top-0 w-full h-8 bg-gray-800 z-20 flex items-center justify-between px-6 pt-2">
+          <span className="text-[10px] font-medium text-white">9:41</span>
+          <div className="flex items-center gap-1.5">
+            <Signal size={10} className="text-white" />
+            <Wifi size={10} className="text-white" />
+            <Battery size={10} className="text-white" />
           </div>
         </div>
 
-        {/* Preview Content */}
-        <div className="p-6 space-y-5">
+        {/* Screen Content */}
+        <div className="flex-1 bg-slate-900 relative overflow-hidden flex flex-col">
 
-          {/* Greeting Preview */}
-          <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles size={14} className="text-indigo-500" />
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">AI Greeting</span>
+          {/* Background Gradient/Mesh */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 via-purple-900/40 to-slate-900 z-0" />
+
+          {/* Call Info Header */}
+          <div className="mt-16 text-center z-10 px-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-4 animate-pulse">
+              <span className="text-2xl font-bold text-white">{businessName.charAt(0).toUpperCase()}</span>
             </div>
-            <p className="text-sm font-medium text-slate-700 leading-relaxed">
-              "Hi, thanks for calling <span className="text-indigo-600 font-bold">{businessName}</span>. How can I assist you today?"
+            <h3 className="text-xl font-bold text-white tracking-tight line-clamp-1">{businessName}</h3>
+            <p className="text-indigo-200 text-xs mt-1 font-medium">AI Assistant</p>
+            <p className="text-slate-400 text-[10px] mt-2">00:14</p>
+          </div>
+
+          {/* Voice Visualizer (CSS Animation) */}
+          <div className="flex-1 flex items-center justify-center z-10 gap-1.5">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className="w-1.5 bg-indigo-400 rounded-full animate-voice-wave"
+                style={{
+                  height: '20px',
+                  animationDelay: `${i * 0.1}s`,
+                  animationDuration: '1s'
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Transcript Bubble */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl mx-4 mb-8 p-4 z-10 relative">
+            <div className="absolute -top-3 left-4 bg-indigo-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
+              AI Speaking
+            </div>
+            <p className="text-sm font-medium text-slate-100 leading-relaxed text-center">
+              "Hi, thanks for calling <span className="text-indigo-300">{businessName}</span>. How can I assist you today?"
             </p>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
-              <div className="flex items-center gap-2 mb-1">
-                <Phone size={12} className="text-slate-400" />
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Calls Handled</span>
-              </div>
-              <p className="text-lg font-black text-slate-800">24/7</p>
+          {/* Call Controls Mockup */}
+          <div className="pb-12 px-8 flex items-center justify-between z-10">
+            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
+              <Mic size={20} className="text-white" />
             </div>
-            <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
-              <div className="flex items-center gap-2 mb-1">
-                <Clock size={12} className="text-slate-400" />
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Avg Response</span>
-              </div>
-              <p className="text-lg font-black text-slate-800">&lt;1s</p>
+            <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/30">
+              <Phone size={28} className="text-white fill-white rotate-[135deg]" />
+            </div>
+            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
+              <GripVertical size={20} className="text-white" />
             </div>
           </div>
 
         </div>
 
-        {/* Footer Tip */}
-        <div className="px-5 py-4 bg-indigo-50 border-t border-indigo-100">
-          <div className="flex items-start gap-3">
-            <CheckCircle2 size={16} className="text-indigo-500 mt-0.5 shrink-0" />
-            <p className="text-xs font-medium text-indigo-700 leading-relaxed">
-              Your AI agent updates in real-time as you configure your business details.
-            </p>
-          </div>
+        {/* Device Chin */}
+        <div className="h-1 bg-gray-800 w-full absolute bottom-0 z-20"></div>
+        <div className="h-1 w-1/3 bg-white/20 rounded-full absolute bottom-2 left-1/2 -translate-x-1/2 z-30"></div>
+      </div>
+
+      {/* Info Card below phone */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex items-start gap-3 max-w-[300px] mx-auto">
+        <CheckCircle2 size={18} className="text-emerald-500 mt-0.5 shrink-0" />
+        <div>
+          <h4 className="text-sm font-bold text-slate-900">Real-time Preview</h4>
+          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            Updates instantly as you modify your business identity and settings.
+          </p>
         </div>
       </div>
 
+      <style>{`
+        @keyframes voice-wave {
+            0%, 100% { height: 10px; opacity: 0.5; }
+            50% { height: 40px; opacity: 1; }
+        }
+        .animate-voice-wave {
+            animation: voice-wave 1.2s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 };
+
