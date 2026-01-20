@@ -113,11 +113,11 @@ const BusinessSetupContent = () => {
           </div>
 
           {/* Split View Content */}
-          <div className="flex-1 flex overflow-hidden w-full relative">
+          <div className="flex-1 flex flex-col md:flex-row overflow-hidden w-full relative">
 
-            {/* Left Panel: Navigation */}
-            <div className="w-full md:w-[320px] lg:w-[360px] border-r border-slate-100 flex flex-col bg-slate-50/30 overflow-y-auto shrink-0 py-6">
-              <div className="px-4 space-y-1">
+            {/* Desktop Sidebar: Navigation */}
+            <div className="hidden md:flex w-[260px] lg:w-[320px] 2xl:w-[360px] border-r border-slate-100 flex-col bg-slate-50/30 overflow-y-auto shrink-0 py-6">
+              <div className="px-3 lg:px-4 space-y-1">
                 {menuItems.map((item) => {
                   const isActive = activeSection === item.id;
                   const Icon = item.icon;
@@ -125,19 +125,19 @@ const BusinessSetupContent = () => {
                     <button
                       key={item.id}
                       onClick={() => setActiveSection(item.id)}
-                      className={`w-full flex items-start text-left gap-4 p-4 rounded-xl transition-all duration-200 border ${isActive
-                        ? 'bg-white border-slate-200 shadow-sm'
-                        : 'border-transparent hover:bg-slate-100/50 hover:border-slate-100 text-slate-500'
+                      className={`w-full flex items-start text-left gap-3 lg:gap-4 p-3 lg:p-4 rounded-xl transition-all duration-200 border ${isActive
+                          ? 'bg-white border-slate-200 shadow-sm'
+                          : 'border-transparent hover:bg-slate-100/50 hover:border-slate-100 text-slate-500'
                         }`}
                     >
                       <div className={`p-2 rounded-lg shrink-0 ${isActive ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-400 group-hover:text-slate-500'}`}>
                         <Icon size={18} />
                       </div>
-                      <div>
-                        <span className={`block text-sm font-semibold tracking-tight ${isActive ? 'text-slate-900' : 'text-slate-600'}`}>
+                      <div className="min-w-0">
+                        <span className={`block text-sm font-semibold tracking-tight truncate ${isActive ? 'text-slate-900' : 'text-slate-600'}`}>
                           {item.label}
                         </span>
-                        <span className="block text-xs text-slate-500 mt-0.5 leading-relaxed font-medium">
+                        <span className="block text-xs text-slate-500 mt-0.5 leading-relaxed font-medium line-clamp-1">
                           {item.desc}
                         </span>
                       </div>
@@ -147,14 +147,37 @@ const BusinessSetupContent = () => {
               </div>
             </div>
 
+            {/* Mobile Navigation: Horizontal Tabs */}
+            <div className="md:hidden w-full bg-white border-b border-slate-100 overflow-x-auto no-scrollbar">
+              <div className="flex items-center gap-2 p-2 min-w-max">
+                {menuItems.map((item) => {
+                  const isActive = activeSection === item.id;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveSection(item.id)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-all text-sm font-semibold whitespace-nowrap ${isActive
+                          ? 'bg-indigo-50 border-indigo-100 text-indigo-700'
+                          : 'bg-white border-transparent text-slate-600 hover:bg-slate-50'
+                        }`}
+                    >
+                      <Icon size={16} className={isActive ? 'text-indigo-600' : 'text-slate-400'} />
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Right Panel: Active Form */}
             <div className="flex-1 bg-white overflow-y-auto custom-scrollbar relative">
-              <div className="max-w-4xl mx-auto p-8 lg:p-12 animate-in fade-in slide-in-from-right-4 duration-300 focus-visible:outline-none">
+              <div className="max-w-4xl mx-auto p-4 md:p-8 lg:p-12 animate-in fade-in slide-in-from-right-4 duration-300 focus-visible:outline-none">
 
                 {activeSection === 'identity' && (
                   <div className="space-y-6">
-                    <div className="border-b border-slate-100 pb-6 mb-6">
-                      <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight text-slate-900">Business Identity</h2>
+                    <div className="border-b border-slate-100 pb-4 md:pb-6 mb-4 md:mb-6">
+                      <h2 className="scroll-m-20 text-xl md:text-2xl font-semibold tracking-tight text-slate-900">Business Identity</h2>
                       <p className="text-sm text-slate-500 mt-1">Define who the AI represents during calls.</p>
                     </div>
                     <BusinessDetails />
@@ -163,8 +186,8 @@ const BusinessSetupContent = () => {
 
                 {activeSection === 'availability' && (
                   <div className="space-y-6">
-                    <div className="border-b border-slate-100 pb-6 mb-6">
-                      <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight text-slate-900">Availability</h2>
+                    <div className="border-b border-slate-100 pb-4 md:pb-6 mb-4 md:mb-6">
+                      <h2 className="scroll-m-20 text-xl md:text-2xl font-semibold tracking-tight text-slate-900">Availability</h2>
                       <p className="text-sm text-slate-500 mt-1">Configure operating hours and holiday handling.</p>
                     </div>
                     <BusinessHoursSettings />
@@ -173,8 +196,8 @@ const BusinessSetupContent = () => {
 
                 {activeSection === 'services' && (
                   <div className="space-y-6">
-                    <div className="border-b border-slate-100 pb-6 mb-6">
-                      <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight text-slate-900">Service Catalog</h2>
+                    <div className="border-b border-slate-100 pb-4 md:pb-6 mb-4 md:mb-6">
+                      <h2 className="scroll-m-20 text-xl md:text-2xl font-semibold tracking-tight text-slate-900">Service Catalog</h2>
                       <p className="text-sm text-slate-500 mt-1">Manage services and knowledge base documents.</p>
                     </div>
                     <Services />
