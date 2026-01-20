@@ -1,100 +1,131 @@
-import { Bot, BarChart3, Shield, Calendar, Globe, Smartphone } from 'lucide-react';
+import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 export function Features() {
   const features = [
     {
-      icon: Bot,
+      icon: BrainCircuit,
       title: 'AI Receptionist',
       description: 'Natural, human-like conversations that handle inquiries and route calls intelligently—available 24/7.',
-      psychology: 'Reliability'
+      className: 'md:col-span-8 md:row-span-2 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent',
+      iconBg: 'bg-blue-500/10',
+      iconColor: 'text-blue-600',
     },
     {
-      icon: Calendar,
+      icon: Timer,
       title: 'Smart Scheduling',
-      description: 'Automated booking that syncs with your calendar. No more back-and-forth emails or missed calls.',
-      psychology: 'Efficiency'
+      description: 'Automated booking that syncs with your calendar.',
+      className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent',
+      iconBg: 'bg-indigo-500/10',
+      iconColor: 'text-indigo-600',
     },
     {
-      icon: BarChart3,
+      icon: Activity,
       title: 'Deep Analytics',
-      description: 'Insights into call patterns and customer sentiment. Make data-driven decisions with ease.',
-      psychology: 'Clarity'
+      description: 'Insights into call patterns and sentiment.',
+      className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-violet-500/10 via-transparent to-transparent',
+      iconBg: 'bg-violet-500/10',
+      iconColor: 'text-violet-600',
     },
     {
-      icon: Shield,
-      title: 'Bank-Level Security',
-      description: 'Your customer data is protected with SOC 2 certified encryption and the highest security standards.',
-      psychology: 'Safety'
-    },
-    {
-      icon: Globe,
+      icon: Languages,
       title: 'Global Scale',
-      description: 'Speak to your customers in over 50 languages. Provide a local experience, everywhere.',
-      psychology: 'Growth'
+      description: 'Speak to customers in over 50 languages. Provide a local experience, everywhere.',
+      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-tr from-cyan-500/10 via-transparent to-transparent',
+      iconBg: 'bg-cyan-500/10',
+      iconColor: 'text-cyan-600',
+    },
+    {
+      icon: ShieldCheck,
+      title: 'Bank-Level Security',
+      description: 'Protected with SOC 2 certified encryption.',
+      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-bl from-emerald-500/10 via-transparent to-transparent',
+      iconBg: 'bg-emerald-500/10',
+      iconColor: 'text-emerald-600',
     },
     {
       icon: Smartphone,
       title: 'Mobile Control',
       description: 'Manage your agent and review transcripts from any device, anywhere in the world.',
-      psychology: 'Freedom'
+      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent',
+      iconBg: 'bg-amber-500/10',
+      iconColor: 'text-amber-600',
     }
   ];
 
   return (
-    <section id="features" className="py-24 md:py-40 px-6 relative overflow-hidden bg-white">
-      {/* --- Minimalist Background --- */}
-      <div className="absolute inset-0 z-0 bg-grid-warm [mask-image:linear-gradient(to_bottom,transparent,black,transparent)] opacity-30"></div>
-      
-      {/* Subtle Glows */}
-      <div className="absolute top-[20%] right-[-10%] w-[60%] md:w-[40%] h-[40%] rounded-full bg-brand-electric/5 blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[20%] left-[-10%] w-[50%] md:w-[30%] h-[30%] rounded-full bg-blue-electric/5 blur-[100px] pointer-events-none"></div>
+    <section id="features" className="py-16 md:py-32 px-4 md:px-6 relative overflow-hidden bg-transparent">
+      {/* Background elements */}
+      <div className="absolute inset-0 z-0 bg-grid-slate-200/[0.02] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-8 md:gap-12">
-          <div className="max-w-2xl animate-fade-in">
-            <span className="text-brand-electric font-black text-[11px] md:text-[13px] uppercase tracking-[0.3em] md:tracking-[0.4em] mb-4 md:mb-6 block">
-              The Platform
-            </span>
-            <h2 className="font-serif text-4xl sm:text-6xl md:text-7xl text-brand-ink leading-[1.1] md:leading-[0.95] tracking-tight">
-              Powerful tools for <br className="hidden sm:block" />
-              <span className="italic">every business.</span>
-            </h2>
-          </div>
-          <p className="text-base md:text-lg text-brand-muted max-w-sm mb-2 font-medium leading-relaxed animate-fade-in" style={{ animationDelay: '200ms' }}>
-            We’ve built everything you need to scale your customer interaction without losing the human touch.
-          </p>
+        <div className="text-center mb-16 md:mb-32">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8"
+          >
+            <Sparkles className="h-4 w-4 text-blue-400" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">Capabilities</span>
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-white mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
+          >
+            Everything you need <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 italic tracking-tight">to scale.</span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-base md:text-xl text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed"
+          >
+            We've combined state-of-the-art Voice AI with business-grade tools to help you provide world-class service, 24/7.
+          </motion.p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1px bg-brand-ink/5 border border-brand-ink/5 rounded-[32px] md:rounded-[48px] overflow-hidden shadow-2xl shadow-brand-ink/5 animate-slide-up">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6">
           {features.map((feature, index) => (
-            <div 
+            <motion.div
               key={index}
-              className="group relative p-8 md:p-12 bg-white hover:bg-brand-warm transition-all duration-700 cursor-pointer overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className={cn(
+                "group relative overflow-hidden rounded-[2rem] border border-white/5 bg-slate-900/40 backdrop-blur-xl p-6 md:p-8 lg:p-10 transition-all duration-500 hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10",
+                feature.className
+              )}
             >
-              <div className="relative z-10">
-                <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-brand-ink/5 flex items-center justify-center mb-8 md:mb-10 group-hover:bg-brand-electric group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
-                  <feature.icon className="w-7 h-7 md:w-8 md:h-8 text-brand-ink group-hover:text-white transition-colors" />
+              <div className="relative z-10 h-full flex flex-col">
+                <div className={cn(
+                  "w-12 md:w-14 h-12 md:h-14 rounded-2xl flex items-center justify-center mb-6 md:mb-8 transition-transform group-hover:scale-110 duration-500 bg-gradient-to-br from-white/10 to-transparent border border-white/10 shadow-inner"
+                )}>
+                  <feature.icon className={cn("w-6 md:w-7 h-6 md:h-7 text-blue-400")} strokeWidth={1.5} />
                 </div>
-                
-                <span className="text-[9px] md:text-[10px] font-black text-brand-electric uppercase tracking-[0.2em] md:tracking-[0.3em] mb-3 md:mb-4 block">
-                  {feature.psychology}
-                </span>
-                
-                <h3 className="text-xl md:text-2xl font-black text-brand-ink mb-4 md:mb-6 tracking-tight group-hover:text-brand-electric transition-colors">
-                  {feature.title}
-                </h3>
-                
-                <p className="text-brand-muted font-medium leading-relaxed text-sm md:text-[15px] group-hover:text-brand-ink transition-colors duration-500">
-                  {feature.description}
-                </p>
+
+                <div className="mt-auto">
+                  <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white mb-3 md:mb-4">
+                    {feature.title}
+                  </h3>
+                  <p className="text-slate-400 font-medium text-sm md:text-base leading-relaxed group-hover:text-slate-300 transition-colors mt-0">
+                    {feature.description}
+                  </p>
+                </div>
               </div>
 
-              {/* Noise texture on hover */}
-              <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-[0.3] pointer-events-none transition-opacity duration-700 bg-noise mix-blend-soft-light"></div>
-              
-              {/* Intentional reveal line */}
-              <div className="absolute bottom-0 left-0 w-0 h-1 bg-brand-electric transition-all duration-700 group-hover:w-full"></div>
-            </div>
+              {/* Hover highlight effect */}
+              <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_80%)]" />
+            </motion.div>
           ))}
         </div>
       </div>

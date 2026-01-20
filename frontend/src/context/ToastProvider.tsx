@@ -1,4 +1,6 @@
 import React, { useState, useCallback, type ReactNode } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, AlertCircle, Info, XCircle, X } from 'lucide-react';
 import { ToastContext, type Toast } from './ToastContext';
 import { useToast } from '../hooks/useToast';
 
@@ -9,17 +11,22 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);
 
-  const showToast = useCallback((message: string, type: Toast['type'] = 'info', duration = 3000) => {
+  const showToast = useCallback((message: string, type: Toast['type'] = 'info', duration = 4000) => {
     const id = Date.now().toString();
     const newToast: Toast = { id, message, type, duration };
-    
+
     setToasts(prev => {
       // Prevent exact duplicate messages from appearing multiple times simultaneously
       const isDuplicate = prev.some(t => t.message === message);
       if (isDuplicate) return prev;
-      return [...prev, newToast];
+      // Limit total toasts to 3
+      const nextToasts = [...prev, newToast];
+      if (nextToasts.length > 3) {
+        return nextToasts.slice(1);
+      }
+      return nextToasts;
     });
-    
+
     if (duration > 0) {
       setTimeout(() => {
         removeToast(id);
@@ -39,75 +46,94 @@ const ToastContainer: React.FC = () => {
   const { toasts, removeToast } = useToast();
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
-      {toasts.map(toast => (
-        <ToastItem
-          key={toast.id}
-          toast={toast}
-          onClose={() => removeToast(toast.id)}
-        />
-      ))}
+    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none w-full max-w-sm">
+      <AnimatePresence mode="popLayout">
+        {toasts.map(toast => (
+          <ToastItem
+            key={toast.id}
+            toast={toast}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </AnimatePresence>
     </div>
   );
 };
 
 const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onClose }) => {
-  const getToastStyles = () => {
-    switch (toast.type) {
-      case 'success':
-        return 'bg-green-500 border-green-600 text-white';
-      case 'error':
-        return 'bg-red-500 border-red-600 text-white';
-      case 'warning':
-        return 'bg-yellow-500 border-yellow-600 text-white';
-      default:
-        return 'bg-blue-500 border-blue-600 text-white';
+  const config = {
+    success: {
+      bg: 'bg-white',
+      border: 'border-emerald-100',
+      icon: <CheckCircle2 className="w-5 h-5 text-emerald-500" />,
+      glow: 'shadow-[0_8px_24px_-4px_rgba(16,185,129,0.12)]',
+      progress: 'bg-emerald-500'
+    },
+    error: {
+      bg: 'bg-white',
+      border: 'border-rose-100',
+      icon: <XCircle className="w-5 h-5 text-rose-500" />,
+      glow: 'shadow-[0_8px_24px_-4px_rgba(244,63,94,0.12)]',
+      progress: 'bg-rose-500'
+    },
+    warning: {
+      bg: 'bg-white',
+      border: 'border-amber-100',
+      icon: <AlertCircle className="w-5 h-5 text-amber-500" />,
+      glow: 'shadow-[0_8px_24px_-4px_rgba(245,158,11,0.12)]',
+      progress: 'bg-amber-500'
+    },
+    info: {
+      bg: 'bg-white',
+      border: 'border-blue-100',
+      icon: <Info className="w-5 h-5 text-blue-500" />,
+      glow: 'shadow-[0_8px_24px_-4px_rgba(59,130,246,0.12)]',
+      progress: 'bg-blue-500'
     }
   };
 
-  const getIcon = () => {
-    switch (toast.type) {
-      case 'success':
-        return (
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-        );
-      case 'error':
-        return (
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          </svg>
-        );
-      case 'warning':
-        return (
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-        );
-      default:
-        return (
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-          </svg>
-        );
-    }
-  };
+  const style = config[toast.type];
 
   return (
-    <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg animate-in slide-in-from-right-full duration-300 ${getToastStyles()}`}>
-      <div className="shrink-0">
-        {getIcon()}
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20, scale: 0.9, filter: 'blur(8px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, scale: 0.9, filter: 'blur(12px)', transition: { duration: 0.2 } }}
+      className="pointer-events-auto"
+    >
+      <div className={`relative overflow-hidden flex items-center gap-4 px-5 py-4 rounded-[1.25rem] border ${style.bg} ${style.border} ${style.glow} group transition-all duration-300 hover:scale-[1.02]`}>
+        {/* Subtle Background Glow */}
+        <div className={`absolute inset-0 opacity-[0.03] ${style.progress} pointer-events-none`} />
+
+        <div className="shrink-0 relative">
+          <div className="absolute inset-0 blur-md opacity-20 bg-current scale-150" />
+          {style.icon}
+        </div>
+
+        <div className="flex-1">
+          <p className="text-[14px] font-bold text-slate-900 tracking-tight leading-snug">
+            {toast.message}
+          </p>
+        </div>
+
+        <button
+          onClick={onClose}
+          className="shrink-0 w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:text-slate-900 hover:bg-slate-100"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {/* Progress Bar Timer */}
+        {toast.duration && toast.duration > 0 && (
+          <motion.div
+            initial={{ scaleX: 1 }}
+            animate={{ scaleX: 0 }}
+            transition={{ duration: toast.duration / 1000, ease: "linear" }}
+            className={`absolute bottom-0 left-0 right-0 h-[3px] origin-left ${style.progress} opacity-40`}
+          />
+        )}
       </div>
-      <p className="text-sm font-bold tracking-tight">{toast.message}</p>
-      <button
-        onClick={onClose}
-        className="ml-auto shrink-0 p-1 hover:bg-white/20 rounded-lg transition-colors"
-      >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
-      </button>
-    </div>
+    </motion.div>
   );
 };

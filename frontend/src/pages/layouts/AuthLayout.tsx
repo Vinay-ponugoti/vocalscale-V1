@@ -1,117 +1,105 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => (
-  <div className="relative min-h-screen w-full overflow-hidden bg-slate-50 font-sans antialiased">
+  <div className="relative min-h-screen w-full overflow-hidden bg-white font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
 
-    {/* 1. Animated gradient base (now uses 3-stop gradient for smoother banding) */}
-    <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-white to-indigo-50 animate-gradient-flow" />
-
-    {/* 2. Premium noise (opacity dropped to 0.025 so it’s only felt, not seen) */}
-    <div className="absolute inset-0 pointer-events-none opacity-[0.025] noise-bg" />
-
-    {/* 3. Blobs with hardware-accelerated blur() + will-change */}
-    <div className="absolute inset-0 isolate">
+    {/* 21st Dev Technical Background */}
+    <div className="fixed inset-0 z-0 pointer-events-none">
+      {/* Subtle Technical Grid */}
       <div
-        className="absolute w-[520px] h-[520px] rounded-full blur-[140px] bg-sky-400/30 will-change-transform animate-voice-pulse"
-        style={{ top: '-18%', left: '-18%' }}
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
+          backgroundSize: '40px 40px',
+        }}
       />
-      <div
-        className="absolute w-[620px] h-[620px] rounded-full blur-[160px] bg-indigo-500/30 will-change-transform animate-drift-slow"
-        style={{ bottom: '-20%', right: '-15%' }}
+
+      {/* Radial Spotlight */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(59,130,246,0.05),transparent_70%)]" />
+
+      {/* Decorative Shimmering Blobs (Very Subtle) */}
+      <motion.div
+        animate={{
+          scale: [1, 1.1, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-400/10 blur-[100px] rounded-full"
       />
-      <div
-        className="absolute w-[420px] h-[420px] rounded-full blur-[120px] bg-blue-400/25 will-change-transform animate-drift-fast"
-        style={{ top: '35%', left: '55%' }}
+      <motion.div
+        animate={{
+          scale: [1.1, 1, 1.1],
+          opacity: [0.2, 0.4, 0.2],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-indigo-400/10 blur-[100px] rounded-full"
       />
     </div>
 
-    {/* 4. Subtle grid (now scales with rem instead of px, crisper on retina) */}
-    <div
-      className="absolute inset-0 pointer-events-none opacity-[0.04]"
-      style={{
-        backgroundImage:
-          'linear-gradient(to right, #94a3b8 0.05rem, transparent 0.05rem), linear-gradient(to bottom, #94a3b8 0.05rem, transparent 0.05rem)',
-        backgroundSize: '2.625rem 2.625rem',
-      }}
-    />
-
-    {/* 5. Layout container (added backdrop-blur safety for ultra-light content) */}
+    {/* Content Container */}
     <div className="relative z-10 flex min-h-screen flex-col">
-      {/* 6. Header (logo now has a subtle glass back-plate so it never clips on white) */}
-      <header className="absolute top-0 left-0 z-50 flex w-full items-center px-6 py-5 sm:px-8">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 flex items-center justify-center bg-brand-ink rounded-2xl shadow-lg group-hover:bg-brand-electric transition-all duration-500 group-hover:-rotate-6 group-hover:scale-110">
-            <img src="/logo-icon1.2.png" alt="Vocal Scale Logo" className="w-6 h-6 object-contain brightness-0 invert" />
-          </div>
-          <span className="text-xl font-black text-brand-ink tracking-tight group-hover:text-brand-electric transition-colors uppercase">
-            Vocal Scale
-          </span>
+      {/* Header */}
+      <header className="w-full flex items-center justify-between px-6 py-8 md:px-12">
+        <Link to="/" className="group">
+          <img
+            src="/logo.png"
+            alt="VocalScale"
+            className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105 duration-500"
+          />
         </Link>
+        <div className="hidden md:block">
+          <Link to="/help" className="text-xs font-bold text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-widest">
+            Need Help?
+          </Link>
+        </div>
       </header>
 
-      {/* 7. Center content (min-h-[calc(100vh-4rem)] prevents footer-jump on short pages) */}
-      <main className="flex flex-1 items-start md:items-center justify-center px-4 sm:px-6 pt-24 pb-8">
-        {children}
+      {/* Main Form Area */}
+      <main className="flex flex-1 items-center justify-center p-6 pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full max-w-[440px]"
+        >
+          {children}
+        </motion.div>
       </main>
+
+      {/* Simplified Footer */}
+      <footer className="w-full py-8 px-6 text-center border-t border-slate-100 bg-white/50 backdrop-blur-sm">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+          &copy; {new Date().getFullYear()} VocalScale AI Platform. Secure & Encrypted.
+        </p>
+      </footer>
     </div>
 
-    {/* 8. All animations kept, just prefixed for older Safari & reduced-motion safe */}
+    {/* Custom Styles for Noise */}
     <style>{`
-      @keyframes gradientFlow {
-        0%   { background-position: 0% 50%; }
-        50%  { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      .animate-gradient-flow {
-        background-size: 200% 200%;
-        animation: gradientFlow 30s ease infinite;
-      }
-
-      @keyframes voicePulse {
-        0%   { transform: scale(1) translate(0, 0); opacity: 0.8; }
-        50%  { transform: scale(1.08) translate(30px, 20px); opacity: 1; }
-        100% { transform: scale(1) translate(0, 0); opacity: 0.8; }
-      }
-      .animate-voice-pulse {
-        animation: voicePulse 22s ease-in-out infinite;
-      }
-
-      @keyframes driftSlow {
-        0%   { transform: translate(0, 0); }
-        50%  { transform: translate(-40px, 60px); }
-        100% { transform: translate(0, 0); }
-      }
-      .animate-drift-slow {
-        animation: driftSlow 35s ease-in-out infinite;
-      }
-
-      @keyframes driftFast {
-        0%   { transform: translate(0, 0); }
-        50%  { transform: translate(50px, -40px); }
-        100% { transform: translate(0, 0); }
-      }
-      .animate-drift-fast {
-        animation: driftFast 26s ease-in-out infinite;
-      }
-
-      .noise-bg {
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .animate-gradient-flow,
-        .animate-voice-pulse,
-        .animate-drift-slow,
-        .animate-drift-fast {
-          animation: none;
-        }
+      .noise-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        opacity: 0.015;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       }
     `}</style>
+    <div className="noise-overlay" />
   </div>
 );
 

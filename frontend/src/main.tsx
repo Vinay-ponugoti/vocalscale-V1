@@ -36,7 +36,7 @@ createRoot(document.getElementById('root')!).render(
             <App />
           </AuthProvider>
         </ToastProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </ErrorBoundary>
   </StrictMode>,

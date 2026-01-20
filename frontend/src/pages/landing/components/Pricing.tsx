@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Check, Zap, Star } from 'lucide-react';
+import { Check, Zap, Star, Sparkles, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 
 export function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
@@ -21,7 +24,7 @@ export function Pricing() {
       cta: 'Start 14-day free trial',
       popular: false,
       icon: Zap,
-      psychology: 'Essential'
+      color: 'blue'
     },
     {
       name: 'Professional',
@@ -39,145 +42,150 @@ export function Pricing() {
         'CRM integrations'
       ],
       cta: 'Start 14-day free trial',
-      popular: false,
+      popular: true,
       icon: Star,
-      psychology: 'Standard'
+      color: 'indigo'
     }
   ];
 
   return (
-    <section id="pricing" className="py-24 md:py-40 px-6 relative overflow-hidden bg-white">
-      {/* --- Minimalist Background --- */}
-      <div className="absolute inset-0 z-0 bg-grid-warm [mask-image:linear-gradient(to_bottom,transparent,black,transparent)] opacity-30"></div>
-      
-      {/* Subtle Glows */}
-      <div className="absolute top-[30%] left-[-10%] w-[60%] md:w-[40%] h-[40%] rounded-full bg-rose-500/5 blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[20%] right-[-10%] w-[50%] md:w-[35%] h-[35%] rounded-full bg-brand-electric/5 blur-[120px] pointer-events-none"></div>
+    <section id="pricing" className="py-16 md:py-32 px-4 md:px-6 relative overflow-hidden bg-transparent">
+      {/* Background decorations */}
+      <div className="absolute inset-0 z-0 bg-grid-slate-200/[0.02] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center mb-16 md:mb-32 animate-fade-in">
-          <span className="text-brand-electric font-black text-[11px] md:text-[13px] uppercase tracking-[0.3em] md:tracking-[0.4em] mb-4 md:mb-6 block">
-            The Investment
-          </span>
-          <h2 className="font-serif text-4xl sm:text-6xl md:text-7xl text-brand-ink leading-[1.1] md:leading-[0.95] tracking-tight mb-6 md:mb-8">
-            Simple plans for <br className="hidden sm:block" />
-            <span className="italic text-brand-electric">growing teams.</span>
-          </h2>
-          <p className="text-base md:text-lg text-brand-muted max-w-2xl mx-auto mb-8 md:mb-12 font-medium leading-relaxed">
-            Choose the plan that fits your current needs. Scale up or down at any time with no hidden fees.
-          </p>
+        <div className="text-center mb-12 md:mb-24">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8"
+          >
+            <Sparkles className="h-4 w-4 text-blue-400 fill-blue-400/20" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">The Investment</span>
+          </motion.div>
 
-          <div className="inline-flex items-center gap-1.5 md:gap-2 p-1 md:p-1.5 bg-brand-warm rounded-2xl md:rounded-3xl border border-brand-ink/5 shadow-inner">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-white mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
+          >
+            Simple plans for <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 italic tracking-tight">growing teams.</span>
+          </motion.h2>
+
+          {/* Pricing Toggle */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="flex items-center justify-center gap-4 mb-12"
+          >
+            <span className={cn("text-sm font-black transition-colors uppercase tracking-widest", !isAnnual ? "text-white" : "text-slate-500")}>Monthly</span>
             <button
-              onClick={() => setIsAnnual(false)}
-              className={`px-6 md:px-10 py-2.5 md:py-3 rounded-xl md:rounded-2xl transition-all duration-500 text-[12px] md:text-[14px] font-black uppercase tracking-widest ${
-                !isAnnual
-                  ? 'bg-white text-brand-ink shadow-lg shadow-brand-ink/5'
-                  : 'text-brand-muted hover:text-brand-ink'
-              }`}
+              onClick={() => setIsAnnual(!isAnnual)}
+              className="relative w-16 h-8 rounded-full bg-white/5 border border-white/10 p-1 transition-colors hover:border-blue-400"
             >
-              Monthly
+              <motion.div
+                animate={{ x: isAnnual ? 32 : 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="w-6 h-6 rounded-full bg-blue-500 shadow-sm"
+              />
             </button>
-            <button
-              onClick={() => setIsAnnual(true)}
-              className={`px-6 md:px-10 py-2.5 md:py-3 rounded-xl md:rounded-2xl transition-all duration-500 text-[12px] md:text-[14px] font-black uppercase tracking-widest flex items-center gap-2 md:gap-3 ${
-                isAnnual
-                  ? 'bg-white text-brand-ink shadow-lg shadow-brand-ink/5'
-                  : 'text-brand-muted hover:text-brand-ink'
-              }`}
-            >
-              Annual
-              <span className="px-1.5 md:px-2 py-0.5 bg-brand-electric text-white rounded-md text-[8px] md:text-[9px] font-black">
-                -20%
+            <div className="flex items-center gap-2">
+              <span className={cn("text-sm font-black transition-colors uppercase tracking-widest", isAnnual ? "text-white" : "text-slate-500")}>Annual</span>
+              <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-tighter rounded-md border border-blue-500/20">
+                -20% Off
               </span>
-            </button>
-          </div>
+            </div>
+          </motion.div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
-            <div
-              key={index}
-              className={`group relative p-8 md:p-12 rounded-[32px] md:rounded-[48px] transition-all duration-700 animate-slide-up overflow-hidden border ${
-                plan.popular 
-                  ? 'bg-brand-ink text-white shadow-[0_48px_96px_-16px_rgba(26,26,26,0.15)] md:scale-105 z-10 border-brand-ink' 
-                  : 'bg-white border-brand-ink/5 hover:border-brand-ink/20'
-              }`}
-              style={{ animationDelay: `${index * 150}ms` }}
+            <motion.div
+              key={plan.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className={cn(
+                "group relative p-1 rounded-[2.5rem] transition-all duration-500",
+                plan.popular ? "bg-gradient-to-b from-blue-500/20 to-indigo-500/20 shadow-2xl shadow-blue-500/10" : "bg-white/5"
+              )}
             >
-              <div className="relative z-10">
+              <div className="relative bg-slate-900/60 backdrop-blur-xl rounded-[2.4rem] p-8 md:p-12 h-full flex flex-col border border-white/5">
                 {plan.popular && (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-electric text-white text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-8 md:mb-10 shadow-lg shadow-brand-electric/20">
-                    <Star className="w-3.5 h-3.5 fill-current" />
-                    Recommended
+                  <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg shadow-blue-500/30">
+                    <Star className="w-3 h-3 fill-current" />
+                    Most Popular
                   </div>
                 )}
-                
-                <div className="flex items-center justify-between mb-8 md:mb-10">
-                  <div>
-                    <h3 className={`text-2xl md:text-3xl font-black mb-2 tracking-tight ${plan.popular ? 'text-white' : 'text-brand-ink'}`}>
-                      {plan.name}
-                    </h3>
-                    <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] ${plan.popular ? 'text-brand-electric' : 'text-brand-electric'}`}>
-                      {plan.psychology}
-                    </span>
+
+                <div className="mb-8">
+                  <div className={cn(
+                    "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-500 bg-gradient-to-br from-white/10 to-transparent border border-white/10 shadow-inner",
+                    plan.popular ? "text-blue-400" : "text-slate-400"
+                  )}>
+                    <plan.icon className="w-6 h-6" strokeWidth={1.5} />
                   </div>
-                  <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center bg-brand-warm ${plan.popular ? 'bg-white/10' : 'bg-brand-ink/5'} transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3`}>
-                    <plan.icon className={`w-7 h-7 md:w-8 md:h-8 ${plan.popular ? 'text-white' : 'text-brand-ink'}`} />
-                  </div>
+                  <h3 className="text-3xl font-black tracking-tight text-white mb-2">{plan.name}</h3>
+                  <p className="text-slate-400 font-medium text-sm leading-relaxed">{plan.description}</p>
                 </div>
 
-                <div className="flex items-baseline gap-2 mb-8 md:mb-10">
-                  <span className={`text-5xl md:text-7xl font-black tracking-tighter ${plan.popular ? 'text-white' : 'text-brand-ink'}`}>
-                    ${isAnnual ? plan.annualPrice : plan.monthlyPrice}
-                  </span>
-                  <span className={`text-base md:text-lg font-bold ${plan.popular ? 'text-white/40' : 'text-brand-muted'}`}>/mo</span>
+                <div className="mb-8 md:mb-10">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl md:text-6xl font-black tracking-tighter text-white">$</span>
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={isAnnual ? 'annual' : 'monthly'}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="text-5xl md:text-7xl font-black tracking-tighter text-white"
+                      >
+                        {isAnnual ? plan.annualPrice : plan.monthlyPrice}
+                      </motion.span>
+                    </AnimatePresence>
+                    <span className="text-slate-500 font-bold ml-1 text-base md:text-lg">/mo</span>
+                  </div>
+                  {isAnnual && (
+                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mt-1">Billed annually</p>
+                  )}
                 </div>
 
-                <p className={`mb-8 md:mb-12 text-sm md:text-[16px] leading-relaxed font-medium ${plan.popular ? 'text-white/60' : 'text-brand-muted'}`}>
-                  {plan.description}
-                </p>
-
-                <div className="space-y-4 md:space-y-6 mb-8 md:mb-12">
+                <div className="space-y-4 mb-10 flex-grow">
                   {plan.features.map((feature) => (
-                    <div key={feature} className="flex items-center gap-3 md:gap-4">
-                      <div className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        plan.popular ? 'bg-brand-electric' : 'bg-brand-warm'
-                      }`}>
-                        <Check className={`w-3 h-3 md:w-3.5 md:h-3.5 ${plan.popular ? 'text-white' : 'text-brand-electric'}`} />
+                    <div key={feature} className="flex items-start gap-3">
+                      <div className={cn(
+                        "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+                        plan.popular ? "bg-blue-500/20 text-blue-400" : "bg-white/5 text-slate-500"
+                      )}>
+                        <Check className="w-3 h-3 stroke-[3px]" />
                       </div>
-                      <span className={`text-sm md:text-[15px] font-medium ${plan.popular ? 'text-white/80' : 'text-brand-ink'}`}>
-                        {feature}
-                      </span>
+                      <span className="text-[15px] font-medium text-slate-300">{feature}</span>
                     </div>
                   ))}
                 </div>
 
-                <button className={`w-full py-5 md:py-6 rounded-2xl md:rounded-3xl font-black text-sm md:text-[15px] uppercase tracking-widest transition-all duration-500 active:scale-[0.98] ${
-                  plan.popular 
-                    ? 'bg-brand-electric text-white hover:bg-white hover:text-brand-ink shadow-xl shadow-brand-electric/20' 
-                    : 'bg-brand-ink text-white hover:bg-brand-electric'
-                }`}>
-                  {plan.cta}
-                </button>
+                <Button
+                  asChild
+                  size="lg"
+                  className={cn(
+                    "w-full rounded-2xl h-14 text-base font-black transition-all active:scale-95 shadow-xl shadow-blue-500/10",
+                    plan.popular ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-white/10 hover:bg-white/20 text-white"
+                  )}
+                >
+                  <a href="/signup">{plan.cta}</a>
+                </Button>
               </div>
-
-              {/* Noise texture on hover */}
-              <div className={`absolute inset-0 z-0 opacity-0 group-hover:opacity-[0.1] pointer-events-none transition-opacity duration-700 bg-noise mix-blend-soft-light ${plan.popular ? 'opacity-[0.05]' : ''}`}></div>
-            </div>
+            </motion.div>
           ))}
-        </div>
-
-        <div className="text-center mt-24 animate-fade-in" style={{ animationDelay: '600ms' }}>
-          <p className="text-brand-muted mb-6 font-medium text-lg">
-            Looking for something custom?
-          </p>
-          <button className="text-brand-ink hover:text-brand-electric font-black text-[14px] uppercase tracking-widest inline-flex items-center gap-3 group transition-colors">
-            Contact our team
-            <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
-          </button>
         </div>
       </div>
     </section>
   );
 }
+
