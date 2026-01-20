@@ -9,8 +9,9 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
-import { Badge } from '../ui/Badge';
-import { TrendingUp, TrendingDown, Phone, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, Calendar } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface ChartDataPoint {
   day: string;
@@ -28,21 +29,17 @@ interface CallVolumeChartProps {
   };
 }
 
-interface TooltipPayload {
-  value: number;
-  payload: ChartDataPoint;
-}
-
-const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: TooltipPayload[]; label?: string }) => {
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-4 border border-white-light shadow-xl rounded-2xl ring-1 ring-charcoal/5">
-        <p className="text-[10px] font-black text-charcoal-light uppercase tracking-widest mb-1">{label}</p>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-blue-electric" />
-          <p className="text-xl font-black text-charcoal tracking-tight">
-            {payload[0].value} <span className="text-xs font-bold text-charcoal-light ml-1">Calls</span>
-          </p>
+      <div className="bg-slate-900 text-white p-3 rounded-lg shadow-xl border border-white/10 text-xs backdrop-blur-md">
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <span className="text-slate-400 font-medium">{label}</span>
+          <Activity className="w-3 h-3 text-blue-400" />
+        </div>
+        <div className="flex items-baseline gap-1">
+          <span className="text-xl font-bold font-mono tracking-tight">{payload[0].value}</span>
+          <span className="text-slate-400 font-medium">calls</span>
         </div>
       </div>
     );
@@ -50,107 +47,119 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   return null;
 };
 
+const CustomTab = ({ label, isActive, onClick }: { label: string; isActive: boolean; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      "relative px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 rounded-md",
+      isActive ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
+    )}
+  >
+    {isActive && (
+      <motion.div
+        layoutId="activeTab"
+        className="absolute inset-0 bg-white shadow-sm ring-1 ring-slate-100 rounded-md"
+        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+      />
+    )}
+    <span className="relative z-10">{label}</span>
+  </button>
+);
+
 const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setTimeRange, trend }) => {
   const safeData = Array.isArray(data) ? data : [];
   const totalCalls = safeData.reduce((sum, d) => sum + d.calls, 0);
   const avgCalls = safeData.length > 0 ? (totalCalls / safeData.length).toFixed(1) : 0;
-  const peakCalls = safeData.length > 0 ? Math.max(...safeData.map(d => d.calls)) : 0;
+
+  // Calculate max for Y-axis domain padding
+  const maxCalls = Math.max(...safeData.map(d => d.calls), 0);
 
   return (
-    <Card className="border-white-light shadow-sm overflow-hidden group">
-      <CardHeader className="pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-blue-electric/10 flex items-center justify-center">
-                <Phone className="w-4 h-4 text-blue-electric" />
-              </div>
-              <CardTitle className="text-base font-black text-charcoal tracking-tight uppercase">Call Volume</CardTitle>
+    <Card className="border-slate-100 bg-white shadow-sm overflow-hidden h-full flex flex-col">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6 border-b border-slate-50">
+        <div className="space-y-1">
+          <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
+            <div className="p-1.5 rounded-md bg-blue-50 text-blue-600">
+              <Activity size={14} />
             </div>
-            <p className="text-[11px] font-bold text-charcoal-light uppercase tracking-widest pl-10">Real-time engagement metrics</p>
+            Call Activity
+          </CardTitle>
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <span className="font-mono font-medium text-slate-700">{totalCalls.toLocaleString()}</span>
+            <span className="text-[10px] uppercase tracking-wide font-medium text-slate-400">Total calls</span>
           </div>
+        </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex bg-white-light p-1 rounded-xl border border-white-light">
-              {['24h', '7d', '30d'].map((range) => (
-                <button
-                  key={range}
-                  onClick={() => setTimeRange(range)}
-                  className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${timeRange === range
-                    ? 'bg-white text-blue-electric shadow-sm scale-100 ring-1 ring-charcoal/5'
-                    : 'text-charcoal-light hover:text-charcoal-medium hover:bg-white/50 scale-95 hover:scale-100'
-                    }`}
-                >
-                  {range.toUpperCase()}
-                </button>
-              ))}
-            </div>
-
-            <div className="h-8 w-px bg-white-light hidden sm:block" />
-
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-black text-charcoal-light uppercase tracking-widest">Peak</p>
-                <p className="text-sm font-black text-charcoal">{peakCalls}</p>
-              </div>
-              {trend && (
-                <Badge variant="secondary" className={`${trend.isPositive ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-rose-50 text-rose-600 hover:bg-rose-100'
-                  } font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-lg border-none`}>
-                  {trend.isPositive ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
-                  {trend.isPositive ? '+' : '-'}{trend.value}%
-                </Badge>
-              )}
-            </div>
-          </div>
+        <div className="flex items-center p-1 bg-slate-50 rounded-lg border border-slate-100">
+          {['24h', '7d', '30d'].map((range) => (
+            <CustomTab
+              key={range}
+              label={range}
+              isActive={timeRange === range}
+              onClick={() => setTimeRange(range)}
+            />
+          ))}
         </div>
       </CardHeader>
 
-      <CardContent className="pt-2">
-        <div className="h-[300px] w-full min-h-[300px]">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-            <AreaChart data={safeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+      <CardContent className="flex-1 min-h-0 pt-6 px-1">
+        <div className="h-full w-full min-h-[250px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={safeData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
-                <linearGradient id="callGradient" x1="0" y1="0" x2="0" y2="100%">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15} />
+                <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.2} />
                   <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F5F7FA" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
               <XAxis
                 dataKey="day"
-                axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 700 }}
-                dy={10}
+                axisLine={false}
+                tickMargin={12}
+                tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
               />
               <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 700 }}
+                hide={true}
+                domain={[0, Math.ceil(maxCalls * 1.1)]} // Add 10% buffering
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#3B82F6', strokeWidth: 1, strokeDasharray: '4 4' }} />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '5 5', opacity: 0.5 }}
+              />
               <Area
                 type="monotone"
                 dataKey="calls"
                 stroke="#3B82F6"
-                strokeWidth={3}
+                strokeWidth={2}
                 fillOpacity={1}
-                fill="url(#callGradient)"
-                animationDuration={2000}
-                activeDot={{ r: 6, fill: '#3B82F6', stroke: '#fff', strokeWidth: 2 }}
+                fill="url(#colorCalls)"
+                isAnimationActive={true}
+                animationDuration={1500}
+                animationEasing="ease-in-out"
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-white-light">
-          <div className="space-y-1">
-            <p className="text-[10px] font-black text-charcoal-light uppercase tracking-widest">Daily Average</p>
-            <p className="text-xl font-black text-charcoal tracking-tight">{avgCalls}</p>
+        <div className="flex items-center justify-between px-6 pt-2 pb-2">
+          <div className="flex items-center gap-2">
+            {trend && (
+              <div className={cn(
+                "flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                trend.isPositive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+              )}>
+                {trend.isPositive ? <TrendingUp size={12} className="mr-1" /> : <TrendingDown size={12} className="mr-1" />}
+                {trend.value}%
+                <span className="ml-1 opacity-70">vs last period</span>
+              </div>
+            )}
           </div>
-          <div className="space-y-1">
-            <p className="text-[10px] font-black text-charcoal-light uppercase tracking-widest">Total Handling</p>
-            <p className="text-xl font-black text-charcoal tracking-tight">{totalCalls}</p>
+
+          <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
+            <Calendar size={12} />
+            <span>Daily Avg: <span className="text-slate-700 font-bold ml-0.5">{avgCalls}</span></span>
           </div>
         </div>
       </CardContent>
