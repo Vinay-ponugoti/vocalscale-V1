@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import type { BusinessHour } from '../../../types/business';
-import { 
+import {
   Clock, Zap
 } from 'lucide-react';
 
@@ -28,17 +28,17 @@ const DAYS = [
 ];
 
 const PRESETS = [
-  { 
-    label: 'Standard (9-5)', 
-    action: (h: BusinessHour[]) => h.map(d => ({ ...d, enabled: !['saturday', 'sunday'].includes(d.day_of_week), open_time: '09:00', close_time: '17:00' })) 
+  {
+    label: 'Standard (9-5)',
+    action: (h: BusinessHour[]) => h.map(d => ({ ...d, enabled: !['saturday', 'sunday'].includes(d.day_of_week), open_time: '09:00', close_time: '17:00' }))
   },
-  { 
-    label: '24/7 Support', 
-    action: (h: BusinessHour[]) => h.map(d => ({ ...d, enabled: true, open_time: '00:00', close_time: '23:59' })) 
+  {
+    label: '24/7 Support',
+    action: (h: BusinessHour[]) => h.map(d => ({ ...d, enabled: true, open_time: '00:00', close_time: '23:59' }))
   },
-  { 
-    label: 'Weekend Only', 
-    action: (h: BusinessHour[]) => h.map(d => ({ ...d, enabled: ['saturday', 'sunday'].includes(d.day_of_week), open_time: '10:00', close_time: '18:00' })) 
+  {
+    label: 'Weekend Only',
+    action: (h: BusinessHour[]) => h.map(d => ({ ...d, enabled: ['saturday', 'sunday'].includes(d.day_of_week), open_time: '10:00', close_time: '18:00' }))
   },
 ];
 
@@ -47,7 +47,7 @@ const PRESETS = [
 const CustomInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => (
   <input
     {...props}
-    className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 transition-all placeholder:text-slate-400"
+    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 hover:bg-white focus:bg-white px-3 py-2.5 transition-all placeholder:text-slate-400"
   />
 );
 
@@ -88,7 +88,7 @@ export const BusinessHoursSettings: React.FC = () => {
 
   if (incomingString !== prevIncomingString && !state.loading) {
     setPrevIncomingString(incomingString);
-    
+
     const convertedHours = incomingHours.map((h: BusinessHour) => ({
       ...h,
       day_of_week: typeof h.day_of_week === 'number' ? INT_TO_DAY[h.day_of_week] : (INT_TO_DAY[parseInt(h.day_of_week)] || h.day_of_week),
@@ -145,7 +145,7 @@ export const BusinessHoursSettings: React.FC = () => {
 
   return (
     <div className="space-y-6 font-sans">
-      
+
       {/* Presets Section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-50/50 border border-slate-200 rounded-xl">
         <div className="flex items-center gap-2.5">
@@ -167,14 +167,14 @@ export const BusinessHoursSettings: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {DAYS.map((day, index) => {
           const isEnabled = hours[index]?.enabled || false;
-          
+
           return (
-            <div 
-              key={day.key} 
+            <div
+              key={day.key}
               className={`
                 relative p-5 rounded-xl border transition-all duration-200
-                ${isEnabled 
-                  ? 'bg-white border-slate-200 shadow-sm' 
+                ${isEnabled
+                  ? 'bg-white border-slate-200 shadow-sm'
                   : 'bg-slate-50/50 border-slate-100'
                 }
               `}
@@ -190,11 +190,11 @@ export const BusinessHoursSettings: React.FC = () => {
                     </span>
                   )}
                 </div>
-                
-                <CustomToggle 
-                  active={isEnabled} 
-                  onChange={() => handleToggleChange(index)} 
-                  label={`Toggle ${day.label}`} 
+
+                <CustomToggle
+                  active={isEnabled}
+                  onChange={() => handleToggleChange(index)}
+                  label={`Toggle ${day.label}`}
                 />
               </div>
 
@@ -222,7 +222,7 @@ export const BusinessHoursSettings: React.FC = () => {
           );
         })}
       </div>
-      
+
       {/* Agent Behavior Tip */}
       <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 flex items-start gap-4 text-slate-700">
         <div className="p-2 bg-white border border-slate-200 rounded-lg shrink-0 shadow-sm">

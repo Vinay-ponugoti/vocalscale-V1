@@ -3,52 +3,63 @@ import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import {
   Building2, Mail, Phone, MapPin, Zap, Globe,
   Search, Loader2, Star, CheckCircle2, Navigation,
-  ExternalLink, Sparkles, X
+  ExternalLink, Sparkles, X, ChevronDown
 } from 'lucide-react';
 import { businessSetupAPI } from '../../../api/businessSetup';
 
 // --- Reusable Styled Components (Editorial/Neubrutalist Aesthetic) ---
 
-const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
+// --- Reusable Styled Components (Modern/Clean Aesthetic) ---
+
+const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => (
   <input
+    ref={ref}
     {...props}
     className={`
-      w-full px-4 py-3 bg-white border-2 border-slate-200 text-slate-900 text-sm font-medium rounded-lg
-      focus:ring-0 focus:border-slate-800 focus:bg-slate-50
+      w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium rounded-xl
+      focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white
       transition-all duration-200 placeholder:text-slate-400
+      disabled:opacity-50 disabled:cursor-not-allowed
       ${props.className || ''}
     `}
   />
-);
+));
+Input.displayName = 'Input';
 
-const Select = (props: React.SelectHTMLAttributes<HTMLSelectElement>) => (
+const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>((props, ref) => (
   <select
+    ref={ref}
     {...props}
     className={`
-      w-full px-4 py-3 bg-white border-2 border-slate-200 text-slate-900 text-sm font-medium rounded-lg
-      focus:ring-0 focus:border-slate-800 focus:bg-slate-50
+      w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium rounded-xl
+      focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white
       transition-all duration-200 cursor-pointer appearance-none
+      disabled:opacity-50 disabled:cursor-not-allowed
       ${props.className || ''}
     `}
   />
-);
+));
+Select.displayName = 'Select';
 
-const TextArea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
+const TextArea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>((props, ref) => (
   <textarea
+    ref={ref}
     {...props}
     className={`
-      w-full px-4 py-3 bg-white border-2 border-slate-200 text-slate-900 text-sm font-medium rounded-lg
-      focus:ring-0 focus:border-slate-800 focus:bg-slate-50
+      w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium rounded-xl
+      focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white
       transition-all duration-200 placeholder:text-slate-400 resize-none
+      disabled:opacity-50 disabled:cursor-not-allowed
       ${props.className || ''}
     `}
   />
-);
+));
+TextArea.displayName = 'TextArea';
 
 const Label = ({ children, optional }: { children: React.ReactNode, optional?: boolean }) => (
-  <label className="block mb-2 text-xs font-bold uppercase tracking-widest text-slate-500">
+  <label className="block mb-2 text-sm font-semibold text-slate-700 tracking-tight">
     {children}
-    {optional && <span className="ml-2 font-normal text-slate-400 text-[10px]">(Optional)</span>}
+    {optional && <span className="ml-2 font-normal text-slate-400 text-xs">(Optional)</span>}
   </label>
 );
 
@@ -346,68 +357,79 @@ export const BusinessDetails: React.FC = () => {
       <div className="space-y-10">
 
         {/* AI Smart Connect Section - Simple Design */}
+        {/* AI Smart Connect Section - Premium Design */}
         {!data.business.auto_setup || (data.business.auto_setup && showSuccessMessage) ? (
           !data.business.auto_setup ? (
-            <div className="bg-white rounded-lg p-6 border border-slate-200 shadow-sm">
-              <div className="relative z-10">
-                {/* Simple Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-sky-500 flex items-center justify-center text-white">
-                      <Sparkles className="w-5 h-5" />
+            <div className="relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 rounded-2xl" />
+              <div className="relative bg-white/50 backdrop-blur-sm rounded-2xl p-8 border border-indigo-100 shadow-xl shadow-indigo-100/50 transition-all duration-300 hover:shadow-indigo-100/80 hover:border-indigo-200">
+
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-white rounded-2xl border border-indigo-100 shadow-md shadow-indigo-100/50 text-indigo-600 shrink-0">
+                      <Sparkles className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="text-base font-semibold text-slate-900">AI Smart Connect</h4>
-                      <p className="text-sm text-slate-500">Auto-fill from Google Places</p>
+                      <h4 className="text-lg font-bold text-slate-900 tracking-tight">AI Smart Connect</h4>
+                      <p className="text-sm text-slate-500 leading-relaxed mt-1 max-w-md">
+                        Instantly populate your business profile by syncing directly with Google Places.
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Search input */}
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <div className="relative max-w-2xl">
+                  <div className="relative group/search">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within/search:text-indigo-500 transition-colors" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                      placeholder="Search your business name..."
-                      className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all placeholder:text-slate-400"
+                      placeholder="Search for your business (e.g. 'Coffee Shop New York')"
+                      className="w-full pl-12 pr-32 py-4 bg-white border border-slate-200 rounded-xl text-base text-slate-900 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder:text-slate-400"
                     />
+                    <div className="absolute right-2 top-2 bottom-2">
+                      <button
+                        onClick={handleSearch}
+                        disabled={isSearching || !searchQuery.trim()}
+                        className="h-full px-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white rounded-lg font-bold text-sm transition-all flex items-center gap-2 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300 disabled:shadow-none translate-y-0 active:translate-y-0.5"
+                      >
+                        {isSearching ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span className="hidden sm:inline">Searching...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Connect</span>
+                            <Sparkles className="w-4 h-4 opacity-70" />
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={handleSearch}
-                    disabled={isSearching || !searchQuery.trim()}
-                    className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    {isSearching ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span className="hidden sm:inline">Searching</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4" />
-                        <span className="hidden sm:inline">Connect</span>
-                      </>
-                    )}
-                  </button>
                 </div>
               </div>
             </div>
           ) : (
             /* Success State - Show when setup is complete */
-            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-emerald-200 flex items-center gap-4 shadow-lg">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+            <div className="bg-emerald-50/50 rounded-2xl p-6 border border-emerald-100 flex items-center gap-5 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              <div className="w-12 h-12 rounded-full bg-white border border-emerald-100 flex items-center justify-center text-emerald-500 shadow-sm shrink-0 z-10">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <div className="flex-1">
-                <h4 className="text-lg font-black text-slate-900 tracking-tight mb-1">AI Setup Complete!</h4>
-                <p className="text-sm text-slate-600 font-medium">Your business profile has been automatically configured.</p>
+              <div className="flex-1 z-10">
+                <h4 className="text-lg font-bold text-slate-900 tracking-tight mb-0.5">Setup Complete!</h4>
+                <p className="text-sm text-slate-600">Your business profile successfully connected to Google Places.</p>
               </div>
-              <div className="px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-emerald-200">
-                <span className="text-xs font-black text-emerald-700 uppercase tracking-wider">✓ Connected</span>
+              <div className="px-4 py-2 bg-white rounded-xl border border-emerald-100 shadow-sm z-10">
+                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Synced
+                </span>
               </div>
             </div>
           )
@@ -418,7 +440,7 @@ export const BusinessDetails: React.FC = () => {
           <div className="group">
             <Label>Company Name</Label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                 <Building2 size={18} />
               </div>
               <Input
@@ -427,7 +449,7 @@ export const BusinessDetails: React.FC = () => {
                 value={data.business.business_name}
                 onChange={handleChange}
                 placeholder="e.g. Nexus Automations"
-                className="pl-10"
+                className="pl-11"
               />
             </div>
           </div>
@@ -453,10 +475,8 @@ export const BusinessDetails: React.FC = () => {
                 <option value="automotive">Automotive</option>
                 <option value="other">Other</option>
               </Select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-500">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-500">
+                <ChevronDown size={14} strokeWidth={2} />
               </div>
             </div>
           </div>
