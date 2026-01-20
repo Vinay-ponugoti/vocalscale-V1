@@ -5,6 +5,7 @@ import {
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { ToastProvider } from '../../context/ToastProvider';
 import { useToast } from '../../hooks/useToast';
+import { useState } from 'react';
 import { useBusinessSetup } from '../../context/BusinessSetupContext';
 import { BusinessDetails } from './components/BusinessDetails';
 import { BusinessHoursSettings } from './components/BusinessHoursSettings';
@@ -32,9 +33,9 @@ const SectionCard = ({ title, subtitle, children, action, icon: Icon, isLast }: 
               <Icon size={22} strokeWidth={1.5} />
             </div>
           )}
-          <div className="space-y-1.5">
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">{title}</h2>
-            {subtitle && <p className="text-slate-500 text-sm leading-relaxed max-w-2xl">{subtitle}</p>}
+          <div className="space-y-1">
+            <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight text-slate-900">{title}</h2>
+            {subtitle && <p className="text-sm text-slate-500">{subtitle}</p>}
           </div>
         </div>
         {action && <div className="shrink-0 self-start sm:self-center">{action}</div>}
@@ -52,96 +53,146 @@ const BusinessSetupContent = () => {
   const { state, actions } = useBusinessSetup();
   const { showToast } = useToast();
   const { saving, isDirty } = state;
+  const [activeSection, setActiveSection] = useState<'identity' | 'availability' | 'services'>('identity');
 
   const handleSave = async () => {
     await actions.saveData(showToast);
   };
 
+  const menuItems = [
+    {
+      id: 'identity',
+      label: 'Business Identity',
+      icon: Building2,
+      desc: 'Name, location, and contact info'
+    },
+    {
+      id: 'availability',
+      label: 'Availability',
+      icon: Clock,
+      desc: 'Operating hours and holidays'
+    },
+    {
+      id: 'services',
+      label: 'Service Catalog',
+      icon: Layers,
+      desc: 'Offerings and knowledge base'
+    },
+  ] as const;
+
   return (
-    <DashboardLayout fullWidth>
-      <div className="flex flex-col h-full bg-[#FAFAFA]">
+    <DashboardLayout>
+      <div className="flex flex-col h-full bg-slate-50/50 p-4 md:p-6 2xl:p-8 overflow-hidden">
 
-        {/* Page Header */}
-        <div className="px-8 py-6 bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-30 transition-all">
-          <div className="max-w-[1600px] mx-auto w-full flex items-center justify-between">
+        {/* Unified Card Container */}
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col h-full overflow-hidden w-full max-w-[1920px] mx-auto animate-in fade-in zoom-in-95 duration-500">
+
+          {/* Header */}
+          <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Business Setup</h1>
-              <p className="text-slate-500 text-sm mt-1">Configure your AI agent's core identity, availability, and services.</p>
+              <h1 className="scroll-m-20 text-xl font-bold tracking-tight text-slate-900">Business Setup</h1>
+              <p className="text-sm text-slate-500 leading-none mt-1">Configure your AI agent's core parameters.</p>
             </div>
-
-            {/* Quick Save Action in Header (Optional, for easy access) */}
-            <div className="hidden md:flex items-center gap-4">
-              {isDirty && <span className="text-xs font-medium text-amber-600 animate-pulse">● Unsaved changes</span>}
-            </div>
-          </div>
-        </div>
-
-        {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto w-full custom-scrollbar">
-          <div className="max-w-[1600px] mx-auto p-6 lg:p-10 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              {/* Main Content Column (Left) */}
-              <div className="lg:col-span-8 space-y-6">
-
-                {/* Section 1: Business Identity */}
-                <SectionCard
-                  title="Business Identity"
-                  subtitle="Define who the AI represents. This information is used for greetings and caller identification."
-                  icon={Building2}
-                >
-                  <BusinessDetails />
-                </SectionCard>
-
-                {/* Section 2: Business Hours */}
-                <SectionCard
-                  title="Availability"
-                  subtitle="Configure hours when your AI Agent is active. Outside these hours, calls can be sent to voicemail."
-                  icon={Clock}
-                >
-                  <BusinessHoursSettings />
-                </SectionCard>
-
-                {/* Section 3: Services */}
-                <SectionCard
-                  title="Service Catalog"
-                  subtitle="List your products or services. Use the AI extractor to auto-generate this list or add them manually."
-                  icon={Layers}
-                  isLast
-                >
-                  <Services />
-                </SectionCard>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm font-medium mr-4">
+                <div className={`w-2 h-2 rounded-full ${isDirty ? 'bg-amber-400' : 'bg-emerald-400'}`} />
+                <span className="text-slate-600 text-xs uppercase tracking-wider font-bold">{isDirty ? 'Unsaved Changes' : 'Saved'}</span>
               </div>
+              <button
+                onClick={handleSave}
+                disabled={saving || !isDirty}
+                className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all duration-200 ${saving || !isDirty
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                  : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-200'
+                  }`}
+              >
+                {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
 
-              {/* Sidebar Column (Right) */}
-              <div className="lg:col-span-4 lg:sticky lg:top-8 order-first lg:order-last">
-                <LivePreview />
+          {/* Split View Content */}
+          <div className="flex-1 flex overflow-hidden w-full relative">
+
+            {/* Left Panel: Navigation */}
+            <div className="w-full md:w-[320px] lg:w-[360px] border-r border-slate-100 flex flex-col bg-slate-50/30 overflow-y-auto shrink-0 py-6">
+              <div className="px-4 space-y-1">
+                {menuItems.map((item) => {
+                  const isActive = activeSection === item.id;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveSection(item.id)}
+                      className={`w-full flex items-start text-left gap-4 p-4 rounded-xl transition-all duration-200 border ${isActive
+                        ? 'bg-white border-slate-200 shadow-sm'
+                        : 'border-transparent hover:bg-slate-100/50 hover:border-slate-100 text-slate-500'
+                        }`}
+                    >
+                      <div className={`p-2 rounded-lg shrink-0 ${isActive ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-400 group-hover:text-slate-500'}`}>
+                        <Icon size={18} />
+                      </div>
+                      <div>
+                        <span className={`block text-sm font-semibold tracking-tight ${isActive ? 'text-slate-900' : 'text-slate-600'}`}>
+                          {item.label}
+                        </span>
+                        <span className="block text-xs text-slate-500 mt-0.5 leading-relaxed font-medium">
+                          {item.desc}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Footer Action Bar */}
-        <div className="border-t border-slate-200 bg-white p-4 px-8 z-30 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-          <div className="max-w-[1600px] mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <div className={`w-2 h-2 rounded-full ${isDirty ? 'bg-amber-400' : 'bg-emerald-400'}`} />
-              <span className="text-slate-600">{isDirty ? 'Unsaved changes' : 'All changes saved'}</span>
+            {/* Right Panel: Active Form */}
+            <div className="flex-1 bg-white overflow-y-auto custom-scrollbar relative">
+              <div className="max-w-4xl mx-auto p-8 lg:p-12 animate-in fade-in slide-in-from-right-4 duration-300 focus-visible:outline-none">
+
+                {activeSection === 'identity' && (
+                  <div className="space-y-6">
+                    <div className="border-b border-slate-100 pb-6 mb-6">
+                      <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight text-slate-900">Business Identity</h2>
+                      <p className="text-sm text-slate-500 mt-1">Define who the AI represents during calls.</p>
+                    </div>
+                    <BusinessDetails />
+                  </div>
+                )}
+
+                {activeSection === 'availability' && (
+                  <div className="space-y-6">
+                    <div className="border-b border-slate-100 pb-6 mb-6">
+                      <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight text-slate-900">Availability</h2>
+                      <p className="text-sm text-slate-500 mt-1">Configure operating hours and holiday handling.</p>
+                    </div>
+                    <BusinessHoursSettings />
+                  </div>
+                )}
+
+                {activeSection === 'services' && (
+                  <div className="space-y-6">
+                    <div className="border-b border-slate-100 pb-6 mb-6">
+                      <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight text-slate-900">Service Catalog</h2>
+                      <p className="text-sm text-slate-500 mt-1">Manage services and knowledge base documents.</p>
+                    </div>
+                    <Services />
+                  </div>
+                )}
+
+              </div>
             </div>
 
-            <button
-              onClick={handleSave}
-              disabled={saving || !isDirty}
-              className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 transform ${saving || !isDirty
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                : 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:shadow-indigo-300 hover:bg-indigo-700 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md'
-                }`}
-            >
-              {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-              {saving ? 'Saving Changes...' : 'Save Changes'}
-            </button>
           </div>
         </div>
+
+        <style>{`
+          .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+          .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+          .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+        `}</style>
 
       </div>
     </DashboardLayout>

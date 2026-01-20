@@ -33,8 +33,8 @@ export const LivePreview = () => {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4 ring-4 ring-slate-800">
               <Mic className="text-white w-7 h-7" />
             </div>
-            <h3 className="text-lg font-bold text-white tracking-tight">{businessName}</h3>
-            <p className="text-indigo-300 text-xs font-medium mt-1">AI Voice Assistant • v1.02</p>
+            <h3 className="scroll-m-20 text-lg font-semibold tracking-tight text-white">{businessName}</h3>
+            <p className="text-sm font-medium leading-none text-indigo-300 mt-1">AI Voice Assistant • v1.02</p>
           </div>
 
           {/* Audio Waveform Visualization */}
@@ -90,8 +90,8 @@ export const LivePreview = () => {
           <Phone size={16} />
         </div>
         <div>
-          <h4 className="text-sm font-bold text-slate-900">Test Your Setup</h4>
-          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+          <h4 className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900">Test Your Setup</h4>
+          <p className="text-sm text-slate-500 mt-1 leading-relaxed">
             Dial your assigned number to hear this configuration live in production.
           </p>
         </div>

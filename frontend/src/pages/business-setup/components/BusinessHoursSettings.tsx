@@ -150,7 +150,7 @@ export const BusinessHoursSettings: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-50/50 border border-slate-200 rounded-xl">
         <div className="flex items-center gap-2.5">
           <Zap size={16} className="text-indigo-600" />
-          <span className="text-sm font-semibold text-slate-900">Quick Presets</span>
+          <span className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900">Quick Presets</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((preset, idx) => (
@@ -181,7 +181,7 @@ export const BusinessHoursSettings: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <span className={`text-sm font-semibold ${isEnabled ? 'text-slate-900' : 'text-slate-400'}`}>
+                  <span className={`text-sm font-medium leading-none ${isEnabled ? 'text-slate-900' : 'text-slate-400'}`}>
                     {day.label}
                   </span>
                   {!isEnabled && (
@@ -201,7 +201,7 @@ export const BusinessHoursSettings: React.FC = () => {
               {isEnabled && (
                 <div className="grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
                   <div>
-                    <label className="block text-[10px] font-medium text-slate-500 mb-1.5">Opens</label>
+                    <label className="text-sm font-medium leading-none text-slate-500 mb-1.5 block">Opens</label>
                     <CustomInput
                       type="time"
                       value={hours[index]?.open_time || ''}
@@ -209,7 +209,7 @@ export const BusinessHoursSettings: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-medium text-slate-500 mb-1.5">Closes</label>
+                    <label className="text-sm font-medium leading-none text-slate-500 mb-1.5 block">Closes</label>
                     <CustomInput
                       type="time"
                       value={hours[index]?.close_time || ''}
@@ -229,8 +229,8 @@ export const BusinessHoursSettings: React.FC = () => {
           <Clock size={18} className="text-indigo-600" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-900 mb-0.5">Off-Hours Protocol</p>
-          <p className="text-xs leading-relaxed text-slate-500">
+          <p className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900 mb-0.5">Off-Hours Protocol</p>
+          <p className="text-sm text-slate-500 leading-relaxed">
             When calls arrive outside active windows, the AI will automatically switch to voicemail mode or route to emergency contacts based on your priority handling settings.
           </p>
         </div>
