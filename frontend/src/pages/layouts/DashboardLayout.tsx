@@ -130,7 +130,24 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [localSearch, setLocalSearch] = useState(searchQuery);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync local state with context when context changes (e.g. clear search)
+  useEffect(() => {
+    setLocalSearch(searchQuery);
+  }, [searchQuery]);
+
+  // Debounce updates to context
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearch !== searchQuery) {
+        setSearchQuery(localSearch);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [localSearch, setSearchQuery, searchQuery]);
 
   // Keyboard shortcut for search
   useEffect(() => {
@@ -405,8 +422,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   role="searchbox"
                   aria-label="Search dashboard"
                   placeholder="Search logs, appointments..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={localSearch}
+                  onChange={(e) => setLocalSearch(e.target.value)}
                   onFocus={(e) => {
                     setIsSearchFocused(true);
                     e.target.style.borderColor = DS.electric;
@@ -495,8 +512,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   aria-haspopup="true"
                   aria-expanded={profileDropdownOpen}
                   className={`flex items-center gap-3 p-1 pl-3 rounded-full transition-all duration-200 ${profileDropdownOpen
-                      ? 'bg-slate-100 ring-2 ring-slate-100'
-                      : 'bg-transparent hover:bg-slate-50'
+                    ? 'bg-slate-100 ring-2 ring-slate-100'
+                    : 'bg-transparent hover:bg-slate-50'
                     }`}
                 >
                   <span className="hidden lg:block text-xs font-bold text-slate-700">{displayName}</span>
