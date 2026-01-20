@@ -112,9 +112,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
             </div>
 
             {/* version/legal tiny footer */}
-            <div className="bg-slate-50/50 p-2 text-center border-t border-slate-50/50">
-              <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">VocalScale ID</p>
-            </div>
+
           </motion.div>
         </>
       )}

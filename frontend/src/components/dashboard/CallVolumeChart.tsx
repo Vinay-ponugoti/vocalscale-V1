@@ -73,6 +73,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
 
   // Calculate max for Y-axis domain padding
   const maxCalls = Math.max(...safeData.map(d => d.calls), 0);
+  const peakCalls = Math.max(...safeData.map(d => d.calls), 0);
 
   return (
     <Card className="border-slate-100 bg-white shadow-sm overflow-hidden h-full flex flex-col">
@@ -84,9 +85,16 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
             </div>
             Call Activity
           </CardTitle>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <span className="font-mono font-medium text-slate-700">{totalCalls.toLocaleString()}</span>
-            <span className="text-[10px] uppercase tracking-wide font-medium text-slate-400">Total calls</span>
+          <div className="flex items-center gap-4 text-sm text-slate-500">
+            <div className="flex items-baseline gap-1">
+              <span className="font-mono font-medium text-slate-700">{totalCalls.toLocaleString()}</span>
+              <span className="text-[10px] uppercase tracking-wide font-medium text-slate-400">Total</span>
+            </div>
+            <div className="w-px h-3 bg-slate-200" />
+            <div className="flex items-baseline gap-1">
+              <span className="font-mono font-medium text-slate-700">{peakCalls.toLocaleString()}</span>
+              <span className="text-[10px] uppercase tracking-wide font-medium text-slate-400">Peak</span>
+            </div>
           </div>
         </div>
 
@@ -122,7 +130,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
               />
               <YAxis
                 hide={true}
-                domain={[0, Math.ceil(maxCalls * 1.1)]} // Add 10% buffering
+                domain={[0, Math.ceil(maxCalls * 1.1)]}
               />
               <Tooltip
                 content={<CustomTooltip />}
@@ -143,7 +151,18 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
           </ResponsiveContainer>
         </div>
 
-        <div className="flex items-center justify-between px-6 pt-2 pb-2">
+        <div className="flex items-center justify-between px-6 pt-4 pb-2 border-t border-slate-50 mt-2">
+          <div className="flex items-center gap-4">
+            <div className="space-y-0.5">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Daily Avg</p>
+              <p className="text-lg font-mono font-bold text-slate-700">{avgCalls}</p>
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Handling</p>
+              <p className="text-lg font-mono font-bold text-slate-700">{totalCalls}</p>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2">
             {trend && (
               <div className={cn(
@@ -155,11 +174,6 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
                 <span className="ml-1 opacity-70">vs last period</span>
               </div>
             )}
-          </div>
-
-          <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
-            <Calendar size={12} />
-            <span>Daily Avg: <span className="text-slate-700 font-bold ml-0.5">{avgCalls}</span></span>
           </div>
         </div>
       </CardContent>

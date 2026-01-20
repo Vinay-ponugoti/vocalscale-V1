@@ -494,27 +494,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   aria-haspopup="true"
                   aria-expanded={profileDropdownOpen}
-                  className={`flex items-center gap-2 md:gap-3 p-1.5 rounded-full border transition-all duration-200 shadow-sm ${profileDropdownOpen
-                      ? 'bg-white border-blue-200 ring-4 ring-blue-50'
-                      : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-md'
+                  className={`flex items-center gap-3 p-1 pl-3 rounded-full transition-all duration-200 ${profileDropdownOpen
+                      ? 'bg-slate-100 ring-2 ring-slate-100'
+                      : 'bg-transparent hover:bg-slate-50'
                     }`}
                 >
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-inner bg-gradient-to-br from-blue-500 to-indigo-600">
+                  <span className="hidden lg:block text-xs font-bold text-slate-700">{displayName}</span>
+
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm bg-gradient-to-br from-blue-500 to-indigo-600 ring-2 ring-white">
                     {firstLetter}
-                  </div>
-
-                  {/* Desktop Text */}
-                  <div className="hidden lg:block text-left pr-2">
-                    <p className="text-xs font-bold leading-tight text-slate-700">{displayName}</p>
-                    <div className="flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <p className="text-[10px] font-medium text-slate-400 capitalize">Online</p>
-                    </div>
-                  </div>
-
-                  {/* Chevron for visual cue */}
-                  <div className={`hidden lg:flex text-slate-400 transition-transform duration-300 ${profileDropdownOpen ? 'rotate-180' : ''}`}>
-                    <ChevronRight size={14} className="rotate-90" />
                   </div>
                 </button>
                 <ProfileDropdown
