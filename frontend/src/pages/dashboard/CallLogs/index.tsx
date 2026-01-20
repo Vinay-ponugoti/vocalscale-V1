@@ -187,163 +187,166 @@ const CallLogsPage = () => {
 
   return (
     <DashboardLayout fullWidth secondaryNav={filtersNav}>
-      <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
+      <div className="flex flex-col h-full bg-slate-50/50 p-4 md:p-6 2xl:p-8 overflow-hidden">
 
-        {/* --- Stats Summary Bar --- */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm px-8 py-6 flex items-center gap-10 shrink-0 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm ring-1 ring-indigo-500/10">
-              <Phone size={20} />
-            </div>
-            <div>
-              <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total Calls</p>
-              <div className="flex items-center gap-2.5">
-                <span className="text-2xl font-black text-slate-900 tracking-tight">{stats.callsToday}</span>
-                <span className={`text-[11px] font-black px-2 py-0.5 rounded-lg ring-1 ${stats.callsTrendUp
-                    ? 'bg-emerald-50 text-emerald-600 ring-emerald-500/20'
-                    : 'bg-rose-50 text-rose-600 ring-rose-500/20'
-                  }`}>
-                  {stats.callsTrend}
-                </span>
+        {/* Unified Card Container */}
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col h-full overflow-hidden w-full max-w-[1920px] mx-auto animate-in fade-in zoom-in-95 duration-500">
+
+          {/* Top Bar: Integrated Stats */}
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-8 bg-white shrink-0 overflow-x-auto no-scrollbar">
+            {/* Stats Items */}
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 ring-1 ring-indigo-500/10">
+                <Phone size={16} />
               </div>
-            </div>
-          </div>
-
-          <div className="h-10 w-px bg-slate-100" />
-
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="w-11 h-11 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600 shadow-sm ring-1 ring-rose-500/10">
-              <Zap size={20} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Urgent Action</p>
-              <span className="text-xl font-black text-slate-900 tracking-tight">{stats.urgentToday}</span>
-            </div>
-          </div>
-
-          <div className="h-10 w-px bg-slate-100" />
-
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="w-11 h-11 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 shadow-sm ring-1 ring-amber-500/10">
-              <Clock size={20} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Avg Duration</p>
-              <span className="text-xl font-black text-slate-900 tracking-tight">{stats.avgDuration}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* --- Main Content Area: Split View --- */}
-        <div className="flex-1 flex overflow-hidden w-full relative">
-
-          {/* Left Panel: Master List */}
-          <div className={`
-            ${selectedLogId ? 'hidden md:flex' : 'flex'} 
-            w-full md:w-[380px] lg:w-[420px] border-r border-slate-100 flex-col bg-white overflow-hidden shrink-0
-          `}>
-            {listError ? (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mb-4 text-red-500 ring-1 ring-red-500/10">
-                  <XCircle size={28} />
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-black text-slate-900">{stats.callsToday}</span>
+                  <span className={`text-[10px] font-bold ${stats.callsTrendUp ? 'text-emerald-600' : 'text-rose-600'}`}>
+                    {stats.callsTrend}
+                  </span>
                 </div>
-                <h3 className="text-slate-900 font-black text-base tracking-tight mb-1">Failed to load logs</h3>
-                <p className="text-slate-500 text-sm mb-6 max-w-[240px]">{listError}</p>
-                <Button variant="outline" onClick={() => refetch()} className="text-indigo-600 font-bold text-xs uppercase tracking-wider">Try again</Button>
               </div>
-            ) : (
-              <div className="flex-1 overflow-y-auto custom-scrollbar">
-                <LogList
-                  logs={logs}
-                  selectedId={selectedLogId}
-                  onSelect={handleSelectLog}
-                  isLoading={isInitialLoading}
-                />
-                {isPlaceholderData && (
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-                    <div className="bg-white/90 backdrop-blur-md border border-indigo-100 px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in zoom-in duration-300">
-                      <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
-                      <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Updating Logs...</span>
-                    </div>
-                  </div>
-                )}
+            </div>
+
+            <div className="h-8 w-px bg-slate-100" />
+
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 ring-1 ring-rose-500/10">
+                <Zap size={16} />
               </div>
-            )}
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Urgent</p>
+                <span className="text-sm font-black text-slate-900">{stats.urgentToday}</span>
+              </div>
+            </div>
+
+            <div className="h-8 w-px bg-slate-100" />
+
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 ring-1 ring-amber-500/10">
+                <Clock size={16} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Avg Time</p>
+                <span className="text-sm font-black text-slate-900">{stats.avgDuration}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Right Panel: Detail View */}
-          <div className={`
-            ${selectedLogId ? 'flex' : 'hidden md:flex'} 
-            flex-1 bg-white overflow-y-auto custom-scrollbar relative
-          `}>
-            {selectedLogId ? (
-              singleLoading ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-20">
-                  <div className="w-16 h-16 rounded-3xl bg-indigo-50 flex items-center justify-center mb-6 ring-1 ring-indigo-500/10">
-                    <Loader2 className="animate-spin text-indigo-600" size={32} />
+          {/* Main Content Area: Split View */}
+          <div className="flex-1 flex overflow-hidden w-full relative">
+
+            {/* Left Panel: Master List */}
+            <div className={`
+              ${selectedLogId ? 'hidden md:flex' : 'flex'} 
+              w-full md:w-[380px] lg:w-[420px] border-r border-slate-100 flex-col bg-slate-50/30 overflow-hidden shrink-0
+            `}>
+              {listError ? (
+                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                  <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mb-4 text-red-500 ring-1 ring-red-500/10">
+                    <XCircle size={28} />
                   </div>
-                  <p className="text-slate-900 font-black text-base tracking-tight">Analyzing Call Data...</p>
-                </div>
-              ) : selectedLog ? (
-                <div className="p-4 md:p-6 animate-in fade-in slide-in-from-right-2 duration-300 w-full max-w-5xl mx-auto">
-                  {/* Mobile Back Button */}
-                  <button
-                    onClick={() => handleSelectLog(null)}
-                    className="md:hidden flex items-center gap-2 text-slate-500 font-black text-[10px] uppercase tracking-widest mb-8 hover:text-slate-900 transition-colors"
-                  >
-                    <ArrowLeft size={14} />
-                    Back to List
-                  </button>
-                  <LogDetails log={selectedLog} />
+                  <h3 className="text-slate-900 font-black text-base tracking-tight mb-1">Failed to load logs</h3>
+                  <p className="text-slate-500 text-sm mb-6 max-w-[240px]">{listError}</p>
+                  <Button variant="outline" onClick={() => refetch()} className="text-indigo-600 font-bold text-xs uppercase tracking-wider">Try again</Button>
                 </div>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center p-12 text-center">
-                  <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mb-8 ring-1 ring-rose-500/10">
-                    <XCircle className="text-rose-500" size={40} />
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                  <LogList
+                    logs={logs}
+                    selectedId={selectedLogId}
+                    onSelect={handleSelectLog}
+                    isLoading={isInitialLoading}
+                  />
+                  {isPlaceholderData && (
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+                      <div className="bg-white/90 backdrop-blur-md border border-indigo-100 px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in zoom-in duration-300">
+                        <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
+                        <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Updating Logs...</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Right Panel: Detail View */}
+            <div className={`
+              ${selectedLogId ? 'flex' : 'hidden md:flex'} 
+              flex-1 bg-white overflow-y-auto custom-scrollbar relative
+            `}>
+              {selectedLogId ? (
+                singleLoading ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-20">
+                    <div className="w-16 h-16 rounded-3xl bg-indigo-50 flex items-center justify-center mb-6 ring-1 ring-indigo-500/10">
+                      <Loader2 className="animate-spin text-indigo-600" size={32} />
+                    </div>
+                    <p className="text-slate-900 font-black text-base tracking-tight">Analyzing Call Data...</p>
                   </div>
-                  <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-3">Log Not Found</h2>
-                  <p className="text-slate-500 max-w-sm mx-auto mb-10 text-sm font-medium leading-relaxed">
-                    The requested call record could not be retrieved. It may have been archived or deleted from our servers.
+                ) : selectedLog ? (
+                  <div className="p-6 md:p-8 animate-in fade-in slide-in-from-right-2 duration-300 w-full max-w-5xl mx-auto">
+                    {/* Mobile Back Button */}
+                    <button
+                      onClick={() => handleSelectLog(null)}
+                      className="md:hidden flex items-center gap-2 text-slate-500 font-black text-[10px] uppercase tracking-widest mb-8 hover:text-slate-900 transition-colors"
+                    >
+                      <ArrowLeft size={14} />
+                      Back to List
+                    </button>
+                    <LogDetails log={selectedLog} />
+                  </div>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center p-12 text-center">
+                    <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mb-8 ring-1 ring-rose-500/10">
+                      <XCircle className="text-rose-500" size={40} />
+                    </div>
+                    <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-3">Log Not Found</h2>
+                    <p className="text-slate-500 max-w-sm mx-auto mb-10 text-sm font-medium leading-relaxed">
+                      The requested call record could not be retrieved. It may have been archived or deleted from our servers.
+                    </p>
+                    <Button
+                      onClick={() => handleSelectLog(null)}
+                      variant="outline"
+                      className="text-indigo-600 font-bold text-xs uppercase tracking-wider"
+                    >
+                      Return to List
+                    </Button>
+                  </div>
+                )
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center p-12 text-center">
+                  <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] border border-slate-100 flex items-center justify-center mb-8 shadow-sm">
+                    <FileText size={40} className="text-slate-300" />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight mb-3 uppercase">Select a Conversation</h3>
+                  <p className="max-w-xs mx-auto text-slate-500 text-sm font-medium leading-relaxed">
+                    Click on any call log from the left panel to view full transcripts, AI analysis, and recordings.
                   </p>
-                  <Button
-                    onClick={() => handleSelectLog(null)}
-                    variant="outline"
-                    className="text-indigo-600 font-bold text-xs uppercase tracking-wider"
-                  >
-                    Return to List
-                  </Button>
                 </div>
-              )
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center p-12 text-center">
-                <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] border border-slate-100 flex items-center justify-center mb-8 shadow-sm">
-                  <FileText size={40} className="text-slate-300" />
-                </div>
-                <h3 className="text-xl font-black text-slate-900 tracking-tight mb-3 uppercase">Select a Conversation</h3>
-                <p className="max-w-xs mx-auto text-slate-500 text-sm font-medium leading-relaxed">
-                  Click on any call log from the left panel to view full transcripts, AI analysis, and recordings.
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #E2E8F0;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #CBD5E1;
-        }
-      `}</style>
+        <style>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 10px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #CBD5E1;
+            border-radius: 10px;
+          }
+        `}</style>
+      </div>
     </DashboardLayout>
   );
 };
