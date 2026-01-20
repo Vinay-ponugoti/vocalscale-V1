@@ -374,8 +374,8 @@ export const Services: React.FC = () => {
                 <Upload size={18} />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-slate-900">Upload Knowledge Base</h4>
-                <p className="text-xs text-slate-500 mt-0.5">Upload PDFs, Docs, or Spreadsheets to train your AI.</p>
+                <h4 className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900">Upload Knowledge Base</h4>
+                <p className="text-sm text-slate-500 mt-0.5">Upload PDFs, Docs, or Spreadsheets to train your AI.</p>
               </div>
             </div>
           </div>
@@ -403,8 +403,8 @@ export const Services: React.FC = () => {
               <Plus size={18} />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-slate-900">Add Manually</h4>
-              <p className="text-xs text-slate-500 mt-0.5">Quickly add a service item by hand.</p>
+              <h4 className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900">Add Manually</h4>
+              <p className="text-sm text-slate-500 mt-0.5">Quickly add a service item by hand.</p>
             </div>
           </div>
         </div>
@@ -471,10 +471,10 @@ export const Services: React.FC = () => {
       {/* Services List */}
       < div className="space-y-4 pt-2" >
         <div className="flex items-center justify-between px-1">
-          <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+          <h3 className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900 flex items-center gap-2">
             <FileUp className="text-indigo-600 w-4 h-4" />
             Service Items
-            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
               {localServices.length}
             </span>
           </h3>
@@ -558,42 +558,44 @@ export const Services: React.FC = () => {
                       >
                         <div className="p-5 space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-4">
+                              <div>
+                                <label className="text-sm font-medium leading-none text-slate-500 block mb-1.5">Service Name</label>
+                                <Input
+                                  value={service.name}
+                                  onChange={(e) => updateService(service.id, 'name', e.target.value)}
+                                  placeholder="e.g. Premium Haircut"
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="text-sm font-medium leading-none text-slate-500 block mb-1.5">Price ($)</label>
+                                  <Input
+                                    type="number"
+                                    value={service.amount}
+                                    onChange={(e) => updateService(service.id, 'amount', parseFloat(e.target.value))}
+                                    placeholder="0.00"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium leading-none text-slate-500 block mb-1.5">Duration</label>
+                                  <Input
+                                    value={service.duration || ''}
+                                    onChange={(e) => updateService(service.id, 'duration', e.target.value)}
+                                    placeholder="e.g. 30 min"
+                                  />
+                                </div>
+                              </div>
+                            </div>
                             <div>
-                              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Service Name</label>
-                              <Input
-                                value={service.name}
-                                onChange={(e) => updateService(service.id, 'name', e.target.value)}
-                                placeholder="e.g. Premium Haircut"
+                              <label className="text-sm font-medium leading-none text-slate-500 block mb-1.5">Description</label>
+                              <TextArea
+                                value={service.description || ''}
+                                onChange={(e) => updateService(service.id, 'description', e.target.value)}
+                                placeholder="Briefly describe what's included..."
+                                rows={4}
                               />
                             </div>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Price ($)</label>
-                                <Input
-                                  type="number"
-                                  value={service.amount}
-                                  onChange={(e) => updateService(service.id, 'amount', parseFloat(e.target.value))}
-                                  placeholder="0.00"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Duration</label>
-                                <Input
-                                  value={service.duration || ''}
-                                  onChange={(e) => updateService(service.id, 'duration', e.target.value)}
-                                  placeholder="e.g. 30 min"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div>
-                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Description</label>
-                            <TextArea
-                              value={service.description || ''}
-                              onChange={(e) => updateService(service.id, 'description', e.target.value)}
-                              placeholder="Briefly describe what's included..."
-                              rows={2}
-                            />
                           </div>
                         </div>
                       </m.div>

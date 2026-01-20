@@ -57,9 +57,9 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttribu
 TextArea.displayName = 'TextArea';
 
 const Label = ({ children, optional }: { children: React.ReactNode, optional?: boolean }) => (
-  <label className="block mb-2 text-sm font-semibold text-slate-700 tracking-tight">
+  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 block mb-2">
     {children}
-    {optional && <span className="ml-2 font-normal text-slate-400 text-xs">(Optional)</span>}
+    {optional && <span className="ml-2 font-normal text-slate-500 text-xs">(Optional)</span>}
   </label>
 );
 
@@ -371,8 +371,8 @@ export const BusinessDetails: React.FC = () => {
                       <Sparkles className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="text-lg font-bold text-slate-900 tracking-tight">AI Smart Connect</h4>
-                      <p className="text-sm text-slate-500 leading-relaxed mt-1 max-w-md">
+                      <h4 className="scroll-m-20 text-lg font-semibold tracking-tight text-slate-900">AI Smart Connect</h4>
+                      <p className="text-sm text-slate-500 mt-1">
                         Instantly populate your business profile by syncing directly with Google Places.
                       </p>
                     </div>
@@ -422,8 +422,8 @@ export const BusinessDetails: React.FC = () => {
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div className="flex-1 z-10">
-                <h4 className="text-lg font-bold text-slate-900 tracking-tight mb-0.5">Setup Complete!</h4>
-                <p className="text-sm text-slate-600">Your business profile successfully connected to Google Places.</p>
+                <h4 className="scroll-m-20 text-lg font-semibold tracking-tight text-slate-900">Setup Complete!</h4>
+                <p className="text-sm text-slate-600 mt-1">Your business profile successfully connected to Google Places.</p>
               </div>
               <div className="px-4 py-2 bg-white rounded-xl border border-emerald-100 shadow-sm z-10">
                 <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
