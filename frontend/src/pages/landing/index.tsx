@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { HeroSection } from './components/HeroSection';
+import { Highlights } from './components/Highlights';
 import { Features } from './components/Features';
 import { HowItWorks } from './components/HowItWorks';
 import { Pricing } from './components/Pricing';
@@ -75,6 +76,7 @@ const Landing = () => {
 
       <div className="relative z-10 flex flex-col">
         <HeroSection />
+        <Highlights />
         <main className="flex flex-col">
           <Features />
           <HowItWorks />
