@@ -219,23 +219,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* Logo Header */}
           <div className={`h-20 flex items-center border-b transition-all duration-300 ${sidebarOpen ? 'justify-between px-8' : 'justify-center px-4'}`} style={{ borderColor: DS.border }}>
-            <div className="flex items-center gap-4">
-              {/* Logo Icon (Using Image) */}
+            <div className={`flex items-center transition-all duration-300 ${sidebarOpen ? 'px-6' : 'justify-center w-full px-4'}`}>
               <button
                 onClick={() => !sidebarOpen && setSidebarOpen(true)}
                 className={`flex items-center justify-center flex-shrink-0 group ${!sidebarOpen ? 'cursor-pointer' : 'cursor-default'}`}
               >
-                {/* Dark Brand Color (Charcoal) for Logo BG */}
-                <div className={`${sidebarOpen ? 'w-12 h-12' : 'w-10 h-10'} flex items-center justify-center rounded-2xl shadow-sm group-hover:scale-105 transition-all duration-500 p-2.5`} style={{ backgroundColor: DS.ink }}>
-                  <img src="/logo-icon1.2.png" alt="Logo" className="w-full h-full object-contain brightness-0 invert" />
+                <div className={`${sidebarOpen ? 'w-16 h-16' : 'w-10 h-10'} flex items-center justify-center rounded-2xl shadow-sm group-hover:scale-105 transition-all duration-500 p-2`} style={{ backgroundColor: DS.ink }}>
+                  <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                 </div>
               </button>
-
-              {/* Text Label */}
-              <div className={`flex flex-col overflow-hidden transition-all duration-300 ${sidebarOpen ? 'w-auto opacity-100' : 'w-0 opacity-0 hidden'}`}>
-                <span className="text-xl font-black tracking-tight uppercase whitespace-nowrap" style={{ color: DS.ink }}>Vocal Scale</span>
-                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: DS.stone }}>AI Agent Platform</span>
-              </div>
             </div>
 
             {/* Toggle Button (Only visible when open) */}
@@ -310,16 +302,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {/* Promo Card / Plan Badge */}
             {sidebarOpen && (
               <div className={`relative overflow-hidden rounded-xl p-3 shadow-sm border transition-all duration-500 group hover:shadow-lg ${subscription?.plans?.name
-                  ? 'bg-gradient-to-br from-slate-900 to-slate-800 border-slate-800'
-                  : 'bg-white border-slate-100 hover:border-blue-200'
+                ? 'bg-gradient-to-br from-slate-900 to-slate-800 border-slate-800'
+                : 'bg-white border-slate-100 hover:border-blue-200'
                 }`}>
                 {/* Decorative background element */}
                 <div className="absolute -right-3 -top-3 w-12 h-12 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all duration-700" />
 
                 <div className="flex items-center gap-2 mb-1.5 relative z-10">
                   <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform duration-500 group-hover:scale-110 ${subscription?.plans?.name
-                      ? 'bg-blue-500/20 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.3)]'
-                      : 'bg-blue-50 text-blue-600'
+                    ? 'bg-blue-500/20 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.3)]'
+                    : 'bg-blue-50 text-blue-600'
                     }`}>
                     <Zap size={12} strokeWidth={2.5} />
                   </div>
@@ -473,8 +465,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     onClick={() => setNotificationPanelOpen(!notificationPanelOpen)}
                     aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
                     className={`p-2.5 rounded-xl transition-all relative outline-none group ${notificationPanelOpen
-                        ? 'bg-blue-50 text-blue-600' // Electric Light/Dark
-                        : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
+                      ? 'bg-blue-50 text-blue-600' // Electric Light/Dark
+                      : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
                       }`}
                   >
                     <Bell size={20} strokeWidth={2.5} />
@@ -541,13 +533,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <div className="fixed inset-0 z-50 md:hidden backdrop-blur-sm" style={{ backgroundColor: 'rgba(31, 41, 55, 0.4)' }} onClick={() => setMobileMenuOpen(false)}>
             <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col" style={{ backgroundColor: DS.white }} onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 flex items-center justify-center rounded-2xl shadow-sm p-2.5" style={{ backgroundColor: DS.ink }}>
-                    <img src="/logo-icon1.2.png" alt="Logo" className="w-full h-full object-contain brightness-0 invert" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xl font-black tracking-tight uppercase" style={{ color: DS.ink }}>Vocal Scale</span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: DS.stone }}>AI Agent Platform</span>
+                <div className="flex items-center">
+                  <div className="w-16 h-16 flex items-center justify-center rounded-2xl shadow-sm p-2" style={{ backgroundColor: DS.ink }}>
+                    <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                   </div>
                 </div>
                 <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-xl" aria-label="Close menu" style={{ color: DS.stone, backgroundColor: DS.surface }}>

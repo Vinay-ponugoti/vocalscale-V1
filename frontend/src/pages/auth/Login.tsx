@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Loader2, LogIn } from 'lucide-react';
+import { Mail, Lock, Loader2, LogIn, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import AuthLayout from '../layouts/AuthLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
-import { storeSession } from '../../utils/sessionUtils';
-
 import { useQueryClient } from '@tanstack/react-query';
 import { env } from '../../config/env';
+import Button from '../../components/ui/Button';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -39,8 +39,6 @@ const Login = () => {
 
     setLoading(true);
     try {
-      // Call Python backend for login
-      console.log('Attempting login via backend:', email);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -50,31 +48,22 @@ const Login = () => {
         }),
       });
 
-      console.log('Backend login response status:', response.status);
-
       if (!response.ok) {
         let errorMsg = 'Invalid email or password.';
         try {
           const errorData = await response.json();
-          console.error('Backend login error details:', errorData);
           errorMsg = errorData.detail || errorMsg;
-        } catch (parseErr) {
-          console.error('Failed to parse error response:', parseErr);
-        }
+        } catch (parseErr) { }
         throw new Error(errorMsg);
       }
 
       const responseData = await response.json();
-      console.log('Login successful, received data:', { ...responseData, session: !!responseData.session });
       const { session } = responseData;
 
       if (session && (session.access_token || session.refresh_token)) {
-        console.log('Storing session and navigating...');
-
-        // Update auth context immediately
         setAuthSession(session);
 
-        // Prefetch critical dashboard data immediately after login
+        // Prefetch critical dashboard data
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
         const authHeaders = {
@@ -82,7 +71,6 @@ const Login = () => {
           'ngrok-skip-browser-warning': 'true'
         };
 
-        // 1. Dashboard Stats
         queryClient.prefetchQuery({
           queryKey: ['dashboard', dateStr, 7],
           queryFn: async () => {
@@ -93,63 +81,12 @@ const Login = () => {
           }
         });
 
-        // 2. Notifications
-        queryClient.prefetchQuery({
-          queryKey: ['notifications'],
-          queryFn: async () => {
-            const response = await fetch(`${env.API_URL}/dashboard/notifications`, {
-              headers: authHeaders
-            });
-            return response.json();
-          }
-        });
-
-        // 3. Business Profile
-        queryClient.prefetchQuery({
-          queryKey: ['business-profile'],
-          queryFn: async () => {
-            const response = await fetch(`${env.API_URL}/business/profile`, {
-              headers: authHeaders
-            });
-            return response.json();
-          }
-        });
-
-        // 4. Recent Calls (Page 1)
-        queryClient.prefetchQuery({
-          queryKey: ['calls', 1, 10, null, null, null, null, null],
-          queryFn: async () => {
-            const response = await fetch(`${env.API_URL}/dashboard/calls?page=1&size=10`, {
-              headers: authHeaders
-            });
-            return response.json();
-          }
-        });
-
-        // 5. Appointments (Page 1)
-        queryClient.prefetchQuery({
-          queryKey: ['appointments', 1, 10],
-          queryFn: async () => {
-            const response = await fetch(`${env.API_URL}/dashboard/appointments?page=1&size=10`, {
-              headers: authHeaders
-            });
-            return response.json();
-          }
-        });
-
-        showToast('Login successful!', 'success');
-
-        // Use navigate for smoother transition
-        console.log('Redirecting to dashboard...');
+        showToast('Welcome back!', 'success');
         navigate('/dashboard', { replace: true });
       } else {
-        console.warn('Login successful but no valid session/token received');
-        const msg = 'Login successful, but session could not be established. Please try again.';
-        setError(msg);
-        showToast(msg, 'error');
+        throw new Error('Session could not be established.');
       }
     } catch (e) {
-      console.error('Login process error:', e);
       const message = e instanceof Error ? e.message : 'Failed to connect to authentication server.';
       setError(message);
       showToast(message, 'error');
@@ -160,9 +97,7 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     if (!isConfigured) {
-      const msg = 'Service unavailable.';
-      setError(msg);
-      showToast(msg, 'error');
+      showToast('Service unavailable.', 'error');
       return;
     }
 
@@ -170,74 +105,73 @@ const Login = () => {
       const redirectUrl = `${window.location.origin}/auth/callback`;
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
       if (!response.ok) throw new Error('Failed to get auth URL');
-      if (!response.ok) throw new Error('Failed to get auth URL');
 
       const { url } = await response.json();
       window.location.href = url;
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'An error occurred during Google login.';
-      setError(message);
-      showToast(message, 'error');
+      showToast('An error occurred during Google login.', 'error');
     }
   };
 
   return (
     <AuthLayout>
-      <div className="bg-white/95 md:bg-white/90 backdrop-blur-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white rounded-[1.5rem] md:rounded-[2rem] w-full max-w-[440px] p-6 md:p-10 flex flex-col items-center text-center transition-colors duration-300 max-h-[calc(100vh-7rem)] overflow-y-auto">
+      <div className="flex flex-col w-full max-w-[440px] px-6 py-12 md:bg-white md:rounded-[2.5rem] md:shadow-[0_20px_50px_rgba(0,0,0,0.04)] md:border md:border-slate-100 items-center">
 
-        {/* Icon - Hidden on Mobile */}
-        <div className="hidden md:flex mb-6 bg-sky-50 p-3 rounded-2xl shadow-sm border border-sky-100">
-          <LogIn className="text-[#0ea5e9] w-8 h-8" />
+        {/* Design Match: Floating Icon at top */}
+        <div className="mb-8 p-6 bg-white rounded-[1.5rem] shadow-[0_10px_30px_rgba(0,0,0,0.05)] border border-slate-50">
+          <LogIn className="w-8 h-8 text-slate-900" strokeWidth={1.5} />
         </div>
 
-        {/* Title */}
-        <h1 className="text-xl md:text-2xl font-bold text-slate-800 mb-2 md:mb-3">
-          Sign in to your Voice Agent
-        </h1>
+        {/* Design Match: Centered Text */}
+        <div className="text-center mb-10 space-y-3">
+          <h1 className="text-3xl font-bold text-slate-950 tracking-tight">
+            Sign in with email
+          </h1>
+          <p className="text-slate-500 font-medium leading-relaxed max-w-[320px] mx-auto">
+            Step into your AI control center to bring your words, data, and teams together. For free.
+          </p>
+        </div>
 
         {securityMessage && (
-          <div className="mb-4 flex items-center gap-2 text-xs font-medium text-sky-600 animate-pulse bg-sky-50 px-3 py-1.5 rounded-full border border-sky-100">
-            <Loader2 className="w-3 h-3 animate-spin" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8 flex items-center gap-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-50 px-4 py-2 rounded-full border border-slate-100"
+          >
+            <div className="w-1.5 h-1.5 bg-slate-900 rounded-full animate-pulse" />
             {securityMessage}
-          </div>
+          </motion.div>
         )}
 
-        {/* Subtitle */}
-        <p className="text-xs md:text-sm text-slate-500 mb-6 md:mb-8 leading-relaxed max-w-xs">
-          Manage calls, phone numbers, and AI voice agents for your business.
-        </p>
-
-        {/* Error */}
+        {/* Error Callout */}
         {error && (
-          <div className="mb-6 w-full p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8 w-full p-4 bg-red-50 text-red-600 text-xs font-bold rounded-2xl border border-red-100 flex items-center gap-3"
+          >
+            <div className="w-1.5 h-1.5 bg-red-600 rounded-full" />
             {error}
-          </div>
+          </motion.div>
         )}
 
-        {/* Form */}
+        {/* Design Match: Minimalist Form */}
         <form className="w-full space-y-4" onSubmit={handleLogin}>
-
-          {/* Email */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Mail className="text-slate-400 w-5 h-5" />
-            </div>
+          <div className="relative group">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-slate-950 transition-colors" strokeWidth={1.5} />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Business email"
+              placeholder="Email"
               required
               disabled={loading}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 focus:border-sky-400 focus:ring-0 rounded-xl text-sm text-slate-700 placeholder-slate-400 shadow-sm"
+              className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-100 focus:border-slate-300 focus:bg-white rounded-[1rem] text-[15px] text-slate-900 placeholder:text-slate-400 transition-all outline-none"
             />
           </div>
 
-          {/* Password */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Lock className="text-slate-400 w-5 h-5" />
-            </div>
+          <div className="relative group">
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-slate-950 transition-colors" strokeWidth={1.5} />
             <input
               type="password"
               value={password}
@@ -245,62 +179,58 @@ const Login = () => {
               placeholder="Password"
               required
               disabled={loading}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 focus:border-sky-400 focus:ring-0 rounded-xl text-sm text-slate-700 placeholder-slate-400 shadow-sm"
+              className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-100 focus:border-slate-300 focus:bg-white rounded-[1rem] text-[15px] text-slate-900 placeholder:text-slate-400 transition-all outline-none"
             />
           </div>
 
-          {/* Forgot password */}
-          <div className="flex justify-end w-full pt-1">
-            <Link
-              to="/forgot-password"
-              className="text-xs font-medium text-slate-500 hover:text-[#0ea5e9]"
-            >
-              Forgot your password?
+          <div className="flex justify-end pt-1">
+            <Link to="/forgot-password" className="text-sm font-bold text-slate-900 hover:text-slate-600 transition-colors">
+              Forgot password?
             </Link>
           </div>
 
-          {/* Submit */}
-          <button
+          <Button
             type="submit"
-            disabled={loading}
-            className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-medium py-3 rounded-xl shadow-lg shadow-sky-200 transition-all active:scale-[0.98] flex justify-center"
+            isLoading={loading}
+            className="w-full h-14 bg-[#1e293b] hover:bg-[#020617] text-white rounded-[1rem] font-bold text-[16px] shadow-lg shadow-slate-950/20 active:scale-[0.98] transition-all mt-4"
           >
-            {loading ? <Loader2 className="animate-spin" size={20} /> : 'Sign In'}
-          </button>
+            Get Started
+          </Button>
         </form>
 
-        {/* Divider */}
-        <div className="w-full flex items-center justify-between my-8">
-          <div className="h-px bg-slate-200 w-full opacity-70 border-t border-dashed"></div>
-          <span className="px-3 text-xs text-slate-400 whitespace-nowrap">
-            Or continue with
-          </span>
-          <div className="h-px bg-slate-200 w-full opacity-70 border-t border-dashed"></div>
+        {/* Design Match: Custom Divider */}
+        <div className="relative w-full my-12">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-100/50 border-dashed"></div>
+          </div>
+          <div className="relative flex justify-center text-[12px] font-medium tracking-tight">
+            <span className="bg-white px-4 text-slate-400">Or sign in with</span>
+          </div>
         </div>
 
-        {/* Social login */}
-        <div className="w-full">
+        {/* Design Match: Bottom Logo Options (Google Only) */}
+        <div className="w-full flex justify-center">
           <button
             onClick={handleGoogleLogin}
-            className="w-full bg-white hover:bg-slate-50 border border-slate-200 rounded-xl py-3 flex items-center justify-center gap-3 shadow-sm transition-all active:scale-[0.98]"
+            className="w-32 h-16 bg-white hover:bg-slate-50 border border-slate-200 rounded-[1rem] flex items-center justify-center transition-all active:scale-[0.95] shadow-sm group"
           >
             <img
               alt="Google"
-              className="w-5 h-5"
+              className="w-6 h-6 grayscale group-hover:grayscale-0 transition-all"
               src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
             />
-            <span className="text-sm font-semibold text-slate-700">Continue with Google</span>
           </button>
         </div>
 
-        {/* Signup */}
-        <p className="text-center text-sm text-slate-600 mt-6">
-          New to the platform?{' '}
-          <Link to="/signup" className="text-[#0ea5e9] font-semibold hover:text-[#0284c7]">
-            Create an account
-          </Link>
-        </p>
-
+        {/* Footer */}
+        <div className="mt-12 text-center">
+          <p className="text-sm font-medium text-slate-400">
+            Fresh here?{' '}
+            <Link to="/signup" className="text-slate-900 font-bold hover:underline underline-offset-4">
+              Create a free account
+            </Link>
+          </p>
+        </div>
       </div>
     </AuthLayout>
   );

@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom
 import { LazyMotion, domAnimation } from 'framer-motion';
 import ProtectedRoute from './components/ProtectedRoute';
 import { PageLoader } from './components/ui/PageLoader';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { AuthSkeleton } from './components/ui/AuthSkeleton';
+import { DashboardSkeleton } from './components/ui/DashboardSkeleton';
 import { BusinessSetupProvider } from './context/BusinessSetupContext';
 import { SetupProvider } from './context/SetupContext';
 import { SearchProvider } from './context/SearchProvider';
@@ -49,49 +52,70 @@ function App() {
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/auth/callback" element={<GoogleCallback />} />
+
+            {/* Auth Routes with separate skeleton */}
+            <Route element={
+              <ErrorBoundary>
+                <Suspense fallback={<AuthSkeleton />}>
+                  <Outlet />
+                </Suspense>
+              </ErrorBoundary>
+            }>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/auth/callback" element={<GoogleCallback />} />
+            </Route>
 
             {/* Protected Setup Routes */}
-            <Route element={<ProtectedRoute />}>
-
-              {/* Dashboard Routes */}
+            <Route element={
+              <ErrorBoundary>
+                <ProtectedRoute />
+              </ErrorBoundary>
+            }>
               <Route element={
-                <BusinessSetupProvider>
-                  <SearchProvider>
-                    <Outlet />
-                  </SearchProvider>
-                </BusinessSetupProvider>
+                <Suspense fallback={<DashboardSkeleton />}>
+                  <Outlet />
+                </Suspense>
               }>
-                <Route path="/dashboard" element={<DashboardHome />} />
-                <Route path="/dashboard/calls" element={<CallLogs />} />
-                <Route path="/dashboard/calls/:callId" element={<CallLogs />} />
-                <Route path="/dashboard/appointments" element={<Appointments />} />
-                <Route path="/dashboard/reviews" element={<Reviews />} />
-                <Route path="/dashboard/settings" element={<Settings />} />
-                <Route path="/dashboard/billing" element={<Billing />} />
-                <Route path="/dashboard/billing/plans" element={<Plans />} />
-                <Route path="/dashboard/help" element={<HelpCenter />} />
-                <Route path="/dashboard/voice-setup" element={<VoiceSetup />} />
-                <Route path="/dashboard/voice-setup/setup-subaccount" element={<SetupSubaccount />} />
-                <Route path="/dashboard/voice-setup/buy" element={<GetNewNumber />} />
-                <Route path="/dashboard/voice-setup/existing" element={<UseExistingNumber />} />
-                <Route path="/dashboard/business-details" element={<BusinessSetup />} />
+                {/* Dashboard Routes */}
+                <Route element={
+                  <BusinessSetupProvider>
+                    <SearchProvider>
+                      <Outlet />
+                    </SearchProvider>
+                  </BusinessSetupProvider>
+                }>
+                  <Route path="/dashboard" element={<DashboardHome />} />
+                  <Route path="/dashboard/calls" element={<CallLogs />} />
+                  <Route path="/dashboard/calls/:callId" element={<CallLogs />} />
+                  <Route path="/dashboard/appointments" element={<Appointments />} />
+                  <Route path="/dashboard/reviews" element={<Reviews />} />
+                  <Route path="/dashboard/settings" element={<Settings />} />
+                  <Route path="/dashboard/billing" element={<Billing />} />
+                  <Route path="/dashboard/billing/plans" element={<Plans />} />
+                  <Route path="/dashboard/help" element={<HelpCenter />} />
+                  <Route path="/dashboard/voice-setup" element={<VoiceSetup />} />
+                  <Route path="/dashboard/voice-setup/setup-subaccount" element={<SetupSubaccount />} />
+                  <Route path="/dashboard/voice-setup/buy" element={<GetNewNumber />} />
+                  <Route path="/dashboard/voice-setup/existing" element={<UseExistingNumber />} />
+                  <Route path="/dashboard/business-details" element={<BusinessSetup />} />
 
-                {/* Voice Model Setup Routes (Moved inside Dashboard) */}
-                <Route path="/dashboard/voice-model/*" element={
-                  <SetupProvider>
-                    <Routes>
-                      <Route path="method" element={<Method />} />
-                      <Route path="record" element={<Record />} />
-                      <Route path="upload" element={<Upload />} />
-                      <Route path="processing" element={<Processing />} />
-                      <Route path="preview" element={<Preview />} />
-                    </Routes>
-                  </SetupProvider>
-                } />
+                  {/* Voice Model Setup Routes (Moved inside Dashboard) */}
+                  <Route path="/dashboard/voice-model/*" element={
+                    <ErrorBoundary>
+                      <SetupProvider>
+                        <Routes>
+                          <Route path="method" element={<Method />} />
+                          <Route path="record" element={<Record />} />
+                          <Route path="upload" element={<Upload />} />
+                          <Route path="processing" element={<Processing />} />
+                          <Route path="preview" element={<Preview />} />
+                        </Routes>
+                      </SetupProvider>
+                    </ErrorBoundary>
+                  } />
+                </Route>
               </Route>
             </Route>
           </Routes>

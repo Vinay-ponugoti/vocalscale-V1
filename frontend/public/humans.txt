@@ -1,0 +1,17 @@
+/* TEAM */
+    Founder: [Your Name/VocalScale Team]
+    Contact: contact@vocalscale.ai
+    Twitter: @vocalscale
+
+/* THANKS */
+    Google Deepmind (Antigravity Agent)
+    Lucide Icons
+    Framer Motion
+    Shadcn UI
+
+/* SITE */
+    Last update: 2026/01/20
+    Language: English
+    Doctype: HTML5
+    Standards: React, Tailwind CSS, TypeScript
+    Software: Vite
