@@ -1,7 +1,6 @@
 /* TEAM */
-    Founder: [Your Name/VocalScale Team]
-    Contact: contact@vocalscale.ai
-    Twitter: @vocalscale
+    Founder: [Vinay/VocalScale Team]
+    Contact: me@vocalscale.ai
 
 /* THANKS */
     Google Deepmind (Antigravity Agent)

@@ -224,8 +224,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 onClick={() => !sidebarOpen && setSidebarOpen(true)}
                 className={`flex items-center justify-center flex-shrink-0 group ${!sidebarOpen ? 'cursor-pointer' : 'cursor-default'}`}
               >
-                <div className={`${sidebarOpen ? 'w-20 h-20' : 'w-12 h-12'} flex items-center justify-center rounded-2xl shadow-sm group-hover:scale-105 transition-all duration-500 p-2.5`} style={{ backgroundColor: DS.ink }}>
-                  <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                <div className="flex items-center gap-3">
+                  <img src="/logo.png" alt="VocalScale" className="w-10 h-10 object-contain" />
+                  {sidebarOpen && (
+                    <span className="text-xl font-black tracking-tight text-slate-900">VocalScale</span>
+                  )}
                 </div>
               </button>
             </div>
@@ -385,10 +388,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </button>
 
             {/* Top Logo - Mobile Only */}
-            <div className="md:hidden flex items-center mr-2">
-              <div className="w-12 h-12 flex items-center justify-center rounded-xl shadow-sm p-2" style={{ backgroundColor: DS.ink }}>
-                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
-              </div>
+            <div className="md:hidden flex items-center gap-2 mr-2">
+              <img src="/logo.png" alt="VocalScale" className="w-8 h-8 object-contain" />
+              <span className="text-lg font-black tracking-tight text-slate-900">VocalScale</span>
             </div>
 
             {/* Left: Search (Always visible now, responsive width) */}
@@ -492,15 +494,27 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   aria-haspopup="true"
                   aria-expanded={profileDropdownOpen}
-                  className="flex items-center gap-2 md:gap-3 p-1 pr-2 rounded-2xl border-2 border-transparent hover:border-slate-200 transition-all shadow-sm"
-                  style={{ backgroundColor: DS.white }}
+                  className={`flex items-center gap-2 md:gap-3 p-1.5 rounded-full border transition-all duration-200 shadow-sm ${profileDropdownOpen
+                      ? 'bg-white border-blue-200 ring-4 ring-blue-50'
+                      : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-md'
+                    }`}
                 >
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm" style={{ backgroundColor: DS.electric }}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-inner bg-gradient-to-br from-blue-500 to-indigo-600">
                     {firstLetter}
                   </div>
-                  <div className="hidden lg:block text-left">
-                    <p className="text-xs font-bold leading-tight" style={{ color: DS.ink }}>{displayName}</p>
-                    <p className="text-[10px] font-medium truncate max-w-[80px]" style={{ color: DS.stone }}>{userEmail}</p>
+
+                  {/* Desktop Text */}
+                  <div className="hidden lg:block text-left pr-2">
+                    <p className="text-xs font-bold leading-tight text-slate-700">{displayName}</p>
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <p className="text-[10px] font-medium text-slate-400 capitalize">Online</p>
+                    </div>
+                  </div>
+
+                  {/* Chevron for visual cue */}
+                  <div className={`hidden lg:flex text-slate-400 transition-transform duration-300 ${profileDropdownOpen ? 'rotate-180' : ''}`}>
+                    <ChevronRight size={14} className="rotate-90" />
                   </div>
                 </button>
                 <ProfileDropdown
@@ -534,8 +548,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col" style={{ backgroundColor: DS.white }} onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
-                  <div className="w-20 h-20 flex items-center justify-center rounded-2xl shadow-sm p-2.5" style={{ backgroundColor: DS.ink }}>
-                    <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                  <div className="flex items-center gap-3">
+                    <img src="/logo.png" alt="VocalScale" className="w-10 h-10 object-contain" />
+                    <span className="text-2xl font-black tracking-tight text-slate-900">VocalScale</span>
                   </div>
                 </div>
                 <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-xl" aria-label="Close menu" style={{ color: DS.stone, backgroundColor: DS.surface }}>
