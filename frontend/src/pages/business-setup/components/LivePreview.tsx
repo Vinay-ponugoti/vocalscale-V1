@@ -1,108 +1,102 @@
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
-import { Mic, CheckCircle2, Phone, GripVertical, Wifi, Battery, Signal } from 'lucide-react';
+import { Mic, Sparkles, Activity, Clock, Phone, Signal, Wifi } from 'lucide-react';
 
 export const LivePreview = () => {
   const { state } = useBusinessSetup();
   const businessName = state.data.business.business_name || "Your Business";
 
   return (
-    <div className="w-full flex flex-col gap-6 lg:h-[calc(100vh-14rem)] lg:sticky lg:top-8 animate-in slide-in-from-right-8 duration-700">
+    <div className="w-full lg:sticky lg:top-8 animate-in fade-in slide-in-from-right-4 duration-700">
 
-      {/* Device Mockup Container */}
-      <div className="relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-2xl flex flex-col overflow-hidden">
+      {/* Live Status Card */}
+      <div className="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl shadow-slate-200/50 ring-1 ring-slate-900/5">
 
-        {/* Notch & Status Bar */}
-        <div className="absolute top-0 w-full h-8 bg-gray-800 z-20 flex items-center justify-between px-6 pt-2">
-          <span className="text-[10px] font-medium text-white">9:41</span>
-          <div className="flex items-center gap-1.5">
-            <Signal size={10} className="text-white" />
-            <Wifi size={10} className="text-white" />
-            <Battery size={10} className="text-white" />
+        {/* Header - Dark & Technical */}
+        <div className="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">System Online</span>
+          </div>
+          <div className="flex items-center gap-3 opacity-50">
+            <Signal size={12} className="text-slate-400" />
+            <Wifi size={12} className="text-slate-400" />
           </div>
         </div>
 
-        {/* Screen Content */}
-        <div className="flex-1 bg-slate-900 relative overflow-hidden flex flex-col">
+        {/* Main Visualization Area */}
+        <div className="p-8 relative">
+          {/* Background Ambient Effect */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-indigo-500/20 blur-[60px] rounded-full pointer-events-none" />
 
-          {/* Background Gradient/Mesh */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 via-purple-900/40 to-slate-900 z-0" />
-
-          {/* Call Info Header */}
-          <div className="mt-16 text-center z-10 px-4">
-            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-4 animate-pulse">
-              <span className="text-2xl font-bold text-white">{businessName.charAt(0).toUpperCase()}</span>
+          {/* Central Identity */}
+          <div className="relative z-10 flex flex-col items-center text-center mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4 ring-4 ring-slate-800">
+              <Mic className="text-white w-7 h-7" />
             </div>
-            <h3 className="text-xl font-bold text-white tracking-tight line-clamp-1">{businessName}</h3>
-            <p className="text-indigo-200 text-xs mt-1 font-medium">AI Assistant</p>
-            <p className="text-slate-400 text-[10px] mt-2">00:14</p>
+            <h3 className="text-lg font-bold text-white tracking-tight">{businessName}</h3>
+            <p className="text-indigo-300 text-xs font-medium mt-1">AI Voice Assistant • v1.02</p>
           </div>
 
-          {/* Voice Visualizer (CSS Animation) */}
-          <div className="flex-1 flex items-center justify-center z-10 gap-1.5">
-            {[1, 2, 3, 4, 5].map((i) => (
+          {/* Audio Waveform Visualization */}
+          <div className="relative z-10 h-16 flex items-center justify-center gap-1.5 mb-8">
+            {[...Array(12)].map((_, i) => (
               <div
                 key={i}
-                className="w-1.5 bg-indigo-400 rounded-full animate-voice-wave"
+                className="w-1.5 bg-indigo-400/80 rounded-full animate-pulse"
                 style={{
-                  height: '20px',
-                  animationDelay: `${i * 0.1}s`,
-                  animationDuration: '1s'
+                  height: Math.random() > 0.5 ? '24px' : '12px',
+                  animationDuration: `${0.8 + Math.random() * 0.5}s`,
+                  opacity: 0.6 + Math.random() * 0.4
                 }}
               />
             ))}
           </div>
 
-          {/* Transcript Bubble */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl mx-4 mb-8 p-4 z-10 relative">
-            <div className="absolute -top-3 left-4 bg-indigo-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
-              AI Speaking
+          {/* Live Transcript Bubble */}
+          <div className="relative z-10 bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles size={12} className="text-indigo-400" />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Greeting Logic</span>
             </div>
-            <p className="text-sm font-medium text-slate-100 leading-relaxed text-center">
-              "Hi, thanks for calling <span className="text-indigo-300">{businessName}</span>. How can I assist you today?"
+            <p className="text-sm text-slate-200 leading-relaxed font-light">
+              "Hi, thanks for calling <span className="text-indigo-400 font-medium">{businessName}</span>. How can I assist you today?"
             </p>
           </div>
-
-          {/* Call Controls Mockup */}
-          <div className="pb-12 px-8 flex items-center justify-between z-10">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
-              <Mic size={20} className="text-white" />
-            </div>
-            <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/30">
-              <Phone size={28} className="text-white fill-white rotate-[135deg]" />
-            </div>
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
-              <GripVertical size={20} className="text-white" />
-            </div>
-          </div>
-
         </div>
 
-        {/* Device Chin */}
-        <div className="h-1 bg-gray-800 w-full absolute bottom-0 z-20"></div>
-        <div className="h-1 w-1/3 bg-white/20 rounded-full absolute bottom-2 left-1/2 -translate-x-1/2 z-30"></div>
+        {/* Footer Metrics */}
+        <div className="grid grid-cols-2 border-t border-slate-800 bg-slate-900/50">
+          <div className="p-4 border-r border-slate-800 flex items-center gap-3">
+            <Clock className="text-slate-500 w-4 h-4" />
+            <div>
+              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Latency</div>
+              <div className="text-white font-mono text-sm">~800ms</div>
+            </div>
+          </div>
+          <div className="p-4 flex items-center gap-3">
+            <Activity className="text-emerald-500 w-4 h-4" />
+            <div>
+              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Status</div>
+              <div className="text-white font-mono text-sm">Active</div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      {/* Info Card below phone */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex items-start gap-3 max-w-[300px] mx-auto">
-        <CheckCircle2 size={18} className="text-emerald-500 mt-0.5 shrink-0" />
+      {/* Helper Card */}
+      <div className="mt-4 p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex gap-3">
+        <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg shrink-0 h-fit">
+          <Phone size={16} />
+        </div>
         <div>
-          <h4 className="text-sm font-bold text-slate-900">Real-time Preview</h4>
+          <h4 className="text-sm font-bold text-slate-900">Test Your Setup</h4>
           <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-            Updates instantly as you modify your business identity and settings.
+            Dial your assigned number to hear this configuration live in production.
           </p>
         </div>
       </div>
 
-      <style>{`
-        @keyframes voice-wave {
-            0%, 100% { height: 10px; opacity: 0.5; }
-            50% { height: 40px; opacity: 1; }
-        }
-        .animate-voice-wave {
-            animation: voice-wave 1.2s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 };
-

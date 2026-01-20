@@ -63,7 +63,7 @@ const BusinessSetupContent = () => {
 
         {/* Page Header */}
         <div className="px-8 py-6 bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-30 transition-all">
-          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+          <div className="max-w-[1600px] mx-auto w-full flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Business Setup</h1>
               <p className="text-slate-500 text-sm mt-1">Configure your AI agent's core identity, availability, and services.</p>
@@ -78,11 +78,11 @@ const BusinessSetupContent = () => {
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto w-full custom-scrollbar">
-          <div className="max-w-7xl mx-auto p-8 2xl:p-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+          <div className="max-w-[1600px] mx-auto p-6 lg:p-10 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
 
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 2xl:gap-12 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Main Content Column (Left) */}
-              <div className="xl:col-span-8 space-y-8">
+              <div className="lg:col-span-8 space-y-6">
 
                 {/* Section 1: Business Identity */}
                 <SectionCard
@@ -114,7 +114,7 @@ const BusinessSetupContent = () => {
               </div>
 
               {/* Sidebar Column (Right) */}
-              <div className="xl:col-span-4 lg:sticky lg:top-8 order-first xl:order-last">
+              <div className="lg:col-span-4 lg:sticky lg:top-8 order-first lg:order-last">
                 <LivePreview />
               </div>
             </div>
@@ -123,7 +123,7 @@ const BusinessSetupContent = () => {
 
         {/* Footer Action Bar */}
         <div className="border-t border-slate-200 bg-white p-4 px-8 z-30 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="max-w-[1600px] mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-medium">
               <div className={`w-2 h-2 rounded-full ${isDirty ? 'bg-amber-400' : 'bg-emerald-400'}`} />
               <span className="text-slate-600">{isDirty ? 'Unsaved changes' : 'All changes saved'}</span>
