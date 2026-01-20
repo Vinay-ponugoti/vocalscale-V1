@@ -194,35 +194,7 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
               </CardContent>
             </Card>
 
-            <Card className="border-none bg-indigo-600 shadow-xl shadow-indigo-100 overflow-hidden relative group">
-              <div className="absolute -right-8 -bottom-8 opacity-10 transform group-hover:scale-125 transition-transform duration-1000">
-                <Sparkles className="w-48 h-48 text-white" />
-              </div>
-              <CardHeader className="relative z-10 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/10">
-                    <Sparkles className="w-5 h-5 text-white" />
-                  </div>
-                  <CardTitle className="text-xs font-black text-white uppercase tracking-widest">Growth Engine</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="relative z-10">
-                <p className="text-[15px] text-indigo-50 font-bold leading-relaxed mb-6">
-                  Your AI agent is currently responding to 0% of reviews within 15 minutes.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-[10px] font-black text-indigo-200 uppercase tracking-widest">
-                    <span>Response Rate</span>
-                    <span>0%</span>
-                  </div>
-                  <Progress value={0} className="h-1.5 bg-white/20" />
-                </div>
-                <p className="text-[10px] text-indigo-200 font-bold uppercase mt-6 tracking-widest flex items-center gap-2">
-                  <span className="w-1 h-1 rounded-full bg-indigo-200"></span>
-                  0% increase in retention
-                </p>
-              </CardContent>
-            </Card>
+
           </div>
         </div>
       </div>
