@@ -224,7 +224,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 onClick={() => !sidebarOpen && setSidebarOpen(true)}
                 className={`flex items-center justify-center flex-shrink-0 group ${!sidebarOpen ? 'cursor-pointer' : 'cursor-default'}`}
               >
-                <div className={`${sidebarOpen ? 'w-16 h-16' : 'w-10 h-10'} flex items-center justify-center rounded-2xl shadow-sm group-hover:scale-105 transition-all duration-500 p-2`} style={{ backgroundColor: DS.ink }}>
+                <div className={`${sidebarOpen ? 'w-20 h-20' : 'w-12 h-12'} flex items-center justify-center rounded-2xl shadow-sm group-hover:scale-105 transition-all duration-500 p-2.5`} style={{ backgroundColor: DS.ink }}>
                   <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                 </div>
               </button>
@@ -386,8 +386,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
             {/* Top Logo - Mobile Only */}
             <div className="md:hidden flex items-center mr-2">
-              <div className="w-10 h-10 flex items-center justify-center rounded-xl shadow-sm p-2" style={{ backgroundColor: DS.ink }}>
-                <img src="/logo-icon1.2.png" alt="Logo" className="w-full h-full object-contain brightness-0 invert" />
+              <div className="w-12 h-12 flex items-center justify-center rounded-xl shadow-sm p-2" style={{ backgroundColor: DS.ink }}>
+                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
               </div>
             </div>
 
@@ -534,7 +534,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col" style={{ backgroundColor: DS.white }} onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
-                  <div className="w-16 h-16 flex items-center justify-center rounded-2xl shadow-sm p-2" style={{ backgroundColor: DS.ink }}>
+                  <div className="w-20 h-20 flex items-center justify-center rounded-2xl shadow-sm p-2.5" style={{ backgroundColor: DS.ink }}>
                     <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                   </div>
                 </div>
