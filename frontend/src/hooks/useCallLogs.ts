@@ -17,18 +17,18 @@ interface RawCallLog {
 export function useCallLogs(filters: CallLogFilters & { customDate?: string }) {
   const { data, isLoading, isPlaceholderData, error, refetch } = useQuery<{ items: RawCallLog[] }>({
     queryKey: ['call-logs', filters],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const headers = await getAuthHeader();
-      
+
       // Construct query parameters
       const params = new URLSearchParams();
       params.append('page', '1');
       params.append('size', '50'); // Fetch enough for the view
-      
+
       if (filters.status && filters.status !== 'All') {
         params.append('status', filters.status);
       }
-      
+
       if (filters.type && filters.type !== 'All') {
         params.append('category', filters.type);
       }
@@ -43,13 +43,13 @@ export function useCallLogs(filters: CallLogFilters & { customDate?: string }) {
         startOfDay.setHours(0, 0, 0, 0);
         const endOfDay = new Date(filters.customDate);
         endOfDay.setHours(23, 59, 59, 999);
-        
+
         params.append('start_date', startOfDay.toISOString());
         params.append('end_date', endOfDay.toISOString());
       } else if (filters.dateRange && filters.dateRange !== 'All' && filters.dateRange !== 'Custom') {
         const now = new Date();
         let startDate: Date | null = null;
-        
+
         if (filters.dateRange === '24h') {
           startDate = new Date(now.getTime() - (24 * 60 * 60 * 1000));
         } else if (filters.dateRange === '7d') {
@@ -57,14 +57,15 @@ export function useCallLogs(filters: CallLogFilters & { customDate?: string }) {
         } else if (filters.dateRange === '30d') {
           startDate = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
         }
-        
+
         if (startDate) {
           params.append('start_date', startDate.toISOString());
         }
       }
 
       const response = await fetch(`${env.API_URL}/dashboard/calls?${params.toString()}`, {
-        headers
+        headers,
+        signal
       });
 
       if (!response.ok) {

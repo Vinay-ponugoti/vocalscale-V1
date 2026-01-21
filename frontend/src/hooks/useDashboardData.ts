@@ -52,10 +52,11 @@ export const useDashboardData = (selectedDate: Date, days: number = 7, timezone:
 
   const { data, isLoading, isPlaceholderData, error } = useQuery<DashboardData>({
     queryKey: ['dashboard', dateStr, days, timezone],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const headers = await getAuthHeader();
       const response = await fetch(`${env.API_URL}/dashboard/stats?date=${selectedDate.toISOString()}&days=${days}&timezone=${timezone}`, {
-        headers
+        headers,
+        signal
       });
 
       if (!response.ok) {
