@@ -200,3 +200,15 @@
     color: hsl(var(--primary-foreground));
   }
 }
+
+/* Global overrides for Recharts focus behavior */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-layer {
+  outline: none !important;
+  user-select: none !important;
+}
+
+*:focus {
+  outline: none !important;
+}
