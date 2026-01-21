@@ -17,6 +17,7 @@ interface BusinessDetails {
   place_id?: string;
   rating?: number;
   auto_setup?: boolean;
+  image_url?: string;
 }
 
 interface BusinessHour {
