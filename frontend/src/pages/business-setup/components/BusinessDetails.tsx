@@ -71,74 +71,53 @@ interface SearchResultProps {
 }
 
 const SearchResultCard = ({ business, onSelect }: SearchResultProps) => (
-  <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/40 p-1 flex flex-col sm:flex-row items-stretch group hover:border-indigo-200 transition-all duration-300">
-    <div className="w-full sm:w-48 h-48 sm:h-auto bg-[#F2E3DB] rounded-xl flex items-center justify-center relative overflow-hidden shrink-0">
-      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="bg-white p-4 shadow-lg border border-slate-100 rotate-2 group-hover:rotate-0 transition-transform duration-500">
-        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center mb-1">Business Image</p>
-        <div className="w-24 h-32 bg-slate-50 border border-slate-100 flex items-center justify-center">
-          <Building2 className="w-8 h-8 text-slate-200" />
+  <button
+    onClick={() => onSelect(business.place_id)}
+    className="w-full bg-white text-left rounded-xl border border-slate-200 hover:border-indigo-400 p-2 flex items-start gap-4 transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-0.5 group"
+  >
+    {/* Image Section */}
+    <div className="w-24 h-24 rounded-lg bg-slate-100 overflow-hidden shrink-0 relative border border-slate-100">
+      {business.photo_url ? (
+        <img src={business.photo_url} alt={business.name} className="w-full h-full object-cover" />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center bg-[#F2E3DB] text-slate-300">
+          <Building2 className="w-8 h-8 opacity-50" />
         </div>
-      </div>
-      <div className="absolute bottom-3 left-3 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100 flex items-center gap-1.5">
-        <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-        <span className="text-[10px] font-black text-slate-900">{business.rating || '4.8'}</span>
+      )}
+      <div className="absolute top-1 right-1 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded shadow-sm flex items-center gap-0.5">
+        <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
+        <span className="text-[10px] font-bold text-slate-900">{business.rating || 'N/A'}</span>
       </div>
     </div>
 
-    <div className="flex-1 p-6 flex flex-col">
-      <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
-        <div>
-          <h3 className="text-xl font-bold text-slate-900 tracking-tight leading-none mb-2">{business.name}</h3>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className={`w-3 h-3 ${s <= (business.rating || 5) ? 'text-amber-400 fill-amber-400' : 'text-slate-200'}`} />
-              ))}
-            </div>
-            <span className="text-xs font-bold text-slate-400">({business.user_ratings_total || '124'} reviews)</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full uppercase tracking-wider">{business.types?.[0]?.replace(/_/g, ' ') || 'Service'}</span>
-          <div className="w-1 h-1 rounded-full bg-slate-300" />
-          <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Open now</span>
+    {/* Content Section */}
+    <div className="flex-1 py-1 min-w-0">
+      <div className="flex items-start justify-between gap-2 mb-1">
+        <h3 className="text-base font-bold text-slate-900 truncate pr-2 group-hover:text-indigo-700 transition-colors">{business.name}</h3>
+        {business.types?.[0] && (
+          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full uppercase tracking-wider shrink-0">
+            {business.types[0].replace(/_/g, ' ')}
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-start gap-2 mb-1.5">
+        <MapPin className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />
+        <p className="text-xs font-medium text-slate-500 line-clamp-1">{business.formatted_address}</p>
+      </div>
+
+      <div className="flex items-center gap-4 mt-2">
+        <span className="text-xs font-bold text-slate-400">
+          {business.user_ratings_total ? `(${business.user_ratings_total} reviews)` : '(New)'}
+        </span>
+        <div className="flex items-center gap-1.5 ml-auto mr-2">
+          <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+            Select <Sparkles className="w-3 h-3" />
           </span>
         </div>
       </div>
-
-      <div className="space-y-3 mb-6">
-        <div className="flex items-start gap-3">
-          <MapPin className="w-4 h-4 text-slate-400 mt-0.5" />
-          <p className="text-sm font-medium text-slate-500 leading-tight">{business.formatted_address}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Phone className="w-4 h-4 text-slate-400" />
-          <p className="text-sm font-medium text-slate-500">{business.formatted_phone_number || '(555) 012-3456'}</p>
-        </div>
-      </div>
-
-      <div className="mt-auto pt-4 border-t border-slate-50 flex flex-wrap gap-2">
-        <button
-          onClick={() => onSelect(business.place_id)}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-indigo-100 transition-all hover:-translate-y-0.5 active:translate-y-0"
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          Connect AI
-        </button>
-        <button className="px-4 py-2.5 bg-white border border-slate-100 text-slate-600 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-slate-50 transition-all">
-          <Navigation className="w-3.5 h-3.5" />
-          View on Maps
-        </button>
-        <button className="px-4 py-2.5 bg-white border border-slate-100 text-slate-600 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-slate-50 transition-all">
-          <ExternalLink className="w-3.5 h-3.5" />
-          Website
-        </button>
-      </div>
     </div>
-  </div>
+  </button>
 );
 
 // --- Main Component ---
@@ -253,7 +232,8 @@ export const BusinessDetails: React.FC = () => {
         category: mapCategory(details.types),
         place_id: details.place_id,
         rating: details.rating,
-        auto_setup: true  // Mark AI setup as complete
+        auto_setup: true,  // Mark AI setup as complete
+        image_url: searchResults.find(r => r.place_id === placeId)?.photo_url || '' // Use photo from search results
       });
 
       // Parse and update business hours if available
@@ -302,45 +282,75 @@ export const BusinessDetails: React.FC = () => {
 
       {/* Search Result Overlay */}
       {showSearch && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
-          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar space-y-4 animate-in zoom-in-95 duration-300">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-white font-black uppercase tracking-widest text-xs">Search Results</h3>
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-start justify-center pt-[15vh] px-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[70vh] animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+
+            {/* Header */}
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                  <Search className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Search Businesses</h3>
+                  <p className="text-xs text-slate-500">Select your business to sync details.</p>
+                </div>
+              </div>
               <button
                 onClick={() => setShowSearch(false)}
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
+                title="Close"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {isSearching ? (
-              <div className="bg-white rounded-3xl p-12 flex flex-col items-center justify-center border border-slate-100 shadow-2xl">
-                <Loader2 className="w-12 h-12 text-indigo-600 animate-spin mb-4" />
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Scanning Google Places...</p>
-              </div>
-            ) : searchResults.length > 0 ? (
-              <div className="space-y-4">
-                {searchResults.map((business, i) => (
-                  <SearchResultCard
-                    key={i}
-                    business={business}
-                    onSelect={handleSelectBusiness}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white rounded-3xl p-12 flex flex-col items-center justify-center border border-slate-100 shadow-2xl">
-                <Search className="w-12 h-12 text-slate-200 mb-4" />
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No businesses found</p>
-                <button
-                  onClick={() => setShowSearch(false)}
-                  className="mt-6 text-indigo-600 font-bold text-sm hover:underline"
-                >
-                  Back to manual entry
-                </button>
-              </div>
-            )}
+            {/* Results Area */}
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/50">
+              {isSearching ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="bg-white p-3 rounded-xl border border-slate-100 flex gap-4 animate-pulse">
+                      <div className="w-20 h-20 bg-slate-100 rounded-lg shrink-0" />
+                      <div className="flex-1 space-y-2 py-1">
+                        <div className="h-4 bg-slate-100 rounded w-3/4" />
+                        <div className="h-3 bg-slate-100 rounded w-1/2" />
+                        <div className="h-3 bg-slate-100 rounded w-1/3" />
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex items-center justify-center gap-2 text-slate-400 text-xs font-medium py-2">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Scanning Google Places...
+                  </div>
+                </div>
+              ) : searchResults.length > 0 ? (
+                <div className="space-y-3">
+                  {searchResults.map((business, i) => (
+                    <SearchResultCard
+                      key={i}
+                      business={business}
+                      onSelect={handleSelectBusiness}
+                    />
+                  ))}
+                  <p className="text-center text-[10px] text-slate-400 font-medium py-2">Showing top 5 results for relevance</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                    <Search className="w-8 h-8 text-slate-300" />
+                  </div>
+                  <h4 className="text-slate-900 font-bold mb-1">No businesses found</h4>
+                  <p className="text-slate-500 text-xs max-w-[200px] mb-6">We couldn't find any matches for "{searchQuery}". Try a different spelling or location.</p>
+                  <button
+                    onClick={() => setShowSearch(false)}
+                    className="px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold text-xs rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    Close & Enter Manually
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
