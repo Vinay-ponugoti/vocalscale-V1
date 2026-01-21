@@ -35,7 +35,7 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
   }
 
   return (
-    <div className="space-y-6 2xl:space-y-10">
+    <div className="space-y-6 2xl:space-y-10 select-none">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm ring-1 ring-indigo-500/10 shrink-0">
