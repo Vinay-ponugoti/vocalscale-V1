@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import { LazyMotion, domAnimation } from 'framer-motion';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -13,35 +13,38 @@ import { PageTracking } from './components/PageTracking';
 import { WebVitalsTracking } from './components/WebVitalsTracking';
 
 // Lazy Load Pages
-const Login = lazy(() => import('./pages/auth/Login'));
-const Signup = lazy(() => import('./pages/auth/Signup'));
-const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
-const GoogleCallback = lazy(() => import('./pages/auth/GoogleCallback'));
+import { lazyImport } from './utils/lazyImport';
+
+// Lazy Load Pages
+const Login = lazyImport(() => import('./pages/auth/Login'));
+const Signup = lazyImport(() => import('./pages/auth/Signup'));
+const ForgotPassword = lazyImport(() => import('./pages/auth/ForgotPassword'));
+const GoogleCallback = lazyImport(() => import('./pages/auth/GoogleCallback'));
 
 // Setup Pages
-const Method = lazy(() => import('./pages/setup/Method'));
-const Record = lazy(() => import('./pages/setup/Record'));
-const Upload = lazy(() => import('./pages/setup/Upload'));
-const Processing = lazy(() => import('./pages/setup/Processing'));
-const Preview = lazy(() => import('./pages/setup/Preview'));
+const Method = lazyImport(() => import('./pages/setup/Method'));
+const Record = lazyImport(() => import('./pages/setup/Record'));
+const Upload = lazyImport(() => import('./pages/setup/Upload'));
+const Processing = lazyImport(() => import('./pages/setup/Processing'));
+const Preview = lazyImport(() => import('./pages/setup/Preview'));
 
 // Landing Page
-const Landing = lazy(() => import('./pages/landing/index'));
+const Landing = lazyImport(() => import('./pages/landing/index'));
 
 // Dashboard Pages
-const DashboardHome = lazy(() => import('./pages/dashboard/Home'));
-const CallLogs = lazy(() => import('./pages/dashboard/CallLogs'));
-const Appointments = lazy(() => import('./pages/dashboard/Appointments'));
-const Reviews = lazy(() => import('./pages/dashboard/Reviews/index'));
-const HelpCenter = lazy(() => import('./pages/dashboard/HelpCenter'));
-const Settings = lazy(() => import('./pages/dashboard/settings'));
-const Billing = lazy(() => import('./pages/dashboard/Billing'));
-const Plans = lazy(() => import('./pages/dashboard/Billing/Plans'));
-const VoiceSetup = lazy(() => import('./pages/voice-setup'));
-const SetupSubaccount = lazy(() => import('./pages/voice-setup/SetupSubaccount'));
-const GetNewNumber = lazy(() => import('./pages/voice-setup/GetNewNumber'));
-const UseExistingNumber = lazy(() => import('./pages/voice-setup/UseExistingNumber'));
-const BusinessSetup = lazy(() => import('./pages/business-setup'));
+const DashboardHome = lazyImport(() => import('./pages/dashboard/Home'));
+const CallLogs = lazyImport(() => import('./pages/dashboard/CallLogs'));
+const Appointments = lazyImport(() => import('./pages/dashboard/Appointments'));
+const Reviews = lazyImport(() => import('./pages/dashboard/Reviews/index'));
+const HelpCenter = lazyImport(() => import('./pages/dashboard/HelpCenter'));
+const Settings = lazyImport(() => import('./pages/dashboard/settings'));
+const Billing = lazyImport(() => import('./pages/dashboard/Billing'));
+const Plans = lazyImport(() => import('./pages/dashboard/Billing/Plans'));
+const VoiceSetup = lazyImport(() => import('./pages/voice-setup'));
+const SetupSubaccount = lazyImport(() => import('./pages/voice-setup/SetupSubaccount'));
+const GetNewNumber = lazyImport(() => import('./pages/voice-setup/GetNewNumber'));
+const UseExistingNumber = lazyImport(() => import('./pages/voice-setup/UseExistingNumber'));
+const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
 
 function App() {
   return (
