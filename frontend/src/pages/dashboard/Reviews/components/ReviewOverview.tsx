@@ -80,7 +80,7 @@ export const ReviewOverview = ({ stats, loading }: ReviewOverviewProps) => {
   const trends = stats?.trends || { rating: 0, reviews: 0, responseRate: 0, responseTime: 0 };
 
   return (
-    <div className="space-y-6 2xl:space-y-10">
+    <div className="space-y-6 2xl:space-y-10 select-none">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">

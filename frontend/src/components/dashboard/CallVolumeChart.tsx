@@ -76,7 +76,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
   const peakCalls = Math.max(...safeData.map(d => d.calls), 0);
 
   return (
-    <Card className="border-slate-100 bg-white shadow-sm overflow-hidden h-full flex flex-col outline-none focus:outline-none select-none">
+    <Card className="border-slate-100 bg-white shadow-sm overflow-hidden h-full flex flex-col outline-none focus:outline-none select-none" style={{ outline: 'none' }} tabIndex={-1}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6 border-b border-slate-50">
         <div className="space-y-1">
           <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
