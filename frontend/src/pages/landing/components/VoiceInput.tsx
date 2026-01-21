@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Mic } from "lucide-react"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, m } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -47,7 +47,7 @@ export function VoiceInput({
 
     return (
         <div className={cn("flex flex-col items-center justify-center", className)}>
-            <motion.div
+            <m.div
                 className="flex p-2 border border-white/10 bg-white/5 items-center justify-center rounded-full cursor-pointer hover:bg-white/10 transition-colors"
                 layout
                 transition={{
@@ -59,7 +59,7 @@ export function VoiceInput({
             >
                 <div className="h-6 w-6 items-center justify-center flex ">
                     {_listening ? (
-                        <motion.div
+                        <m.div
                             className="w-4 h-4 bg-primary rounded-sm"
                             animate={{
                                 rotate: [0, 180, 360],
@@ -76,7 +76,7 @@ export function VoiceInput({
                 </div>
                 <AnimatePresence mode="wait">
                     {_listening && (
-                        <motion.div
+                        <m.div
                             initial={{ opacity: 0, width: 0, marginLeft: 0 }}
                             animate={{ opacity: 1, width: "auto", marginLeft: 8 }}
                             exit={{ opacity: 0, width: 0, marginLeft: 0 }}
@@ -88,7 +88,7 @@ export function VoiceInput({
                             {/* Frequency Animation */}
                             <div className="flex gap-0.5 items-center justify-center">
                                 {[...Array(12)].map((_, i) => (
-                                    <motion.div
+                                    <m.div
                                         key={i}
                                         className="w-0.5 bg-blue-500 rounded-full"
                                         initial={{ height: 2 }}
@@ -110,10 +110,10 @@ export function VoiceInput({
                             <div className="text-xs text-muted-foreground w-10 text-center">
                                 {formatTime(_time)}
                             </div>
-                        </motion.div>
+                        </m.div>
                     )}
                 </AnimatePresence>
-            </motion.div>
+            </m.div>
         </div>
     )
 }

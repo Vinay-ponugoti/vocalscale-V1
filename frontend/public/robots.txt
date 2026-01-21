@@ -1,4 +1,4 @@
-jkl;v# robots.txt for VocalScale
+# robots.txt for VocalScale
 # Documentation: https://www.robotstxt.org/
 
 User-agent: *
