@@ -39,7 +39,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${env.API_URL}/auth/login`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -74,7 +74,7 @@ const Login = () => {
         queryClient.prefetchQuery({
           queryKey: ['dashboard', dateStr, 7],
           queryFn: async () => {
-            const response = await fetch(`${env.API_URL}/dashboard/stats?date=${now.toISOString()}&days=7`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/stats?date=${now.toISOString()}&days=7`, {
               headers: authHeaders
             });
             return response.json();
