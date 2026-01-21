@@ -223,15 +223,29 @@ export const BusinessDetails: React.FC = () => {
         return 'other';
       };
 
+      // Clean website URL (remove query params)
+      const cleanWebsiteUrl = (url?: string): string => {
+        if (!url) return '';
+        try {
+          // If URL doesn't have protocol, add https:// to parse it correctly
+          const urlToParse = url.startsWith('http') ? url : `https://${url}`;
+          const urlObj = new URL(urlToParse);
+          return `${urlObj.origin}${urlObj.pathname}`;
+        } catch (e) {
+          return url; // Return original if parsing fails
+        }
+      };
+
       // Auto-populate business fields and mark setup as complete
       actions.updateBusiness({
         business_name: details.name,
         address: details.formatted_address,
         phone: details.formatted_phone_number || details.international_phone_number,
-        website: details.website,
+        website: cleanWebsiteUrl(details.website),
         category: mapCategory(details.types),
         place_id: details.place_id,
         rating: details.rating,
+        user_ratings_total: details.user_ratings_total,
         auto_setup: true,  // Mark AI setup as complete
         image_url: searchResults.find(r => r.place_id === placeId)?.photo_url || '' // Use photo from search results
       });

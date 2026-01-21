@@ -12,6 +12,8 @@ interface BusinessDetails {
   website?: string;
   contact_name?: string;
   timezone?: string;
+  rating?: number;
+  user_ratings_total?: number;
 }
 
 interface BusinessHour {
