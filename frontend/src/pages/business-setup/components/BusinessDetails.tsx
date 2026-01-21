@@ -298,7 +298,7 @@ export const BusinessDetails: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl font-sans relative">
+    <div className="w-full font-sans relative">
 
       {/* Search Result Overlay */}
       {showSearch && (
