@@ -1,6 +1,6 @@
 'use client';
 import type { ReactNode } from 'react';
-import { motion, type Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import React from 'react';
 
@@ -150,18 +150,18 @@ function AnimatedGroup({
   const itemVariants = variants?.item || selectedVariants.item;
 
   return (
-    <motion.div
+    <m.div
       initial='hidden'
       animate='visible'
       variants={containerVariants}
       className={cn(className)}
     >
       {React.Children.map(children, (child, index) => (
-        <motion.div key={index} variants={itemVariants}>
+        <m.div key={index} variants={itemVariants}>
           {child}
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }
 

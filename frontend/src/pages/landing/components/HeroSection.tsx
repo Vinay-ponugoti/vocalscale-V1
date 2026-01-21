@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronRight, Menu, X, Sparkles } from 'lucide-react'
-import { motion, AnimatePresence, type Variants } from 'framer-motion'
+import { m, AnimatePresence, type Variants } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { cn } from '@/lib/utils'
@@ -142,6 +142,8 @@ export function HeroSection() {
                                     <img
                                         src="/dash.png"
                                         alt="VocalScale Dashboard Interface"
+                                        width="2934"
+                                        height="1678"
                                         className="w-full h-auto rounded-xl border border-white/5 shadow-sm opacity-90"
                                     />
                                 </div>
@@ -202,23 +204,23 @@ const HeroHeader = () => {
                                 className="relative z-[102] -m-2.5 block cursor-pointer p-2.5 lg:hidden text-white transition-all active:scale-95">
                                 <AnimatePresence mode="wait">
                                     {menuState ? (
-                                        <motion.div
+                                        <m.div
                                             key="close"
                                             initial={{ opacity: 0, rotate: -90 }}
                                             animate={{ opacity: 1, rotate: 0 }}
                                             exit={{ opacity: 0, rotate: 90 }}
                                             transition={{ duration: 0.2 }}>
                                             <X size={26} strokeWidth={2.5} />
-                                        </motion.div>
+                                        </m.div>
                                     ) : (
-                                        <motion.div
+                                        <m.div
                                             key="menu"
                                             initial={{ opacity: 0, rotate: 90 }}
                                             animate={{ opacity: 1, rotate: 0 }}
                                             exit={{ opacity: 0, rotate: -90 }}
                                             transition={{ duration: 0.2 }}>
                                             <Menu size={26} strokeWidth={2.5} />
-                                        </motion.div>
+                                        </m.div>
                                     )}
                                 </AnimatePresence>
                             </button>
@@ -259,7 +261,7 @@ const HeroHeader = () => {
                 {/* Mobile Menu Overlay */}
                 <AnimatePresence>
                     {menuState && (
-                        <motion.div
+                        <m.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
@@ -301,7 +303,7 @@ const HeroHeader = () => {
                                 </nav>
                             </div>
 
-                            <motion.div
+                            <m.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.4 }}
@@ -324,8 +326,8 @@ const HeroHeader = () => {
                                         Get Started Free
                                     </Link>
                                 </Button>
-                            </motion.div>
-                        </motion.div>
+                            </m.div>
+                        </m.div>
                     )}
                 </AnimatePresence>
             </nav>
@@ -336,7 +338,7 @@ const HeroHeader = () => {
 const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn("flex items-center", className)}>
-            <img src="/logo.png" alt="VocalScale" className="h-10 md:h-11 w-auto object-contain" />
+            <img src="/logo.png" alt="VocalScale" width="428" height="428" className="h-10 md:h-11 w-auto object-contain" />
         </div>
     )
 }

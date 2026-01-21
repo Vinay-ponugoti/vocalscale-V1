@@ -242,7 +242,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 className={`flex items-center justify-center flex-shrink-0 group ${!sidebarOpen ? 'cursor-pointer' : 'cursor-default'}`}
               >
                 <div className="flex items-center gap-3">
-                  <img src="/logo.png" alt="VocalScale" className="w-10 h-10 object-contain" />
+                  <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-10 h-10 object-contain" />
                   {sidebarOpen && (
                     <span className="text-xl font-black tracking-tight text-slate-900">VocalScale</span>
                   )}
@@ -406,7 +406,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
             {/* Top Logo - Mobile Only */}
             <div className="md:hidden flex items-center gap-2 mr-2">
-              <img src="/logo.png" alt="VocalScale" className="w-8 h-8 object-contain" />
+              <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-8 h-8 object-contain" />
               <span className="text-lg font-black tracking-tight text-slate-900">VocalScale</span>
             </div>
 
@@ -554,7 +554,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
                   <div className="flex items-center gap-3">
-                    <img src="/logo.png" alt="VocalScale" className="w-10 h-10 object-contain" />
+                    <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-10 h-10 object-contain" />
                     <span className="text-2xl font-black tracking-tight text-slate-900">VocalScale</span>
                   </div>
                 </div>

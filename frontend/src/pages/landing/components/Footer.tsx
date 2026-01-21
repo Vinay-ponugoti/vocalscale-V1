@@ -30,7 +30,7 @@ export function Footer() {
           {/* Brand & Mini Newsletter */}
           <div className="max-w-sm">
             <Link to="/" className="flex items-center gap-2.5 mb-5 group">
-              <img src="/logo.png" alt="Vocal Scale Logo" className="w-8 h-8 object-contain transition-transform group-hover:scale-110" />
+              <img src="/logo.png" alt="Vocal Scale Logo" width="428" height="428" className="w-8 h-8 object-contain transition-transform group-hover:scale-110" />
               <span className="text-xl font-black text-white tracking-tight">VocalScale</span>
             </Link>
             <p className="text-slate-400 mb-6 text-sm leading-relaxed font-medium">

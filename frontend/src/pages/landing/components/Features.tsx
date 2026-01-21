@@ -1,5 +1,5 @@
 import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, User } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { VoiceInput } from './VoiceInput';
 
@@ -9,16 +9,16 @@ function AiReceptionistVisual() {
       <div className="flex items-center gap-8 mb-8">
         {/* Big Icon */}
         <div className="relative">
-          <motion.div
+          <m.div
             initial={{ scale: 0.9, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
             className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl shadow-blue-500/20"
           >
             <User className="w-12 h-12 text-white/90" strokeWidth={1.5} />
-          </motion.div>
+          </m.div>
           {/* Status dot */}
-          <motion.div
+          <m.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
             transition={{ delay: 0.4 }}
@@ -29,7 +29,7 @@ function AiReceptionistVisual() {
         {/* Voice Selection */}
         <div className="flex flex-col gap-2.5">
           {['Emma (US)', 'James (US)', 'Alice (UK)'].map((voice, i) => (
-            <motion.div
+            <m.div
               key={voice}
               initial={{ x: 20, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
@@ -43,18 +43,18 @@ function AiReceptionistVisual() {
             >
               {i === 0 && <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />}
               {voice}
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
 
-      <motion.div
+      <m.div
         initial={{ y: 20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6 }}
       >
         <VoiceInput />
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -119,7 +119,7 @@ export function Features() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16 md:mb-32">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -127,9 +127,9 @@ export function Features() {
           >
             <Sparkles className="h-4 w-4 text-blue-400" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">Capabilities</span>
-          </motion.div>
+          </m.div>
 
-          <motion.h2
+          <m.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -138,9 +138,9 @@ export function Features() {
           >
             Everything you need <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 italic tracking-tight">to scale.</span>
-          </motion.h2>
+          </m.h2>
 
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -148,12 +148,12 @@ export function Features() {
             className="text-base md:text-xl text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed"
           >
             We've combined state-of-the-art Voice AI with business-grade tools to help you provide world-class service, 24/7.
-          </motion.p>
+          </m.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6">
           {features.map((feature, index) => (
-            <motion.div
+            <m.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -189,7 +189,7 @@ export function Features() {
 
               {/* Hover highlight effect */}
               <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_80%)]" />
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
