@@ -18,6 +18,7 @@ interface BusinessDetails {
   rating?: number;
   auto_setup?: boolean;
   image_url?: string;
+  user_ratings_total?: number;
 }
 
 interface BusinessHour {
