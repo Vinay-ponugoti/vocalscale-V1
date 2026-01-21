@@ -1,6 +1,63 @@
-import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles } from 'lucide-react';
+import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { VoiceInput } from './VoiceInput';
+
+function AiReceptionistVisual() {
+  return (
+    <div className="flex flex-col items-center justify-center w-full h-full min-h-[220px]">
+      <div className="flex items-center gap-8 mb-8">
+        {/* Big Icon */}
+        <div className="relative">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl shadow-blue-500/20"
+          >
+            <User className="w-12 h-12 text-white/90" strokeWidth={1.5} />
+          </motion.div>
+          {/* Status dot */}
+          <motion.div
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
+            transition={{ delay: 0.4 }}
+            className="absolute top-1 right-1 w-6 h-6 bg-green-500 border-4 border-slate-900 rounded-full"
+          />
+        </div>
+
+        {/* Voice Selection */}
+        <div className="flex flex-col gap-2.5">
+          {['Emma (US)', 'James (US)', 'Alice (UK)'].map((voice, i) => (
+            <motion.div
+              key={voice}
+              initial={{ x: 20, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.3 + (i * 0.1) }}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-medium cursor-pointer transition-all hover:scale-105",
+                i === 0
+                  ? "bg-blue-500/20 border-blue-500/30 text-blue-200"
+                  : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+              )}
+            >
+              {i === 0 && <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />}
+              {voice}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.6 }}
+      >
+        <VoiceInput />
+      </motion.div>
+    </div>
+  );
+}
 
 export function Features() {
   const features = [
@@ -11,6 +68,7 @@ export function Features() {
       className: 'md:col-span-8 md:row-span-2 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent',
       iconBg: 'bg-blue-500/10',
       iconColor: 'text-blue-600',
+      content: <AiReceptionistVisual />
     },
     {
       icon: Timer,
@@ -107,11 +165,17 @@ export function Features() {
               )}
             >
               <div className="relative z-10 h-full flex flex-col">
-                <div className={cn(
-                  "w-12 md:w-14 h-12 md:h-14 rounded-2xl flex items-center justify-center mb-6 md:mb-8 transition-transform group-hover:scale-110 duration-500 bg-gradient-to-br from-white/10 to-transparent border border-white/10 shadow-inner"
-                )}>
-                  <feature.icon className={cn("w-6 md:w-7 h-6 md:h-7 text-blue-400")} strokeWidth={1.5} />
-                </div>
+                {feature.content ? (
+                  <div className="flex-1 flex items-center justify-center mb-6">
+                    {feature.content}
+                  </div>
+                ) : (
+                  <div className={cn(
+                    "w-12 md:w-14 h-12 md:h-14 rounded-2xl flex items-center justify-center mb-6 md:mb-8 transition-transform group-hover:scale-110 duration-500 bg-gradient-to-br from-white/10 to-transparent border border-white/10 shadow-inner"
+                  )}>
+                    <feature.icon className={cn("w-6 md:w-7 h-6 md:h-7 text-blue-400")} strokeWidth={1.5} />
+                  </div>
+                )}
 
                 <div className="mt-auto">
                   <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white mb-3 md:mb-4">
