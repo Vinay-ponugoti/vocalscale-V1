@@ -619,7 +619,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
                 <div className="pt-6 border-t mt-6" style={{ borderColor: DS.border }}>
                   <SectionLabel label="System" sidebarOpen={true} />
-                  {/* Removed duplicate Settings link */}
+                  <NavItem
+                    item={{ path: '/dashboard/settings', label: 'Settings', icon: Settings }}
+                    isActive={isActive('/dashboard/settings')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
                   <NavItem
                     item={{ path: '/dashboard/billing', label: 'Billing', icon: CreditCard }}
                     isActive={isActive('/dashboard/billing')}

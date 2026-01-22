@@ -226,7 +226,7 @@ const Settings = () => {
 
           {/* --- Sidebar / Tabs --- */}
           <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-slate-100 bg-white flex flex-col shrink-0">
-            <div className="p-4 lg:p-6 pb-2 lg:pb-4">
+            <div className="hidden lg:block p-4 lg:p-6 pb-2 lg:pb-4">
               <h1 className="text-lg font-black text-slate-900 tracking-tight">Settings</h1>
               <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.15em] mt-0.5">Configuration</p>
             </div>
