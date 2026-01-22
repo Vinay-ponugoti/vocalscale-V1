@@ -560,8 +560,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         {/* MOBILE MENU OVERLAY */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 z-50 md:hidden backdrop-blur-sm" style={{ backgroundColor: 'rgba(31, 41, 55, 0.4)' }} onClick={() => setMobileMenuOpen(false)}>
-            <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col" style={{ backgroundColor: DS.white }} onClick={e => e.stopPropagation()}>
+          <div className="fixed inset-0 z-50 md:hidden backdrop-blur-sm animate-in fade-in duration-200" style={{ backgroundColor: 'rgba(31, 41, 55, 0.4)' }} onClick={() => setMobileMenuOpen(false)}>
+            <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col animate-in slide-in-from-left duration-300" style={{ backgroundColor: DS.white }} onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
                   <div className="flex items-center gap-3">
@@ -619,11 +619,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
                 <div className="pt-6 border-t mt-6" style={{ borderColor: DS.border }}>
                   <SectionLabel label="System" sidebarOpen={true} />
-                  <NavItem
-                    item={{ path: '/dashboard/settings', label: 'Settings', icon: Settings }}
-                    isActive={isActive('/dashboard/settings')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
+                  {/* Removed duplicate Settings link */}
                   <NavItem
                     item={{ path: '/dashboard/billing', label: 'Billing', icon: CreditCard }}
                     isActive={isActive('/dashboard/billing')}
