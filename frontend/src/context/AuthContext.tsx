@@ -10,6 +10,7 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
+  isSigningOut: boolean;
   securityMessage: string | null;
   signOut: () => Promise<void>;
   isConfigured: boolean;
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
   loading: true,
+  isSigningOut: false,
   securityMessage: null,
   signOut: async () => { },
   isConfigured: true,
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const [securityMessage, setSecurityMessage] = useState<string | null>(null);
   const mounted = useRef(true);
 
@@ -141,8 +144,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [session]); // Restart heartbeat only when session changes
 
   const signOut = async () => {
-    setLoading(true);
-    setSecurityMessage("Signing out safely...");
+    if (mounted.current) {
+      setIsSigningOut(true);
+      setLoading(true);
+      setSecurityMessage("Signing out safely...");
+    }
+
     try {
       const token = session?.access_token;
 
@@ -175,8 +182,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.log('✅ React Query cache cleared');
         }
 
-
-
         console.log('✅ Logout complete - all data cleared');
       }
     } catch (error) {
@@ -192,6 +197,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (mounted.current) {
         setLoading(false);
         setSecurityMessage(null);
+        setIsSigningOut(false);
       }
     }
   };
@@ -236,6 +242,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       session,
       user,
       loading,
+      isSigningOut,
       securityMessage,
       signOut,
       isConfigured: true,

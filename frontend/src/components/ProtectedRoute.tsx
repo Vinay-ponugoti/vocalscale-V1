@@ -4,9 +4,10 @@ import { isSessionExpired } from '../utils/sessionUtils';
 import { DashboardSkeleton } from './ui/DashboardSkeleton';
 
 export default function ProtectedRoute() {
-  const { user, loading, session } = useAuth();
+  const { user, loading, session, isSigningOut } = useAuth();
   const location = useLocation();
 
+  if (isSigningOut) return null; // Prevent flash during signout
   if (loading) return <DashboardSkeleton />;
 
   if (!user || !session || isSessionExpired(session)) {

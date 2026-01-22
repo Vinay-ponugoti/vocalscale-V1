@@ -265,7 +265,7 @@ const HeroHeader = () => {
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
                             className="fixed inset-0 bg-slate-950/98 backdrop-blur-2xl z-[90] lg:hidden pt-32 pb-12 px-8 flex flex-col justify-between h-screen">
 
                             {/* Animated Grid Background for Menu */}
@@ -273,22 +273,7 @@ const HeroHeader = () => {
 
                             <div className="relative z-10">
                                 <nav className="flex flex-col gap-6">
-                                    <AnimatedGroup
-                                        variants={{
-                                            container: {
-                                                visible: {
-                                                    transition: {
-                                                        staggerChildren: 0.1,
-                                                        delayChildren: 0.1
-                                                    }
-                                                }
-                                            },
-                                            item: {
-                                                hidden: { opacity: 0, x: -20 },
-                                                visible: { opacity: 1, x: 0 }
-                                            }
-                                        }}
-                                        className="flex flex-col gap-8">
+                                    <div className="flex flex-col gap-8">
                                         {menuItems.map((item, index) => (
                                             <a
                                                 key={index}
@@ -299,15 +284,11 @@ const HeroHeader = () => {
                                                 <ArrowRight className="w-5 h-5 opacity-0 -translate-x-4 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all text-blue-500" />
                                             </a>
                                         ))}
-                                    </AnimatedGroup>
+                                    </div>
                                 </nav>
                             </div>
 
-                            <m.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.4 }}
-                                className="relative z-10 flex flex-col gap-4">
+                            <div className="relative z-10 flex flex-col gap-4">
                                 <div className="h-px w-full bg-white/10 mb-6" />
                                 <Button
                                     asChild
@@ -326,7 +307,7 @@ const HeroHeader = () => {
                                         Get Started Free
                                     </Link>
                                 </Button>
-                            </m.div>
+                            </div>
                         </m.div>
                     )}
                 </AnimatePresence>

@@ -27,6 +27,7 @@ import { billingApi } from '../../api/billing';
 import NotificationPanel from '../../components/dashboard/NotificationPanel';
 import ProfileDropdown from '../../components/dashboard/ProfileDropdown';
 import { NavigationGuard } from '../../utils/navigationGuard';
+import { PullToRefresh } from '../../components/ui/PullToRefresh';
 
 import { env } from '../../config/env';
 import { getAuthHeader } from '../../lib/api';
@@ -165,6 +166,18 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [mobileMenuOpen]);
 
   const { data: businessProfile } = useQuery<BusinessProfile | null>({
     queryKey: ['business-profile', user?.id],
@@ -407,7 +420,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {/* Top Logo - Mobile Only */}
             <div className="md:hidden flex items-center gap-2 mr-2">
               <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-8 h-8 object-contain" />
-              <span className="text-lg font-black tracking-tight text-slate-900">VocalScale</span>
             </div>
 
             {/* Left: Search (Always visible now, responsive width) */}
@@ -543,7 +555,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             }}
           >
 
-            {children}
+            {/* Pull to Refresh Wrapper */}
+            <PullToRefresh
+              onRefresh={() => {
+                window.location.reload();
+              }}
+            >
+              {children}
+            </PullToRefresh>
           </main>
         </div>
 
