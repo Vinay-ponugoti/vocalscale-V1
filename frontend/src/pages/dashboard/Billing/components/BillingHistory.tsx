@@ -55,13 +55,13 @@ const BillingHistory: React.FC = () => {
     return (
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-electric/10 flex items-center justify-center text-blue-electric ring-1 ring-blue-electric/20">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 ring-1 ring-blue-500/10">
             <CalendarDays size={20} strokeWidth={2.5} />
           </div>
           <h2 className="text-xl font-black text-charcoal tracking-tight uppercase">Billing History</h2>
         </div>
-        <div className="h-[400px] rounded-3xl border-2 border-dashed border-slate-100 bg-slate-50/30 flex items-center justify-center">
-          <Loader2 className="animate-spin text-blue-electric" size={32} strokeWidth={2.5} />
+        <div className="h-[400px] rounded-3xl border border-slate-200 bg-slate-50/50 flex items-center justify-center">
+          <Loader2 className="animate-spin text-blue-600" size={32} strokeWidth={2.5} />
         </div>
       </div>
     );
@@ -71,17 +71,17 @@ const BillingHistory: React.FC = () => {
     <div className="flex flex-col gap-6 h-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-electric/10 flex items-center justify-center text-blue-electric ring-1 ring-blue-electric/20">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 ring-1 ring-blue-500/10">
             <CalendarDays size={20} strokeWidth={2.5} />
           </div>
           <h2 className="text-xl font-black text-charcoal tracking-tight uppercase">Billing History</h2>
         </div>
         {invoices.length > 0 && (
-          <button className="text-[10px] font-black text-blue-electric hover:text-blue-dark transition-colors uppercase tracking-widest px-4 py-2 rounded-xl bg-blue-electric/10 hover:bg-blue-electric/20">View All</button>
+          <button className="text-[10px] font-black text-blue-600 hover:text-blue-700 transition-colors uppercase tracking-widest px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100">View All</button>
         )}
       </div>
-      
-      <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all flex-1 min-h-[400px] flex flex-col">
+
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm flex-1 min-h-[400px] flex flex-col">
         {invoices.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-4 p-12">
             <div className="w-20 h-20 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-200 ring-1 ring-slate-100">
@@ -95,7 +95,7 @@ const BillingHistory: React.FC = () => {
         ) : (
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-100 bg-slate-50/30 sticky top-0 z-10">
+              <thead className="border-b border-slate-100 bg-slate-50/50 sticky top-0 z-10">
                 <tr className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                   <th className="px-6 py-5">Date</th>
                   <th className="px-6 py-5">Description</th>
@@ -117,11 +117,10 @@ const BillingHistory: React.FC = () => {
                       Invoice #{inv.stripe_invoice_id ? inv.stripe_invoice_id.slice(-4) : '....'}
                     </td>
                     <td className="px-6 py-5">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ring-1 ${
-                        inv.status === 'paid' 
-                          ? 'bg-emerald-50 text-emerald-600 ring-emerald-500/10' 
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ring-1 ${inv.status === 'paid'
+                          ? 'bg-emerald-50 text-emerald-600 ring-emerald-500/10'
                           : 'bg-amber-50 text-amber-600 ring-amber-500/10'
-                      }`}>
+                        }`}>
                         {inv.status}
                       </span>
                     </td>
@@ -130,11 +129,11 @@ const BillingHistory: React.FC = () => {
                     </td>
                     <td className="px-6 py-5 text-right">
                       {inv.invoice_pdf ? (
-                        <a 
-                          href={inv.invoice_pdf} 
-                          target="_blank" 
+                        <a
+                          href={inv.invoice_pdf}
+                          target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center text-slate-400 hover:text-blue-electric transition-all w-10 h-10 rounded-xl hover:bg-blue-electric/5 border border-transparent group-hover:border-blue-electric/10 hover:shadow-sm"
+                          className="inline-flex items-center justify-center text-slate-400 hover:text-blue-600 transition-all w-10 h-10 rounded-xl hover:bg-blue-50 border border-transparent group-hover:border-blue-100 hover:shadow-sm"
                           title="Download Invoice"
                         >
                           <Download size={18} strokeWidth={2.5} />
