@@ -1,5 +1,5 @@
 import { Sparkles, Waves, Puzzle, Star, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+
 import { cn } from '@/lib/utils';
 
 export function HowItWorks() {
@@ -92,13 +92,9 @@ export function HowItWorks() {
 
             <div className="relative z-10 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
               <div>
-                <motion.div
-                  initial={{ rotate: -20, scale: 0.8 }}
-                  whileInView={{ rotate: 0, scale: 1 }}
-                  className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-blue-500/20"
-                >
+                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-blue-500/20">
                   <Sparkles className="w-7 h-7 text-white" />
-                </motion.div>
+                </div>
                 <h3 className="font-bold text-3xl sm:text-5xl leading-[1.1] md:leading-[1.05] tracking-tight mb-4 md:mb-6 text-white">
                   A conversation that <br />
                   <span className="text-blue-400 italic underline decoration-blue-500/20 decoration-2 md:decoration-4 underline-offset-8 tracking-tight">actually converts.</span>
