@@ -1,5 +1,5 @@
 import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, User } from 'lucide-react';
-import { m } from 'framer-motion';
+
 import { cn } from '@/lib/utils';
 import { VoiceInput } from './VoiceInput';
 
@@ -9,31 +9,18 @@ function AiReceptionistVisual() {
       <div className="flex items-center gap-8 mb-8">
         {/* Big Icon */}
         <div className="relative">
-          <m.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl shadow-blue-500/20"
-          >
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl shadow-blue-500/20">
             <User className="w-12 h-12 text-white/90" strokeWidth={1.5} />
-          </m.div>
+          </div>
           {/* Status dot */}
-          <m.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            transition={{ delay: 0.4 }}
-            className="absolute top-1 right-1 w-6 h-6 bg-green-500 border-4 border-slate-900 rounded-full"
-          />
+          <div className="absolute top-1 right-1 w-6 h-6 bg-green-500 border-4 border-slate-900 rounded-full" />
         </div>
 
         {/* Voice Selection */}
         <div className="flex flex-col gap-2.5">
           {['Emma (US)', 'James (US)', 'Alice (UK)'].map((voice, i) => (
-            <m.div
+            <div
               key={voice}
-              initial={{ x: 20, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.3 + (i * 0.1) }}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-medium cursor-pointer transition-all hover:scale-105",
                 i === 0
@@ -43,18 +30,14 @@ function AiReceptionistVisual() {
             >
               {i === 0 && <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />}
               {voice}
-            </m.div>
+            </div>
           ))}
         </div>
       </div>
 
-      <m.div
-        initial={{ y: 20, opacity: 0 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6 }}
-      >
+      <div>
         <VoiceInput />
-      </m.div>
+      </div>
     </div>
   );
 }
