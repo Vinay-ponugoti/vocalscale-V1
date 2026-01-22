@@ -5,14 +5,14 @@ import { useLocation } from 'react-router-dom';
 interface PullToRefreshProps {
     onRefresh: () => Promise<void>;
     children: React.ReactNode;
+    scrollContainerRef?: React.RefObject<HTMLElement>;
 }
 
-export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, children }) => {
+export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, children, scrollContainerRef }) => {
     const [startY, setStartY] = useState(0);
     const [pulling, setPulling] = useState(false);
     const [loading, setLoading] = useState(false);
     const [pullDistance, setPullDistance] = useState(0);
-    const contentRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
 
     // Reset state on navigation
@@ -22,24 +22,37 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, childre
         setPullDistance(0);
     }, [location.pathname]);
 
+    const getScrollTop = () => {
+        if (scrollContainerRef?.current) {
+            return scrollContainerRef.current.scrollTop;
+        }
+        return window.scrollY;
+    };
+
     const handleTouchStart = (e: React.TouchEvent) => {
         // Only enable if we are at the top of the page
-        if (window.scrollY === 0 && !loading) {
+        if (getScrollTop() === 0 && !loading) {
             setStartY(e.touches[0].clientY);
-            setPulling(true);
+            // We don't set pulling=true yet, we wait for move to confirm direction
         }
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        if (!pulling || loading) return;
+        if (loading) return;
 
         const currentY = e.touches[0].clientY;
         const diff = currentY - startY;
 
-        if (diff > 0) {
+        if (getScrollTop() === 0 && diff > 0) {
+            // Started pulling down from top
+            if (!pulling) setPulling(true);
+
             // Add resistance
             const distance = Math.min(diff * 0.4, 120);
             setPullDistance(distance);
+        } else {
+            setPulling(false);
+            setPullDistance(0);
         }
     };
 
@@ -89,7 +102,6 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, childre
 
             {/* Content */}
             <div
-                ref={contentRef}
                 className="transition-transform duration-200 ease-out"
                 style={{ transform: `translateY(${pullDistance}px)` }}
             >
