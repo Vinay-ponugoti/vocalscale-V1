@@ -1,0 +1,100 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+
+interface PullToRefreshProps {
+    onRefresh: () => Promise<void>;
+    children: React.ReactNode;
+}
+
+export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, children }) => {
+    const [startY, setStartY] = useState(0);
+    const [pulling, setPulling] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [pullDistance, setPullDistance] = useState(0);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const location = useLocation();
+
+    // Reset state on navigation
+    useEffect(() => {
+        setLoading(false);
+        setPulling(false);
+        setPullDistance(0);
+    }, [location.pathname]);
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        // Only enable if we are at the top of the page
+        if (window.scrollY === 0 && !loading) {
+            setStartY(e.touches[0].clientY);
+            setPulling(true);
+        }
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!pulling || loading) return;
+
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+
+        if (diff > 0) {
+            // Add resistance
+            const distance = Math.min(diff * 0.4, 120);
+            setPullDistance(distance);
+        }
+    };
+
+    const handleTouchEnd = async () => {
+        if (!pulling || loading) return;
+
+        setPulling(false);
+        if (pullDistance > 60) {
+            setLoading(true);
+            setPullDistance(60); // Keep it visible while loading
+            try {
+                await onRefresh();
+            } finally {
+                setTimeout(() => {
+                    setLoading(false);
+                    setPullDistance(0);
+                }, 500);
+            }
+        } else {
+            setPullDistance(0);
+        }
+    };
+
+    return (
+        <div
+            className="min-h-screen relative"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
+            {/* Loading Indicator */}
+            <div
+                className="fixed top-0 left-0 right-0 flex justify-center pointer-events-none z-50 transition-all duration-300 ease-out"
+                style={{
+                    transform: `translateY(${pullDistance > 0 ? pullDistance + 10 : -50}px)`,
+                    opacity: pullDistance > 0 ? Math.min(pullDistance / 40, 1) : 0
+                }}
+            >
+                <div className="bg-white rounded-full p-2 shadow-lg border border-slate-100">
+                    <Loader2
+                        className={`text-indigo-600 ${loading ? 'animate-spin' : ''}`}
+                        size={20}
+                        style={{ transform: `rotate(${pullDistance * 2}deg)` }}
+                    />
+                </div>
+            </div>
+
+            {/* Content */}
+            <div
+                ref={contentRef}
+                className="transition-transform duration-200 ease-out"
+                style={{ transform: `translateY(${pullDistance}px)` }}
+            >
+                {children}
+            </div>
+        </div>
+    );
+};
