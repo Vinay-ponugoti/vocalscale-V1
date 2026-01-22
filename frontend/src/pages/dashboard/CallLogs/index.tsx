@@ -109,8 +109,8 @@ const CallLogsPage = () => {
   const selectedLog = callId ? singleLog : logs.find(l => l.id === selectedLogId);
 
   const filtersNav = (
-    <div className="flex items-center gap-4 w-full">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center gap-4 w-full overflow-x-auto no-scrollbar pb-2 lg:pb-0">
+      <div className="flex items-center gap-2 shrink-0">
         <div className="relative">
           <select
             value={filters.status}
@@ -141,9 +141,9 @@ const CallLogsPage = () => {
         </div>
       </div>
 
-      <div className="h-6 w-[1px] bg-slate-200 mx-1" />
+      <div className="h-6 w-[1px] bg-slate-200 mx-1 shrink-0" />
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-1.5 rounded-xl group focus-within:ring-2 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition-all hover:border-slate-300 shadow-sm">
           <Calendar size={14} className="text-slate-400 group-focus-within:text-indigo-500" />
           <input
@@ -177,7 +177,7 @@ const CallLogsPage = () => {
         variant="ghost"
         size="icon"
         onClick={handleReset}
-        className="h-9 w-9 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all active:scale-95 ml-auto border border-transparent hover:border-indigo-100"
+        className="h-9 w-9 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all active:scale-95 ml-auto border border-transparent hover:border-indigo-100 shrink-0"
         title="Reset Filters"
       >
         <RefreshCw size={16} />
@@ -188,6 +188,11 @@ const CallLogsPage = () => {
   return (
     <DashboardLayout fullWidth secondaryNav={filtersNav}>
       <div className="flex flex-col h-full bg-slate-50/50 p-4 md:p-6 2xl:p-8 overflow-hidden">
+
+        {/* Mobile Filters */}
+        <div className="lg:hidden mb-4">
+          {filtersNav}
+        </div>
 
         {/* Unified Card Container */}
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col h-full overflow-hidden w-full max-w-[1920px] mx-auto animate-in fade-in zoom-in-95 duration-500">
