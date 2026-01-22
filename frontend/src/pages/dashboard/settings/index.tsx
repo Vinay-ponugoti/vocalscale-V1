@@ -9,6 +9,7 @@ import { BookingRequirementsContent } from './components/BookingRequirementsCont
 import { VoiceSettingsContent } from './components/VoiceSettingsContent';
 import { NotificationSettingsContent } from './components/NotificationSettingsContent';
 import type { NotificationSettings, Voice, VoiceSettings } from '../../../types/settings';
+import { DashboardSkeleton } from '../../../components/ui/DashboardSkeleton';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Settings = () => {
     transfer_number: '',
     standard_transfer_number: ''
   });
-  
+
   const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
     voice_id: '',
     speaking_speed: 1.0,
@@ -44,9 +45,9 @@ const Settings = () => {
   const [activeSection, setActiveSection] = useState('voice');
 
   useEffect(() => {
-    const anyChanges = unsavedChangesRef.current.voiceSettings || 
-                       unsavedChangesRef.current.notifications ||
-                       unsavedChangesRef.current.bookingRequirements;
+    const anyChanges = unsavedChangesRef.current.voiceSettings ||
+      unsavedChangesRef.current.notifications ||
+      unsavedChangesRef.current.bookingRequirements;
     setHasUnsavedChanges(anyChanges);
   }, [voiceSettings, notifications]);
 
@@ -55,7 +56,7 @@ const Settings = () => {
       const customEvent = e as CustomEvent;
       unsavedChangesRef.current.bookingRequirements = customEvent.detail?.hasChanges || false;
       setHasUnsavedChanges(
-        unsavedChangesRef.current.voiceSettings || 
+        unsavedChangesRef.current.voiceSettings ||
         unsavedChangesRef.current.notifications ||
         unsavedChangesRef.current.bookingRequirements
       );
@@ -185,16 +186,7 @@ const Settings = () => {
   };
 
   if (loading) {
-    return (
-      <DashboardLayout fullWidth>
-        <div className="h-full w-full flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-slate-100 rounded-full border-t-indigo-600 animate-spin mx-auto" />
-            <p className="mt-4 font-black text-[10px] uppercase tracking-[0.2em] text-indigo-400 animate-pulse">Loading Configuration</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
+    return <DashboardSkeleton />;
   }
 
   const sections = [
@@ -205,177 +197,179 @@ const Settings = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex flex-col lg:flex-row h-full overflow-hidden">
-        
-        {/* --- Sidebar / Tabs --- */}
-        <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-slate-100 bg-white flex flex-col shrink-0">
-          <div className="p-4 lg:p-6 pb-2 lg:pb-4">
-            <h1 className="text-lg font-black text-slate-900 tracking-tight">Settings</h1>
-            <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.15em] mt-0.5">Configuration</p>
-          </div>
+      <div className="flex flex-col h-full overflow-hidden bg-slate-50 relative">
 
-          {/* Scrollable Tabs Area */}
-          <div className="flex-1 overflow-x-auto lg:overflow-y-auto px-3 py-2 lg:py-1 flex lg:flex-col gap-1 custom-scrollbar scrollbar-hide lg:scrollbar-default">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => setActiveSection(section.id)}
-                className={`flex-shrink-0 lg:w-full flex items-center gap-3 p-2.5 lg:p-3 rounded-xl transition-all duration-300 group ${
-                  activeSection === section.id
-                    ? 'bg-indigo-50/80 text-indigo-900 lg:border lg:border-indigo-100/50 shadow-sm shadow-indigo-100/20'
-                    : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
-                }`}
-              >
-                <div className={`p-2 rounded-lg transition-all duration-300 ${
-                  activeSection === section.id 
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' 
-                    : 'bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-indigo-600'
-                }`}>
-                  <section.icon size={14} />
-                </div>
-                <div className="text-left">
-                  <p className={`text-[12px] font-black tracking-tight transition-colors ${
-                    activeSection === section.id ? 'text-slate-900' : 'text-slate-500'
-                  }`}>{section.label}</p>
-                  <p className="hidden lg:block text-[9px] font-bold text-slate-400 uppercase tracking-wider">{section.description}</p>
-                </div>
-              </button>
-            ))}
+        {/* Mobile Header with Save Button */}
+        <div className="lg:hidden flex-none px-4 py-4 border-b border-slate-200 bg-white flex items-center justify-between z-10 shrink-0">
+          <div>
+            <h1 className="text-lg font-bold tracking-tight text-slate-900">Settings</h1>
+            <p className="text-xs text-slate-500 mt-0.5">Configuration & Preferences</p>
           </div>
-
-          {/* Desktop Save Button Area */}
-          <div className="hidden lg:block p-5 mt-auto border-t border-slate-50">
-            <button
-              onClick={handleSaveAll}
-              disabled={savingAll || !hasUnsavedChanges}
-              className={`
-                w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300
-                ${savingAll || !hasUnsavedChanges
-                  ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-100 hover:-translate-y-0.5 active:translate-y-0'
-                }
-              `}
-            >
-              {savingAll ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <Save size={16} />
-              )}
-              {savingAll ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
+          <button
+            onClick={handleSaveAll}
+            disabled={savingAll || !hasUnsavedChanges}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all duration-200 ${savingAll || !hasUnsavedChanges
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+              : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-200 hover:-translate-y-0.5'
+              }`}
+          >
+            {savingAll ? (
+              <div className="w-3.5 h-3.5 border-2 border-slate-400/30 border-t-slate-400 rounded-full animate-spin" />
+            ) : (
+              <Save size={14} />
+            )}
+            {savingAll ? 'Saving...' : 'Save'}
+          </button>
         </div>
 
-        {/* --- Main Content Area --- */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 2xl:p-12">
-          <div className="w-full space-y-6 lg:space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            
-            {/* Header / Alerts */}
-            {message && (
-              <div className={`p-4 rounded-2xl flex items-center gap-3 border shadow-sm animate-in fade-in slide-in-from-top-2 ${
-                message.type === 'success' 
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-100' 
-                  : 'bg-rose-50 text-rose-800 border-rose-100'
-              }`}>
-                <div className={`p-1.5 rounded-full ${message.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>
-                  {message.type === 'success' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />}
-                </div>
-                <span className="font-bold text-[10px] uppercase tracking-wider">{message.text}</span>
-              </div>
-            )}
+        <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
 
-            {/* Content Sections */}
-            <div className="space-y-6">
-              {activeSection === 'voice' && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-lg font-black text-slate-900 tracking-tight">AI Voice Setup</h2>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Sound & Persona Configuration</p>
-                    </div>
-                    <button
-                      onClick={() => navigate('/dashboard/voice-model/method')}
-                      className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-400 hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm"
-                    >
-                      Advanced <ChevronRight size={12} />
-                    </button>
-                  </div>
-                  
-                  <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
-                    <VoiceSettingsContent 
-                      settings={voiceSettings}
-                      availableVoices={availableVoices}
-                      onChange={handleVoiceChange}
-                      onNavigateToAdvanced={() => navigate('/dashboard/voice-model/method')}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {activeSection === 'booking' && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-lg font-black text-slate-900 tracking-tight">Booking Requirements</h2>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Appointment Rule Definition</p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        window.dispatchEvent(new CustomEvent('booking-requirements-add-trigger'));
-                      }}
-                      className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-400 hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm"
-                    >
-                      Add Field
-                    </button>
-                  </div>
-                  <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
-                    <BookingRequirementsContent />
-                  </div>
-                </div>
-              )}
-
-              {activeSection === 'notifications' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-black text-slate-900 tracking-tight">Notification Alerts</h2>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">System Alert Preferences</p>
-                  </div>
-                  <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
-                    <NotificationSettingsContent 
-                      settings={notifications}
-                      onChange={handleNotificationChange}
-                    />
-                  </div>
-                </div>
-              )}
+          {/* --- Sidebar / Tabs --- */}
+          <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-slate-100 bg-white flex flex-col shrink-0">
+            <div className="p-4 lg:p-6 pb-2 lg:pb-4">
+              <h1 className="text-lg font-black text-slate-900 tracking-tight">Settings</h1>
+              <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.15em] mt-0.5">Configuration</p>
             </div>
 
-            {/* Mobile Save Button Area (Sticky at bottom) */}
-            <div className="lg:hidden sticky bottom-0 pt-4 pb-2 bg-slate-50/50 backdrop-blur-sm border-t border-slate-100 mt-8">
+            {/* Scrollable Tabs Area */}
+            <div className="flex-1 overflow-x-auto lg:overflow-y-auto px-3 py-2 lg:py-1 flex lg:flex-col gap-1 custom-scrollbar scrollbar-hide lg:scrollbar-default">
+              {sections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className={`flex-shrink-0 lg:w-full flex items-center gap-3 p-2.5 lg:p-3 rounded-xl transition-all duration-300 group ${activeSection === section.id
+                    ? 'bg-indigo-50/80 text-indigo-900 lg:border lg:border-indigo-100/50 shadow-sm shadow-indigo-100/20'
+                    : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
+                    }`}
+                >
+                  <div className={`p-2 rounded-lg transition-all duration-300 ${activeSection === section.id
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100'
+                    : 'bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-indigo-600'
+                    }`}>
+                    <section.icon size={14} />
+                  </div>
+                  <div className="text-left">
+                    <p className={`text-[12px] font-black tracking-tight transition-colors ${activeSection === section.id ? 'text-slate-900' : 'text-slate-500'
+                      }`}>{section.label}</p>
+                    <p className="hidden lg:block text-[9px] font-bold text-slate-400 uppercase tracking-wider">{section.description}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop Save Button Area */}
+            <div className="hidden lg:block p-5 mt-auto border-t border-slate-50">
               <button
                 onClick={handleSaveAll}
                 disabled={savingAll || !hasUnsavedChanges}
                 className={`
-                  w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all duration-300
-                  ${savingAll || !hasUnsavedChanges
+                w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300
+                ${savingAll || !hasUnsavedChanges
                     ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100'
-                    : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl shadow-indigo-100'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-100 hover:-translate-y-0.5 active:translate-y-0'
                   }
-                `}
+              `}
               >
                 {savingAll ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
-                  <Save size={18} />
+                  <Save size={16} />
                 )}
-                {savingAll ? 'Saving...' : 'Save All Changes'}
+                {savingAll ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      <style>{`
+          {/* --- Main Content Area --- */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 2xl:p-12">
+            <div className="w-full space-y-6 lg:space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+              {/* Header / Alerts */}
+              {message && (
+                <div className={`p-4 rounded-2xl flex items-center gap-3 border shadow-sm animate-in fade-in slide-in-from-top-2 ${message.type === 'success'
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-100'
+                  : 'bg-rose-50 text-rose-800 border-rose-100'
+                  }`}>
+                  <div className={`p-1.5 rounded-full ${message.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>
+                    {message.type === 'success' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />}
+                  </div>
+                  <span className="font-bold text-[10px] uppercase tracking-wider">{message.text}</span>
+                </div>
+              )}
+
+              {/* Content Sections */}
+              <div className="space-y-6">
+                {activeSection === 'voice' && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-lg font-black text-slate-900 tracking-tight">AI Voice Setup</h2>
+                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Sound & Persona Configuration</p>
+                      </div>
+                      <button
+                        onClick={() => navigate('/dashboard/voice-model/method')}
+                        className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-400 hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm"
+                      >
+                        Advanced <ChevronRight size={12} />
+                      </button>
+                    </div>
+
+                    <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
+                      <VoiceSettingsContent
+                        settings={voiceSettings}
+                        availableVoices={availableVoices}
+                        onChange={handleVoiceChange}
+                        onNavigateToAdvanced={() => navigate('/dashboard/voice-model/method')}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {activeSection === 'booking' && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-lg font-black text-slate-900 tracking-tight">Booking Requirements</h2>
+                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Appointment Rule Definition</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          window.dispatchEvent(new CustomEvent('booking-requirements-add-trigger'));
+                        }}
+                        className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-400 hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm"
+                      >
+                        Add Field
+                      </button>
+                    </div>
+                    <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
+                      <BookingRequirementsContent />
+                    </div>
+                  </div>
+                )}
+
+                {activeSection === 'notifications' && (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-lg font-black text-slate-900 tracking-tight">Notification Alerts</h2>
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">System Alert Preferences</p>
+                    </div>
+                    <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
+                      <NotificationSettingsContent
+                        settings={notifications}
+                        onChange={handleNotificationChange}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Bottom Space */}
+              <div className="lg:hidden h-20" />
+            </div>
+          </div>
+        </div>
+
+        <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
           height: 4px;
@@ -398,6 +392,7 @@ const Settings = () => {
           scrollbar-width: none;
         }
       `}</style>
+      </div>
     </DashboardLayout>
   );
 };
