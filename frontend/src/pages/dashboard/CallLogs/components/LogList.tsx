@@ -189,7 +189,7 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
                       </div>
 
                       <p className={`
-                        text-[13px] font-medium line-clamp-1 leading-relaxed
+                        text-[13px] font-medium line-clamp-2 leading-relaxed
                         ${isSelected ? 'text-indigo-700/70' : 'text-slate-500'}
                       `}>
                         {log.summary || log.transcript || 'No details available for this call'}

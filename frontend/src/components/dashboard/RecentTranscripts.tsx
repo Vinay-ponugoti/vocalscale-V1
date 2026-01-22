@@ -25,10 +25,10 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
     try {
       const date = new Date(dateString);
       if (Number.isNaN(date.getTime())) return '';
-      return date.toLocaleTimeString('en-US', { 
+      return date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true 
+        hour12: true
       });
     } catch {
       return '';
@@ -61,9 +61,9 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
           </div>
           <p className="text-[11px] font-bold text-charcoal-light uppercase tracking-widest pl-10">Latest customer interactions</p>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           className="text-[11px] font-black uppercase tracking-widest text-charcoal-light hover:text-blue-electric group"
           onClick={() => navigate('/dashboard/calls')}
         >
@@ -111,14 +111,14 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
                       <h4 className="text-sm font-black text-charcoal truncate tracking-tight">
                         {call.caller_name || "Unknown Caller"}
                       </h4>
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className={`text-[9px] font-black uppercase tracking-widest border-none px-2 py-0.5 rounded-lg ${getCategoryStyles(call.category)}`}
                       >
                         {call.category}
                       </Badge>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 mb-2">
                       <div className="flex items-center gap-1.5 text-[10px] font-bold text-charcoal-light uppercase tracking-widest">
                         <Clock className="w-3 h-3" />
@@ -131,7 +131,7 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
                       </div>
                     </div>
 
-                    <p className="text-[12px] text-charcoal-light font-medium leading-relaxed line-clamp-1 group-hover:text-charcoal-medium transition-colors">
+                    <p className="text-[12px] text-charcoal-light font-medium leading-relaxed line-clamp-2 group-hover:text-charcoal-medium transition-colors">
                       {call.summary || call.transcript_snippet || "AI is processing this call transcript..."}
                     </p>
                   </div>
