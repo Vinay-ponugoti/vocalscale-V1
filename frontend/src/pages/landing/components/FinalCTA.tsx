@@ -32,10 +32,7 @@ export function FinalCTA() {
   return (
     <section id="book-demo" className="py-20 md:py-32 px-6 relative overflow-hidden bg-transparent">
       <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+        <div
           className="relative p-10 md:p-24 bg-slate-900/60 backdrop-blur-3xl rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-2xl border border-white/5"
         >
           {/* Background utilities */}
@@ -44,18 +41,14 @@ export function FinalCTA() {
           <div className="absolute bottom-0 left-0 w-[60%] h-[60%] bg-indigo-500/10 blur-[120px] rounded-full" />
 
           <div className="max-w-3xl mx-auto text-center relative z-10">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
+            <div
               className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 backdrop-blur-md border border-white/10 rounded-full mb-8 md:mb-10 text-slate-300"
             >
               <Sparkles className="w-4 h-4 text-blue-400" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Ready to scale?</span>
-            </motion.div>
+            </div>
 
-            <motion.h2
-              layout
+            <h2
               className="font-black text-4xl sm:text-6xl md:text-7xl text-white mb-8 md:mb-10 tracking-[-0.03em] leading-[1.05]"
             >
               {isSuccess ? (
@@ -66,17 +59,16 @@ export function FinalCTA() {
                   <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 tracking-tight">the voice it deserves.</span>
                 </>
               )}
-            </motion.h2>
+            </h2>
 
-            <motion.p
-              layout
+            <p
               className="text-slate-400 text-lg md:text-xl mb-10 md:mb-14 max-w-xl mx-auto leading-relaxed font-medium"
             >
               {isSuccess
                 ? "We've received your request. Our team will reach out within 24 hours to schedule your personalized demo."
                 : "Join forward-thinking businesses scaling their front desk with VocalScale's AI."
               }
-            </motion.p>
+            </p>
 
             <div className="flex justify-center min-h-[56px]">
               <AnimatePresence mode="wait">

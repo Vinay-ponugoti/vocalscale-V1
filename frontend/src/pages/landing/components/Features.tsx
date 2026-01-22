@@ -119,46 +119,31 @@ export function Features() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16 md:mb-32">
-          <m.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <div
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8"
           >
             <Sparkles className="h-4 w-4 text-blue-400" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">Capabilities</span>
-          </m.div>
+          </div>
 
-          <m.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+          <h2
             className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-white mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
           >
             Everything you need <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 italic tracking-tight">to scale.</span>
-          </m.h2>
+          </h2>
 
-          <m.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+          <p
             className="text-base md:text-xl text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed"
           >
             We've combined state-of-the-art Voice AI with business-grade tools to help you provide world-class service, 24/7.
-          </m.p>
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6">
           {features.map((feature, index) => (
-            <m.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
               className={cn(
                 "group relative overflow-hidden rounded-[2rem] border border-white/5 bg-slate-900/40 backdrop-blur-xl p-6 md:p-8 lg:p-10 transition-all duration-500 hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10",
                 feature.className
@@ -189,7 +174,7 @@ export function Features() {
 
               {/* Hover highlight effect */}
               <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_80%)]" />
-            </m.div>
+            </div>
           ))}
         </div>
       </div>

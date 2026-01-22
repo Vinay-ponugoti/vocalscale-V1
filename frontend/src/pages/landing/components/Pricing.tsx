@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Check, Zap, Star, Sparkles, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 
@@ -55,32 +54,22 @@ export function Pricing() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-12 md:mb-24">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+          <div
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8"
           >
             <Sparkles className="h-4 w-4 text-blue-400 fill-blue-400/20" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">The Investment</span>
-          </motion.div>
+          </div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <h2
             className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-white mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
           >
             Simple plans for <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 italic tracking-tight">growing teams.</span>
-          </motion.h2>
+          </h2>
 
           {/* Pricing Toggle */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+          <div
             className="flex items-center justify-center gap-4 mb-12"
           >
             <span className={cn("text-sm font-black transition-colors uppercase tracking-widest", !isAnnual ? "text-white" : "text-slate-500")}>Monthly</span>
@@ -88,10 +77,11 @@ export function Pricing() {
               onClick={() => setIsAnnual(!isAnnual)}
               className="relative w-16 h-8 rounded-full bg-white/5 border border-white/10 p-1 transition-colors hover:border-blue-400"
             >
-              <motion.div
-                animate={{ x: isAnnual ? 32 : 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className="w-6 h-6 rounded-full bg-blue-500 shadow-sm"
+              <div
+                className={cn(
+                  "w-6 h-6 rounded-full bg-blue-500 shadow-sm transition-transform duration-300",
+                  isAnnual ? "translate-x-8" : "translate-x-0"
+                )}
               />
             </button>
             <div className="flex items-center gap-2">
@@ -100,17 +90,13 @@ export function Pricing() {
                 -20% Off
               </span>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
-            <motion.div
+            <div
               key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
               className={cn(
                 "group relative p-1 rounded-[2.5rem] transition-all duration-500",
                 plan.popular ? "bg-gradient-to-b from-blue-500/20 to-indigo-500/20 shadow-2xl shadow-blue-500/10" : "bg-white/5"
@@ -138,17 +124,11 @@ export function Pricing() {
                 <div className="mb-8 md:mb-10">
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl md:text-6xl font-black tracking-tighter text-white">$</span>
-                    <AnimatePresence mode="wait">
-                      <motion.span
-                        key={isAnnual ? 'annual' : 'monthly'}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="text-5xl md:text-7xl font-black tracking-tighter text-white"
-                      >
-                        {isAnnual ? plan.annualPrice : plan.monthlyPrice}
-                      </motion.span>
-                    </AnimatePresence>
+                    <span
+                      className="text-5xl md:text-7xl font-black tracking-tighter text-white"
+                    >
+                      {isAnnual ? plan.annualPrice : plan.monthlyPrice}
+                    </span>
                     <span className="text-slate-500 font-bold ml-1 text-base md:text-lg">/mo</span>
                   </div>
                   {isAnnual && (
@@ -181,7 +161,7 @@ export function Pricing() {
                   <a href="/signup">{plan.cta}</a>
                 </Button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
