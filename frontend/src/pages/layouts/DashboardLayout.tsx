@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   LayoutDashboard,
   HelpCircle,
@@ -27,6 +27,7 @@ import { billingApi } from '../../api/billing';
 import NotificationPanel from '../../components/dashboard/NotificationPanel';
 import ProfileDropdown from '../../components/dashboard/ProfileDropdown';
 import { NavigationGuard } from '../../utils/navigationGuard';
+import { PullToRefresh } from '../../components/layout/PullToRefresh';
 
 import { env } from '../../config/env';
 import { getAuthHeader } from '../../lib/api';
@@ -120,6 +121,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   fullWidth = false,
   secondaryNav
 }) => {
+  const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -132,6 +134,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const mainContentRef = useRef<HTMLElement>(null);
+
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries();
+  };
 
   // Sync local state with context when context changes (e.g. clear search)
   useEffect(() => {
@@ -315,17 +322,43 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             />
 
             <div className="mt-auto">
-              <SectionLabel label="System" sidebarOpen={sidebarOpen} />
-              <NavItem
-                item={{ path: '/dashboard/settings', label: 'Settings', icon: Settings }}
-                isCollapsed={!sidebarOpen}
-                isActive={isActive('/dashboard/settings')}
-              />
-              <NavItem
-                item={{ path: '/dashboard/help', label: 'Help & Docs', icon: HelpCircle }}
-                isCollapsed={!sidebarOpen}
-                isActive={isActive('/dashboard/help')}
-              />
+              {/* Sidebar Header for Desktop Only */}
+              <div className="hidden lg:block pt-6 border-t mt-6" style={{ borderColor: DS.border }}>
+                <SectionLabel label="System" sidebarOpen={sidebarOpen} />
+                <NavItem
+                  item={{ path: '/dashboard/settings', label: 'Settings', icon: Settings }}
+                  isCollapsed={!sidebarOpen}
+                  isActive={isActive('/dashboard/settings')}
+                />
+                <NavItem
+                  item={{ path: '/dashboard/billing', label: 'Billing', icon: CreditCard }}
+                  isCollapsed={!sidebarOpen}
+                  isActive={isActive('/dashboard/billing')}
+                />
+                <NavItem
+                  item={{ path: '/dashboard/help', label: 'Help & Docs', icon: HelpCircle }}
+                  isCollapsed={!sidebarOpen}
+                  isActive={isActive('/dashboard/help')}
+                />
+              </div>
+
+              {/* Sign Out Button */}
+              <button
+                onClick={handleSignOut}
+                className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-5' : 'justify-center'} py-3 text-sm font-bold rounded-xl transition-all duration-300 group`}
+                style={{ color: DS.stone }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FEF2F2'; // Very subtle red
+                  e.currentTarget.style.color = '#DC2626'; // Red
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = DS.stone;
+                }}
+              >
+                <LogOut size={18} strokeWidth={2.5} className={sidebarOpen ? 'mr-3 group-hover:-translate-x-1 transition-transform' : ''} />
+                {sidebarOpen && <span>Log Out</span>}
+              </button>
             </div>
           </div>
 
@@ -379,25 +412,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 )}
               </div>
             )}
-
-            {/* Sign Out Button */}
-            <button
-              onClick={handleSignOut}
-              className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-5' : 'justify-center'} py-3 text-sm font-bold rounded-xl transition-all duration-300 group`}
-              style={{ color: DS.stone }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#FEF2F2'; // Very subtle red
-                e.currentTarget.style.color = '#DC2626'; // Red
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = DS.stone;
-              }}
-            >
-              <LogOut size={18} strokeWidth={2.5} className={sidebarOpen ? 'mr-3 group-hover:-translate-x-1 transition-transform' : ''} />
-              {sidebarOpen && <span>Log Out</span>}
-            </button>
           </div>
+
         </aside>
 
         {/* MAIN CONTENT WRAPPER */}
@@ -547,14 +563,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* PAGE CONTENT */}
           <main
+            ref={mainContentRef}
             className={`flex-1 ${fullWidth ? 'p-0 overflow-hidden' : 'p-4 md:p-8 overflow-y-auto'}`}
             style={{ backgroundColor: DS.offWhite }}
             onDoubleClick={() => {
               if (sidebarOpen) setSidebarOpen(false);
             }}
           >
-
-            {children}
+            <PullToRefresh onRefresh={handleRefresh} scrollContainerRef={mainContentRef}>
+              {children}
+            </PullToRefresh>
           </main>
         </div>
 
