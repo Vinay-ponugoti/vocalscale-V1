@@ -18,6 +18,9 @@ const Billing: React.FC = () => {
   const canceled = searchParams.get('canceled');
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Mobile Tab State
+  const [activeTab, setActiveTab] = useState<'overview' | 'history' | 'payment'>('overview');
+
   // Stats State
   const [subscription, setSubscription] = useState<any>(null);
   const [usage, setUsage] = useState<any>(null);
@@ -124,16 +127,43 @@ const Billing: React.FC = () => {
   const remainingPercentage = totalMinutes > 0 ? Math.min(100, Math.max(0, Math.round(((totalMinutes - usedMinutes) / totalMinutes) * 100))) : 0;
   const overageMinutes = Math.max(0, usedMinutes - totalMinutes);
 
+  const mobileTabs = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'history', label: 'History' },
+    { id: 'payment', label: 'Payment' },
+  ] as const;
+
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex flex-col h-full bg-slate-50/50 p-4 md:p-6 2xl:p-8 overflow-hidden">
+      <div className="flex flex-col h-full bg-slate-50/50 p-0 md:p-6 2xl:p-8 overflow-hidden">
+
+        {/* Mobile Navigation Tabs */}
+        <div className="md:hidden flex-none bg-white border-b border-slate-200 p-2 z-10 sticky top-0">
+          <div className="flex bg-slate-100/80 p-1 rounded-xl">
+            {mobileTabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${isActive
+                    ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-900/5'
+                    : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Unified Card Container */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col h-full overflow-hidden w-full max-w-[1920px] mx-auto animate-in fade-in zoom-in-95 duration-500">
+        <div className="bg-white md:border border-slate-200 rounded-none md:rounded-2xl shadow-none md:shadow-sm flex flex-col h-full overflow-hidden w-full max-w-[1920px] mx-auto animate-in fade-in zoom-in-95 duration-500">
 
-          {/* Top Bar: Integrated Stats (Plan & Usage) */}
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-8 bg-white shrink-0 overflow-x-auto no-scrollbar">
+          {/* Top Bar: Integrated Stats (Plan & Usage) - Desktop Only or Mobile Overview */}
+          <div className={`px-6 py-4 border-b border-slate-100 bg-white shrink-0 overflow-x-auto no-scrollbar ${activeTab === 'overview' ? 'flex' : 'hidden md:flex'} items-center gap-8`}>
             {/* Plan Info */}
             <div className="flex items-center gap-3 shrink-0">
               <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 ring-1 ring-blue-500/10">
@@ -191,8 +221,8 @@ const Billing: React.FC = () => {
                 <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-1000 ${overageMinutes > 0 ? 'bg-amber-500' :
-                        remainingPercentage < 20 ? 'bg-rose-500' :
-                          'bg-blue-600'
+                      remainingPercentage < 20 ? 'bg-rose-500' :
+                        'bg-blue-600'
                       }`}
                     style={{ width: `${Math.min(100, (usedMinutes / (totalMinutes || 1)) * 100)}%` }}
                   />
@@ -218,48 +248,55 @@ const Billing: React.FC = () => {
           </div>
 
           {/* Main Content Area - Scrollable */}
-          <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-white">
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 custom-scrollbar bg-white">
             <div className="max-w-7xl mx-auto space-y-8 pb-10">
 
               {/* Notifications */}
-              {success && (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 size={20} className="text-emerald-500" />
-                    <span className="text-sm font-bold">
-                      {isPolling
-                        ? `Payment received! Checking subscription status (attempt ${pollCount + 1}/10)...`
-                        : subscribed
-                          ? "Subscription activated successfully!"
-                          : "Payment received. Please check back in a few minutes."
-                      }
-                    </span>
-                  </div>
-                  {isPolling && <Loader2 size={18} className="text-emerald-500 animate-spin" />}
+              {(success || canceled) && (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                  {success && (
+                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-xl flex items-center justify-between gap-3 shadow-sm mb-6">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle2 size={20} className="text-emerald-500" />
+                        <span className="text-sm font-bold">
+                          {isPolling
+                            ? `Payment received! Checking subscription status (attempt ${pollCount + 1}/10)...`
+                            : subscribed
+                              ? "Subscription activated successfully!"
+                              : "Payment received. Please check back in a few minutes."
+                          }
+                        </span>
+                      </div>
+                      {isPolling && <Loader2 size={18} className="text-emerald-500 animate-spin" />}
+                    </div>
+                  )}
+
+                  {canceled && (
+                    <div className="bg-amber-50 border border-amber-200 text-amber-700 px-6 py-4 rounded-xl flex items-center gap-3 shadow-sm mb-6">
+                      <XCircle size={20} className="text-amber-500" />
+                      <span className="text-sm font-bold">Payment canceled. No changes were made to your plan.</span>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {canceled && (
-                <div className="bg-amber-50 border border-amber-200 text-amber-700 px-6 py-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm">
-                  <XCircle size={20} className="text-amber-500" />
-                  <span className="text-sm font-bold">Payment canceled. No changes were made to your plan.</span>
-                </div>
-              )}
-
-              {/* Usage Section */}
-              <div>
+              {/* Mobile: Overview Tab | Desktop: Always Show */}
+              <div className={`${activeTab === 'overview' ? 'block' : 'hidden md:block'}`}>
                 <UsageBreakdown hasSubscription={hasSubscription} usage={usage} />
               </div>
 
-              <div className="w-full h-px bg-slate-100 my-8" />
+              <div className="hidden md:block w-full h-px bg-slate-100 my-8" />
 
               {/* Billing & Payment Grid */}
-              <div className="grid gap-8 lg:grid-cols-3">
-                <div className="lg:col-span-2">
+              <div className={`grid gap-8 lg:grid-cols-3 ${activeTab === 'overview' ? 'hidden md:grid' : ''}`}>
+
+                {/* Mobile: History Tab | Desktop: Col Span 2 */}
+                <div className={`lg:col-span-2 ${activeTab === 'history' ? 'block' : 'hidden md:block'}`}>
                   <BillingHistory />
                 </div>
 
-                <div className="flex flex-col gap-6">
+                {/* Mobile: Payment Tab | Desktop: Col Span 1 */}
+                <div className={`flex flex-col gap-6 ${activeTab === 'payment' ? 'block' : 'hidden md:flex'}`}>
                   <PaymentMethod />
                   <UpsellCard />
                 </div>
