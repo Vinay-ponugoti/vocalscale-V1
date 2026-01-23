@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   LayoutDashboard,
   HelpCircle,
@@ -121,7 +121,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   fullWidth = false,
   secondaryNav
 }) => {
-  const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -134,11 +133,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const mainContentRef = useRef<HTMLElement>(null);
-
-  const handleRefresh = async () => {
-    await queryClient.invalidateQueries();
-  };
 
   // Sync local state with context when context changes (e.g. clear search)
   useEffect(() => {
@@ -563,16 +557,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* PAGE CONTENT */}
           <main
-            ref={mainContentRef}
             className={`flex-1 ${fullWidth ? 'p-0 overflow-hidden' : 'p-4 md:p-8 overflow-y-auto'}`}
             style={{ backgroundColor: DS.offWhite }}
             onDoubleClick={() => {
               if (sidebarOpen) setSidebarOpen(false);
             }}
           >
-            <PullToRefresh onRefresh={handleRefresh} scrollContainerRef={mainContentRef}>
-              {children}
-            </PullToRefresh>
+            {children}
           </main>
         </div>
 
