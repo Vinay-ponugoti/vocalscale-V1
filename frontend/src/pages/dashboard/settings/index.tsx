@@ -9,7 +9,6 @@ import { BookingRequirementsContent } from './components/BookingRequirementsCont
 import { VoiceSettingsContent } from './components/VoiceSettingsContent';
 import { NotificationSettingsContent } from './components/NotificationSettingsContent';
 import type { NotificationSettings, Voice, VoiceSettings } from '../../../types/settings';
-import { DashboardSkeleton } from '../../../components/ui/DashboardSkeleton';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -184,10 +183,6 @@ const Settings = () => {
       setSavingAll(false);
     }
   };
-
-  if (loading) {
-    return <DashboardSkeleton />;
-  }
 
   const sections = [
     { id: 'voice', label: 'AI Voice', icon: Volume2, description: 'Sound & Persona' },
