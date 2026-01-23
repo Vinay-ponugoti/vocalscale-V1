@@ -28,7 +28,6 @@ import { billingApi } from '../../api/billing';
 import NotificationPanel from '../../components/dashboard/NotificationPanel';
 import ProfileDropdown from '../../components/dashboard/ProfileDropdown';
 import { NavigationGuard } from '../../utils/navigationGuard';
-import { PullToRefresh } from '../../components/layout/PullToRefresh';
 
 import { env } from '../../config/env';
 import { getAuthHeader } from '../../lib/api';
