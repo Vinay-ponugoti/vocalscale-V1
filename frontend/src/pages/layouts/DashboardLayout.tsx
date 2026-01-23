@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import PullToRefresh from 'react-simple-pull-to-refresh';
 import {
   LayoutDashboard,
   HelpCircle,
@@ -121,6 +122,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   fullWidth = false,
   secondaryNav
 }) => {
+  const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -133,6 +135,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle pull-to-refresh
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries();
+  };
 
   // Sync local state with context when context changes (e.g. clear search)
   useEffect(() => {
@@ -563,7 +570,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               if (sidebarOpen) setSidebarOpen(false);
             }}
           >
-            {children}
+            <PullToRefresh
+              onRefresh={handleRefresh}
+              pullingContent=""
+              refreshingContent={
+                <div className="flex justify-center py-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                </div>
+              }
+            >
+              <div>{children}</div>
+            </PullToRefresh>
           </main>
         </div>
 
