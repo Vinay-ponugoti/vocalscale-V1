@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { User, CreditCard, LogOut, Settings, Sparkles, ChevronRight } from 'lucide-react';
+import { User, CreditCard, LogOut, Settings, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProfileDropdownProps {
@@ -38,24 +38,18 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
             className="absolute top-14 right-0 w-72 bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-slate-200/50 border border-white/50 ring-1 ring-slate-100 z-50 overflow-hidden origin-top-right"
           >
             {/* Header Section */}
-            <div className="p-1">
-              <div className="relative overflow-hidden rounded-xl bg-slate-50 p-4 border border-slate-100">
-                <div className="absolute top-0 right-0 p-3 opacity-10">
-                  <Sparkles className="w-12 h-12 text-blue-500" />
+            <div className="px-4 py-3 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-500/20 ring-2 ring-white">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={displayName} className="h-full w-full rounded-full object-cover" />
+                  ) : (
+                    displayName.charAt(0).toUpperCase()
+                  )}
                 </div>
-
-                <div className="relative z-10 flex items-center gap-3">
-                  <div className="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/20">
-                    {avatarUrl ? (
-                      <img src={avatarUrl} alt={displayName} className="h-full w-full rounded-full object-cover" />
-                    ) : (
-                      displayName.charAt(0).toUpperCase()
-                    )}
-                  </div>
-                  <div className="overflow-hidden">
-                    <p className="font-bold text-slate-800 truncate text-sm">{displayName}</p>
-                    <p className="text-[11px] font-medium text-slate-500 truncate">{email}</p>
-                  </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm text-slate-900 truncate">{displayName}</p>
+                  <p className="text-xs font-medium text-slate-500 truncate">{email}</p>
                 </div>
               </div>
             </div>
