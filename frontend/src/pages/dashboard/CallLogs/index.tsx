@@ -187,15 +187,15 @@ const CallLogsPage = () => {
 
   return (
     <DashboardLayout fullWidth secondaryNav={filtersNav}>
-      <div className="flex flex-col h-full bg-slate-50/50 p-4 md:p-6 2xl:p-8 overflow-hidden">
+      <div className="flex flex-col h-full bg-white overflow-hidden">
 
         {/* Mobile Filters */}
-        <div className="lg:hidden mb-4">
+        <div className="lg:hidden mb-4 p-4 border-b">
           {filtersNav}
         </div>
 
         {/* Unified Card Container */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col h-full overflow-hidden w-full max-w-[1920px] mx-auto animate-in fade-in zoom-in-95 duration-500">
+        <div className="flex flex-col h-full overflow-hidden w-full animate-in fade-in zoom-in-95 duration-500">
 
           {/* Top Bar: Integrated Stats */}
           <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-8 bg-white shrink-0 overflow-x-auto no-scrollbar">
