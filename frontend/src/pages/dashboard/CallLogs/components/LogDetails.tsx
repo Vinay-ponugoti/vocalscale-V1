@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share, Download, Check, FileText, Flag, Bot, Info, Mic, Clock } from 'lucide-react';
+import { Share, Download, FileText, Flag, Bot, Info, Mic, Clock } from 'lucide-react';
 import type { CallLog } from '../types';
 import AISummary from './AISummary';
 import { format, parseISO } from 'date-fns';
@@ -108,11 +108,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
               <Download size={16} />
             </Button>
           </div>
-          <div className="h-5 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
-          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] uppercase tracking-widest px-4 h-9 shadow-lg shadow-indigo-200 ring-1 ring-indigo-500/20">
-            <Check size={14} className="mr-1.5" />
-            Mark Resolved
-          </Button>
+
         </div>
       </div>
 
@@ -154,8 +150,8 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                       </div>
                       <div className={`space-y-1 max-w-[85%] ${isAI ? '' : 'flex flex-col items-end'}`}>
                         <div className={`px-4 py-3 text-[13px] leading-relaxed transition-all font-medium ${isAI
-                            ? 'bg-slate-50 text-slate-900 rounded-xl rounded-tl-none border border-slate-100'
-                            : 'bg-white text-slate-900 rounded-xl rounded-tr-none border border-slate-200 shadow-sm'
+                          ? 'bg-slate-50 text-slate-900 rounded-xl rounded-tl-none border border-slate-100'
+                          : 'bg-white text-slate-900 rounded-xl rounded-tr-none border border-slate-200 shadow-sm'
                           }`}>
                           {msg.content}
                         </div>
@@ -232,8 +228,8 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</span>
                 <Badge className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border shadow-none ${log.status === 'Completed'
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-50'
-                    : 'bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-50'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-50'
+                  : 'bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-50'
                   }`}>{log.status}</Badge>
               </div>
 
