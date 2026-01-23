@@ -49,6 +49,34 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 bg-slate-50/50">
+              <CardContent className="p-5 flex flex-col justify-between h-28">
+                <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shadow-sm ring-1 ring-amber-100">
+                  <Timer size={16} />
+                </div>
+                <div>
+                  <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest mb-1">Overage</p>
+                  <p className="text-lg font-black text-charcoal tracking-tight">
+                    {usage?.overage_minutes > 0 ? `${parseFloat(usage.overage_minutes).toFixed(1)}m` : '0m'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 bg-slate-50/50">
+              <CardContent className="p-5 flex flex-col justify-between h-28">
+                <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shadow-sm ring-1 ring-rose-100">
+                  <Timer size={16} />
+                </div>
+                <div>
+                  <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest mb-1">Est. Cost</p>
+                  <p className="text-lg font-black text-charcoal tracking-tight">
+                    ${usage?.estimated_cost ? parseFloat(usage.estimated_cost).toFixed(2) : '0.00'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Minute Distribution Card */}
