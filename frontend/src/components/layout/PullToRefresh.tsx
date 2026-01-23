@@ -47,6 +47,9 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, childre
             // Started pulling down from top
             if (!pulling) setPulling(true);
 
+            // Prevent default scrolling ONLY when pulling to refresh
+            e.preventDefault();
+
             // Add resistance
             const distance = Math.min(diff * 0.4, 120);
             setPullDistance(distance);
@@ -78,7 +81,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, childre
 
     return (
         <div
-            className="min-h-screen relative"
+            className="relative w-full h-full"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
