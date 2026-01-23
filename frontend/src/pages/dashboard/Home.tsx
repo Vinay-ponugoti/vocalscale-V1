@@ -17,10 +17,10 @@ import DashboardSkeleton from '../../components/dashboard/DashboardSkeleton';
 const Home = () => {
   const { state } = useBusinessSetup();
   const timezone = state.data.business.timezone || 'America/New_York';
-  
+
   // Use a helper to get "today" in the business timezone
   const getBusinessToday = () => toZonedTime(new Date(), timezone);
-  
+
   const [selectedDate, setSelectedDate] = useState(getBusinessToday());
   const [timeRange, setTimeRange] = useState('7d');
 
@@ -48,7 +48,7 @@ const Home = () => {
   return (
     <DashboardLayout fullWidth>
       <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
-        
+
         {/* --- Header Section --- */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
           <div>
@@ -69,20 +69,36 @@ const Home = () => {
           </div>
 
           <div className="flex items-center gap-2">
-             {/* Date Navigation Controls */}
-            <button 
+            {/* Date Navigation Controls */}
+            <button
               onClick={handlePrev}
               className="p-2 bg-white border border-white-light text-charcoal-medium rounded-lg hover:bg-white-light hover:text-charcoal transition-all active:scale-95 shadow-sm"
             >
               <ArrowLeft size={20} strokeWidth={2.5} />
             </button>
-            <div className="bg-white border border-white-light px-6 py-2 rounded-lg shadow-sm min-w-[140px] flex justify-center items-center">
-               {/* Display formatted date using business timezone */}
-               <span className="text-sm font-bold text-charcoal">
+
+            {/* Clickable Date Picker */}
+            <div className="relative bg-white border border-white-light rounded-lg shadow-sm min-w-[160px] overflow-hidden">
+              <input
+                type="date"
+                value={selectedDate.toISOString().split('T')[0]}
+                max={getBusinessToday().toISOString().split('T')[0]}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const newDate = new Date(e.target.value + 'T12:00:00');
+                    setSelectedDate(toZonedTime(newDate, timezone));
+                  }
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              />
+              <div className="px-6 py-2 flex justify-center items-center pointer-events-none">
+                <span className="text-sm font-bold text-charcoal">
                   {formatDate(selectedDate, timezone, 'MMM dd, yyyy')}
-               </span>
+                </span>
+              </div>
             </div>
-            <button 
+
+            <button
               onClick={handleNext}
               disabled={isBusinessToday}
               className="p-2 bg-white border border-white-light text-charcoal-medium rounded-lg hover:bg-white-light hover:text-charcoal transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
@@ -98,22 +114,22 @@ const Home = () => {
           <>
             {/* --- Stats Grid --- */}
             <div className="w-full">
-              <StatsGrid 
-                stats={stats} 
-                appointmentsCount={appointments.length} 
+              <StatsGrid
+                stats={stats}
+                appointmentsCount={appointments.length}
               />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-6 2xl:gap-10">
-              
+
               {/* --- LEFT: CHART & CALLS --- */}
               <div className="lg:col-span-2 2xl:col-span-3 space-y-6 2xl:space-y-10">
-                
+
                 {/* Real Chart */}
-                <CallVolumeChart 
-                  data={chartData} 
-                  timeRange={timeRange} 
-                  setTimeRange={setTimeRange} 
+                <CallVolumeChart
+                  data={chartData}
+                  timeRange={timeRange}
+                  setTimeRange={setTimeRange}
                   trend={stats.totalTrend}
                 />
               </div>
