@@ -8,14 +8,12 @@ const CustomToggle: React.FC<{ active: boolean; onChange: () => void }> = ({ act
   <button
     type="button"
     onClick={onChange}
-    className={`w-11 h-6 rounded-full p-1 transition-all duration-300 ease-out focus:outline-none ${
-      active ? 'bg-indigo-600 shadow-sm shadow-indigo-200' : 'bg-slate-200'
-    }`}
+    className={`w-11 h-6 rounded-full p-1 transition-all duration-300 ease-out focus:outline-none ${active ? 'bg-indigo-600 shadow-sm shadow-indigo-200' : 'bg-slate-200'
+      }`}
   >
     <div
-      className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-300 ease-out ${
-        active ? 'translate-x-5' : 'translate-x-0'
-      }`}
+      className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-300 ease-out ${active ? 'translate-x-5' : 'translate-x-0'
+        }`}
     />
   </button>
 );
@@ -25,29 +23,35 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
   availableVoices,
   onChange,
 }) => {
-  // Get voices for currently selected language
+  // Get ONLY active voices for currently selected language
   const languageVoices = availableVoices.filter(voice => {
+    // Check if voice is enabled first
+    if (voice.is_active === false) return false;
+
     // If voice has an explicit accent/language field that matches
-    if (voice.accent && voice.accent.toLowerCase().includes(settings.language.toLowerCase().split('-')[0])) {
+    const selectedLangBase = settings.language.toLowerCase().split('-')[0];
+    if (voice.accent && voice.accent.toLowerCase().includes(selectedLangBase)) {
       return true;
     }
-    
+
     // Fallback to provider_voice_id pattern matching
     const providerVoiceId = voice.provider_voice_id?.toLowerCase() || '';
-    const selectedLang = settings.language.toLowerCase().split('-')[0];
-    return providerVoiceId.includes('-' + selectedLang) || 
-           providerVoiceId.startsWith('aura-2-' + selectedLang) ||
-           providerVoiceId.includes(selectedLang);
+    return providerVoiceId.includes('-' + selectedLangBase) ||
+      providerVoiceId.startsWith('aura-2-' + selectedLangBase) ||
+      providerVoiceId.includes(selectedLangBase);
   });
 
-  // Handle language change - automatically select default voice for that language
+  // Handle language change - automatically select default ACTIVE voice for that language
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLanguage = e.target.value;
-    // Find first voice for new language
-    const selectedLang = newLanguage.toLowerCase().split('-')[0];
+    const selectedLangBase = newLanguage.toLowerCase().split('-')[0];
+
+    // Find first active voice for new language
     const defaultVoiceForLanguage = availableVoices.find(voice => {
+      if (voice.is_active === false) return false;
       const providerVoiceId = voice.provider_voice_id?.toLowerCase() || '';
-      return providerVoiceId.startsWith('aura-2-' + selectedLang) || providerVoiceId.includes('-' + selectedLang);
+      return providerVoiceId.startsWith('aura-2-' + selectedLangBase) ||
+        providerVoiceId.includes('-' + selectedLangBase);
     });
 
     // Update both language and voice_id (use database ID)
@@ -60,7 +64,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 
   return (
     <div className="space-y-10 2xl:space-y-14">
-      
+
       {/* SECTION: Voice & Language */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 2xl:gap-10">
 
@@ -75,7 +79,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
               value={settings.voice_id}
               onChange={(e) => {
                 const selectedVoice = languageVoices.find(v => v.id === e.target.value);
-                onChange({ 
+                onChange({
                   voice_id: e.target.value,
                   model_name: selectedVoice?.name || ''
                 });
@@ -90,7 +94,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             </select>
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-indigo-500 transition-colors">
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
           </div>
@@ -126,14 +130,14 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                 <option value="ja">Japanese</option>
               </optgroup>
             </select>
-             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-indigo-500 transition-colors">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-indigo-500 transition-colors">
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-indigo-500 transition-colors">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-indigo-500 transition-colors">
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
           </div>
@@ -150,18 +154,18 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             {settings.speaking_speed}x
           </span>
         </div>
-        
+
         <div className="relative w-full h-6 flex items-center group">
           <div className="absolute w-full h-1.5 bg-slate-100 rounded-full" />
-          <div 
+          <div
             className="absolute h-1.5 bg-indigo-600 rounded-full pointer-events-none transition-all duration-300"
             style={{ width: `${((settings.speaking_speed - 0.5) / 1.5) * 100}%` }}
           />
-          <input 
-            type="range" 
-            min="0.5" 
-            max="2" 
-            step="0.1" 
+          <input
+            type="range"
+            min="0.5"
+            max="2"
+            step="0.1"
             value={settings.speaking_speed}
             onChange={(e) => onChange({ speaking_speed: parseFloat(e.target.value) })}
             className="relative w-full h-full appearance-none bg-transparent cursor-pointer z-10 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-indigo-600 [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110"
@@ -184,14 +188,14 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
           {['friendly', 'professional', 'casual'].map((tone) => {
             const isActive = settings.conversation_tone === tone;
             return (
-              <button 
+              <button
                 key={tone}
                 onClick={() => onChange({ conversation_tone: tone })}
                 className={`
                   relative py-3 px-4 font-black text-[10px] uppercase tracking-widest transition-all duration-300
                   rounded-xl border flex items-center justify-center gap-2 group
-                  ${isActive 
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100' 
+                  ${isActive
+                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100'
                     : 'bg-white text-slate-500 border-slate-100 hover:border-indigo-200 hover:text-indigo-600 shadow-sm'
                   }
                 `}
@@ -218,7 +222,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
           />
         </div>
       </div>
-      
+
       {/* SECTION: System Toggle */}
       <div className="pt-8 border-t border-slate-50">
         <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-slate-100 group transition-all duration-300 hover:bg-white hover:border-indigo-100">
@@ -230,8 +234,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
               Allow the AI to autonomously handle incoming calls.
             </span>
           </div>
-          <CustomToggle 
-            active={settings.is_active} 
+          <CustomToggle
+            active={settings.is_active}
             onChange={() => onChange({ is_active: !settings.is_active })}
           />
         </div>
