@@ -78,7 +78,7 @@ const Home = () => {
             </button>
 
             {/* Clickable Date Picker */}
-            <div className="relative bg-white border border-white-light rounded-lg shadow-sm min-w-[160px] overflow-hidden">
+            <div className="relative bg-white border border-white-light rounded-lg shadow-sm min-w-[160px] overflow-visible">
               <input
                 type="date"
                 value={selectedDate.toISOString().split('T')[0]}
@@ -89,9 +89,10 @@ const Home = () => {
                     setSelectedDate(toZonedTime(newDate, timezone));
                   }
                 }}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                style={{ colorScheme: 'light' }}
               />
-              <div className="px-6 py-2 flex justify-center items-center pointer-events-none">
+              <div className="px-6 py-2 flex justify-center items-center pointer-events-none relative z-10">
                 <span className="text-sm font-bold text-charcoal">
                   {formatDate(selectedDate, timezone, 'MMM dd, yyyy')}
                 </span>
