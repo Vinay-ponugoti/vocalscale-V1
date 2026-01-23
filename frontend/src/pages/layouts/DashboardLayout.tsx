@@ -248,19 +248,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* Logo Header */}
           <div className={`h-20 flex items-center border-b transition-all duration-300 ${sidebarOpen ? 'justify-between px-8' : 'justify-center px-4'}`} style={{ borderColor: DS.border }}>
-            <div className={`flex items-center transition-all duration-300 ${sidebarOpen ? 'px-6' : 'justify-center w-full px-4'}`}>
-              <button
-                onClick={() => !sidebarOpen && setSidebarOpen(true)}
-                className={`flex items-center justify-center flex-shrink-0 group ${!sidebarOpen ? 'cursor-pointer' : 'cursor-default'}`}
-              >
-                <div className="flex items-center gap-3">
-                  <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-10 h-10 object-contain" />
-                  {sidebarOpen && (
-                    <span className="text-xl font-black tracking-tight text-slate-900">VocalScale</span>
-                  )}
-                </div>
-              </button>
-            </div>
+            <Link
+              to="/dashboard"
+              className={`flex items-center transition-all duration-300 ${sidebarOpen ? 'px-6' : 'justify-center w-full px-4'} group cursor-pointer`}
+            >
+              <div className="flex items-center gap-3">
+                <img src="/logo.png" alt="VocalScale AI Phone Agent" width="428" height="428" className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
+                {sidebarOpen && (
+                  <div className="flex flex-col">
+                    <span className="text-xl font-black tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">VocalScale</span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">AI Phone Agent</span>
+                  </div>
+                )}
+              </div>
+            </Link>
 
             {/* Toggle Button (Only visible when open) */}
             {sidebarOpen && (
