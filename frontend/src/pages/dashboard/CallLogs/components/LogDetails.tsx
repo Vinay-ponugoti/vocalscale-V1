@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share, Download, FileText, Flag, Bot, Info, Mic, Clock } from 'lucide-react';
+import { Share, Download, FileText, Flag, Bot, Mic, Clock } from 'lucide-react';
 import type { CallLog } from '../types';
 import AISummary from './AISummary';
 import { format, parseISO } from 'date-fns';
@@ -83,61 +83,60 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
   const transcriptMessages = parseTranscript(log.transcript);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-10 w-full">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-10 w-full">
 
       {/* --- Header Area --- */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shrink-0 ring-1 ring-indigo-500/10 shadow-sm">
-            <Mic size={20} />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b-2 border-slate-100">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center shrink-0 ring-4 ring-indigo-500/10 shadow-lg shadow-indigo-200">
+            <Mic size={22} strokeWidth={2.5} />
           </div>
           <div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">Call Intelligence</h1>
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">
-              {formattedDate} <span className="mx-1.5 text-slate-200">•</span> {formattedTime}
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Call Intelligence</h1>
+            <p className="text-slate-500 text-xs font-semibold mt-1">
+              {formattedDate} <span className="mx-2 text-slate-300">•</span> {formattedTime}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-50 border-transparent hover:border-slate-100">
-              <Share size={16} />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-50 border-transparent hover:border-slate-100">
-              <Download size={16} />
-            </Button>
-          </div>
-
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
+            <Share size={18} />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
+            <Download size={18} />
+          </Button>
         </div>
       </div>
 
       {/* --- AI Summary Section --- */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2 text-slate-400">
-          <Bot size={14} />
-          <h3 className="text-[11px] font-black uppercase tracking-[0.2em]">AI Analysis</h3>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+            <Bot size={16} className="text-indigo-600" />
+          </div>
+          <h3 className="text-xs font-black uppercase tracking-wider text-slate-700">AI Analysis</h3>
         </div>
         <AISummary summary={log.summary || log.notes} />
       </div>
 
       {/* --- Main Content Grid --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         {/* Left Column: Transcript */}
         <div className="lg:col-span-8 space-y-6">
 
           {/* Transcript Container */}
-          <Card className="border-slate-200 overflow-hidden flex flex-col shadow-sm ring-1 ring-slate-200/50">
-            <CardHeader className="px-5 py-3 border-b border-slate-100 bg-slate-50/30 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="font-black text-slate-900 text-[10px] uppercase tracking-widest">Transcript</CardTitle>
-              <Badge variant="outline" className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border-emerald-100 uppercase tracking-tighter">
+          <Card className="border-slate-200 overflow-hidden flex flex-col shadow-md ring-1 ring-slate-900/5">
+            <CardHeader className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="font-black text-slate-900 text-xs uppercase tracking-wider">Conversation Transcript</CardTitle>
+              <Badge variant="outline" className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border-emerald-200 uppercase tracking-tight">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 Recorded
               </Badge>
             </CardHeader>
 
-            <CardContent className="p-6 space-y-6 bg-white min-h-[300px]">
+            <CardContent className="p-8 space-y-6 bg-white min-h-[400px]">
               {transcriptMessages.length > 0 ? (
                 transcriptMessages.map((msg) => {
                   const isAI = msg.role === 'assistant';
@@ -169,42 +168,29 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
               )}
             </CardContent>
           </Card>
-
-          {/* System Notes */}
-          {log.notes && (
-            <div className="bg-amber-50/40 border border-amber-100/60 rounded-xl p-5 flex gap-3 ring-1 ring-amber-500/10">
-              <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
-                <Info size={16} className="text-amber-600" />
-              </div>
-              <div>
-                <h3 className="font-black text-amber-900 text-[9px] uppercase tracking-widest mb-1">System Note</h3>
-                <p className="text-sm text-amber-800/80 leading-relaxed font-medium">{log.notes}</p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Right Column: Meta Info */}
         <div className="lg:col-span-4 space-y-6">
 
           {/* Caller Identity Card */}
-          <Card className="bg-white rounded-xl border-slate-200 shadow-sm p-5 space-y-5 ring-1 ring-slate-200/50">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-lg font-black text-slate-400 ring-1 ring-slate-900/5">
+          <Card className="bg-white rounded-2xl border-slate-200 shadow-md p-6 space-y-5 ring-1 ring-slate-900/5">
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 border-2 border-slate-200 flex items-center justify-center text-xl font-black text-slate-600 ring-4 ring-slate-900/5 shadow-sm">
                 {(log.caller_name || 'Unknown').substring(0, 2).toUpperCase()}
               </div>
-              <div className="min-w-0">
-                <h2 className="text-base font-black text-slate-900 truncate tracking-tight">{log.caller_name}</h2>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 truncate">{log.phone_number}</p>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg font-black text-slate-900 truncate tracking-tight">{log.caller_name}</h2>
+                <p className="text-xs font-semibold text-slate-500 mt-1 truncate">{log.phone_number}</p>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Badge variant="secondary" className="bg-slate-50 text-slate-600 border-slate-100 font-black text-[9px] tracking-widest uppercase px-2.5 py-1 rounded-lg">
+            <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+              <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200 font-bold text-[10px] tracking-wide uppercase px-3 py-1.5 rounded-lg">
                 {log.category}
               </Badge>
               {log.tags?.map((tag, i) => (
-                <Badge key={i} variant="outline" className="bg-white text-slate-400 border-slate-100 font-bold text-[9px] tracking-widest uppercase px-2.5 py-1 rounded-lg">
+                <Badge key={i} variant="outline" className="bg-white text-slate-500 border-slate-200 font-semibold text-[10px] tracking-wide uppercase px-3 py-1.5 rounded-lg">
                   #{tag}
                 </Badge>
               ))}
@@ -212,11 +198,11 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
           </Card>
 
           {/* Call Metadata */}
-          <Card className="bg-white rounded-xl border-slate-200 shadow-sm overflow-hidden ring-1 ring-slate-200/50">
-            <CardHeader className="px-5 py-3 border-b border-slate-100 bg-slate-50/30">
-              <CardTitle className="font-black text-slate-900 text-[10px] uppercase tracking-widest">Metadata</CardTitle>
+          <Card className="bg-white rounded-2xl border-slate-200 shadow-md overflow-hidden ring-1 ring-slate-900/5">
+            <CardHeader className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+              <CardTitle className="font-black text-slate-900 text-xs uppercase tracking-wider">Call Details</CardTitle>
             </CardHeader>
-            <CardContent className="p-5 space-y-4">
+            <CardContent className="p-6 space-y-5">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Duration</span>
                 <span className="text-sm font-black text-slate-900 flex items-center gap-2">
