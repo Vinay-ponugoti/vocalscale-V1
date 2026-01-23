@@ -78,48 +78,72 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
   const peakCalls = Math.max(...safeData.map(d => d.calls), 0);
 
   return (
-    <Card className="border-slate-100 bg-white shadow-sm overflow-hidden h-full flex flex-col outline-none focus:outline-none select-none" tabIndex={-1}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6 border-b border-slate-50">
-        <div className="space-y-1">
-          <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
-            <div className="p-1.5 rounded-md bg-blue-50 text-blue-600">
-              <Activity size={14} />
+    <Card className="border-slate-200 bg-white shadow-sm overflow-hidden h-full flex flex-col" tabIndex={-1}>
+      <CardHeader className="flex flex-col space-y-4 pb-4 border-b border-slate-100">
+        {/* Title Row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+              <Activity size={18} strokeWidth={2.5} />
             </div>
-            Call Activity
-          </CardTitle>
-          <div className="flex items-center gap-4 text-sm text-slate-500">
-            <div className="flex items-baseline gap-1">
-              <span className="font-mono font-medium text-slate-700">{totalCalls.toLocaleString()}</span>
-              <span className="text-[10px] uppercase tracking-wide font-medium text-slate-400">Total</span>
+            <div>
+              <CardTitle className="text-lg font-black text-slate-900">Call Activity</CardTitle>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Last {timeRange === '24h' ? '24 hours' : timeRange === '7d' ? '7 days' : '30 days'}</p>
             </div>
-            <div className="w-px h-3 bg-slate-200" />
-            <div className="flex items-baseline gap-1">
-              <span className="font-mono font-medium text-slate-700">{peakCalls.toLocaleString()}</span>
-              <span className="text-[10px] uppercase tracking-wide font-medium text-slate-400">Peak</span>
-            </div>
+          </div>
+
+          {/* Time Range Tabs */}
+          <div className="flex items-center gap-1 p-1 bg-slate-50 rounded-lg border border-slate-200">
+            {['24h', '7d', '30d'].map((range) => (
+              <CustomTab
+                key={range}
+                label={range}
+                isActive={timeRange === range}
+                onClick={() => setTimeRange(range)}
+              />
+            ))}
           </div>
         </div>
 
-        <div className="flex items-center p-1 bg-slate-50 rounded-lg border border-slate-100">
-          {['24h', '7d', '30d'].map((range) => (
-            <CustomTab
-              key={range}
-              label={range}
-              isActive={timeRange === range}
-              onClick={() => setTimeRange(range)}
-            />
-          ))}
+        {/* Stats Row */}
+        <div className="flex items-center gap-6">
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-black text-slate-900 font-mono">{totalCalls}</span>
+            <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Total Calls</span>
+          </div>
+          <div className="h-8 w-px bg-slate-200" />
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-black text-slate-900 font-mono">{peakCalls}</span>
+            <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Peak Day</span>
+          </div>
+          <div className="h-8 w-px bg-slate-200" />
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-black text-slate-900 font-mono">{avgCalls}</span>
+            <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Daily Avg</span>
+          </div>
+          {trend && (
+            <>
+              <div className="h-8 w-px bg-slate-200" />
+              <div className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold",
+                trend.isPositive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+              )}>
+                {trend.isPositive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                {trend.value}%
+              </div>
+            </>
+          )}
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 min-h-0 pt-6 px-1">
+      <CardContent className="flex-1 min-h-0 pt-6 px-2">
         <div className="h-full w-full min-h-[200px] max-h-[350px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={safeData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -128,7 +152,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
                 tickLine={false}
                 axisLine={false}
                 tickMargin={12}
-                tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
+                tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600 }}
               />
               <YAxis
                 hide={true}
@@ -141,8 +165,8 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
               <Area
                 type="monotone"
                 dataKey="calls"
-                stroke="#3B82F6"
-                strokeWidth={2}
+                stroke="#6366F1"
+                strokeWidth={3}
                 fillOpacity={1}
                 fill="url(#colorCalls)"
                 isAnimationActive={true}
@@ -151,32 +175,6 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
               />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
-
-        <div className="flex items-center justify-between px-6 pt-4 pb-2 border-t border-slate-50 mt-2">
-          <div className="flex items-center gap-4">
-            <div className="space-y-0.5">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Daily Avg</p>
-              <p className="text-lg font-mono font-bold text-slate-700">{avgCalls}</p>
-            </div>
-            <div className="space-y-0.5">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Handling</p>
-              <p className="text-lg font-mono font-bold text-slate-700">{totalCalls}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {trend && (
-              <div className={cn(
-                "flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
-                trend.isPositive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
-              )}>
-                {trend.isPositive ? <TrendingUp size={12} className="mr-1" /> : <TrendingDown size={12} className="mr-1" />}
-                {trend.value}%
-                <span className="ml-1 opacity-70">vs last period</span>
-              </div>
-            )}
-          </div>
         </div>
       </CardContent>
     </Card>
