@@ -250,10 +250,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <div className={`h-20 flex items-center border-b transition-all duration-300 ${sidebarOpen ? 'justify-between px-8' : 'justify-center px-4'}`} style={{ borderColor: DS.border }}>
             <Link
               to="/dashboard"
-              className={`flex items-center transition-all duration-300 ${sidebarOpen ? 'px-6' : 'justify-center w-full px-4'} group cursor-pointer`}
+              className={`flex items-center transition-all duration-300 ${sidebarOpen ? 'px-6' : 'justify-center w-full px-4'} group cursor-pointer no-underline`}
             >
               <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="VocalScale AI Phone Agent" width="428" height="428" className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
+                <img src="/logo.png" alt="VocalScale AI Phone Agent" width="428" height="428" className="w-10 h-10 flex-shrink-0 object-contain group-hover:scale-105 transition-transform" />
                 {sidebarOpen && (
                   <div className="flex flex-col">
                     <span className="text-xl font-black tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">VocalScale</span>
