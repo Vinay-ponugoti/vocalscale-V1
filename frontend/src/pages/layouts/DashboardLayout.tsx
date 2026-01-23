@@ -211,7 +211,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     queryKey: ['subscription', user?.id],
     queryFn: () => billingApi.getSubscription(),
     enabled: !!user?.id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 30, // 30 seconds (was 5 minutes - too long for fresh subscription data)
+    refetchInterval: 1000 * 60, // Refetch every minute to catch subscription changes
   });
 
   const handleSignOut = async () => {

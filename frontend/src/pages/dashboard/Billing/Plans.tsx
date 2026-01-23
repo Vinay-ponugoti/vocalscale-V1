@@ -38,6 +38,18 @@ const Plans: React.FC = () => {
       }
     };
     fetchData();
+
+    // Refetch subscription every 30 seconds to catch recent purchases
+    const interval = setInterval(async () => {
+      try {
+        const sub = await billingApi.getSubscription();
+        setSubscription(sub);
+      } catch (error) {
+        console.error('Error refetching subscription:', error);
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleUpgrade = async (priceId: string, planName: string) => {
