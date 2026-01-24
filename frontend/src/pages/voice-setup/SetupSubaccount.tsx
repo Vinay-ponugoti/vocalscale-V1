@@ -108,7 +108,7 @@ const SetupSubaccount = () => {
       const apiUrl = env.API_URL;
       const headers = await getAuthHeader();
 
-      const response = await fetch(`${apiUrl}/subaccounts/create`, {
+      const response = await fetch(`${apiUrl}/subaccounts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

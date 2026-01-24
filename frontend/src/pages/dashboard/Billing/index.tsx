@@ -121,8 +121,8 @@ const Billing: React.FC = () => {
     ? format(new Date(subscription.current_period_end * 1000), 'MMM d')
     : format(endOfMonth(new Date()), 'MMM d');
 
-  const totalMinutes = hasSubscription ? (usage?.total_minutes || plan.limits?.ai_minutes || 0) : 0;
-  const usedMinutes = hasSubscription ? (usage?.used_minutes || 0) : 0;
+  const totalMinutes = hasSubscription ? (usage?.minutes_limit || plan.limits?.ai_minutes || 0) : 0;
+  const usedMinutes = hasSubscription ? (usage?.minutes_used || 0) : 0;
   // const remainingMinutes = hasSubscription ? (usage?.remaining_minutes || 0) : 0;
   const remainingPercentage = totalMinutes > 0 ? Math.min(100, Math.max(0, Math.round(((totalMinutes - usedMinutes) / totalMinutes) * 100))) : 0;
   const overageMinutes = Math.max(0, usedMinutes - totalMinutes);
