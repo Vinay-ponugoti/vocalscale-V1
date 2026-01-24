@@ -259,7 +259,24 @@ export const BusinessDetails: React.FC = () => {
       }
 
       // Auto-save to backend
-      await actions.saveData();
+      const result = await actions.saveData();
+
+      // Save reviews if available
+      if (details.reviews && Array.isArray(details.reviews)) {
+        const businessId = (typeof result === 'object' && result?.business_id) ? result.business_id : data.business.id;
+
+        if (businessId) {
+          try {
+            // Take top 5 reviews
+            const topReviews = details.reviews.slice(0, 5);
+            await businessSetupAPI.saveReviews(topReviews, businessId);
+            console.log('✅ Reviews synced successfully');
+          } catch (reviewErr) {
+            console.error('Failed to sync reviews:', reviewErr);
+            // Don't block UI on review failure
+          }
+        }
+      }
 
       // Clear search
       setShowSearch(false);

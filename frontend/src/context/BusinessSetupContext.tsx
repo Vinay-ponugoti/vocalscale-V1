@@ -159,7 +159,7 @@ interface BusinessSetupContextType {
   state: BusinessSetupState;
   actions: {
     loadData: () => Promise<void>;
-    saveData: (showToast?: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void) => Promise<boolean>;
+    saveData: (showToast?: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void) => Promise<{ success: boolean; business_id?: string } | boolean>;
     updateBusiness: (data: Partial<BusinessDetails>) => void;
     updateBusinessHours: (hours: BusinessHour[]) => void;
     updateServices: (services: Service[]) => void;
@@ -190,7 +190,7 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
     }
   }, []);
 
-  const saveData = useCallback(async (showToast?: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void): Promise<boolean> => {
+  const saveData = useCallback(async (showToast?: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void): Promise<{ success: boolean; business_id?: string } | boolean> => {
     const currentState = stateRef.current;
 
     if (!currentState.isDirty) {
@@ -201,13 +201,13 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
     dispatch({ type: 'SET_SAVING', payload: true });
 
     try {
-      await businessSetupAPI.saveBusinessSetup(currentState.data);
+      const result = await businessSetupAPI.saveBusinessSetup(currentState.data);
 
       dispatch({ type: 'SET_DIRTY', payload: false });
       dispatch({ type: 'SET_ERROR', payload: null });
 
       showToast?.('Changes saved successfully!', 'success');
-      return true;
+      return result;
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to save data';
