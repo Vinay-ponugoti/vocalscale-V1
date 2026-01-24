@@ -3,6 +3,8 @@ import { getAuthHeader } from '../lib/api';
 
 // Import types directly inline to avoid module issues
 interface BusinessDetails {
+  id?: string;
+  user_id?: string;
   business_name: string;
   category?: string;
   phone?: string;
@@ -12,8 +14,11 @@ interface BusinessDetails {
   website?: string;
   contact_name?: string;
   timezone?: string;
+  place_id?: string;
   rating?: number;
   user_ratings_total?: number;
+  auto_setup?: boolean;
+  image_url?: string;
 }
 
 interface BusinessHour {
@@ -36,6 +41,7 @@ interface UrgentCallRule {
   condition_text: string;
   action: string;
   contact?: string;
+  id_val?: string;
 }
 
 interface BookingRequirement {
@@ -51,6 +57,14 @@ interface BusinessSetupData {
   services?: Service[];
   urgent_call_rules?: UrgentCallRule[];
   booking_requirements?: BookingRequirement[];
+}
+
+interface Review {
+  author_name: string;
+  rating: number;
+  text: string;
+  time: number;
+  relative_time_description: string;
 }
 
 const API_BASE_URL = env.API_URL;
@@ -148,6 +162,17 @@ class BusinessSetupAPI {
     return this.request(`/google-places/details?place_id=${placeId}`);
   }
 
+  // Save reviews
+  async saveReviews(reviews: Review[], businessId: string): Promise<{ status: string; saved: number }> {
+    return this.request('/reviews', {
+      method: 'POST',
+      body: JSON.stringify({
+        business_id: businessId,
+        reviews: reviews
+      }),
+    });
+  }
+
   // Upload Knowledge Document for processing
   async uploadKnowledgeDocument(file: File): Promise<{ task_id: string; status: string; message: string }> {
     const url = `${API_BASE_URL}/knowledge/upload`;
@@ -205,7 +230,6 @@ class BusinessSetupAPI {
     });
 
     if (!response.ok) {
-      // Fail gracefully (return empty) if endpoint doesn't exist yet or fails
       console.warn('Failed to fetch knowledge files');
       return [];
     }
