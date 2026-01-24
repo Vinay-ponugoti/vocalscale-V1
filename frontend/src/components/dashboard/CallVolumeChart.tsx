@@ -137,7 +137,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
       </CardHeader>
 
       <CardContent className="flex-1 min-h-0 pt-4 px-4 pb-4">
-        <div className="h-full w-full min-h-[200px] max-h-[350px]">
+        <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={safeData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>

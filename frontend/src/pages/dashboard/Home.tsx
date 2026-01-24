@@ -13,6 +13,7 @@ import CallVolumeChart from '../../components/dashboard/CallVolumeChart';
 import RecentTranscripts from '../../components/dashboard/RecentTranscripts';
 import ReviewStats from '../../components/dashboard/ReviewStats';
 import DashboardSkeleton from '../../components/dashboard/DashboardSkeleton';
+import CalendarPicker from '../../components/dashboard/CalendarPicker';
 
 const Home = () => {
   const { state } = useBusinessSetup();
@@ -77,27 +78,12 @@ const Home = () => {
               <ArrowLeft size={20} strokeWidth={2.5} />
             </button>
 
-            {/* Clickable Date Picker */}
-            <div className="relative bg-white border border-white-light rounded-lg shadow-sm min-w-[160px] overflow-visible">
-              <input
-                type="date"
-                value={selectedDate.toISOString().split('T')[0]}
-                max={getBusinessToday().toISOString().split('T')[0]}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    const newDate = new Date(e.target.value + 'T12:00:00');
-                    setSelectedDate(toZonedTime(newDate, timezone));
-                  }
-                }}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                style={{ colorScheme: 'light' }}
-              />
-              <div className="px-6 py-2 flex justify-center items-center pointer-events-none relative z-10">
-                <span className="text-sm font-bold text-charcoal">
-                  {formatDate(selectedDate, timezone, 'MMM dd, yyyy')}
-                </span>
-              </div>
-            </div>
+            {/* Custom Calendar Picker */}
+            <CalendarPicker
+              date={selectedDate}
+              setDate={(date) => setSelectedDate(toZonedTime(date, timezone))}
+              maxDate={toZonedTime(new Date(), timezone)}
+            />
 
             <button
               onClick={handleNext}
