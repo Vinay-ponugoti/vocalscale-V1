@@ -69,8 +69,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 2xl:gap-10">
 
         {/* Voice Persona */}
-        <div className="space-y-2">
-          <Label className="block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
+        <div className="space-y-3">
+          <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
             Voice Persona
           </Label>
           <div className="relative group">
@@ -101,8 +101,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
         </div>
 
         {/* Language */}
-        <div className="space-y-2">
-          <Label className="block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
+        <div className="space-y-3">
+          <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
             Language
           </Label>
           <div className="relative group">
@@ -147,7 +147,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
       {/* SECTION: Speaking Speed */}
       <div className="space-y-4">
         <div className="flex justify-between items-end">
-          <Label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
+          <Label className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
             Speaking Speed
           </Label>
           <span className="font-mono text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100">
@@ -172,7 +172,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
           />
         </div>
 
-        <div className="flex justify-between text-[9px] font-black uppercase tracking-[0.1em] text-slate-400">
+        <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
           <span>Slow</span>
           <span>Normal</span>
           <span>Fast</span>
@@ -181,7 +181,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 
       {/* SECTION: Conversation Tone */}
       <div className="space-y-4">
-        <Label className="block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
+        <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
           Conversation Tone
         </Label>
         <div className="grid grid-cols-3 gap-3">
@@ -192,7 +192,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                 key={tone}
                 onClick={() => onChange({ conversation_tone: tone })}
                 className={`
-                  relative py-3 px-4 font-black text-[10px] uppercase tracking-widest transition-all duration-300
+                  relative py-4 px-4 font-black text-[11px] uppercase tracking-widest transition-all duration-300
                   rounded-xl border flex items-center justify-center gap-2 group
                   ${isActive
                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100'
@@ -208,8 +208,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
       </div>
 
       {/* SECTION: Custom Greeting */}
-      <div className="space-y-2">
-        <Label className="block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
+      <div className="space-y-3">
+        <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
           Custom Greeting
         </Label>
         <div className="relative group">
@@ -230,7 +230,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             <span className="text-sm font-black text-slate-900 tracking-tight">
               Enable AI Receptionist
             </span>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mt-1">
               Allow the AI to autonomously handle incoming calls.
             </span>
           </div>

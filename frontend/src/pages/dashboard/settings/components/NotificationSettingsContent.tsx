@@ -12,8 +12,8 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
   return (
     <div className="space-y-8 2xl:space-y-12">
       {/* Basic Toggles */}
-      <div className="space-y-3 2xl:space-y-5">
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 px-1">Delivery Channels</h3>
+      <div className="space-y-4 2xl:space-y-6">
+        <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 mb-5 px-1">Delivery Channels</h3>
 
         {/* Urgent Call Alerts */}
         <div className="flex items-center justify-between p-5 bg-slate-50/50 rounded-2xl hover:bg-white hover:border-indigo-100 transition-all duration-300 border border-slate-100 group">
@@ -22,8 +22,8 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
               <AlertCircle size={20} />
             </div>
             <div>
-              <p className="text-sm font-black text-slate-900 tracking-tight">Urgent Call Alerts</p>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">Receive SMS immediately for emergency mentions</p>
+              <p className="text-[15px] font-black text-slate-900 tracking-tight">Urgent Call Alerts</p>
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mt-1">Receive SMS immediately for emergency mentions</p>
             </div>
           </div>
           <Toggle
@@ -39,8 +39,8 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
               <Globe size={20} />
             </div>
             <div>
-              <p className="text-sm font-black text-slate-900 tracking-tight">New Booking Confirmations</p>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">Email notification for new calendar bookings</p>
+              <p className="text-[15px] font-black text-slate-900 tracking-tight">New Booking Confirmations</p>
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mt-1">Email notification for new calendar bookings</p>
             </div>
           </div>
           <Toggle
@@ -56,8 +56,8 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
               <Save size={20} />
             </div>
             <div>
-              <p className="text-sm font-black text-slate-900 tracking-tight">Missed Call Alerts</p>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">Digest of all missed calls and bookings</p>
+              <p className="text-[15px] font-black text-slate-900 tracking-tight">Missed Call Alerts</p>
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mt-1">Digest of all missed calls and bookings</p>
             </div>
           </div>
           <Toggle
@@ -68,10 +68,10 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
       </div>
 
       {/* Call Transfer Configuration */}
-      <div className="space-y-4 pt-4 border-t border-slate-100">
+      <div className="space-y-5 pt-6 border-t border-slate-100">
         <div>
-          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Call Forwarding & Routing</h3>
-          <p className="text-[9px] text-slate-400 px-1 mt-1">Configure how calls are routed to your team based on AI escalation.</p>
+          <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 px-1">Call Forwarding & Routing</h3>
+          <p className="text-[11px] text-slate-500 px-1 mt-1 font-bold uppercase tracking-wide opacity-80">Configure how calls are routed to your team based on AI escalation.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 2xl:gap-8">
@@ -82,8 +82,8 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
                 <PhoneForwarded size={16} />
               </div>
               <div className="flex-1">
-                <h4 className="text-[11px] font-black text-slate-900 mb-0.5 uppercase tracking-wider">Urgent Transfer</h4>
-                <p className="text-[10px] font-bold text-slate-400 mb-4">Route here when AI detects an emergency.</p>
+                <h4 className="text-[12px] font-black text-slate-900 mb-1 uppercase tracking-wider">Urgent Transfer</h4>
+                <p className="text-[11px] font-bold text-slate-500 mb-4 opacity-70">Route here when AI detects an emergency.</p>
 
                 <div className="flex items-center gap-3 px-3 py-2 bg-slate-50/50 rounded-xl border border-slate-100 transition-colors">
                   <span className="text-sm">📱</span>
@@ -109,8 +109,8 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
                 <PhoneForwarded size={16} />
               </div>
               <div className="flex-1">
-                <h4 className="text-[11px] font-black text-slate-900 mb-0.5 uppercase tracking-wider">Standard Transfer</h4>
-                <p className="text-[10px] font-bold text-slate-400 mb-4">Route here for non-escalated requests.</p>
+                <h4 className="text-[12px] font-black text-slate-900 mb-1 uppercase tracking-wider">Standard Transfer</h4>
+                <p className="text-[11px] font-bold text-slate-500 mb-4 opacity-70">Route here for non-escalated requests.</p>
 
                 <div className="flex items-center gap-3 px-3 py-2 bg-slate-50/50 rounded-xl border border-slate-100 transition-colors">
                   <span className="text-sm">📱</span>

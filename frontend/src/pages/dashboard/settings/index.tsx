@@ -227,26 +227,26 @@ const Settings = () => {
             </div>
 
             {/* Scrollable Tabs Area */}
-            <div className="flex-1 overflow-x-auto lg:overflow-y-auto px-3 py-2 lg:py-1 flex lg:flex-col gap-1 custom-scrollbar scrollbar-hide lg:scrollbar-default">
+            <div className="flex-1 overflow-x-auto lg:overflow-y-auto px-4 py-3 lg:py-2 flex lg:flex-col gap-1.5 custom-scrollbar scrollbar-hide lg:scrollbar-default">
               {sections.map((section) => (
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
-                  className={`flex-shrink-0 lg:w-full flex items-center gap-3 p-2.5 lg:p-3 rounded-xl transition-all duration-300 group ${activeSection === section.id
-                    ? 'bg-indigo-50/80 text-indigo-900 lg:border lg:border-indigo-100/50 shadow-sm shadow-indigo-100/20'
-                    : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
+                  className={`flex-shrink-0 lg:w-full flex items-center gap-3.5 p-3 rounded-2xl transition-all duration-300 group ${activeSection === section.id
+                    ? 'bg-indigo-50/80 text-indigo-950 lg:border lg:border-indigo-100/50 shadow-sm shadow-indigo-100/10'
+                    : 'text-slate-400 hover:bg-slate-50 hover:text-slate-700'
                     }`}
                 >
-                  <div className={`p-2 rounded-lg transition-all duration-300 ${activeSection === section.id
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100'
+                  <div className={`p-2.5 rounded-xl transition-all duration-300 ${activeSection === section.id
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
                     : 'bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-indigo-600'
                     }`}>
-                    <section.icon size={14} />
+                    <section.icon size={16} />
                   </div>
                   <div className="text-left">
-                    <p className={`text-[12px] font-black tracking-tight transition-colors ${activeSection === section.id ? 'text-slate-900' : 'text-slate-500'
+                    <p className={`text-[13px] font-black tracking-tight transition-colors ${activeSection === section.id ? 'text-slate-900' : 'text-slate-600'
                       }`}>{section.label}</p>
-                    <p className="hidden lg:block text-[9px] font-bold text-slate-400 uppercase tracking-wider">{section.description}</p>
+                    <p className={`hidden lg:block text-[10px] font-bold uppercase tracking-widest ${activeSection === section.id ? 'text-indigo-600/70' : 'text-slate-400'}`}>{section.description}</p>
                   </div>
                 </button>
               ))}
@@ -298,8 +298,8 @@ const Settings = () => {
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-lg font-black text-slate-900 tracking-tight">AI Voice Setup</h2>
-                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Sound & Persona Configuration</p>
+                        <h2 className="text-xl font-black text-slate-900 tracking-tight">AI Voice Setup</h2>
+                        <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-1">Sound & Persona Configuration</p>
                       </div>
                       <button
                         onClick={() => navigate('/dashboard/voice-model/method')}
@@ -324,8 +324,8 @@ const Settings = () => {
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-lg font-black text-slate-900 tracking-tight">Booking Requirements</h2>
-                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Appointment Rule Definition</p>
+                        <h2 className="text-xl font-black text-slate-900 tracking-tight">Booking Requirements</h2>
+                        <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-1">Appointment Rule Definition</p>
                       </div>
                       <button
                         onClick={() => {
@@ -345,8 +345,8 @@ const Settings = () => {
                 {activeSection === 'notifications' && (
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-lg font-black text-slate-900 tracking-tight">Notification Alerts</h2>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">System Alert Preferences</p>
+                      <h2 className="text-xl font-black text-slate-900 tracking-tight">Notification Alerts</h2>
+                      <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-1">System Alert Preferences</p>
                     </div>
                     <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
                       <NotificationSettingsContent
