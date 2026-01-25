@@ -118,27 +118,27 @@ const UseExistingNumber = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className={`${isMobile ? 'py-4 px-4' : 'min-h-[calc(100vh-80px)] flex items-center justify-start py-10 px-4 sm:px-6'} font-sans`}>
+      <div className={`${isMobile ? 'h-[calc(100vh-80px)] overflow-y-auto py-4 px-4' : 'h-[calc(100vh-80px)] overflow-y-auto flex items-start justify-center py-6 px-4 sm:px-6'} font-sans custom-scrollbar`}>
 
         {/* Main Card Container */}
         <div className="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
 
           {/* Header */}
-          <header className={`bg-white border-b border-slate-100 ${isMobile ? 'p-6' : 'p-10'} text-center`}>
-            <div className={`inline-flex ${isMobile ? 'h-12 w-12' : 'h-16 w-16'} items-center justify-center rounded-2xl bg-indigo-600 text-white mb-6 shadow-lg shadow-indigo-200`}>
-              <PhoneIncoming className={`${isMobile ? 'w-6 h-6' : 'w-8 h-8'}`} strokeWidth={2.5} />
+          <header className={`bg-white border-b border-slate-100 ${isMobile ? 'p-5' : 'p-8'} text-center`}>
+            <div className={`inline-flex ${isMobile ? 'h-10 w-10' : 'h-12 w-12'} items-center justify-center rounded-2xl bg-indigo-600 text-white mb-4 shadow-lg shadow-indigo-200`}>
+              <PhoneIncoming className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={2.5} />
             </div>
             <div>
-              <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-black text-slate-900 tracking-tight mb-3`}>
+              <h1 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-black text-slate-900 tracking-tight mb-2`}>
                 Use Your Existing Number
               </h1>
-              <p className={`text-slate-600 ${isMobile ? 'text-sm' : 'text-lg'} max-w-xl mx-auto font-medium leading-relaxed`}>
+              <p className={`text-slate-500 ${isMobile ? 'text-xs' : 'text-sm'} max-w-lg mx-auto font-medium leading-relaxed`}>
                 Keep your business number. We'll assist you in setting up call forwarding so our AI can answer your missed calls.
               </p>
             </div>
           </header>
 
-          <div className={`${isMobile ? 'p-6' : 'p-8 sm:p-12'} grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16`}>
+          <div className={`${isMobile ? 'p-5' : 'p-8 sm:p-10'} grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 scroll-mt-20`}>
 
             {/* Left Column: Configuration */}
             <div className="flex flex-col gap-8">
@@ -154,7 +154,7 @@ const UseExistingNumber = () => {
                     <Phone className="w-5 h-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
                   </div>
                   <input
-                    className={`w-full rounded-xl border-2 border-slate-200 bg-white text-slate-900 ${isMobile ? 'h-12' : 'h-14'} pl-12 pr-12 text-lg font-bold focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-300`}
+                    className={`w-full rounded-xl border-2 border-slate-200 bg-white text-slate-900 ${isMobile ? 'h-11' : 'h-12'} pl-11 pr-11 text-base font-bold focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-300`}
                     placeholder="(555) 000-0000"
                     type="tel"
                     value={phoneNumber}
@@ -183,7 +183,7 @@ const UseExistingNumber = () => {
                 <div className="space-y-4 relative z-10">
                   <div className="relative bg-white rounded-xl shadow-sm">
                     <select
-                      className={`w-full rounded-xl border-2 border-indigo-100 bg-transparent text-slate-900 ${isMobile ? 'h-12' : 'h-14'} pl-4 pr-10 text-base font-bold focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 cursor-pointer appearance-none outline-none transition-all`}
+                      className={`w-full rounded-xl border-2 border-indigo-100 bg-transparent text-slate-900 ${isMobile ? 'h-11' : 'h-12'} pl-4 pr-10 text-sm font-bold focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 cursor-pointer appearance-none outline-none transition-all`}
                       value={carrier}
                       onChange={(e) => setCarrier(e.target.value)}
                     >
@@ -202,7 +202,7 @@ const UseExistingNumber = () => {
                     <div className="flex items-center justify-center gap-2 mb-3">
                       <span className="text-xs font-bold text-indigo-500 uppercase tracking-widest">Dial this code on your phone</span>
                     </div>
-                    <code className="block text-3xl sm:text-4xl font-black text-slate-900 tracking-tight font-mono mb-6">
+                    <code className="block text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono mb-6">
                       *72 (555) 123-4567
                     </code>
                     <button
@@ -230,23 +230,23 @@ const UseExistingNumber = () => {
 
                 <div className="flex justify-between items-center relative z-10">
                   <div className="flex flex-col items-center gap-2 lg:gap-3">
-                    <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-400 group-hover:border-indigo-300 transition-colors`}>
-                      <User className={`${isMobile ? 'w-5 h-5' : 'w-7 h-7'}`} />
+                    <div className={`${isMobile ? 'w-10 h-10' : 'w-12 h-12'} rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-400 group-hover:border-indigo-300 transition-colors`}>
+                      <User className={`${isMobile ? 'w-4 h-4' : 'w-6 h-6'}`} />
                     </div>
                     <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Caller</span>
                   </div>
 
                   <div className="flex flex-col items-center gap-2 lg:gap-3">
-                    <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-900`}>
-                      <Smartphone className={`${isMobile ? 'w-5 h-5' : 'w-7 h-7'}`} />
+                    <div className={`${isMobile ? 'w-10 h-10' : 'w-12 h-12'} rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-900`}>
+                      <Smartphone className={`${isMobile ? 'w-4 h-4' : 'w-6 h-6'}`} />
                     </div>
                     <span className="text-[9px] font-bold uppercase tracking-widest text-slate-600">You</span>
                   </div>
 
                   <div className="flex flex-col items-center gap-2 lg:gap-3">
-                    <div className={`${isMobile ? 'w-14 h-14' : 'w-20 h-20'} rounded-full bg-indigo-600 shadow-xl shadow-indigo-500/30 flex items-center justify-center text-white relative z-10 border-4 border-white`}>
-                      <Bot className={`${isMobile ? 'w-6 h-6' : 'w-8 h-8'}`} strokeWidth={2.5} />
-                      <div className="absolute top-0 right-0 w-4 h-4 lg:w-5 lg:h-5 bg-emerald-500 border-2 border-white rounded-full animate-pulse"></div>
+                    <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-full bg-indigo-600 shadow-xl shadow-indigo-500/30 flex items-center justify-center text-white relative z-10 border-4 border-white`}>
+                      <Bot className={`${isMobile ? 'w-5 h-5' : 'w-7 h-7'}`} strokeWidth={2.5} />
+                      <div className="absolute top-0 right-0 w-3 h-3 lg:w-4 lg:h-4 bg-emerald-500 border-2 border-white rounded-full animate-pulse"></div>
                     </div>
                     <span className="text-[9px] font-black uppercase tracking-widest text-indigo-600">AI Receptionist</span>
                   </div>
@@ -269,9 +269,9 @@ const UseExistingNumber = () => {
                 </div>
                 <button
                   onClick={() => alert("To test, please call your number from a DIFFERENT phone. If properly forwarded, our AI will answer.")}
-                  className="w-full h-14 bg-white text-slate-900 hover:bg-indigo-50 rounded-xl font-black uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-3 active:scale-95 shadow-lg"
+                  className="w-full h-12 bg-white text-slate-900 hover:bg-slate-50 rounded-xl font-black uppercase tracking-widest text-[11px] transition-all flex items-center justify-center gap-3 active:scale-95 shadow-lg shadow-indigo-500/10"
                 >
-                  <Zap className="w-5 h-5 text-indigo-600" fill="currentColor" />
+                  <Zap className="w-4 h-4 text-indigo-600" fill="currentColor" />
                   Test Call Now
                 </button>
               </div>
@@ -298,6 +298,21 @@ const UseExistingNumber = () => {
 
         </div>
       </div>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #E2E8F0;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #CBD5E1;
+        }
+      `}</style>
     </DashboardLayout>
   );
 };
