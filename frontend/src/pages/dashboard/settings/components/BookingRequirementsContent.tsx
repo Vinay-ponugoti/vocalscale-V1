@@ -127,18 +127,18 @@ export const BookingRequirementsContent: React.FC = () => {
       {/* Header Info */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 2xl:gap-6 pb-2">
         <div>
-          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Active Requirements</h3>
-          <p className="text-[9px] text-slate-400 px-1 mt-1 font-medium">Configure what information AI must collect from callers.</p>
+          <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 px-1">Active Requirements</h3>
+          <p className="text-[11px] text-slate-500 px-1 mt-1 font-bold uppercase tracking-wide opacity-80">Configure what information AI must collect from callers.</p>
         </div>
-        
+
         {hasChanges && (
-          <m.div 
+          <m.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2.5 bg-indigo-50/50 px-3.5 py-2 rounded-xl border border-indigo-100/50"
+            className="flex items-center gap-2.5 bg-indigo-50/50 px-4 py-2.5 rounded-2xl border border-indigo-100/50 shadow-sm"
           >
-            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-            <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Unsaved Progress</span>
+            <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+            <span className="text-[10px] font-black text-indigo-700 uppercase tracking-[0.15em]">Unsaved Changes</span>
           </m.div>
         )}
       </div>
@@ -148,7 +148,7 @@ export const BookingRequirementsContent: React.FC = () => {
           {requirements.map((req, idx) => {
             const Icon = getFieldIcon(req.field_name);
             const isDefault = isDefaultRequirement(req.field_name);
-            
+
             return (
               <m.div
                 key={req.field_name + idx}
@@ -158,8 +158,8 @@ export const BookingRequirementsContent: React.FC = () => {
                 exit={{ opacity: 0, scale: 0.98 }}
                 className={`
                   group relative flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300
-                  ${req.required 
-                    ? 'bg-white border-indigo-100 shadow-sm shadow-indigo-50/50' 
+                  ${req.required
+                    ? 'bg-white border-indigo-100 shadow-sm shadow-indigo-50/50'
                     : 'bg-slate-50/50 border-slate-100 hover:bg-white hover:border-slate-200'
                   }
                 `}
@@ -180,9 +180,8 @@ export const BookingRequirementsContent: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <h4 className="font-black text-slate-900 text-sm tracking-tight truncate">{req.field_name}</h4>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className={`text-[9px] font-black uppercase tracking-widest ${
-                      req.required ? 'text-indigo-600' : 'text-slate-400'
-                    }`}>
+                    <span className={`text-[9px] font-black uppercase tracking-widest ${req.required ? 'text-indigo-600' : 'text-slate-400'
+                      }`}>
                       {req.required ? 'Mandatory Field' : 'Optional Collection'}
                     </span>
                     {isDefault && (
@@ -199,9 +198,9 @@ export const BookingRequirementsContent: React.FC = () => {
                   <button
                     onClick={() => handleToggleStatus(idx)}
                     className={`
-                      px-4 py-2 rounded-xl font-black text-[9px] uppercase tracking-widest border transition-all duration-300
+                      px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest border transition-all duration-300
                       ${req.required
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100 hover:bg-indigo-700' 
+                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100/50 hover:bg-indigo-700 hover:-translate-y-0.5'
                         : 'bg-white text-slate-500 border-slate-200 hover:border-indigo-600 hover:text-indigo-600'
                       }
                     `}
@@ -233,12 +232,12 @@ export const BookingRequirementsContent: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsAddingField(true)}
-              className="group flex items-center justify-center gap-3 p-4 rounded-2xl border-2 border-dashed border-slate-100 text-slate-400 hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50/20 transition-all duration-300"
+              className="group flex items-center justify-center gap-4 p-5 rounded-3xl border-2 border-dashed border-slate-200 text-slate-400 hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50/20 transition-all duration-300"
             >
-              <div className="p-1.5 bg-slate-50 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
-                <Plus size={16} strokeWidth={3} />
+              <div className="p-2 bg-slate-100 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                <Plus size={18} strokeWidth={3} />
               </div>
-              <span className="font-black text-[10px] uppercase tracking-widest">Add Custom Field</span>
+              <span className="font-black text-[11px] uppercase tracking-[0.15em]">Add Custom Requirement</span>
             </m.button>
           ) : (
             <m.div
