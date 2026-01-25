@@ -13,7 +13,10 @@ import {
 } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 
+import { useAuth } from '../../../context/AuthContext';
+
 const Plans: React.FC = () => {
+  const { user } = useAuth();
   const [isAnnual, setIsAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +59,10 @@ const Plans: React.FC = () => {
     setLoading(planName);
     setError(null);
     try {
-      const { url } = await billingApi.createCheckoutSession(priceId);
+      if (!user?.email) {
+        throw new Error('User email is required for checkout');
+      }
+      const { url } = await billingApi.createCheckoutSession(priceId, user.email);
       if (url) {
         window.location.href = url;
       }
