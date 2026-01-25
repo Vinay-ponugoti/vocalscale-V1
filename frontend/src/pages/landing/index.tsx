@@ -6,6 +6,7 @@ import { HowItWorks } from './components/HowItWorks';
 import { Pricing } from './components/Pricing';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
+import { ROILiveTicker } from './components/ROILiveTicker';
 
 const Landing = () => {
   return (
@@ -76,6 +77,7 @@ const Landing = () => {
 
       <div className="relative z-10 flex flex-col">
         <HeroSection />
+        <ROILiveTicker />
         <Highlights />
         <main className="flex flex-col">
           <Features />
