@@ -7,7 +7,6 @@ import { Pricing } from './components/Pricing';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
 import { ROILiveTicker } from './components/ROILiveTicker';
-import { ComparisonSection } from './components/ComparisonSection';
 
 const Landing = () => {
   return (
