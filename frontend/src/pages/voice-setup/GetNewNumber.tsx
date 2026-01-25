@@ -184,11 +184,22 @@ const GetNewNumber = () => {
       }
 
       const data = await response.json();
-      setNumbers(data.available || []);
+
+      // Map the backend response to the frontend PhoneNumber interface
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedNumbers: PhoneNumber[] = (data.available || []).map((item: any) => ({
+        phone_number: item.phone_number,
+        number: item.friendly_name, // Map friendly_name to number
+        location: data.location || searchQuery, // Use the searched location
+        monthly_cost: item.monthly_cost,
+        badge: item.item_badge // maintain badge if it exists (though backend currently doesn't send it)
+      }));
+
+      setNumbers(mappedNumbers);
 
       // Select the first number (Best Match) by default if available
-      if (data.available && data.available.length > 0) {
-        setSelectedNumber(data.available[0]);
+      if (mappedNumbers.length > 0) {
+        setSelectedNumber(mappedNumbers[0]);
       } else {
         setSelectedNumber(null);
       }
