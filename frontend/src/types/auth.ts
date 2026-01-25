@@ -3,6 +3,9 @@ export interface User {
   email?: string;
   full_name?: string;
   avatar_url?: string;
+  user_metadata?: {
+    [key: string]: any;
+  };
   [key: string]: unknown;
 }
 
