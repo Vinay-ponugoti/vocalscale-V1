@@ -10,5 +10,8 @@ export interface Session {
   access_token: string;
   refresh_token?: string;
   expires_at?: number;
+  expires_in?: number;
+  provider_token?: string;
+  provider_refresh_token?: string;
   user: User;
 }

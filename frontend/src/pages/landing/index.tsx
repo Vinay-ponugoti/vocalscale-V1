@@ -79,7 +79,6 @@ const Landing = () => {
       <div className="relative z-10 flex flex-col">
         <HeroSection />
         <ROILiveTicker />
-        <ComparisonSection />
         <Highlights />
         <main className="flex flex-col">
           <Features />
