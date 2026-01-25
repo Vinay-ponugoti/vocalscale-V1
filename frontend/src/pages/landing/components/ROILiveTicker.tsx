@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useSpring, useTransform, animate } from 'framer-motion';
 import { PhoneMissed, Zap, ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const ROILiveTicker = () => {
+    const navigate = useNavigate();
     const [count, setCount] = useState(4821);
 
     useEffect(() => {
@@ -27,16 +29,6 @@ export const ROILiveTicker = () => {
             {/* Aggressive Gradient Background */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_70%)]" />
 
-            {/* Scrolling Text Track (Ambient) */}
-            <div className="absolute top-0 left-0 w-full overflow-hidden whitespace-nowrap opacity-[0.03] select-none pointer-events-none py-4">
-                <motion.div
-                    animate={{ x: [0, -1000] }}
-                    transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                    className="text-9xl font-black text-white uppercase tracking-tighter"
-                >
-                    MISSED CALLS = LOST REVENUE • STOP THE BLEEDING • SCALE WITH AI • ANSWER EVERY CALL • MISSED CALLS = LOST REVENUE • STOP THE BLEEDING • SCALE WITH AI • ANSWER EVERY CALL •
-                </motion.div>
-            </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
                 <div className="flex flex-col items-center text-center space-y-8">
@@ -97,6 +89,7 @@ export const ROILiveTicker = () => {
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
+                            onClick={() => navigate('/signup')}
                             className="mt-8 px-8 py-4 bg-white text-slate-950 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-3 mx-auto shadow-2xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all"
                         >
                             Start Saving Revenue

@@ -207,7 +207,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     staleTime: 1000 * 60 * 15,
   });
 
-  const { data: subscription } = useQuery({
+  const { data: subscription, isLoading: isLoadingSubscription } = useQuery({
     queryKey: ['subscription', user?.id],
     queryFn: () => billingApi.getSubscription(),
     enabled: !!user?.id,
@@ -222,6 +222,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   const userEmail = user?.email || '';
   const displayName = businessProfile?.business_name || user?.full_name || userEmail.split('@')[0] || 'User';
+  const hasActiveSubscription = subscription && (subscription.status === 'active' || subscription.status === 'trialing');
+
   const isActive = (path: string) => {
     if (path === '/dashboard') {
       return location.pathname === '/dashboard';
@@ -358,7 +360,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
 
           {/* Bottom Card & Upgrade */}
-          {!subscription?.plan?.name && (
+          {!isLoadingSubscription && !hasActiveSubscription && (
             <div className="p-3 border-t space-y-2" style={{ borderColor: DS.border, backgroundColor: DS.surface }}>
               {/* Promo Card / Plan Badge */}
               {sidebarOpen && (
