@@ -358,7 +358,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
 
           {/* Bottom Card & Upgrade */}
-          {!subscription?.plans?.name && (
+          {!subscription?.plan?.name && (
             <div className="p-3 border-t space-y-2" style={{ borderColor: DS.border, backgroundColor: DS.surface }}>
               {/* Promo Card / Plan Badge */}
               {sidebarOpen && (
