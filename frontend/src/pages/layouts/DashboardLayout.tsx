@@ -221,7 +221,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   };
 
   const userEmail = user?.email || '';
-  const displayName = businessProfile?.business_name || user?.full_name || userEmail.split('@')[0] || 'User';
+  // Split display logic:
+  // 1. Dashboard Header: Priorities Business Name -> "New Business"
+  const businessName = businessProfile?.business_name || 'New Business';
+
+  // 2. Profile Dropdown: Priorities User Name -> Email -> "User"
+  const userFullName = user?.full_name || user?.user_metadata?.full_name || userEmail;
+
   const hasActiveSubscription = subscription && (subscription.status === 'active' || subscription.status === 'trialing');
 
   const isActive = (path: string) => {
@@ -231,7 +237,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     return location.pathname.startsWith(path);
   };
 
-  const firstLetter = displayName.charAt(0).toUpperCase();
+  const firstLetter = (userFullName || businessName).charAt(0).toUpperCase();
 
   return (
     <>
@@ -520,7 +526,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     : 'bg-transparent hover:bg-slate-50'
                     }`}
                 >
-                  <span className="hidden lg:block text-xs font-bold text-slate-700">{displayName}</span>
+                  <span className="hidden lg:block text-xs font-bold text-slate-700">{businessName}</span>
 
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm bg-gradient-to-br from-blue-500 to-indigo-600 ring-2 ring-white">
                     {firstLetter}
@@ -530,7 +536,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   isOpen={profileDropdownOpen}
                   onClose={() => setProfileDropdownOpen(false)}
                   onSignOut={handleSignOut}
-                  displayName={displayName}
+                  displayName={userFullName}
                   email={userEmail}
                   avatarUrl={user?.avatar_url}
                 />
