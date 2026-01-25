@@ -7,6 +7,7 @@ import { Pricing } from './components/Pricing';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
 import { ROILiveTicker } from './components/ROILiveTicker';
+import { ComparisonSection } from './components/ComparisonSection';
 
 const Landing = () => {
   return (
@@ -78,6 +79,7 @@ const Landing = () => {
       <div className="relative z-10 flex flex-col">
         <HeroSection />
         <ROILiveTicker />
+        <ComparisonSection />
         <Highlights />
         <main className="flex flex-col">
           <Features />
