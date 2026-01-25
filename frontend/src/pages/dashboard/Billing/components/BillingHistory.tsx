@@ -118,8 +118,8 @@ const BillingHistory: React.FC = () => {
                     </td>
                     <td className="px-6 py-5">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ring-1 ${inv.status === 'paid'
-                          ? 'bg-emerald-50 text-emerald-600 ring-emerald-500/10'
-                          : 'bg-amber-50 text-amber-600 ring-amber-500/10'
+                        ? 'bg-emerald-50 text-emerald-600 ring-emerald-500/10'
+                        : 'bg-amber-50 text-amber-600 ring-amber-500/10'
                         }`}>
                         {inv.status}
                       </span>
