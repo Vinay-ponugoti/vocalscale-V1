@@ -184,11 +184,11 @@ const GetNewNumber = () => {
       }
 
       const data = await response.json();
-      setNumbers(data.numbers || []);
+      setNumbers(data.available || []);
 
       // Select the first number (Best Match) by default if available
-      if (data.numbers && data.numbers.length > 0) {
-        setSelectedNumber(data.numbers[0]);
+      if (data.available && data.available.length > 0) {
+        setSelectedNumber(data.available[0]);
       } else {
         setSelectedNumber(null);
       }
@@ -322,13 +322,13 @@ const GetNewNumber = () => {
                       key={item.phone_number}
                       onClick={() => setSelectedNumber(item)}
                       className={`group relative flex flex-col rounded-2xl ${isMobile ? 'p-5' : 'p-6'} cursor-pointer transition-all border-2 ${isSelected
-                          ? 'border-indigo-600 bg-indigo-50/30 shadow-md ring-4 ring-indigo-500/5'
-                          : 'border-slate-100 bg-white hover:border-indigo-200 hover:shadow-lg hover:-translate-y-1'
+                        ? 'border-indigo-600 bg-indigo-50/30 shadow-md ring-4 ring-indigo-500/5'
+                        : 'border-slate-100 bg-white hover:border-indigo-200 hover:shadow-lg hover:-translate-y-1'
                         }`}
                     >
                       <div className={`absolute top-4 right-4 ${isMobile ? 'w-5 h-5' : 'w-6 h-6'} rounded-full flex items-center justify-center transition-all ${isSelected
-                          ? 'bg-indigo-600 scale-110 shadow-lg shadow-indigo-600/30'
-                          : 'border-2 border-slate-200 group-hover:border-indigo-400'
+                        ? 'bg-indigo-600 scale-110 shadow-lg shadow-indigo-600/30'
+                        : 'border-2 border-slate-200 group-hover:border-indigo-400'
                         }`}>
                         {isSelected && <Check className={`${isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5'} text-white`} strokeWidth={3} />}
                       </div>
