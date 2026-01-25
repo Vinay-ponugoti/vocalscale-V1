@@ -118,31 +118,7 @@ const HelpCenter = () => {
     <DashboardLayout fullWidth>
       <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
 
-        {/* VIDEO MODAL */}
-        {selectedVideo && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-300">
-            <div
-              className="absolute inset-0"
-              onClick={() => setSelectedVideo(null)}
-            ></div>
-            <div className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
-              <button
-                onClick={() => setSelectedVideo(null)}
-                className="absolute top-4 right-4 z-20 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full transition-all backdrop-blur-sm"
-              >
-                <X size={20} />
-              </button>
-              <video
-                controls
-                autoPlay
-                className="w-full h-full object-contain"
-              >
-                <source src={selectedVideo} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          </div>
-        )}
+
 
         {/* ARTICLE MODAL */}
         {selectedArticle && (
@@ -293,40 +269,64 @@ const HelpCenter = () => {
               </div>
 
               <div className="space-y-6">
-                {/* Featured Video Card */}
-                <div
-                  onClick={() => setSelectedVideo("https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4")}
-                  className="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-lg hover:border-indigo-100 transition-all duration-300 cursor-pointer group"
-                >
-                  <div className="flex gap-5">
-                    {/* Thumbnail */}
-                    <div className="w-40 h-24 bg-slate-900 rounded-xl flex-shrink-0 relative overflow-hidden group-hover:ring-2 ring-indigo-500/20 transition-all">
-                      <img
-                        src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop"
-                        alt="AI Training"
-                        className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/30 group-hover:scale-110 transition-transform duration-300">
-                          <Play size={16} fill="white" className="text-white ml-0.5" />
+                {/* Featured Video Card - Inline Player Switch */}
+                {selectedVideo === "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4" ? (
+                  <div className="bg-black rounded-2xl overflow-hidden shadow-lg ring-1 ring-slate-900/5 animate-in fade-in zoom-in duration-300 relative aspect-video group">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedVideo(null);
+                      }}
+                      className="absolute top-4 right-4 z-20 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
+                    >
+                      <X size={18} />
+                    </button>
+                    <video
+                      controls
+                      autoPlay
+                      playsInline
+                      muted={false} // Unmuted for inline playback since user initiated
+                      className="w-full h-full object-contain"
+                    >
+                      <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => setSelectedVideo("https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4")}
+                    className="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-lg hover:border-indigo-100 transition-all duration-300 cursor-pointer group"
+                  >
+                    <div className="flex gap-5">
+                      {/* Thumbnail */}
+                      <div className="w-40 h-24 bg-slate-900 rounded-xl flex-shrink-0 relative overflow-hidden group-hover:ring-2 ring-indigo-500/20 transition-all">
+                        <img
+                          src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop"
+                          alt="AI Training"
+                          className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/30 group-hover:scale-110 transition-transform duration-300">
+                            <Play size={16} fill="white" className="text-white ml-0.5" />
+                          </div>
                         </div>
+                        <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">
+                          4:12
+                        </span>
                       </div>
-                      <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">
-                        4:12
-                      </span>
-                    </div>
 
-                    {/* Content */}
-                    <div className="flex flex-col justify-center">
-                      <h3 className="font-bold text-slate-900 text-base mb-2 group-hover:text-indigo-600 transition-colors">
-                        Training your AI in 5 Minutes
-                      </h3>
-                      <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
-                        Learn how to upload your business documents and URLs to build a custom knowledge base.
-                      </p>
+                      {/* Content */}
+                      <div className="flex flex-col justify-center">
+                        <h3 className="font-bold text-slate-900 text-base mb-2 group-hover:text-indigo-600 transition-colors">
+                          Training your AI in 5 Minutes
+                        </h3>
+                        <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
+                          Learn how to upload your business documents and URLs to build a custom knowledge base.
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
