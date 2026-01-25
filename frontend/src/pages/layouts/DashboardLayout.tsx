@@ -358,43 +358,23 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
 
           {/* Bottom Card & Upgrade */}
-          <div className="p-3 border-t space-y-2" style={{ borderColor: DS.border, backgroundColor: DS.surface }}>
-            {/* Promo Card / Plan Badge */}
-            {sidebarOpen && (
-              <div className={`relative overflow-hidden rounded-xl p-3 shadow-sm border transition-all duration-500 group hover:shadow-lg ${subscription?.plans?.name
-                ? 'bg-gradient-to-br from-slate-900 to-slate-800 border-slate-800'
-                : 'bg-white border-slate-100 hover:border-blue-200'
-                }`}>
-                {/* Decorative background element */}
-                <div className="absolute -right-3 -top-3 w-12 h-12 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all duration-700" />
+          {!subscription?.plans?.name && (
+            <div className="p-3 border-t space-y-2" style={{ borderColor: DS.border, backgroundColor: DS.surface }}>
+              {/* Promo Card / Plan Badge */}
+              {sidebarOpen && (
+                <div className={`relative overflow-hidden rounded-xl p-3 shadow-sm border transition-all duration-500 group hover:shadow-lg bg-white border-slate-100 hover:border-blue-200`}>
+                  {/* Decorative background element */}
+                  <div className="absolute -right-3 -top-3 w-12 h-12 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all duration-700" />
 
-                <div className="flex items-center gap-2 mb-1.5 relative z-10">
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform duration-500 group-hover:scale-110 ${subscription?.plans?.name
-                    ? 'bg-blue-500/20 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.3)]'
-                    : 'bg-blue-50 text-blue-600'
-                    }`}>
-                    <Zap size={12} strokeWidth={2.5} />
+                  <div className="flex items-center gap-2 mb-1.5 relative z-10">
+                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform duration-500 group-hover:scale-110 bg-blue-50 text-blue-600`}>
+                      <Zap size={12} strokeWidth={2.5} />
+                    </div>
+                    <h4 className={`text-[10px] font-black uppercase tracking-widest text-slate-900`}>
+                      Upgrade
+                    </h4>
                   </div>
-                  <h4 className={`text-[10px] font-black uppercase tracking-widest ${subscription?.plans?.name ? 'text-white' : 'text-slate-900'
-                    }`}>
-                    {subscription?.plans?.name ? subscription.plans.name : 'Upgrade'}
-                  </h4>
-                </div>
 
-                {subscription?.plans?.name ? (
-                  <div className="flex flex-col gap-2 relative z-10">
-                    <p className="text-[9px] leading-tight font-medium text-slate-400">
-                      Premium features <span className="text-blue-400">active</span>.
-                    </p>
-                    <Link
-                      to="/dashboard/billing"
-                      className="w-full py-1.5 flex items-center justify-center bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-blue-500 transition-all shadow-md shadow-blue-900/20 group/btn"
-                    >
-                      Billing
-                      <ChevronRight size={10} className="ml-0.5 group-hover/btn:translate-x-0.5 transition-transform" />
-                    </Link>
-                  </div>
-                ) : (
                   <div className="relative z-10">
                     <p className="text-[9px] leading-tight mb-2 font-medium text-slate-500">Unlock unlimited AI minutes & models.</p>
                     <Link
@@ -404,10 +384,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       View Plans
                     </Link>
                   </div>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
 
         </aside>
 
