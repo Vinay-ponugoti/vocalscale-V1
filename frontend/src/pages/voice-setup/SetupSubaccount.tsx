@@ -164,9 +164,11 @@ const SetupSubaccount = () => {
             <div className={`${isMobile ? 'w-10 h-10' : 'w-12 h-12 lg:w-14 lg:h-14'} rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200 mb-3 lg:mb-4 ring-4 ring-indigo-50`}>
               <Building2 className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6 lg:w-7 lg:h-7'}`} />
             </div>
-            <h1 className={`${isMobile ? 'text-lg' : 'text-xl md:text-2xl lg:text-3xl'} font-black text-slate-900 tracking-tight mb-1 lg:mb-2`}>Set Up Business Account</h1>
+            <h1 className={`${isMobile ? 'text-lg' : 'text-xl md:text-2xl lg:text-3xl'} font-black text-slate-900 tracking-tight mb-1 lg:mb-2`}>
+              Initialize Voice Subaccount
+            </h1>
             <p className="text-slate-500 text-[10px] md:text-sm lg:text-base font-medium max-w-lg mx-auto px-4">
-              Create your dedicated Twilio subaccount to manage your business communications.
+              Create your dedicated voice subaccount. This is a <strong>one-time setup</strong> that allows you to purchase and manage <strong>multiple phone numbers</strong> under a single business identity.
             </p>
           </div>
 
@@ -189,8 +191,8 @@ const SetupSubaccount = () => {
                         <CheckCircle className="w-3 h-3 text-emerald-600" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-indigo-900">Isolated Billing</p>
-                        <p className="text-[10px] text-indigo-700/70 font-medium">Keep your business expenses separated.</p>
+                        <p className="text-xs font-bold text-indigo-900">One Account, Many Numbers</p>
+                        <p className="text-[10px] text-indigo-700/70 font-medium">Buy as many numbers as you need under this one account.</p>
                       </div>
                     </div>
                     <div className="flex gap-3">
@@ -198,8 +200,8 @@ const SetupSubaccount = () => {
                         <CheckCircle className="w-3 h-3 text-emerald-600" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-indigo-900">Better Security</p>
-                        <p className="text-[10px] text-indigo-700/70 font-medium">Enhanced data protection for logs.</p>
+                        <p className="text-xs font-bold text-indigo-900">One-Time Setup</p>
+                        <p className="text-[10px] text-indigo-700/70 font-medium">You only need to do this once per user.</p>
                       </div>
                     </div>
                     <div className="flex gap-3">
@@ -207,8 +209,8 @@ const SetupSubaccount = () => {
                         <CheckCircle className="w-3 h-3 text-emerald-600" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-indigo-900">Multi-Business</p>
-                        <p className="text-[10px] text-indigo-700/70 font-medium">Manage multiple locations easily.</p>
+                        <p className="text-xs font-bold text-indigo-900">Isolated & Secure</p>
+                        <p className="text-[10px] text-indigo-700/70 font-medium">Your voice data is kept separate and secure.</p>
                       </div>
                     </div>
                   </div>
@@ -282,8 +284,8 @@ const SetupSubaccount = () => {
                 <div className={`bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 ${isMobile ? 'p-5' : 'p-6 lg:p-8'} h-full flex flex-col overflow-hidden relative`}>
                   <div className="absolute top-0 inset-x-0 h-1 bg-indigo-600"></div>
                   <div className={`${isMobile ? 'mb-4' : 'mb-6 lg:mb-8'}`}>
-                    <h3 className={`${isMobile ? 'text-base' : 'text-lg lg:text-xl'} font-black text-slate-900 tracking-tight mb-1`}>Initialize Account</h3>
-                    <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">Enter your business details</p>
+                    <h3 className={`${isMobile ? 'text-base' : 'text-lg lg:text-xl'} font-black text-slate-900 tracking-tight mb-1`}>Initialize Your Subaccount</h3>
+                    <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">Enter Business Name & Click Initialize</p>
                   </div>
 
                   <div className="space-y-6 flex-1 flex flex-col justify-center">
