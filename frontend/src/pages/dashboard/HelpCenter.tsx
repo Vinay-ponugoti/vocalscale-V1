@@ -20,7 +20,7 @@ const HelpCenter = () => {
           <p className="text-slate-600 leading-relaxed">
             Building a powerful AI assistant starts with providing high-quality training data. Our platform allows you to upload various sources to make your AI an expert in your business.
           </p>
-          
+
           <div className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100">
             <h4 className="font-black text-indigo-900 text-sm mb-3 flex items-center gap-2">
               <Info size={16} /> Key Training Sources
@@ -44,8 +44,8 @@ const HelpCenter = () => {
           <div className="space-y-3">
             <h4 className="font-black text-slate-900 text-sm">Best Practices for Training</h4>
             <p className="text-[13px] text-slate-500 leading-relaxed">
-              1. Keep documents concise and clear.<br/>
-              2. Use bullet points for structured information like pricing.<br/>
+              1. Keep documents concise and clear.<br />
+              2. Use bullet points for structured information like pricing.<br />
               3. Regularly update your knowledge base as your business evolves.
             </p>
           </div>
@@ -59,7 +59,7 @@ const HelpCenter = () => {
           <p className="text-slate-600 leading-relaxed">
             Configure how your AI handles incoming calls, transfers, and after-hours logic to ensure a seamless experience for every caller.
           </p>
-          
+
           <div className="grid grid-cols-1 gap-4">
             <div className="border border-slate-100 p-4 rounded-xl hover:border-indigo-100 transition-colors">
               <h5 className="font-bold text-slate-900 text-sm mb-1">Smart Routing</h5>
@@ -84,7 +84,7 @@ const HelpCenter = () => {
           <p className="text-slate-600 leading-relaxed">
             Transparency is key. Here is how we calculate your usage and manage your subscription.
           </p>
-          
+
           <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
             <h4 className="font-black text-slate-900 text-sm mb-4">Pricing Model</h4>
             <div className="space-y-3">
@@ -119,14 +119,14 @@ const HelpCenter = () => {
         {/* ARTICLE MODAL */}
         {selectedArticle && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-            <div 
+            <div
               className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
               onClick={() => setSelectedArticle(null)}
             ></div>
             <div className="relative bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
               <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
                 <h3 className="text-xl font-black text-slate-900 tracking-tight">{selectedArticle.title}</h3>
-                <button 
+                <button
                   onClick={() => setSelectedArticle(null)}
                   className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
                 >
@@ -137,7 +137,7 @@ const HelpCenter = () => {
                 {selectedArticle.content}
               </div>
               <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end">
-                <button 
+                <button
                   onClick={() => setSelectedArticle(null)}
                   className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-[13px] tracking-tight hover:bg-indigo-700 transition-all active:scale-[0.98]"
                 >
@@ -155,7 +155,7 @@ const HelpCenter = () => {
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
             <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
           </div>
-          
+
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <span className="inline-flex items-center gap-2 py-1.5 px-3.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-[0.15em] border border-indigo-100 mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span>
@@ -171,8 +171,8 @@ const HelpCenter = () => {
               <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
                 <Search className="text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
               </div>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className="w-full py-5 pl-14 pr-36 rounded-2xl bg-slate-50 border border-slate-100 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 focus:bg-white shadow-sm transition-all"
                 placeholder="Search for answers (e.g. 'billing', 'voice setup')..."
               />
@@ -186,7 +186,7 @@ const HelpCenter = () => {
         <div className="w-full">
           {/* BREADCRUMBS */}
           <div className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-10 flex items-center gap-2">
-            <span className="hover:text-indigo-600 transition-colors cursor-pointer">Dashboard</span> 
+            <span className="hover:text-indigo-600 transition-colors cursor-pointer">Dashboard</span>
             <span className="text-slate-300">/</span>
             <span className="text-slate-900">Help Center</span>
           </div>
@@ -202,21 +202,21 @@ const HelpCenter = () => {
                 Explore All Articles <ArrowRight size={14} />
               </div>
             </div>
-            
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <HelpCategoryCard 
-                icon={Rocket} title="AI Setup & Training" 
-                description="Teach your AI about your business by uploading PDFs, website URLs, or custom text." 
+              <HelpCategoryCard
+                icon={Rocket} title="AI Setup & Training"
+                description="Teach your AI about your business by uploading PDFs, website URLs, or custom text."
                 onClick={() => setSelectedArticle(articles['AI Setup & Training'])}
               />
-              <HelpCategoryCard 
-                icon={Phone} title="Call Management" 
-                description="Setup routing rules, call transfers, after-hours logic, and emergency escalations." 
+              <HelpCategoryCard
+                icon={Phone} title="Call Management"
+                description="Setup routing rules, call transfers, after-hours logic, and emergency escalations."
                 onClick={() => setSelectedArticle(articles['Call Management'])}
               />
-              <HelpCategoryCard 
-                icon={Receipt} title="Billing & Usage" 
-                description="Manage your minutes, overage protection, and subscription for scaling teams." 
+              <HelpCategoryCard
+                icon={Receipt} title="Billing & Usage"
+                description="Manage your minutes, overage protection, and subscription for scaling teams."
                 onClick={() => setSelectedArticle(articles['Billing & Usage'])}
               />
             </div>
@@ -224,7 +224,7 @@ const HelpCenter = () => {
 
           {/* SPLIT SECTION: FAQs & TUTORIALS */}
           <div className="grid lg:grid-cols-2 gap-16 mb-24">
-            
+
             {/* Left: FAQs */}
             <div>
               <div className="flex justify-between items-center mb-8">
@@ -233,24 +233,24 @@ const HelpCenter = () => {
                   View all <ArrowRight size={14} className="ml-1.5" />
                 </a>
               </div>
-              
+
               <div className="space-y-1">
-                <FAQItem 
+                <FAQItem
                   defaultOpen={true}
-                  question="How fast does the AI respond to callers?" 
-                  answer="Our AI features ultra-low latency processing (~500ms), ensuring the conversation feels natural and human-like without awkward pauses." 
+                  question="How fast does the AI respond to callers?"
+                  answer="Our AI features ultra-low latency processing (~500ms), ensuring the conversation feels natural and human-like without awkward pauses."
                 />
-                <FAQItem 
-                  question="Can I train the AI on my own business data?" 
-                  answer="Yes! You can upload PDFs, docx, or paste your website URL. The AI will learn your pricing, services, and FAQs to answer caller queries accurately." 
+                <FAQItem
+                  question="Can I train the AI on my own business data?"
+                  answer="Yes! You can upload PDFs, docx, or paste your website URL. The AI will learn your pricing, services, and FAQs to answer caller queries accurately."
                 />
-                <FAQItem 
-                  question="Does it support multiple languages?" 
-                  answer="Absolutely. We support over 30+ languages with automatic language detection, allowing your AI to switch seamlessly between English, Spanish, French, and more." 
+                <FAQItem
+                  question="Does it support multiple languages?"
+                  answer="Absolutely. We support over 30+ languages with automatic language detection, allowing your AI to switch seamlessly between English, Spanish, French, and more."
                 />
-                <FAQItem 
-                  question="Can the AI transfer calls to a human?" 
-                  answer="Yes. You can define specific 'Escalation Rules' where the AI will automatically transfer the call to a live agent if it encounters a complex request." 
+                <FAQItem
+                  question="Can the AI transfer calls to a human?"
+                  answer="Yes. You can define specific 'Escalation Rules' where the AI will automatically transfer the call to a live agent if it encounters a complex request."
                 />
               </div>
             </div>
@@ -264,30 +264,30 @@ const HelpCenter = () => {
                 </a>
               </div>
 
-              <div className="space-y-4">
-                {[
-                  { title: "Training your AI in 5 Minutes", desc: "Learn how to upload your business documents and URLs to build a custom knowledge base.", time: "4:12", date: "Updated 1 day ago" },
-                  { title: "Advanced Call Routing Setup", desc: "Deep dive into handling transfers, after-hours, and VIP lists for your business.", time: "7:45", date: "Updated last week" },
-                  { title: "HubSpot & CRM Integration", desc: "Step-by-step guide to automatically syncing call summaries and lead data to your CRM.", time: "5:18", date: "Updated 2 weeks ago" }
-                ].map((video, idx) => (
-                  <div key={idx} className="bg-white border border-slate-100 p-4 rounded-2xl flex gap-5 hover:border-indigo-100 hover:shadow-md transition-all duration-300 cursor-pointer group">
-                    {/* Thumbnail Placeholder */}
-                    <div className="w-32 h-20 bg-slate-900 rounded-xl flex-shrink-0 flex items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-indigo-600/10 group-hover:bg-indigo-600/20 transition-colors"></div>
-                      <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md relative z-10 border border-white/30 group-hover:scale-110 transition-transform duration-300">
-                        <Play size={14} fill="white" className="text-white ml-0.5" />
-                      </div>
+              <div className="space-y-6">
+                {/* Featured Video Player */}
+                <div className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-base mb-1">Training your AI in 5 Minutes</h3>
+                      <p className="text-xs text-slate-500 font-medium leading-relaxed">Learn how to upload your business documents and URLs to build a custom knowledge base.</p>
                     </div>
-                    <div className="flex flex-col justify-center">
-                      <h3 className="font-bold text-slate-900 text-sm mb-1.5 group-hover:text-indigo-600 transition-colors">{video.title}</h3>
-                      <p className="text-[12px] text-slate-500 font-medium line-clamp-1 mb-2.5 leading-relaxed">{video.desc}</p>
-                      <div className="flex items-center gap-4 text-[11px]">
-                        <span className="bg-indigo-50 px-2 py-0.5 rounded-lg text-indigo-600 font-black tracking-tight">{video.time}</span>
-                        <span className="text-slate-400 font-medium">{video.date}</span>
-                      </div>
-                    </div>
+                    <span className="bg-indigo-50 px-2.5 py-1 rounded-lg text-indigo-600 font-black text-[11px] tracking-tight">4:12</span>
                   </div>
-                ))}
+
+                  <div className="rounded-xl overflow-hidden bg-slate-900 aspect-video relative group">
+                    <video
+                      controls
+                      preload="metadata"
+                      className="w-full h-full object-cover"
+                      poster="https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop" /* Fallback placeholder if no poster provided yet */
+                    >
+                      <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -306,7 +306,7 @@ const HelpCenter = () => {
                 <MessageSquare size={32} />
               </div>
               <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Live Chat</h3>
-              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Connect with a support agent instantly.<br/>Average wait time: <span className="text-indigo-600 font-bold">&lt; 2 mins</span>.</p>
+              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Connect with a support agent instantly.<br />Average wait time: <span className="text-indigo-600 font-bold">&lt; 2 mins</span>.</p>
               <button className="w-full bg-indigo-600 text-white py-4 rounded-xl font-black text-[13px] tracking-tight hover:bg-indigo-700 transition-all shadow-sm hover:shadow-indigo-200 active:scale-[0.98]">
                 Start Chat
               </button>
@@ -317,7 +317,7 @@ const HelpCenter = () => {
                 <Ticket size={32} />
               </div>
               <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Submit a Ticket</h3>
-              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Describe your issue in detail.<br/>We typically respond in <span className="text-indigo-600 font-bold">&lt; 24h</span>.</p>
+              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Describe your issue in detail.<br />We typically respond in <span className="text-indigo-600 font-bold">&lt; 24h</span>.</p>
               <button className="w-full bg-white border border-slate-200 text-slate-700 py-4 rounded-xl font-black text-[13px] tracking-tight hover:border-indigo-500 hover:text-indigo-600 transition-all active:scale-[0.98]">
                 Create Ticket
               </button>
@@ -328,7 +328,7 @@ const HelpCenter = () => {
                 <Phone size={32} />
               </div>
               <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Call Support</h3>
-              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Speak directly with an expert.<br/><span className="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-md font-black text-[10px] uppercase">Enterprise Plan</span></p>
+              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Speak directly with an expert.<br /><span className="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-md font-black text-[10px] uppercase">Enterprise Plan</span></p>
               <button className="w-full bg-white border border-slate-200 text-gray-700 py-4 rounded-xl font-black text-[13px] tracking-tight hover:border-indigo-500 hover:text-indigo-600 transition-all active:scale-[0.98]">
                 View Number
               </button>
