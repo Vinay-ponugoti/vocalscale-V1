@@ -137,10 +137,12 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
               <div className="flex flex-col gap-5">
                 <div>
                   <div className="flex justify-between text-[11px] mb-2">
-                    <span className="font-bold text-charcoal-medium">AI Minutes</span>
+                    <span className="font-bold text-charcoal-medium">Minutes Usage</span>
                     <span className="text-charcoal font-black">
-                      {Math.round((usage?.used_minutes / (usage?.total_minutes || 1)) * 100)}%
-                      <span className="text-[9px] text-charcoal-light font-bold ml-1">({usage?.used_minutes}m)</span>
+                      {usage?.used_minutes}m
+                      <span className="text-[9px] text-charcoal-light font-bold ml-1">
+                        ({Math.round((usage?.used_minutes / (usage?.total_minutes || 1)) * 100)}%)
+                      </span>
                     </span>
                   </div>
                   <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">

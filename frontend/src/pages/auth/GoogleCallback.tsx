@@ -53,7 +53,7 @@ const GoogleCallback = () => {
 
         // Update auth context immediately so we don't see loading screens on the next page
         setAuthSession(session);
-        
+
         // --- Sync with Backend ---
         // Send the refresh token to our backend so we can access Google Business API later
         try {
@@ -67,7 +67,9 @@ const GoogleCallback = () => {
             body: JSON.stringify({
               access_token: accessToken,
               refresh_token: refreshToken,
-              expires_in: parseInt(expiresIn || '3600')
+              expires_in: parseInt(expiresIn || '3600'),
+              full_name: user?.full_name || '',
+              avatar_url: user?.avatar_url || ''
             })
           });
           console.log('Google tokens synced with backend');
@@ -79,9 +81,9 @@ const GoogleCallback = () => {
         // Prefetch critical dashboard data immediately after OAuth login
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
-        const authHeaders = { 
+        const authHeaders = {
           'Authorization': `Bearer ${accessToken}`,
-          'ngrok-skip-browser-warning': 'true' 
+          'ngrok-skip-browser-warning': 'true'
         };
 
         const prefetchOptions = { staleTime: 1000 * 60 * 5 };
