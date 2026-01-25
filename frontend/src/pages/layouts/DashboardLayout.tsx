@@ -183,28 +183,37 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     queryFn: async ({ signal }) => {
       if (!user?.id) return null;
 
-      const headers = await getAuthHeader();
-      const response = await fetch(`${env.API_URL}/profile`, {
-        headers,
-        signal,
-      });
+      try {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${env.API_URL}/profile`, {
+          headers,
+          signal,
+        });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        if (!response.ok) {
+          console.error('Profile fetch failed:', response.status, response.statusText);
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Profile Data Fetched:', data);
+
+        if (!data) return null;
+
+        return {
+          id: user.id,
+          business_name: data.business_name,
+          business_type: data.business_type,
+          phone_number: data.contact_phone || data.phone
+        };
+      } catch (err) {
+        console.error('Error fetching business profile:', err);
+        return null;
       }
-
-      const data = await response.json();
-      if (!data) return null;
-
-      return {
-        id: user.id,
-        business_name: data.business_name || 'My Business',
-        business_type: data.business_type,
-        phone_number: data.contact_phone || data.phone
-      };
     },
     enabled: !!user?.id,
-    staleTime: 1000 * 60 * 15,
+    staleTime: 1000 * 60 * 5, // Reduced stale time for debugging
+    retry: 1,
   });
 
   const { data: subscription, isLoading: isLoadingSubscription } = useQuery({
