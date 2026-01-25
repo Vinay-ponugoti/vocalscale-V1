@@ -69,19 +69,22 @@ const SetupSubaccount = () => {
 
         // Check if subaccount exists in profile
         if (data.has_subaccount && data.subaccount) {
-          const status = data.subaccount.status?.toLowerCase();
-          if (status === 'active' || status === 'suspended') {
-            setExistingSubaccount(data.subaccount);
-            setBusinessName(data.subaccount.friendly_name || '');
+          setExistingSubaccount(data.subaccount);
+          setBusinessName(data.subaccount.friendly_name || '');
 
-            if (status === 'active') {
-              console.log('🚀 Active subaccount found, preparring redirect...');
-              setSuccess(true);
-              // Auto-redirect after a short delay
-              setTimeout(() => {
-                navigate('/dashboard/voice-setup/buy');
-              }, 2000);
-            }
+          const status = data.subaccount.status?.toLowerCase();
+
+          // If status is active OR missing (legacy), redirect
+          // If status is suspended, show existing account UI but don't redirect
+          if (!status || status === 'active') {
+            console.log('🚀 Active/Legacy subaccount found, preparing redirect...');
+            setSuccess(true);
+            // Auto-redirect after a short delay
+            setTimeout(() => {
+              navigate('/dashboard/voice-setup/buy');
+            }, 2000);
+          } else if (status === 'suspended') {
+            // Just show the existing account UI (handled by existingSubaccount state)
           } else {
             setError(`Your account status is "${data.subaccount.status}". Please contact support.`);
           }
