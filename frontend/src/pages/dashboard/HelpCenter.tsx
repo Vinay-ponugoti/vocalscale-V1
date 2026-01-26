@@ -1,13 +1,40 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Search, Rocket, Receipt, ArrowRight, Play, MessageSquare, Ticket, Phone, X, CheckCircle2, Info } from 'lucide-react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';
 
+const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4";
+
 interface Article {
   title: string;
   content: React.ReactNode;
 }
+
+const VideoPlayer = ({ src }: { src: string }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        console.error("Autoplay prevented:", error);
+      });
+    }
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      controls
+      playsInline
+      crossOrigin="anonymous"
+      className="w-full h-full object-contain"
+    >
+      <source src={src} type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  );
+};
 
 const HelpCenter = () => {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
@@ -270,7 +297,7 @@ const HelpCenter = () => {
 
               <div className="space-y-6">
                 {/* Featured Video Card - Inline Player Switch */}
-                {selectedVideo === "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4" ? (
+                {selectedVideo === VIDEO_URL ? (
                   <div className="bg-black rounded-2xl overflow-hidden shadow-lg ring-1 ring-slate-900/5 animate-in fade-in zoom-in duration-300 relative aspect-video group">
                     <button
                       onClick={(e) => {
@@ -281,20 +308,11 @@ const HelpCenter = () => {
                     >
                       <X size={18} />
                     </button>
-                    <video
-                      controls
-                      autoPlay
-                      playsInline
-                      muted={false} // Unmuted for inline playback since user initiated
-                      className="w-full h-full object-contain"
-                    >
-                      <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4" type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
+                    <VideoPlayer src={VIDEO_URL} />
                   </div>
                 ) : (
                   <div
-                    onClick={() => setSelectedVideo("https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4")}
+                    onClick={() => setSelectedVideo(VIDEO_URL)}
                     className="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-lg hover:border-indigo-100 transition-all duration-300 cursor-pointer group"
                   >
                     <div className="flex gap-5">
