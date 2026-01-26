@@ -9,9 +9,10 @@ export function Pricing() {
   const plans = [
     {
       name: 'Starter',
-      description: 'Perfect for ambitious solo pros and local businesses ready to scale.',
-      monthlyPrice: 99,
-      annualPrice: 69,
+      description: 'Perfect for ambitious solo pros. Automated 24/7 AI Receptionist.',
+      monthlyPrice: 69, // 30% off $99
+      annualPrice: 59,  // 40% off $99
+      originalPrice: 99,
       features: [
         '300 AI minutes included',
         'Extra minutes: $0.094/min',
@@ -28,9 +29,10 @@ export function Pricing() {
     },
     {
       name: 'Professional',
-      description: 'The complete powerhouse for growing teams and multi-location dominance.',
-      monthlyPrice: 169,
-      annualPrice: 101,
+      description: 'Powerhouse for growing teams. Auto-schedule appointments & scale.',
+      monthlyPrice: 118, // 30% off $169
+      annualPrice: 101,  // 40% off $169
+      originalPrice: 169,
       features: [
         '1000 AI minutes included',
         'Extra minutes: $0.094/min',
@@ -124,18 +126,26 @@ export function Pricing() {
                 </div>
 
                 <div className="mb-8 md:mb-10">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl md:text-6xl font-black tracking-tighter text-white">$</span>
-                    <span
-                      className="text-5xl md:text-7xl font-black tracking-tighter text-white"
-                    >
-                      {isAnnual ? plan.annualPrice : plan.monthlyPrice}
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xl md:text-2xl font-bold text-slate-500 line-through decoration-slate-500/50 decoration-2">
+                      ${plan.originalPrice}
                     </span>
-                    <span className="text-slate-500 font-bold ml-1 text-base md:text-lg">/mo</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl md:text-6xl font-black tracking-tighter text-white">$</span>
+                      <span
+                        className="text-5xl md:text-7xl font-black tracking-tighter text-white"
+                      >
+                        {isAnnual ? plan.annualPrice : plan.monthlyPrice}
+                      </span>
+                      <span className="text-slate-500 font-bold ml-1 text-base md:text-lg">/mo</span>
+                    </div>
                   </div>
                   {isAnnual && (
                     <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mt-1">Billed annually</p>
                   )}
+                  <p className="text-[11px] font-bold text-emerald-400 mt-2 tracking-wide uppercase">
+                    Grab Early! First 3 months same price if you subscribe now.
+                  </p>
                 </div>
 
                 <div className="space-y-4 mb-10 flex-grow">
