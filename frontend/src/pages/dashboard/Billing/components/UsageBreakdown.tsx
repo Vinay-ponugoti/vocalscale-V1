@@ -198,7 +198,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
               <table className="w-full text-left text-xs">
                 <thead className="sticky top-0 bg-white z-10">
                   <tr className="text-[9px] font-black text-charcoal-light uppercase tracking-widest border-b border-slate-100">
-                    <th className="pb-3 pl-2">Status</th>
+
                     <th className="pb-3">Date & Time</th>
                     <th className="pb-3">Caller</th>
                     <th className="pb-3">Duration</th>
@@ -231,16 +231,6 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
 
                       return (
                         <tr key={call.id || i} className="group hover:bg-slate-50/50 transition-colors">
-                          <td className="py-4 pl-2">
-                            <div className="flex items-center gap-2">
-                              <div className={`p-1 rounded-full ${status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
-                                {getCallIcon(status)}
-                              </div>
-                              <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ring-1 ${getStatusBadge(status)}`}>
-                                {status}
-                              </span>
-                            </div>
-                          </td>
                           <td className="py-4 font-medium text-charcoal">
                             <div className="flex flex-col">
                               <span>{format(dateObj, 'MMM d, yyyy')}</span>
@@ -269,7 +259,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
           </CardContent>
         </Card>
       </div>
-    </div>
+    </div >
   );
 };
 

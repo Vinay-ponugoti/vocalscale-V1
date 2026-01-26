@@ -99,7 +99,7 @@ const BillingHistory: React.FC = () => {
                 <tr className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                   <th className="px-6 py-5">Date</th>
                   <th className="px-6 py-5">Description</th>
-                  {/* <th className="px-6 py-5">Status</th> */}
+                  <th className="px-6 py-5">Status</th>
                   <th className="px-6 py-5">Amount</th>
                   <th className="px-6 py-5 text-right">Invoice</th>
                 </tr>
@@ -116,14 +116,14 @@ const BillingHistory: React.FC = () => {
                     <td className="px-6 py-5 font-bold text-charcoal-medium truncate max-w-[200px]">
                       Invoice #{inv.stripe_invoice_id ? inv.stripe_invoice_id.slice(-4) : '....'}
                     </td>
-                    {/* <td className="px-6 py-5">
+                    <td className="px-6 py-5">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ring-1 ${inv.status === 'paid'
                         ? 'bg-emerald-50 text-emerald-600 ring-emerald-500/10'
                         : 'bg-amber-50 text-amber-600 ring-amber-500/10'
                         }`}>
                         {inv.status}
                       </span>
-                    </td> */}
+                    </td>
                     <td className="px-6 py-5 font-black text-charcoal text-sm">
                       {formatCurrency(inv.amount_paid, inv.currency)}
                     </td>

@@ -122,20 +122,9 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
       storeSession(session);
     }
 
-    // If it's valid, check local expiry just in case
-    const now = Math.floor(Date.now() / 1000);
-    const expiresAt = session.expires_at;
-
-    if (expiresAt && now >= expiresAt) {
-      // Here we would normally refresh the session via backend
-      // For now, let's just mark it invalid if expired
-      storeSession(null);
-      return {
-        isValid: false,
-        session: null,
-        error: 'Session expired locally'
-      };
-    }
+    // TRUST BACKEND: If backend returned 200 OK, the token is valid regardless of local timestamp
+    // We removed the local expiresAt check here to prevent false positives (flickering)
+    // especially after device sleep/wake when clocks might drift or be stale.
 
     return {
       isValid: true,
