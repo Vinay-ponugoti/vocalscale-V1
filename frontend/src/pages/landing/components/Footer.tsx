@@ -16,7 +16,7 @@ export function Footer() {
     Support: [
       { label: 'Security', href: '#' },
       { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms', href: '#' }
+      { label: 'Terms', href: '/terms' }
     ]
   };
 
@@ -88,7 +88,7 @@ export function Footer() {
             </div>
             <div className="flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">
               <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
+              <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
             </div>
           </div>
         </div>
