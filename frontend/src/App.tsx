@@ -32,6 +32,7 @@ const Preview = lazyImport(() => import('./pages/setup/Preview'));
 const Landing = lazyImport(() => import('./pages/landing/index'));
 
 const Privacy = lazyImport(() => import('./pages/landing/Privacy'));
+const Terms = lazyImport(() => import('./pages/landing/Terms'));
 
 // Dashboard Pages
 const DashboardHome = lazyImport(() => import('./pages/dashboard/Home'));
@@ -58,6 +59,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
 
             {/* Auth Routes with separate skeleton */}
             <Route element={
