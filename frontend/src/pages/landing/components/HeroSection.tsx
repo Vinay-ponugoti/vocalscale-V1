@@ -139,11 +139,12 @@ export function HeroSection() {
                                     className="bg-gradient-to-b to-slate-950 absolute inset-0 z-10 from-transparent from-35%"
                                 />
                                 <div className="inset-shadow-2xs ring-white/10 bg-slate-900/50 relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-white/5 p-1.5 md:p-2 shadow-2xl shadow-blue-900/40 ring-1 backdrop-blur-3xl">
-                                    <img
-                                        src="/dash.png"
-                                        alt="VocalScale Dashboard Interface"
-                                        width="2934"
-                                        height="1678"
+                                    <video
+                                        src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/0126.mov"
+                                        autoPlay
+                                        muted
+                                        loop
+                                        playsInline
                                         className="w-full h-auto rounded-xl border border-white/5 shadow-sm opacity-90"
                                     />
                                 </div>
