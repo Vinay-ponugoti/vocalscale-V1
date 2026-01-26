@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Check, Zap, Star, Sparkles, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 
@@ -58,22 +59,34 @@ export function Pricing() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-12 md:mb-24">
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8"
           >
             <Sparkles className="h-4 w-4 text-blue-400 fill-blue-400/20" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">The Investment</span>
-          </div>
+          </motion.div>
 
-          <h2
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-white mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
           >
             Simple plans for <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 italic tracking-tight">growing teams.</span>
-          </h2>
+          </motion.h2>
 
           {/* Pricing Toggle */}
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="flex items-center justify-center gap-4 mb-12"
           >
             <span className={cn("text-sm font-black transition-colors uppercase tracking-widest", !isAnnual ? "text-white" : "text-slate-500")}>Monthly</span>
@@ -94,13 +107,18 @@ export function Pricing() {
                 Save up to 40%
               </span>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
-            <div
+            <motion.div
               key={plan.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
               className={cn(
                 "group relative p-1 rounded-[2.5rem] transition-all duration-500",
                 plan.popular ? "bg-gradient-to-b from-blue-500/20 to-indigo-500/20 shadow-2xl shadow-blue-500/10" : "bg-white/5"
@@ -143,9 +161,13 @@ export function Pricing() {
                   {isAnnual && (
                     <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mt-1">Billed annually</p>
                   )}
-                  <p className="text-[11px] font-bold text-emerald-400 mt-2 tracking-wide uppercase">
+                  <motion.p
+                    animate={{ opacity: [0.8, 1, 0.8] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="text-[11px] font-bold text-emerald-400 mt-2 tracking-wide uppercase"
+                  >
                     Grab Early! First 3 months same price if you subscribe now.
-                  </p>
+                  </motion.p>
                 </div>
 
                 <div className="space-y-4 mb-10 flex-grow">
@@ -173,7 +195,7 @@ export function Pricing() {
                   <a href="/signup">{plan.cta}</a>
                 </Button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
