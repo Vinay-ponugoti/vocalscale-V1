@@ -9,12 +9,13 @@ export function Pricing() {
   const plans = [
     {
       name: 'Starter',
-      description: 'Ideal for solo practitioners and small local businesses.',
-      monthlyPrice: 49,
-      annualPrice: 39,
+      description: 'Perfect for ambitious solo pros and local businesses ready to scale.',
+      monthlyPrice: 99,
+      annualPrice: 69,
       features: [
         '300 AI minutes included',
-        'Basic appointment scheduling',
+        'Extra minutes: $0.094/min',
+        'In-app & Google Calendar scheduling',
         'Standard AI voice models',
         'Email support',
         'Call history & transcripts',
@@ -27,12 +28,13 @@ export function Pricing() {
     },
     {
       name: 'Professional',
-      description: 'Perfect for growing teams and multi-location businesses.',
-      monthlyPrice: 129,
-      annualPrice: 99,
+      description: 'The complete powerhouse for growing teams and multi-location dominance.',
+      monthlyPrice: 169,
+      annualPrice: 101,
       features: [
         '1000 AI minutes included',
-        'Advanced calendar sync',
+        'Extra minutes: $0.094/min',
+        'In-app & Google Calendar scheduling',
         'Premium HD voice models',
         'Priority 24/7 support',
         'Custom knowledge base',
@@ -87,7 +89,7 @@ export function Pricing() {
             <div className="flex items-center gap-2">
               <span className={cn("text-sm font-black transition-colors uppercase tracking-widest", isAnnual ? "text-white" : "text-slate-500")}>Annual</span>
               <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-tighter rounded-md border border-blue-500/20">
-                -20% Off
+                Save up to 40%
               </span>
             </div>
           </div>
