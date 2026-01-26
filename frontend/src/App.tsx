@@ -31,6 +31,8 @@ const Preview = lazyImport(() => import('./pages/setup/Preview'));
 // Landing Page
 const Landing = lazyImport(() => import('./pages/landing/index'));
 
+const Privacy = lazyImport(() => import('./pages/landing/Privacy'));
+
 // Dashboard Pages
 const DashboardHome = lazyImport(() => import('./pages/dashboard/Home'));
 const CallLogs = lazyImport(() => import('./pages/dashboard/CallLogs'));
@@ -55,6 +57,7 @@ function App() {
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/privacy" element={<Privacy />} />
 
             {/* Auth Routes with separate skeleton */}
             <Route element={

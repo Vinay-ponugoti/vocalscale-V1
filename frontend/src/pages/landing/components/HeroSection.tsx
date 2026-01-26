@@ -1,10 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ChevronRight, Menu, X, Sparkles } from 'lucide-react'
-import { m, AnimatePresence, type Variants } from 'framer-motion'
+import { ArrowRight, ChevronRight } from 'lucide-react'
+import { type Variants } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { AnimatedGroup } from '@/components/ui/animated-group'
-import { cn } from '@/lib/utils'
+import { Header } from './Header'
 
 const transitionVariants: { item: Variants } = {
     item: {
@@ -26,16 +26,10 @@ const transitionVariants: { item: Variants } = {
     },
 }
 
-const menuItems = [
-    { name: 'Features', href: '#features' },
-    { name: 'Process', href: '#how-it-works' },
-    { name: 'Pricing', href: '#pricing' },
-]
-
 export function HeroSection() {
     return (
         <>
-            <HeroHeader />
+            <Header />
             <main className="overflow-hidden">
                 <div
                     aria-hidden
@@ -154,173 +148,5 @@ export function HeroSection() {
                 </section>
             </main>
         </>
-    )
-}
-
-const HeroHeader = () => {
-    const [menuState, setMenuState] = React.useState(false)
-    const [isScrolled, setIsScrolled] = React.useState(false)
-
-    React.useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50)
-        }
-        window.addEventListener('scroll', handleScroll)
-        return () => {
-            window.removeEventListener('scroll', handleScroll)
-            document.body.style.overflow = 'unset'
-        }
-    }, [])
-
-    React.useEffect(() => {
-        if (menuState) {
-            document.body.style.overflow = 'hidden'
-        } else {
-            document.body.style.overflow = 'unset'
-        }
-    }, [menuState])
-
-    return (
-        <header>
-            <nav className="fixed z-[100] w-full px-2 group">
-                <div className={cn(
-                    'mx-auto mt-4 max-w-6xl transition-all duration-500 relative z-[101]',
-                    isScrolled
-                        ? 'bg-slate-900/80 max-w-4xl rounded-full border border-white/5 backdrop-blur-xl px-4 md:px-5 py-2.5 shadow-2xl shadow-black/20'
-                        : 'px-6 lg:px-12 py-4'
-                )}>
-                    <div className="relative flex items-center justify-between gap-6 lg:gap-0">
-                        <div className="flex w-full justify-between lg:w-auto items-center">
-                            <Link
-                                to="/"
-                                aria-label="home"
-                                className="flex items-center space-x-2 relative z-[102]"
-                                onClick={() => setMenuState(false)}>
-                                <Logo />
-                            </Link>
-
-                            <button
-                                onClick={() => setMenuState(!menuState)}
-                                aria-label={menuState ? 'Close Menu' : 'Open Menu'}
-                                className="relative z-[102] -m-2.5 block cursor-pointer p-2.5 lg:hidden text-white transition-all active:scale-95">
-                                <AnimatePresence mode="wait">
-                                    {menuState ? (
-                                        <m.div
-                                            key="close"
-                                            initial={{ opacity: 0, rotate: -90 }}
-                                            animate={{ opacity: 1, rotate: 0 }}
-                                            exit={{ opacity: 0, rotate: 90 }}
-                                            transition={{ duration: 0.2 }}>
-                                            <X size={26} strokeWidth={2.5} />
-                                        </m.div>
-                                    ) : (
-                                        <m.div
-                                            key="menu"
-                                            initial={{ opacity: 0, rotate: 90 }}
-                                            animate={{ opacity: 1, rotate: 0 }}
-                                            exit={{ opacity: 0, rotate: -90 }}
-                                            transition={{ duration: 0.2 }}>
-                                            <Menu size={26} strokeWidth={2.5} />
-                                        </m.div>
-                                    )}
-                                </AnimatePresence>
-                            </button>
-                        </div>
-
-                        {/* Desktop Menu */}
-                        <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-                            <ul className="flex gap-10">
-                                {menuItems.map((item, index) => (
-                                    <li key={index}>
-                                        <a
-                                            href={item.href}
-                                            className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 hover:text-white transition-colors">
-                                            {item.name}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        {/* Desktop CRM/CTA */}
-                        <div className="hidden lg:flex items-center gap-6">
-                            <Link to="/login" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors px-4">
-                                Login
-                            </Link>
-                            <Button
-                                asChild
-                                size="sm"
-                                className="rounded-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-[10px] h-9 px-6 transition-all active:scale-95 shadow-lg shadow-blue-500/20">
-                                <Link to="/signup">
-                                    Join Now
-                                </Link>
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Mobile Menu Overlay */}
-                <AnimatePresence>
-                    {menuState && (
-                        <m.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.2, ease: "easeOut" }}
-                            className="fixed inset-0 bg-slate-950/98 backdrop-blur-2xl z-[90] lg:hidden pt-32 pb-12 px-8 flex flex-col justify-between h-screen">
-
-                            {/* Animated Grid Background for Menu */}
-                            <div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]" />
-
-                            <div className="relative z-10">
-                                <nav className="flex flex-col gap-6">
-                                    <div className="flex flex-col gap-8">
-                                        {menuItems.map((item, index) => (
-                                            <a
-                                                key={index}
-                                                href={item.href}
-                                                onClick={() => setMenuState(false)}
-                                                className="text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-blue-400 transition-all flex items-center justify-between group/item">
-                                                {item.name}
-                                                <ArrowRight className="w-5 h-5 opacity-0 -translate-x-4 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all text-blue-500" />
-                                            </a>
-                                        ))}
-                                    </div>
-                                </nav>
-                            </div>
-
-                            <div className="relative z-10 flex flex-col gap-4">
-                                <div className="h-px w-full bg-white/10 mb-6" />
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    size="lg"
-                                    className="rounded-[1.5rem] border-white/10 text-white font-black h-14 uppercase tracking-[0.2em] text-[10px] bg-white/5 active:scale-95">
-                                    <Link to="/login" onClick={() => setMenuState(false)}>
-                                        Login to Account
-                                    </Link>
-                                </Button>
-                                <Button
-                                    asChild
-                                    size="lg"
-                                    className="rounded-[1.5rem] bg-blue-600 hover:bg-blue-700 text-white font-black h-14 uppercase tracking-[0.2em] text-[10px] shadow-2xl shadow-blue-500/20 active:scale-95">
-                                    <Link to="/signup" onClick={() => setMenuState(false)}>
-                                        Get Started Free
-                                    </Link>
-                                </Button>
-                            </div>
-                        </m.div>
-                    )}
-                </AnimatePresence>
-            </nav>
-        </header>
-    )
-}
-
-const Logo = ({ className }: { className?: string }) => {
-    return (
-        <div className={cn("flex items-center", className)}>
-            <img src="/logo.png" alt="VocalScale" width="428" height="428" className="h-10 md:h-11 w-auto object-contain" />
-        </div>
     )
 }
