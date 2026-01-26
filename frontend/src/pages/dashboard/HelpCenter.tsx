@@ -4,7 +4,7 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';
 
-const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/AI%20Train.mp4";
+const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/main%20-%201%20(1).mp4";
 
 interface Article {
   title: string;
@@ -28,9 +28,10 @@ const VideoPlayer = ({ src }: { src: string }) => {
       controls
       playsInline
       crossOrigin="anonymous"
-      className="w-full h-full object-contain"
+      preload="metadata"
+      className="w-full h-full object-cover rounded-2xl"
     >
-      <source src={src} type="video/mp4" />
+      <source src={`${src}#t=0.001`} type="video/mp4" />
       Your browser does not support the video tag.
     </video>
   );
@@ -298,7 +299,7 @@ const HelpCenter = () => {
               <div className="space-y-6">
                 {/* Featured Video Card - Inline Player Switch */}
                 {selectedVideo === VIDEO_URL ? (
-                  <div className="bg-black rounded-2xl overflow-hidden shadow-lg ring-1 ring-slate-900/5 animate-in fade-in zoom-in duration-300 relative aspect-video group">
+                  <div className="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 animate-in fade-in zoom-in duration-300 relative aspect-video group border border-slate-800">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
