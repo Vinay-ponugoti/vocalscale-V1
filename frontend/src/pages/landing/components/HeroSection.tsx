@@ -126,14 +126,14 @@ export function HeroSection() {
                                     aria-hidden
                                     className="bg-gradient-to-b to-slate-50 absolute inset-0 z-10 from-transparent from-35%"
                                 />
-                                <div className="inset-shadow-2xs ring-slate-900/5 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-200 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 backdrop-blur-3xl opacity-100">
+                                <div className="inset-shadow-2xs ring-slate-900/10 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-300/50 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 opacity-100">
                                     <video
                                         src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/0126.mov"
                                         autoPlay
                                         muted
                                         loop
                                         playsInline
-                                        className="w-full h-auto rounded-xl border border-slate-100 shadow-sm"
+                                        className="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
                                     />
                                 </div>
                             </div>
