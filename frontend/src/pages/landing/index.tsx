@@ -10,28 +10,30 @@ import { ROILiveTicker } from './components/ROILiveTicker';
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-slate-950 selection:bg-blue-500 selection:text-white flex flex-col relative overflow-hidden">
-      {/* 21st Dev Background Shaders & Animations */}
+    <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+      {/* Background Effects - "Luminous Enterprise" */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        {/* Large Amorphous Glows */}
+        {/* Soft Modern Gradients */}
         <motion.div
           animate={{
             x: [0, 50, 0],
             y: [0, 30, 0],
             scale: [1, 1.1, 1],
+            opacity: [0.3, 0.4, 0.3],
           }}
           transition={{
             duration: 20,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-600/5 blur-[120px] rounded-full"
+          className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] bg-blue-200/40 blur-[120px] rounded-full mix-blend-multiply"
         />
         <motion.div
           animate={{
             x: [0, -50, 0],
             y: [0, -30, 0],
             scale: [1.1, 1, 1.1],
+            opacity: [0.3, 0.4, 0.3],
           }}
           transition={{
             duration: 25,
@@ -39,47 +41,35 @@ const Landing = () => {
             ease: "easeInOut",
             delay: 2
           }}
-          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-600/5 blur-[120px] rounded-full"
+          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-200/40 blur-[120px] rounded-full mix-blend-multiply"
+        />
+        <motion.div
+          animate={{
+            x: [20, -20, 20],
+            y: [20, -20, 20],
+            opacity: [0.2, 0.3, 0.2],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+          className="absolute top-[40%] left-[30%] w-[50%] h-[50%] bg-emerald-100/40 blur-[120px] rounded-full mix-blend-multiply"
         />
 
-        {/* Strategic Tactical Grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        {/* Subtle Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
-        {/* Micro-sparks / Particles */}
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0 }}
-            animate={{
-              y: [0, -40, 0],
-              opacity: [0, 0.4, 0],
-            }}
-            transition={{
-              duration: 10 + Math.random() * 10,
-              repeat: Infinity,
-              delay: Math.random() * 10,
-              ease: "easeInOut"
-            }}
-            className="absolute w-0.5 h-0.5 bg-blue-400 rounded-full blur-[1px]"
-            style={{
-              left: `${10 + Math.random() * 80}%`,
-              top: `${20 + Math.random() * 60}%`,
-            }}
-          />
-        ))}
-
-        {/* Center Spotlight */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.02),transparent_70%)]" />
+        {/* White fade at bottom to blend content */}
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-slate-50 to-transparent" />
       </div>
-
-      {/* Persistent Noise Overlay */}
-      <div className="fixed inset-0 z-[1] opacity-[0.02] pointer-events-none bg-noise mix-blend-soft-light" />
 
       <div className="relative z-10 flex flex-col">
         <HeroSection />
         <ROILiveTicker />
         <Highlights />
-        <main className="flex flex-col">
+        <main className="flex flex-col space-y-24 pb-24">
           <Features />
           <HowItWorks />
           <Pricing />
