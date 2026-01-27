@@ -16,27 +16,37 @@ const GoogleCallback = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Supabase OAuth returns tokens in the hash fragment
+        console.log('Google Callback URL:', window.location.href);
+
+        let accessToken: string | null = null;
+        let refreshToken: string | null = null;
+        let expiresIn: string | null = null;
+
+        // 1. Try Hash (Supabase default)
         const hash = window.location.hash;
-        if (!hash) {
-          // Check if there are error parameters in the query string
-          const params = new URLSearchParams(window.location.search);
-          const error = params.get('error_description') || params.get('error');
+        if (hash) {
+          const hashParams = new URLSearchParams(hash.substring(1));
+          accessToken = hashParams.get('access_token');
+          refreshToken = hashParams.get('refresh_token');
+          expiresIn = hashParams.get('expires_in');
+        }
+
+        // 2. Try Query Params (Fallback)
+        if (!accessToken) {
+          const searchParams = new URLSearchParams(window.location.search);
+          accessToken = searchParams.get('access_token');
+          refreshToken = searchParams.get('refresh_token');
+          expiresIn = searchParams.get('expires_in');
+
+          // Check for errors
+          const error = searchParams.get('error_description') || searchParams.get('error');
           if (error) {
             throw new Error(error);
           }
-          throw new Error('No authentication data received');
         }
 
-        // Parse hash fragment
-        // Remove the '#' and split by '&'
-        const hashParams = new URLSearchParams(hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
-        const expiresIn = hashParams.get('expires_in');
-
         if (!accessToken) {
-          throw new Error('Access token not found in response');
+          throw new Error('Access token not found in response (checked both Hash and Query params)');
         }
 
         // Fetch user profile immediately
