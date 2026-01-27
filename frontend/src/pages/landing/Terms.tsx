@@ -12,7 +12,7 @@ const Terms = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 selection:bg-blue-500 selection:text-white flex flex-col relative overflow-hidden">
+        <div className="min-h-screen bg-slate-50 selection:bg-blue-200 selection:text-blue-900 flex flex-col relative overflow-hidden">
             {/* Background Effects */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <motion.div
@@ -26,7 +26,7 @@ const Terms = () => {
                         repeat: Infinity,
                         ease: "easeInOut"
                     }}
-                    className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-600/5 blur-[120px] rounded-full"
+                    className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-100/50 blur-[120px] rounded-full mix-blend-multiply"
                 />
                 <motion.div
                     animate={{
@@ -40,10 +40,9 @@ const Terms = () => {
                         ease: "easeInOut",
                         delay: 2
                     }}
-                    className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-600/5 blur-[120px] rounded-full"
+                    className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-100/50 blur-[120px] rounded-full mix-blend-multiply"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-                <div className="fixed inset-0 z-[1] opacity-[0.02] pointer-events-none bg-noise mix-blend-soft-light" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
             </div>
 
             <div className="relative z-10 flex flex-col">
@@ -52,10 +51,10 @@ const Terms = () => {
                 <div className="container mx-auto px-6 py-24 md:py-32 max-w-7xl">
                     {/* Header Section */}
                     <div className="text-center mb-16">
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-6">
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight mb-6">
                             Terms and Conditions
                         </h1>
-                        <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+                        <p className="text-xl text-slate-600 max-w-2xl mx-auto">
                             Please read these terms carefully before using our services.
                         </p>
                         <div className="mt-4 text-sm text-slate-500 font-medium uppercase tracking-wider">
@@ -66,8 +65,8 @@ const Terms = () => {
                     <div className="flex flex-col lg:flex-row gap-12">
                         {/* Quick Navigation Sidebar */}
                         <aside className="lg:w-1/4 hidden lg:block">
-                            <div className="sticky top-32 bg-slate-900/50 backdrop-blur-xl border border-white/5 rounded-2xl p-6">
-                                <h3 className="text-blue-400 font-bold mb-4 flex items-center gap-2">
+                            <div className="sticky top-32 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl p-6 shadow-sm">
+                                <h3 className="text-blue-600 font-bold mb-4 flex items-center gap-2">
                                     <span>📋</span> Quick Navigation
                                 </h3>
                                 <div className="space-y-2">
@@ -84,7 +83,7 @@ const Terms = () => {
                                         <button
                                             key={item.id}
                                             onClick={() => scrollToSection(item.id)}
-                                            className="block w-full text-left px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                                            className="block w-full text-left px-4 py-2 text-sm text-slate-600 hover:text-blue-600 hover:bg-slate-50 rounded-lg transition-all font-medium"
                                         >
                                             {item.label}
                                         </button>
@@ -98,12 +97,12 @@ const Terms = () => {
                             {/* Section 1: Agreement */}
                             <section id="agreement" className="scroll-mt-32">
                                 <SectionHeader number="1" title="Agreement to Terms" />
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-400">
+                                <div className="prose prose-slate max-w-none text-slate-600">
                                     <p>
                                         We are <strong>vocalscale</strong> ("Company," "we," "us," "our"), a company registered in South Carolina, United States at 220 elm st, clemson, SC 29631.
                                     </p>
                                     <p>
-                                        We operate the website <span className="text-blue-400">vocalscale.com</span> (the "Site"), as well as any other related products and services that refer or link to these legal terms (the "Legal Terms") (collectively, the "Services").
+                                        We operate the website <span className="text-blue-600 font-medium">vocalscale.com</span> (the "Site"), as well as any other related products and services that refer or link to these legal terms (the "Legal Terms") (collectively, the "Services").
                                     </p>
                                     <p>
                                         These Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you"), and vocalscale, concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.
@@ -114,7 +113,7 @@ const Terms = () => {
                             {/* Section 2: Services */}
                             <section id="services" className="scroll-mt-32">
                                 <SectionHeader number="2" title="Our Services" />
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-400">
+                                <div className="prose prose-slate max-w-none text-slate-600">
                                     <p>
                                         The information provided when using the Services is not intended for distribution to or use by any person or entity in any jurisdiction or country where such distribution or use would be contrary to law or regulation or which would subject us to any registration requirement within such jurisdiction or country. Accordingly, those persons who choose to access the Services from other locations do so on their own initiative and are solely responsible for compliance with local laws, if and to the extent local laws are applicable.
                                     </p>
@@ -127,8 +126,8 @@ const Terms = () => {
                             {/* Section 3: Intellectual Property */}
                             <section id="ip" className="scroll-mt-32">
                                 <SectionHeader number="3" title="Intellectual Property Rights" />
-                                <h3 className="text-xl font-bold text-white mb-4">Our Intellectual Property</h3>
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-400 mb-8">
+                                <h3 className="text-xl font-bold text-slate-900 mb-4">Our Intellectual Property</h3>
+                                <div className="prose prose-slate max-w-none text-slate-600 mb-8">
                                     <p>
                                         We are the owner or the licensee of all intellectual property rights in our Services, including all source code, databases, functionality, software, website designs, audio, video, text, photographs, and graphics in the Services (collectively, the "Content"), as well as the trademarks, service marks, and logos contained therein (the "Marks").
                                     </p>
@@ -137,8 +136,8 @@ const Terms = () => {
                                     </p>
                                 </div>
 
-                                <h3 className="text-xl font-bold text-white mb-4">Your Use of Our Services</h3>
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-400">
+                                <h3 className="text-xl font-bold text-slate-900 mb-4">Your Use of Our Services</h3>
+                                <div className="prose prose-slate max-w-none text-slate-600">
                                     <p>Subject to your compliance with these Legal Terms, we grant you a non-exclusive, non-transferable, revocable license to:</p>
                                     <ul className="list-disc pl-5 space-y-2">
                                         <li>access the Services; and</li>
@@ -151,7 +150,7 @@ const Terms = () => {
                             {/* Section 4: User Representations */}
                             <section id="userreps" className="scroll-mt-32">
                                 <SectionHeader number="4" title="User Representations" />
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-400">
+                                <div className="prose prose-slate max-w-none text-slate-600">
                                     <p>By using the Services, you represent and warrant that:</p>
                                     <ul className="list-disc pl-5 space-y-2">
                                         <li>all registration information you submit will be true, accurate, current, and complete;</li>
@@ -168,7 +167,7 @@ const Terms = () => {
                             {/* Section 5: Purchases */}
                             <section id="purchases" className="scroll-mt-32">
                                 <SectionHeader number="5" title="Purchases and Payment" />
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-400">
+                                <div className="prose prose-slate max-w-none text-slate-600">
                                     <p>We accept the following forms of payment:</p>
                                     <ul className="list-disc pl-5 space-y-2 mb-4">
                                         <li>Visa</li>
@@ -185,7 +184,7 @@ const Terms = () => {
                             {/* Section 6: Prohibited Activities */}
                             <section id="prohibited" className="scroll-mt-32">
                                 <SectionHeader number="6" title="Prohibited Activities" />
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-400">
+                                <div className="prose prose-slate max-w-none text-slate-600">
                                     <p>
                                         You may not access or use the Services for any purpose other than that for which we make the Services available. The Services may not be used in connection with any commercial endeavors except those that are specifically endorsed or approved by us.
                                     </p>
@@ -205,7 +204,7 @@ const Terms = () => {
                             {/* Section 7: Liability */}
                             <section id="liability" className="scroll-mt-32">
                                 <SectionHeader number="7" title="Limitations of Liability" />
-                                <div className="prose prose-invert prose-slate max-w-none text-slate-400">
+                                <div className="prose prose-slate max-w-none text-slate-600">
                                     <p>
                                         IN NO EVENT WILL WE OR OUR DIRECTORS, EMPLOYEES, OR AGENTS BE LIABLE TO YOU OR ANY THIRD PARTY FOR ANY DIRECT, INDIRECT, CONSEQUENTIAL, EXEMPLARY, INCIDENTAL, SPECIAL, OR PUNITIVE DAMAGES, INCLUDING LOST PROFIT, LOST REVENUE, LOSS OF DATA, OR OTHER DAMAGES ARISING FROM YOUR USE OF THE SERVICES, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
                                     </p>
@@ -215,12 +214,12 @@ const Terms = () => {
                             {/* Section 8: Contact */}
                             <section id="contact" className="scroll-mt-32">
                                 <SectionHeader number="8" title="Contact Us" />
-                                <div className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 p-8 rounded-2xl border border-white/10 text-center">
-                                    <h3 className="text-2xl font-bold text-white mb-4">Have questions?</h3>
-                                    <p className="text-slate-400 mb-8">
+                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl border border-slate-200 text-center shadow-sm">
+                                    <h3 className="text-2xl font-bold text-slate-900 mb-4">Have questions?</h3>
+                                    <p className="text-slate-600 mb-8">
                                         In order to resolve a complaint regarding the Services or to receive further information regarding use of the Services, please contact us at:
                                     </p>
-                                    <div className="space-y-2 text-slate-300 mb-8">
+                                    <div className="space-y-2 text-slate-700 mb-8">
                                         <p className="font-bold">vocalscale</p>
                                         <p>220 elm st</p>
                                         <p>clemson, SC 29631</p>
@@ -228,7 +227,7 @@ const Terms = () => {
                                         <p>Phone: 8646489322</p>
                                     </div>
                                     <div className="flex flex-wrap justify-center gap-4">
-                                        <a href="mailto:support@vocalscale.com" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold transition-all">
+                                        <a href="mailto:support@vocalscale.com" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20">
                                             support@vocalscale.com
                                         </a>
                                     </div>
@@ -247,7 +246,7 @@ const Terms = () => {
 
 // Helper Components
 const SectionHeader = ({ number, title }: { number: string, title: string }) => (
-    <h2 className="text-3xl font-bold text-white mb-6 pb-4 border-b border-white/10 flex items-center gap-4">
+    <h2 className="text-3xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-200 flex items-center gap-4">
         <span className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold flex-shrink-0 shadow-lg shadow-blue-500/20">
             {number}
         </span>
@@ -256,11 +255,11 @@ const SectionHeader = ({ number, title }: { number: string, title: string }) => 
 );
 
 const WarningBox = ({ title, icon, children }: { title: string, icon: string, children: React.ReactNode }) => (
-    <div className="bg-amber-500/5 border-l-4 border-amber-500 p-6 my-8 rounded-r-lg">
-        <div className="font-bold text-amber-400 mb-2 flex items-center gap-2">
+    <div className="bg-amber-50 border-l-4 border-amber-500 p-6 my-8 rounded-r-lg">
+        <div className="font-bold text-amber-800 mb-2 flex items-center gap-2">
             <span>{icon}</span> {title}
         </div>
-        <div className="text-slate-400">{children}</div>
+        <div className="text-slate-700">{children}</div>
     </div>
 );
 
