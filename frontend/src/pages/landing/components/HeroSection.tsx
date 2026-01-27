@@ -27,6 +27,14 @@ const transitionVariants: { item: Variants } = {
 }
 
 export function HeroSection() {
+    const videoRef = React.useRef<HTMLVideoElement>(null)
+
+    React.useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.playbackRate = 0.75
+        }
+    }, [])
+
     return (
         <>
             <Header />
@@ -121,13 +129,9 @@ export function HeroSection() {
                                 ...transitionVariants,
                             }}>
                             <div className="relative mt-12 md:mt-[35px] px-4 md:px-[35px]">
-                                {/* Gradient fade to white at the bottom of the video section */}
-                                <div
-                                    aria-hidden
-                                    className="bg-gradient-to-b to-slate-50 absolute inset-0 z-10 from-transparent from-35%"
-                                />
                                 <div className="inset-shadow-2xs ring-slate-900/10 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-300/50 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 opacity-100">
                                     <video
+                                        ref={videoRef}
                                         src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/0126.mov"
                                         autoPlay
                                         muted
