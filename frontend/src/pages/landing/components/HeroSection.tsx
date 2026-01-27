@@ -120,7 +120,7 @@ export function HeroSection() {
                                 },
                                 ...transitionVariants,
                             }}>
-                            <div className="relative mt-12 md:mt-20 px-4 md:px-6">
+                            <div className="relative mt-12 md:mt-[35px] px-4 md:px-[35px]">
                                 {/* Gradient fade to white at the bottom of the video section */}
                                 <div
                                     aria-hidden
