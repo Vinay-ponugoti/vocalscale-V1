@@ -39,7 +39,7 @@ export function HeroSection() {
                                     <Link
                                         to="/signup"
                                         className="hover:bg-slate-100/80 bg-white/60 group mx-auto flex w-fit items-center gap-3 md:gap-4 rounded-full border border-slate-200 p-1 pl-4 shadow-sm shadow-slate-200/50 transition-all duration-300 backdrop-blur-md">
-                                        <span className="text-slate-600 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] line-clamp-1">Introducing HD Voice Models</span>
+                                        <span className="text-slate-600 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] line-clamp-1">Introducing AI Voice Models</span>
                                         <span className="block h-4 w-0.5 border-l border-slate-200"></span>
 
                                         <div className="bg-blue-600 group-hover:bg-blue-500 size-6 overflow-hidden rounded-full duration-500 flex-shrink-0">
@@ -126,14 +126,14 @@ export function HeroSection() {
                                     aria-hidden
                                     className="bg-gradient-to-b to-slate-50 absolute inset-0 z-10 from-transparent from-35%"
                                 />
-                                <div className="inset-shadow-2xs ring-slate-900/5 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-200 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 backdrop-blur-3xl opacity-100">
+                                <div className="inset-shadow-2xs ring-slate-900/10 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-300/50 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 opacity-100">
                                     <video
                                         src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/0126.mov"
                                         autoPlay
                                         muted
                                         loop
                                         playsInline
-                                        className="w-full h-auto rounded-xl border border-slate-100 shadow-sm"
+                                        className="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
                                     />
                                 </div>
                             </div>

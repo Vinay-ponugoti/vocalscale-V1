@@ -21,12 +21,43 @@ export function FinalCTA() {
     }
 
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
 
-    setIsSubmitting(false);
-    setIsSuccess(true);
-    showToast('Demo request sent successfully!', 'success');
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/landing@vocalscale.com", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          message: reason || "No message provided",
+          _subject: "New Demo Request from VocalScale Landing Page",
+          _template: "table"
+        })
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+        showToast('Request sent successfully!', 'success');
+
+        // Reset form after 2 seconds
+        setTimeout(() => {
+          setIsSuccess(false);
+          setIsBooking(false);
+          setEmail('');
+          setReason('');
+        }, 2000);
+      } else {
+        const data = await response.json();
+        throw new Error(data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      showToast('Failed to send request. Please try again later.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -52,7 +83,7 @@ export function FinalCTA() {
               className="font-black text-4xl sm:text-6xl md:text-7xl text-slate-900 mb-8 md:mb-10 tracking-[-0.03em] leading-[1.05]"
             >
               {isSuccess ? (
-                <span className="text-emerald-600 italic tracking-tight">You're on the list.</span>
+                <span className="text-emerald-600 italic tracking-tight">You're all set!</span>
               ) : (
                 <>
                   Give your business <br className="hidden sm:block" />
