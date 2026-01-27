@@ -9,11 +9,11 @@ function AiReceptionistVisual() {
       <div className="flex items-center gap-8 mb-8">
         {/* Big Icon */}
         <div className="relative">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl shadow-blue-500/20">
-            <User className="w-12 h-12 text-white/90" strokeWidth={1.5} />
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200 flex items-center justify-center shadow-xl shadow-blue-500/10">
+            <User className="w-12 h-12 text-blue-600" strokeWidth={1.5} />
           </div>
           {/* Status dot */}
-          <div className="absolute top-1 right-1 w-6 h-6 bg-green-500 border-4 border-slate-900 rounded-full" />
+          <div className="absolute top-1 right-1 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full shadow-sm" />
         </div>
 
         {/* Voice Selection */}
@@ -22,13 +22,13 @@ function AiReceptionistVisual() {
             <div
               key={voice}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-medium cursor-pointer transition-all hover:scale-105",
+                "flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold cursor-pointer transition-all hover:scale-105 shadow-sm",
                 i === 0
-                  ? "bg-blue-500/20 border-blue-500/30 text-blue-200"
-                  : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+                  ? "bg-blue-600 border-blue-600 text-white shadow-blue-500/30"
+                  : "bg-white border-slate-200 text-slate-500 hover:border-blue-200 hover:text-blue-600"
               )}
             >
-              {i === 0 && <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />}
+              {i === 0 && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
               {voice}
             </div>
           ))}
@@ -48,8 +48,8 @@ export function Features() {
       icon: BrainCircuit,
       title: 'AI Receptionist',
       description: 'Natural, human-like conversations that handle inquiries and route calls intelligently—available 24/7.',
-      className: 'md:col-span-8 md:row-span-2 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent',
-      iconBg: 'bg-blue-500/10',
+      className: 'md:col-span-8 md:row-span-2 bg-gradient-to-br from-blue-50/50 via-white/50 to-white/50',
+      iconBg: 'bg-blue-100',
       iconColor: 'text-blue-600',
       content: <AiReceptionistVisual />
     },
@@ -57,40 +57,40 @@ export function Features() {
       icon: Timer,
       title: 'Smart Scheduling',
       description: 'Automated booking that syncs with your calendar.',
-      className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent',
-      iconBg: 'bg-indigo-500/10',
+      className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-indigo-50/50 via-white/50 to-white/50',
+      iconBg: 'bg-indigo-100',
       iconColor: 'text-indigo-600',
     },
     {
       icon: Activity,
       title: 'Deep Analytics',
       description: 'Insights into call patterns and sentiment.',
-      className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-violet-500/10 via-transparent to-transparent',
-      iconBg: 'bg-violet-500/10',
+      className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-violet-50/50 via-white/50 to-white/50',
+      iconBg: 'bg-violet-100',
       iconColor: 'text-violet-600',
     },
     {
       icon: Languages,
       title: 'Global Scale',
       description: 'Speak to customers in over 50 languages. Provide a local experience, everywhere.',
-      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-tr from-cyan-500/10 via-transparent to-transparent',
-      iconBg: 'bg-cyan-500/10',
+      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-tr from-cyan-50/50 via-white/50 to-white/50',
+      iconBg: 'bg-cyan-100',
       iconColor: 'text-cyan-600',
     },
     {
       icon: ShieldCheck,
       title: 'Bank-Level Security',
       description: 'Protected with SOC 2 certified encryption.',
-      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-bl from-emerald-500/10 via-transparent to-transparent',
-      iconBg: 'bg-emerald-500/10',
+      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-bl from-emerald-50/50 via-white/50 to-white/50',
+      iconBg: 'bg-emerald-100',
       iconColor: 'text-emerald-600',
     },
     {
       icon: Smartphone,
       title: 'Mobile Control',
       description: 'Manage your agent and review transcripts from any device, anywhere in the world.',
-      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent',
-      iconBg: 'bg-amber-500/10',
+      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-br from-amber-50/50 via-white/50 to-white/50',
+      iconBg: 'bg-amber-100',
       iconColor: 'text-amber-600',
     }
   ];
@@ -98,26 +98,26 @@ export function Features() {
   return (
     <section id="features" className="py-16 md:py-32 px-4 md:px-6 relative overflow-hidden bg-transparent">
       {/* Background elements */}
-      <div className="absolute inset-0 z-0 bg-grid-slate-200/[0.02] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
+      <div className="absolute inset-0 z-0 bg-grid-slate-900/[0.03] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16 md:mb-32">
           <div
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8 shadow-sm"
           >
-            <Sparkles className="h-4 w-4 text-blue-400" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">Capabilities</span>
+            <Sparkles className="h-4 w-4 text-blue-600" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">Capabilities</span>
           </div>
 
           <h2
-            className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-white mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
+            className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
           >
             Everything you need <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 italic tracking-tight">to scale.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 italic tracking-tight">to scale.</span>
           </h2>
 
           <p
-            className="text-base md:text-xl text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed"
+            className="text-base md:text-xl text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed"
           >
             We've combined state-of-the-art Voice AI with business-grade tools to help you provide world-class service, 24/7.
           </p>
@@ -128,7 +128,7 @@ export function Features() {
             <div
               key={index}
               className={cn(
-                "group relative overflow-hidden rounded-[2rem] border border-white/5 bg-slate-900/40 backdrop-blur-xl p-6 md:p-8 lg:p-10 transition-all duration-500 hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10",
+                "group relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white/60 backdrop-blur-md p-6 md:p-8 lg:p-10 transition-all duration-500 hover:border-blue-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:bg-white",
                 feature.className
               )}
             >
@@ -139,24 +139,25 @@ export function Features() {
                   </div>
                 ) : (
                   <div className={cn(
-                    "w-12 md:w-14 h-12 md:h-14 rounded-2xl flex items-center justify-center mb-6 md:mb-8 transition-transform group-hover:scale-110 duration-500 bg-gradient-to-br from-white/10 to-transparent border border-white/10 shadow-inner"
+                    "w-12 md:w-14 h-12 md:h-14 rounded-2xl flex items-center justify-center mb-6 md:mb-8 transition-transform group-hover:scale-110 duration-500 bg-white border border-slate-100 shadow-sm",
+                    feature.iconBg
                   )}>
-                    <feature.icon className={cn("w-6 md:w-7 h-6 md:h-7 text-blue-400")} strokeWidth={1.5} />
+                    <feature.icon className={cn("w-6 md:w-7 h-6 md:h-7", feature.iconColor)} strokeWidth={1.5} />
                   </div>
                 )}
 
                 <div className="mt-auto">
-                  <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white mb-3 md:mb-4">
+                  <h3 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900 mb-3 md:mb-4">
                     {feature.title}
                   </h3>
-                  <p className="text-slate-400 font-medium text-sm md:text-base leading-relaxed group-hover:text-slate-300 transition-colors mt-0">
+                  <p className="text-slate-600 font-medium text-sm md:text-base leading-relaxed group-hover:text-slate-900 transition-colors mt-0">
                     {feature.description}
                   </p>
                 </div>
               </div>
 
               {/* Hover highlight effect */}
-              <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_80%)]" />
+              <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.03),transparent_80%)]" />
             </div>
           ))}
         </div>
