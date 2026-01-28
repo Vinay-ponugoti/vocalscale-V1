@@ -100,9 +100,9 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
         </div>
       </CardHeader>
 
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6 flex-1 min-h-[350px]">
-        {/* Quick Stats Integration */}
-        <div className="flex items-center gap-8 mb-6 px-2">
+      <CardContent className="px-2 pb-2 flex-1 flex flex-col min-h-[400px]">
+        {/* Quick Stats Integration - Tightened Gap */}
+        <div className="flex items-center gap-8 mb-4 px-6 pt-6">
           <div className="flex flex-col">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Interactions</span>
             <span className="text-3xl font-black text-slate-900 tabular-nums tracking-tighter">{totalCalls}</span>
@@ -118,9 +118,9 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
 
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[300px] w-full"
+          className="flex-1 w-full"
         >
-          <AreaChart data={safeData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+          <AreaChart data={safeData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
             <defs>
               <linearGradient id="fillCalls" x1="0" y1="0" x2="0" y2="1">
                 <stop
