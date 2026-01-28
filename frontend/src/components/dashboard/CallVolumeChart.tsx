@@ -142,6 +142,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
               axisLine={false}
               tickMargin={12}
               minTickGap={40}
+              padding={{ left: 0, right: 0 }}
               tickFormatter={(value) => {
                 // Return simpler labels to "remove excess"
                 if (typeof value === 'string' && value.includes(',')) return value.split(',')[0];
