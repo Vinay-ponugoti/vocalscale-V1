@@ -7,7 +7,7 @@ import { useSearch } from '../../../hooks/useSearch';
 import type { CallLogFilters } from './types';
 import LogList from './components/LogList';
 import LogDetails from './components/LogDetails';
-import { Loader2, ArrowLeft, RefreshCw, Phone, XCircle, FileText, Zap, Clock, Calendar, ChevronRight } from 'lucide-react';
+import { Loader2, ArrowLeft, RefreshCw, Headset, XCircle, FileText, Zap, Clock, Calendar, ChevronRight } from 'lucide-react';
 import { startOfDay, subDays, isAfter, isBefore, parseISO } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { Button } from '../../../components/ui/Button';
@@ -201,8 +201,8 @@ const CallLogsPage = () => {
           <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-8 bg-white shrink-0 overflow-x-auto no-scrollbar">
             {/* Stats Items */}
             <div className="flex items-center gap-3 shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 ring-1 ring-indigo-500/10">
-                <Phone size={16} />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100/50 flex items-center justify-center text-indigo-600 ring-1 ring-indigo-500/10 shadow-sm transition-all duration-300 hover:scale-110">
+                <Headset size={16} />
               </div>
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total</p>
