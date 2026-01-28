@@ -45,9 +45,9 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'Booking':
-        return <Badge variant="default" className="bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-50 shadow-none font-black text-[11px] tracking-widest uppercase">Booking</Badge>;
+        return <Badge variant="default" className="bg-slate-100 text-slate-900 border-slate-200 hover:bg-slate-100 shadow-none font-black text-[11px] tracking-widest uppercase">Booking</Badge>;
       case 'Inquiry':
-        return <Badge variant="default" className="bg-purple-50 text-purple-700 border-purple-100 hover:bg-purple-50 shadow-none font-black text-[11px] tracking-widest uppercase">Inquiry</Badge>;
+        return <Badge variant="default" className="bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-50 shadow-none font-black text-[11px] tracking-widest uppercase">Inquiry</Badge>;
       case 'Urgent':
         return <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-100 hover:bg-rose-50 shadow-none font-black text-[11px] tracking-widest uppercase">Urgent</Badge>;
       default:
@@ -104,7 +104,7 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50"
+            className="h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-50"
             disabled={currentPage === totalPages || totalPages === 0}
             onClick={() => handlePageChange(currentPage + 1)}
           >
@@ -136,22 +136,22 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
                   className={`
                     group px-6 py-5 cursor-pointer transition-all duration-300 relative
                     ${isSelected
-                      ? 'bg-indigo-50/50'
+                      ? 'bg-slate-900/5'
                       : 'bg-white hover:bg-slate-50/50'
                     }
                   `}
                 >
                   {/* Selected Indicator */}
                   {isSelected && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-full shadow-[0_0_12px_rgba(79,70,229,0.4)]" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-900 rounded-r-full shadow-[0_0_12px_rgba(15,23,42,0.2)]" />
                   )}
 
                   <div className="flex items-start gap-4">
                     <div className={`
                       h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500
                       ${isSelected
-                        ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 text-white scale-110 shadow-xl shadow-indigo-200/50'
-                        : 'bg-slate-50 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:scale-105'
+                        ? 'bg-gradient-to-br from-slate-800 to-slate-900 text-white scale-110 shadow-xl shadow-slate-200/50'
+                        : 'bg-slate-50 text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-900 group-hover:scale-105'
                       }
                     `}>
                       <Headset size={20} className={isSelected ? 'animate-pulse' : ''} />
@@ -161,7 +161,7 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
                       <div className="flex items-center justify-between gap-2">
                         <h3 className={`
                           text-[15px] font-black truncate tracking-tight transition-colors
-                          ${isSelected ? 'text-indigo-900' : 'text-slate-900'}
+                          ${isSelected ? 'text-slate-900' : 'text-slate-900'}
                         `}>
                           {log.caller_name || 'Anonymous Caller'}
                         </h3>
@@ -190,7 +190,7 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
 
                       <p className={`
                         text-[13px] font-medium line-clamp-2 leading-relaxed
-                        ${isSelected ? 'text-indigo-700/70' : 'text-slate-500'}
+                        ${isSelected ? 'text-slate-700/70' : 'text-slate-500'}
                       `}>
                         {log.summary || log.transcript || 'No details available for this call'}
                       </p>

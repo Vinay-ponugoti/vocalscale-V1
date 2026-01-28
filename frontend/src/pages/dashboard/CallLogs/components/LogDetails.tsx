@@ -88,7 +88,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
       {/* --- Header Area --- */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b-2 border-slate-100">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center shrink-0 ring-4 ring-indigo-500/10 shadow-xl shadow-indigo-200/50 transition-all duration-500 hover:scale-105">
+          <div className="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl flex items-center justify-center shrink-0 ring-4 ring-slate-900/5 shadow-xl shadow-slate-200/50 transition-all duration-500 hover:scale-105">
             <Headset size={22} strokeWidth={2.5} />
           </div>
           <div>
@@ -100,10 +100,10 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all">
             <Share size={18} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all">
             <Download size={18} />
           </Button>
         </div>
@@ -112,8 +112,8 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
       {/* --- AI Summary Section --- */}
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-            <Bot size={16} className="text-indigo-600" />
+          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+            <Bot size={16} className="text-slate-600" />
           </div>
           <h3 className="text-xs font-black uppercase tracking-wider text-slate-700">AI Analysis</h3>
         </div>
@@ -143,7 +143,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
                   return (
                     <div key={msg.id} className={`flex gap-3 ${isAI ? '' : 'flex-row-reverse'}`}>
-                      <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 border text-[10px] font-black shadow-sm ring-1 ${isAI ? 'bg-indigo-600 border-indigo-500 text-white ring-indigo-500/20' : 'bg-white border-slate-200 text-slate-600 ring-slate-900/5'
+                      <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 border text-[10px] font-black shadow-sm ring-1 ${isAI ? 'bg-slate-900 border-slate-800 text-white ring-slate-900/10' : 'bg-white border-slate-200 text-slate-600 ring-slate-900/5'
                         }`}>
                         {isAI ? <Bot size={14} /> : (log.caller_name || 'Unknown').substring(0, 1).toUpperCase()}
                       </div>
@@ -186,7 +186,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
             </div>
 
             <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
-              <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200 font-bold text-[10px] tracking-wide uppercase px-3 py-1.5 rounded-lg">
+              <Badge variant="secondary" className="bg-slate-100 text-slate-900 border-slate-200 font-bold text-[10px] tracking-wide uppercase px-3 py-1.5 rounded-lg">
                 {log.category}
               </Badge>
               {log.tags?.map((tag, i) => (
@@ -206,7 +206,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Duration</span>
                 <span className="text-sm font-black text-slate-900 flex items-center gap-2">
-                  <Clock size={14} className="text-indigo-400" />
+                  <Clock size={14} className="text-slate-400" />
                   {Math.floor((log.duration_seconds || 0) / 60)}m {(log.duration_seconds || 0) % 60}s
                 </span>
               </div>
@@ -223,11 +223,11 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                 <div className="space-y-4 pt-2">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lead Score</span>
-                    <span className="text-sm font-black text-indigo-600">{log.lead_score}%</span>
+                    <span className="text-sm font-black text-slate-900">{log.lead_score}%</span>
                   </div>
                   <div className="w-full h-2 bg-slate-50 rounded-full overflow-hidden ring-1 ring-slate-900/5">
                     <div
-                      className="h-full bg-indigo-600 rounded-full shadow-[0_0_10px_rgba(79,70,229,0.3)] transition-all duration-1000"
+                      className="h-full bg-slate-900 rounded-full shadow-[0_0_10px_rgba(15,23,42,0.2)] transition-all duration-1000"
                       style={{ width: `${log.lead_score}%` }}
                     ></div>
                   </div>

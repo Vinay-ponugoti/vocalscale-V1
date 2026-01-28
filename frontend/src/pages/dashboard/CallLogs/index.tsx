@@ -115,7 +115,7 @@ const CallLogsPage = () => {
           <select
             value={filters.status}
             onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
+            className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2 rounded-xl outline-none focus:ring-2 focus:ring-slate-500/10 focus:border-slate-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
           >
             <option value="All">All Status</option>
             <option value="Completed">Completed</option>
@@ -129,7 +129,7 @@ const CallLogsPage = () => {
           <select
             value={filters.type}
             onChange={(e) => handleFilterChange('type', e.target.value)}
-            className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
+            className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2 rounded-xl outline-none focus:ring-2 focus:ring-slate-500/10 focus:border-slate-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
           >
             <option value="All">All Types</option>
             <option value="Booking">Booking</option>
@@ -144,8 +144,8 @@ const CallLogsPage = () => {
       <div className="h-6 w-[1px] bg-slate-200 mx-1 shrink-0" />
 
       <div className="flex items-center gap-2 shrink-0">
-        <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-1.5 rounded-xl group focus-within:ring-2 focus-within:ring-indigo-500/10 focus-within:border-indigo-500 transition-all hover:border-slate-300 shadow-sm">
-          <Calendar size={14} className="text-slate-400 group-focus-within:text-indigo-500" />
+        <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-1.5 rounded-xl group focus-within:ring-2 focus-within:ring-slate-500/10 focus-within:border-slate-500 transition-all hover:border-slate-300 shadow-sm">
+          <Calendar size={14} className="text-slate-400 group-focus-within:text-slate-900" />
           <input
             type="date"
             value={customDate}
@@ -161,7 +161,7 @@ const CallLogsPage = () => {
               handleFilterChange('dateRange', e.target.value);
               if (e.target.value !== 'Custom') setCustomDate('');
             }}
-            className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
+            className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2 rounded-xl outline-none focus:ring-2 focus:ring-slate-500/10 focus:border-slate-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
           >
             <option value="24h">Last 24h</option>
             <option value="7d">Last 7 Days</option>
@@ -177,7 +177,7 @@ const CallLogsPage = () => {
         variant="ghost"
         size="icon"
         onClick={handleReset}
-        className="h-9 w-9 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all active:scale-95 ml-auto border border-transparent hover:border-indigo-100 shrink-0"
+        className="h-9 w-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all active:scale-95 ml-auto border border-transparent hover:border-slate-100 shrink-0"
         title="Reset Filters"
       >
         <RefreshCw size={16} />
@@ -201,7 +201,7 @@ const CallLogsPage = () => {
           <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-8 bg-white shrink-0 overflow-x-auto no-scrollbar">
             {/* Stats Items */}
             <div className="flex items-center gap-3 shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100/50 flex items-center justify-center text-indigo-600 ring-1 ring-indigo-500/10 shadow-sm transition-all duration-300 hover:scale-110">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100/50 flex items-center justify-center text-slate-600 ring-1 ring-slate-900/5 shadow-sm transition-all duration-300 hover:scale-110">
                 <Headset size={16} />
               </div>
               <div>
@@ -255,7 +255,7 @@ const CallLogsPage = () => {
                   </div>
                   <h3 className="text-slate-900 font-black text-base tracking-tight mb-1">Failed to load logs</h3>
                   <p className="text-slate-500 text-sm mb-6 max-w-[240px]">{listError}</p>
-                  <Button variant="outline" onClick={() => refetch()} className="text-indigo-600 font-bold text-xs uppercase tracking-wider">Try again</Button>
+                  <Button variant="outline" onClick={() => refetch()} className="text-slate-900 font-bold text-xs uppercase tracking-wider">Try again</Button>
                 </div>
               ) : (
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -267,8 +267,8 @@ const CallLogsPage = () => {
                   />
                   {isPlaceholderData && (
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-                      <div className="bg-white/90 backdrop-blur-md border border-indigo-100 px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in zoom-in duration-300">
-                        <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
+                      <div className="bg-white/90 backdrop-blur-md border border-slate-100 px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in zoom-in duration-300">
+                        <div className="w-1.5 h-1.5 bg-slate-900 rounded-full animate-pulse" />
                         <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Updating Logs...</span>
                       </div>
                     </div>
@@ -285,8 +285,8 @@ const CallLogsPage = () => {
               {selectedLogId ? (
                 singleLoading ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-20">
-                    <div className="w-16 h-16 rounded-3xl bg-indigo-50 flex items-center justify-center mb-6 ring-1 ring-indigo-500/10">
-                      <Loader2 className="animate-spin text-indigo-600" size={32} />
+                    <div className="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center mb-6 ring-1 ring-slate-900/5">
+                      <Loader2 className="animate-spin text-slate-900" size={32} />
                     </div>
                     <p className="text-slate-900 font-black text-base tracking-tight">Analyzing Call Data...</p>
                   </div>
@@ -314,7 +314,7 @@ const CallLogsPage = () => {
                     <Button
                       onClick={() => handleSelectLog(null)}
                       variant="outline"
-                      className="text-indigo-600 font-bold text-xs uppercase tracking-wider"
+                      className="text-slate-900 font-bold text-xs uppercase tracking-wider"
                     >
                       Return to List
                     </Button>
