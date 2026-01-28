@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Clock, ChevronLeft, ChevronRight, Zap, Mic, Search
+  Clock, ChevronLeft, ChevronRight, Zap, Headset, Search
 } from 'lucide-react';
 import type { CallLog } from '../types';
 import { format, parseISO, isToday, isYesterday } from 'date-fns';
@@ -148,13 +148,13 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
 
                   <div className="flex items-start gap-4">
                     <div className={`
-                      h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300
+                      h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500
                       ${isSelected
-                        ? 'bg-indigo-600 text-white scale-110 shadow-lg shadow-indigo-200'
-                        : 'bg-slate-50 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600'
+                        ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 text-white scale-110 shadow-xl shadow-indigo-200/50'
+                        : 'bg-slate-50 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:scale-105'
                       }
                     `}>
-                      <Mic size={20} className={isSelected ? 'animate-pulse' : ''} />
+                      <Headset size={20} className={isSelected ? 'animate-pulse' : ''} />
                     </div>
 
                     <div className="flex-1 min-w-0 space-y-1.5">
@@ -202,7 +202,7 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

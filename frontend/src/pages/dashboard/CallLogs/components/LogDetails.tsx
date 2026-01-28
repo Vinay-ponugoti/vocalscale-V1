@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share, Download, FileText, Flag, Bot, Mic, Clock } from 'lucide-react';
+import { Share, Download, FileText, Flag, Bot, Headset, Clock } from 'lucide-react';
 import type { CallLog } from '../types';
 import AISummary from './AISummary';
 import { format, parseISO } from 'date-fns';
@@ -88,8 +88,8 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
       {/* --- Header Area --- */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b-2 border-slate-100">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center shrink-0 ring-4 ring-indigo-500/10 shadow-lg shadow-indigo-200">
-            <Mic size={22} strokeWidth={2.5} />
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center shrink-0 ring-4 ring-indigo-500/10 shadow-xl shadow-indigo-200/50 transition-all duration-500 hover:scale-105">
+            <Headset size={22} strokeWidth={2.5} />
           </div>
           <div>
             <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Call Intelligence</h1>
