@@ -100,7 +100,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
         </div>
       </CardHeader>
 
-      <CardContent className="px-2 pb-2 flex-1 flex flex-col min-h-[400px]">
+      <CardContent className="px-2 pb-2 flex-1 flex flex-col min-h-[300px] sm:min-h-[400px]">
         {/* Quick Stats Integration - Tightened Gap */}
         <div className="flex items-center gap-8 mb-4 px-6 pt-6">
           <div className="flex flex-col">
@@ -118,7 +118,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
 
         <ChartContainer
           config={chartConfig}
-          className="flex-1 w-full"
+          className="aspect-auto flex-1 w-full"
         >
           <AreaChart data={safeData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
             <defs>
@@ -141,7 +141,8 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
               tickLine={false}
               axisLine={false}
               tickMargin={12}
-              minTickGap={40}
+              minTickGap={60}
+              interval="preserveStartEnd"
               padding={{ left: 0, right: 0 }}
               tickFormatter={(value) => {
                 // Return simpler labels to "remove excess"
