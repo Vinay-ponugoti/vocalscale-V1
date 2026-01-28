@@ -43,8 +43,8 @@ interface CallVolumeChartProps {
 
 const chartConfig = {
   calls: {
-    label: "Total Calls",
-    color: "#0f172a",
+    label: "Calls",
+    color: "#4285F4",
   },
 } satisfies ChartConfig
 
@@ -63,13 +63,13 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row px-6">
         <div className="grid flex-1 gap-1">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-slate-100 text-slate-900 ring-1 ring-slate-900/5">
+            <div className="p-1.5 rounded-lg bg-blue-50 text-[#4285F4] ring-1 ring-[#4285F4]/10">
               <Activity size={16} strokeWidth={2.5} />
             </div>
             <CardTitle className="text-base font-black text-slate-900 uppercase tracking-tight">Call Volume</CardTitle>
           </div>
           <CardDescription className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-            Displaying {safeData.length} records for the current period
+            Displaying {safeData.length} active records
           </CardDescription>
         </div>
 
@@ -120,13 +120,13 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
           config={chartConfig}
           className="aspect-auto h-[300px] w-full"
         >
-          <AreaChart data={safeData} margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
+          <AreaChart data={safeData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="fillCalls" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="var(--color-calls)"
-                  stopOpacity={0.1}
+                  stopOpacity={0.15}
                 />
                 <stop
                   offset="95%"
@@ -141,9 +141,10 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
               tickLine={false}
               axisLine={false}
               tickMargin={12}
-              minTickGap={32}
+              minTickGap={40}
               tickFormatter={(value) => {
-                // If the value is just a day name or date, we use it as is
+                // Return simpler labels to "remove excess"
+                if (typeof value === 'string' && value.includes(',')) return value.split(',')[0];
                 return value;
               }}
               tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 700 }}
@@ -162,9 +163,9 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
               type="natural"
               fill="url(#fillCalls)"
               stroke="var(--color-calls)"
-              strokeWidth={2.5}
+              strokeWidth={3}
               stackId="a"
-              animationDuration={1500}
+              animationDuration={1000}
             />
             <ChartLegend content={<ChartLegendContent />} />
           </AreaChart>

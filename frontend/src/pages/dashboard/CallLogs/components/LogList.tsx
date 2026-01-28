@@ -143,15 +143,15 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
                 >
                   {/* Selected Indicator */}
                   {isSelected && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-900 rounded-r-full shadow-[0_0_12px_rgba(15,23,42,0.2)]" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#4285F4] rounded-r-full shadow-[0_0_12px_rgba(66,133,244,0.3)]" />
                   )}
 
                   <div className="flex items-start gap-4">
                     <div className={`
                       h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500
                       ${isSelected
-                        ? 'bg-gradient-to-br from-slate-800 to-slate-900 text-white scale-110 shadow-xl shadow-slate-200/50'
-                        : 'bg-slate-50 text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-900 group-hover:scale-105'
+                        ? 'bg-gradient-to-br from-[#4285F4] to-[#3474E0] text-white scale-110 shadow-xl shadow-blue-200/50'
+                        : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-[#4285F4] group-hover:scale-105'
                       }
                     `}>
                       <Headset size={20} className={isSelected ? 'animate-pulse' : ''} />

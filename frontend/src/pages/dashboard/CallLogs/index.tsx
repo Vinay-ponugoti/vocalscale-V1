@@ -201,7 +201,7 @@ const CallLogsPage = () => {
           <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-8 bg-white shrink-0 overflow-x-auto no-scrollbar">
             {/* Stats Items */}
             <div className="flex items-center gap-3 shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100/50 flex items-center justify-center text-slate-600 ring-1 ring-slate-900/5 shadow-sm transition-all duration-300 hover:scale-110">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-[#4285F4] ring-1 ring-[#4285F4]/10 shadow-sm transition-all duration-300 hover:scale-110">
                 <Headset size={16} />
               </div>
               <div>
@@ -285,8 +285,8 @@ const CallLogsPage = () => {
               {selectedLogId ? (
                 singleLoading ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-20">
-                    <div className="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center mb-6 ring-1 ring-slate-900/5">
-                      <Loader2 className="animate-spin text-slate-900" size={32} />
+                    <div className="w-16 h-16 rounded-3xl bg-blue-50 flex items-center justify-center mb-6 ring-1 ring-[#4285F4]/10">
+                      <Loader2 className="animate-spin text-[#4285F4]" size={32} />
                     </div>
                     <p className="text-slate-900 font-black text-base tracking-tight">Analyzing Call Data...</p>
                   </div>

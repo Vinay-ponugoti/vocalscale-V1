@@ -88,7 +88,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
       {/* --- Header Area --- */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b-2 border-slate-100">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl flex items-center justify-center shrink-0 ring-4 ring-slate-900/5 shadow-xl shadow-slate-200/50 transition-all duration-500 hover:scale-105">
+          <div className="w-12 h-12 bg-gradient-to-br from-[#4285F4] to-[#3474E0] text-white rounded-2xl flex items-center justify-center shrink-0 ring-4 ring-blue-500/10 shadow-xl shadow-blue-200/50 transition-all duration-500 hover:scale-105">
             <Headset size={22} strokeWidth={2.5} />
           </div>
           <div>
@@ -112,8 +112,8 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
       {/* --- AI Summary Section --- */}
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-            <Bot size={16} className="text-slate-600" />
+          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+            <Bot size={16} className="text-[#4285F4]" />
           </div>
           <h3 className="text-xs font-black uppercase tracking-wider text-slate-700">AI Analysis</h3>
         </div>
@@ -143,7 +143,9 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
                   return (
                     <div key={msg.id} className={`flex gap-3 ${isAI ? '' : 'flex-row-reverse'}`}>
-                      <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 border text-[10px] font-black shadow-sm ring-1 ${isAI ? 'bg-slate-900 border-slate-800 text-white ring-slate-900/10' : 'bg-white border-slate-200 text-slate-600 ring-slate-900/5'
+                      <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 border text-[10px] font-black shadow-sm ring-1 ${isAI
+                        ? "bg-[#4285F4] border-blue-400 text-white shadow-sm"
+                        : "bg-slate-50 border-slate-100 text-slate-700"
                         }`}>
                         {isAI ? <Bot size={14} /> : (log.caller_name || 'Unknown').substring(0, 1).toUpperCase()}
                       </div>
