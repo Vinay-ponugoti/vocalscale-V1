@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { env } from '../../config/env';
 import { getAuthHeader } from '../../lib/api';
+import { billingApi } from '../../api/billing';
+import { Link } from 'react-router-dom';
 
 // ============ CUSTOM HOOKS ============
 const useWindowSize = () => {
@@ -57,6 +59,58 @@ const GetNewNumber = () => {
   const [numbers, setNumbers] = useState<PhoneNumber[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [checkingSubaccount, setCheckingSubaccount] = useState(true);
+  const [checkingLimits, setCheckingLimits] = useState(true);
+  const [limitReached, setLimitReached] = useState(false);
+  const [limitMessage, setLimitMessage] = useState('');
+  const [currentPlanName, setCurrentPlanName] = useState('');
+
+  const checkLimits = useCallback(async () => {
+    try {
+      const apiUrl = env.API_URL;
+      const headers = await getAuthHeader();
+
+      // 1. Fetch Subscription & Plan
+      const subscription = await billingApi.getSubscription().catch(() => null);
+
+      // 2. Fetch Active Numbers Count
+      const numbersResp = await fetch(`${apiUrl}/phone-numbers`, {
+        headers: { 'Content-Type': 'application/json', ...headers }
+      });
+
+      let currentCount = 0;
+      if (numbersResp.ok) {
+        const numbersData = await numbersResp.json();
+        currentCount = Array.isArray(numbersData) ? numbersData.length : 0;
+      }
+
+      // 3. Determine Limits
+      // Default to Starter limits if no sub/plan found (e.g. trial)
+      let maxNumbers = 1;
+      let planName = 'Starter';
+
+      if (subscription && subscription.plan) {
+        planName = subscription.plan.name;
+        if (subscription.plan.limits && typeof subscription.plan.limits.max_phone_numbers === 'number') {
+          maxNumbers = subscription.plan.limits.max_phone_numbers;
+        }
+        setCurrentPlanName(planName);
+      }
+
+      // Check if limit reached
+      if (currentCount >= maxNumbers) {
+        setLimitReached(true);
+        setLimitMessage(`Your ${planName} plan allows ${maxNumbers} phone number${maxNumbers === 1 ? '' : 's'}. You currently have ${currentCount}.`);
+      } else {
+        setLimitReached(false);
+      }
+
+    } catch (err) {
+      console.error('Error checking limits:', err);
+      // Don't block on error, backend will enforce anyway
+    } finally {
+      setCheckingLimits(false);
+    }
+  }, []);
 
   const checkSubaccountStatus = useCallback(async () => {
     try {
@@ -98,10 +152,11 @@ const GetNewNumber = () => {
     }
   }, [navigate]);
 
-  // Check if user has subaccount on mount
+  // Check if user has subaccount and limits on mount
   useEffect(() => {
     checkSubaccountStatus();
-  }, [checkSubaccountStatus]);
+    checkLimits(); // Run in parallel
+  }, [checkSubaccountStatus, checkLimits]);
 
   if (checkingSubaccount) {
     return (
@@ -273,29 +328,66 @@ const GetNewNumber = () => {
               <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-slate-500 font-medium mt-1`}>Establish a local presence or go toll-free. Your AI receptionist is ready immediately.</p>
             </div>
 
-            {/* Search and Filters Card */}
-            <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm ${isMobile ? 'p-4' : 'p-6'} mb-6 md:mb-8`}>
-              <div className="flex flex-col md:flex-row gap-3 md:gap-4">
-                <div className="flex-grow relative">
-                  <Search className={`absolute left-4 top-1/2 -translate-y-1/2 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-slate-400`} />
-                  <input
-                    className={`w-full ${isMobile ? 'h-11 pl-10' : 'h-12 pl-12'} pr-4 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-sm font-medium bg-slate-50/50`}
-                    placeholder={isMobile ? "City, State, or ZIP" : "Search City, State, or ZIP (e.g. 90210)"}
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  />
+            {/* Search and Filters Card or Limit Reached Message */}
+            {limitReached ? (
+              <div className={`bg-amber-50 rounded-2xl border border-amber-100 shadow-sm ${isMobile ? 'p-4' : 'p-6'} mb-6 md:mb-8 animate-in fade-in zoom-in duration-300`}>
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 border border-amber-200">
+                    <AlertCircle size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-amber-800 uppercase tracking-tight mb-2">Limit Reached</h3>
+                    <p className="text-sm font-medium text-amber-700 max-w-lg mx-auto">
+                      {limitMessage}
+                    </p>
+                    <p className="text-sm font-medium text-amber-700 mt-1">
+                      Please upgrade your plan to add more numbers.
+                    </p>
+                  </div>
+                  <div className="flex gap-3 mt-2">
+                    <button
+                      onClick={() => navigate('/dashboard/voice-setup')}
+                      className="px-6 py-2.5 rounded-xl border border-amber-200 text-amber-700 font-bold uppercase tracking-widest text-[10px] hover:bg-amber-100 transition-all bg-white"
+                    >
+                      Cancel
+                    </button>
+                    <Link
+                      to="/dashboard/billing"
+                      className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-amber-600/20 transition-all flex items-center gap-2"
+                    >
+                      Upgrade Plan
+                    </Link>
+                  </div>
                 </div>
-                <button
-                  onClick={handleSearch}
-                  disabled={searching}
-                  className={`${isMobile ? 'h-11 px-6' : 'h-12 px-8'} bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 min-w-[140px] hover:-translate-y-0.5`}
-                >
-                  {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Search Numbers'}
-                </button>
               </div>
-            </div>
+            ) : checkingLimits ? (
+              <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm ${isMobile ? 'p-8' : 'p-10'} mb-6 md:mb-8 flex items-center justify-center`}>
+                <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
+              </div>
+            ) : (
+              <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm ${isMobile ? 'p-4' : 'p-6'} mb-6 md:mb-8`}>
+                <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+                  <div className="flex-grow relative">
+                    <Search className={`absolute left-4 top-1/2 -translate-y-1/2 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-slate-400`} />
+                    <input
+                      className={`w-full ${isMobile ? 'h-11 pl-10' : 'h-12 pl-12'} pr-4 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-sm font-medium bg-slate-50/50`}
+                      placeholder={isMobile ? "City, State, or ZIP" : "Search City, State, or ZIP (e.g. 90210)"}
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    />
+                  </div>
+                  <button
+                    onClick={handleSearch}
+                    disabled={searching}
+                    className={`${isMobile ? 'h-11 px-6' : 'h-12 px-8'} bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 min-w-[140px] hover:-translate-y-0.5`}
+                  >
+                    {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Search Numbers'}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Results Grid Header */}
             <div className="mb-4 md:mb-6 flex items-center justify-between">
