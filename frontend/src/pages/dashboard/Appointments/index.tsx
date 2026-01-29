@@ -137,13 +137,20 @@ const FullScreenAppointments: React.FC = () => {
   // ============ HELPER FUNCTIONS ============
   const getZonedTime = useCallback((dateStr: string) => {
     try {
-      if (!dateStr) return toZonedTime(new Date(), timezone);
+      if (!dateStr) return new Date();
+      // The backend returns ISO string in UTC or with offset (e.g. 2026-01-29T17:00:00-05:00).
+      // The browser's Date object automatically handles conversion to the system's local time.
+      // If we want to display it in the BUSINESS timezone (e.g. EST), we should use toZonedTime.
+      // However, if the dateStr already contains timezone info (offset), passing it to new Date() is safer.
+      
       const date = new Date(dateStr);
-      if (isNaN(date.getTime())) return toZonedTime(new Date(), timezone);
+      if (isNaN(date.getTime())) return new Date();
+      
+      // Convert the absolute UTC time to the target timezone's wall time
       return toZonedTime(date, timezone);
     } catch (e) {
       console.error('Error in getZonedTime:', e);
-      return toZonedTime(new Date(), timezone);
+      return new Date();
     }
   }, [timezone]);
 
