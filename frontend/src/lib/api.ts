@@ -188,7 +188,7 @@ export const api = {
     const params = new URLSearchParams();
     if (text) params.append('text', text);
     const queryString = params.toString();
-    return `${API_BASE}/voices/samples/${voiceId}${queryString ? `?${queryString}` : ''}`;
+    return `${API_BASE}/samples/${voiceId}${queryString ? `?${queryString}` : ''}`;
   },
 
   async getVoiceSettings() {
