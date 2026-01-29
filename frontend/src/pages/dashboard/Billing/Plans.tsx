@@ -128,31 +128,36 @@ const Plans: React.FC = () => {
     return [
       {
         name: 'Starter',
-        description: 'Ideal for solo practitioners and small local businesses.',
-        monthlyPrice: 49,
-        annualPrice: 39,
+        description: 'Perfect for ambitious solo pros. Automated 24/7 AI Receptionist.',
+        monthlyPrice: 69,
+        originalMonthlyPrice: 99,
+        annualPrice: 59, // Assuming annual discount around 20% ~ 55, setting to 59
         features: [
           '300 AI minutes included',
-          'Basic appointment scheduling',
+          'Extra minutes: $0.094/min',
+          'In-app & Google Calendar scheduling',
           'Standard AI voice models',
           'Email support',
           'Call history & transcripts',
-          '1 Local phone number'
+          '1 Local phone number',
         ],
-        cta: 'Upgrade to Starter',
+        cta: 'Start 14-day free trial',
         current: false,
         icon: Zap,
         psychology: 'Essential',
-        stripe_price_id: 'price_starter'
+        stripe_price_id: 'price_starter',
+        promoText: 'Grab Early! First 3 months same price if you subscribe now.'
       },
       {
         name: 'Professional',
-        description: 'Perfect for growing teams and multi-location businesses.',
-        monthlyPrice: 129,
-        annualPrice: 99,
+        description: 'Powerhouse for growing teams. Auto-schedule appointments & scale.',
+        monthlyPrice: 118,
+        originalMonthlyPrice: 169,
+        annualPrice: 99, // Assuming ~$100 annual
         features: [
-          '1,000 AI minutes included',
-          'Advanced calendar sync',
+          '1000 AI minutes included',
+          'Extra minutes: $0.094/min',
+          'In-app & Google Calendar scheduling',
           'Premium HD voice models',
           'Priority 24/7 support',
           'Custom knowledge base',
@@ -163,16 +168,17 @@ const Plans: React.FC = () => {
         cta: 'Upgrade to Professional',
         current: false,
         icon: Star,
-        psychology: 'Standard',
-        stripe_price_id: 'price_pro'
+        psychology: 'Most Popular',
+        stripe_price_id: 'price_pro',
+        promoText: 'Grab Early! First 3 months same price if you subscribe now.'
       },
       {
         name: 'Elite',
         description: 'Maximum power for high-volume businesses and agencies.',
-        monthlyPrice: 299,
-        annualPrice: 250,
+        monthlyPrice: 0, // Contact Us
+        annualPrice: 0,
         features: [
-          '3,000 AI minutes included',
+          'Custom AI minutes',
           'Dedicated account manager',
           'Custom voice cloning',
           'API access & webhooks',
@@ -181,18 +187,19 @@ const Plans: React.FC = () => {
           'Advanced analytics dashboard',
           'Custom CRM development'
         ],
-        cta: 'Upgrade to Elite',
+        cta: 'Contact Sales',
         current: false,
         icon: Crown,
         psychology: 'Ultimate',
-        stripe_price_id: 'price_elite'
+        stripe_price_id: 'price_elite',
+        contactUs: true
       }
     ];
   };
 
   const getDefaultDescription = (name: string) => {
-    if (name === 'Starter') return 'Ideal for solo practitioners and small local businesses.';
-    if (name === 'Professional') return 'Perfect for growing teams and multi-location businesses.';
+    if (name === 'Starter') return 'Perfect for ambitious solo pros. Automated 24/7 AI Receptionist.';
+    if (name === 'Professional') return 'Powerhouse for growing teams. Auto-schedule appointments & scale.';
     if (name === 'Elite') return 'Maximum power for high-volume businesses and agencies.';
     return 'Scale your business with the right AI capabilities.';
   };
@@ -200,15 +207,17 @@ const Plans: React.FC = () => {
   const getDefaultFeatures = (name: string) => {
     if (name === 'Starter') return [
       '300 AI minutes included',
-      'Basic appointment scheduling',
+      'Extra minutes: $0.094/min',
+      'In-app & Google Calendar scheduling',
       'Standard AI voice models',
       'Email support',
       'Call history & transcripts',
       '1 Local phone number'
     ];
     if (name === 'Professional') return [
-      '1,000 AI minutes included',
-      'Advanced calendar sync',
+      '1000 AI minutes included',
+      'Extra minutes: $0.094/min',
+      'In-app & Google Calendar scheduling',
       'Premium HD voice models',
       'Priority 24/7 support',
       'Custom knowledge base',
@@ -217,7 +226,7 @@ const Plans: React.FC = () => {
       'CRM integrations'
     ];
     if (name === 'Elite') return [
-      '3,000 AI minutes included',
+      'Custom AI minutes',
       'Dedicated account manager',
       'Custom voice cloning',
       'API access & webhooks',
@@ -333,16 +342,37 @@ const Plans: React.FC = () => {
                         </CardTitle>
                       </div>
 
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-black text-charcoal tracking-tighter">
-                          ${Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
-                        </span>
-                        <span className="text-xs font-bold text-charcoal-light">/mo</span>
+                      <div className="flex items-baseline gap-2">
+                        {plan.contactUs ? (
+                          <span className="text-3xl font-black text-charcoal tracking-tighter">
+                            Custom
+                          </span>
+                        ) : (
+                          <>
+                            {plan.originalMonthlyPrice && !isAnnual && (
+                              <div className="flex flex-col items-center">
+                                <span className="text-sm font-bold text-slate-400 line-through decoration-slate-400/50">
+                                  ${plan.originalMonthlyPrice}
+                                </span>
+                              </div>
+                            )}
+                            <span className="text-4xl font-black text-charcoal tracking-tighter">
+                              ${Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
+                            </span>
+                            <span className="text-xs font-bold text-charcoal-light">/mo</span>
+                          </>
+                        )}
                       </div>
 
                       <CardDescription className="text-sm font-medium leading-relaxed">
                         {plan.description}
                       </CardDescription>
+
+                      {plan.promoText && (
+                        <div className="mt-2 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded inline-block">
+                          {plan.promoText}
+                        </div>
+                      )}
                     </div>
                   </CardHeader>
 
@@ -365,7 +395,13 @@ const Plans: React.FC = () => {
                   <CardFooter className="pt-0">
                     <button
                       disabled={plan.current || loading === plan.name}
-                      onClick={() => handleUpgrade(plan.stripe_price_id, plan.name)}
+                      onClick={() => {
+                        if (plan.contactUs) {
+                          window.location.href = 'mailto:sales@vocalscale.com';
+                        } else {
+                          handleUpgrade(plan.stripe_price_id, plan.name);
+                        }
+                      }}
                       className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 ${plan.current
                         ? 'bg-white-light text-charcoal-light cursor-default'
                         : 'bg-charcoal text-white hover:bg-charcoal-dark shadow-lg shadow-charcoal/20 hover:shadow-charcoal/30'
