@@ -179,9 +179,9 @@ export const BookingRequirementsContent: React.FC = () => {
               <Calendar size={24} className="text-indigo-600" />
             </div>
             <div>
-              <h3 className="text-sm font-black text-slate-900 tracking-tight">Google Calendar Integration</h3>
+              <h3 className="text-sm font-black text-slate-900 tracking-tight">Google Account Connection</h3>
               <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wide">
-                Allow AI to check availability & book appointments
+                Connect your account for synchronization
               </p>
             </div>
           </div>
@@ -197,7 +197,7 @@ export const BookingRequirementsContent: React.FC = () => {
               <Link size={14} />
             )}
             <span className="text-[10px] font-black uppercase tracking-widest">
-              {connecting ? 'Connecting...' : 'Connect Calendar'}
+              {connecting ? 'Connecting...' : 'Connect Account'}
             </span>
           </button>
         </div>
