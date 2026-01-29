@@ -1,5 +1,6 @@
 import type { Session } from '../types/auth';
 import { env } from '../config/env';
+import { safeLocalStorage } from './storageUtils';
 
 const SESSION_KEY = 'voice_ai_session';
 
@@ -12,14 +13,14 @@ export interface SessionValidationResult {
 
 export const storeSession = (session: Session | null) => {
   if (session) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    safeLocalStorage.setItem(SESSION_KEY, JSON.stringify(session));
   } else {
-    localStorage.removeItem(SESSION_KEY);
+    safeLocalStorage.removeItem(SESSION_KEY);
   }
 };
 
 export const getStoredSession = (): Session | null => {
-  const stored = localStorage.getItem(SESSION_KEY);
+  const stored = safeLocalStorage.getItem(SESSION_KEY);
   if (!stored) return null;
   try {
     return JSON.parse(stored);

@@ -63,6 +63,8 @@ interface BusinessProfile {
   business_name: string;
   business_type?: string;
   phone_number?: string;
+  full_name?: string;
+  avatar_url?: string;
 }
 
 // --- UI COMPONENTS ---
@@ -204,7 +206,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           id: user.id,
           business_name: data.business_name,
           business_type: data.business_type,
-          phone_number: data.contact_phone || data.phone
+          phone_number: data.contact_phone || data.phone,
+          full_name: data.full_name,
+          avatar_url: data.avatar_url
         };
       } catch (err) {
         console.error('Error fetching business profile:', err);
@@ -234,8 +238,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   // 1. Dashboard Header: Priorities Business Name -> "New Business"
   const businessName = businessProfile?.business_name || 'New Business';
 
-  // 2. Profile Dropdown: Priorities User Name -> Email -> "User"
-  const userFullName = user?.full_name || user?.user_metadata?.full_name || userEmail;
+  // 2. Profile Dropdown: Priorities API Profile Name -> Session User Name -> Email -> "User"
+  const userFullName = businessProfile?.full_name || user?.full_name || user?.user_metadata?.full_name || userEmail;
 
   const hasActiveSubscription = subscription && (subscription.status === 'active' || subscription.status === 'trialing');
 
@@ -547,7 +551,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   onSignOut={handleSignOut}
                   displayName={userFullName}
                   email={userEmail}
-                  avatarUrl={user?.avatar_url}
+                  avatarUrl={businessProfile?.avatar_url || user?.avatar_url}
                 />
               </div>
             </div>
