@@ -88,28 +88,33 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
 
     if (!response.ok) {
       console.warn('Backend session validation failed:', response.status);
-      // If 401, session is definitely invalid
+
+      // CRITICAL: If 401, session is definitely invalid/expired.
+      // We MUST clear it to trigger a redirect.
       if (response.status === 401) {
+        console.error('Session expired (401). Clearing stored session.');
         storeSession(null);
         return {
           isValid: false,
           session: null,
-          error: 'Session invalid or expired',
+          error: 'Session expired',
           backendReachable: true
         };
       }
+
+      // For other errors (5xx, etc), we might be in a temporary glitch.
+      // We keep the local session but flag the backend status.
       return {
-        isValid: false,
-        session: null,
-        error: `Backend session validation failed (${response.status})`,
-        backendReachable: response.status !== 502 && response.status !== 503 && response.status !== 504
+        isValid: true,
+        session,
+        error: `Backend error (${response.status})`,
+        backendReachable: false
       };
     }
 
     // Parse the validation response to get user data
     const validationData = await response.json();
 
-    // If session is valid, ensure user object is populated
     if (validationData.user_id) {
       session.user = {
         ...session.user,
@@ -118,13 +123,8 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
         full_name: validationData.user_metadata?.full_name || session.user?.full_name || '',
         avatar_url: validationData.user_metadata?.avatar_url || validationData.user_metadata?.picture || '',
       };
-      // Update local storage with the user data
       storeSession(session);
     }
-
-    // TRUST BACKEND: If backend returned 200 OK, the token is valid regardless of local timestamp
-    // We removed the local expiresAt check here to prevent false positives (flickering)
-    // especially after device sleep/wake when clocks might drift or be stale.
 
     return {
       isValid: true,
@@ -133,13 +133,14 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
     };
 
   } catch (e: unknown) {
-    console.error('Backend unreachable during session validation:', e);
-    // CRITICAL FIX: Keep session alive if backend is temporarily unreachable
-    // This prevents logout on fast refresh/back button when backend is slow
+    // Handle network errors (offline, etc)
+    const isAbort = e instanceof Error && e.name === 'AbortError';
+    console.error(isAbort ? 'Session validation timed out' : 'Backend unreachable:', e);
+
     return {
-      isValid: true,  // Changed from false - trust local session if backend offline
-      session,        // Return existing session
-      error: 'Backend unreachable (session kept alive)',
+      isValid: true, // Keep session alive - don't logout if internet is just flaky
+      session,
+      error: isAbort ? 'Validation timeout' : 'Network error',
       backendReachable: false
     };
   }

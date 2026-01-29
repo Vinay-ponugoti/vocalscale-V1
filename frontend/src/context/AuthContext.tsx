@@ -152,11 +152,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []); // Run only once on mount
 
-  // Heartbeat interval for security
+  // Heartbeat interval for security + Window Focus Re-validation
   useEffect(() => {
     if (!session) return;
 
-    const sessionCheckInterval = setInterval(async () => {
+    let lastCheck = 0;
+    const checkSession = async (force = false) => {
+      const now = Date.now();
+      // Debounce: don't check more than once every 10 seconds unless forced
+      if (!force && now - lastCheck < 10000) return;
+      lastCheck = now;
+
       if (mounted.current && session) {
         try {
           // Verify with backend directly
@@ -164,18 +170,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
           // Only logout if session is explicitly invalid (not just unreachable)
           if (mounted.current && !isValid && backendReachable) {
-            console.warn('Security heartbeat detected invalid session. Logging out.');
+            console.warn('Security check detected invalid session. Redirecting to login.');
             setSession(null);
             setUser(null);
             storeSession(null);
           }
         } catch (error) {
-          console.error('Error during security heartbeat:', error);
+          console.error('Error during security check:', error);
         }
       }
-    }, 60000); // Check every minute
+    };
 
-    return () => clearInterval(sessionCheckInterval);
+    // 1. Regular heartbeat (every minute)
+    const interval = setInterval(() => checkSession(), 60000);
+
+    // 2. Proactive check on window focus or visibility change
+    const handleFocus = () => {
+      console.log('Window focused - re-validating security context');
+      checkSession(true);
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('Tab visible - re-validating security context');
+        checkSession(true);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [session]); // Restart heartbeat only when session changes
 
   const signOut = async () => {

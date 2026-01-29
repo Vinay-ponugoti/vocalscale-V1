@@ -16,6 +16,9 @@ interface Invoice {
 const BillingHistory: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(5); // Fixed page size for invoices
+  const [total, setTotal] = useState(0);
 
   const formatCurrency = (amountInCents: number, currency: string = 'USD') => {
     return new Intl.NumberFormat('en-US', {
@@ -39,8 +42,16 @@ const BillingHistory: React.FC = () => {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const data = await billingApi.getInvoices();
-        setInvoices(data);
+        setLoading(true);
+        const data = await billingApi.getInvoices(page, pageSize);
+        if (data.items) {
+          setInvoices(data.items);
+          setTotal(data.total || 0);
+        } else {
+          // Fallback if API hasn't been updated yet or returns array
+          setInvoices(Array.isArray(data) ? data : []);
+          setTotal(Array.isArray(data) ? data.length : 0);
+        }
       } catch (error) {
         console.error('Error fetching invoices:', error);
       } finally {
@@ -49,7 +60,9 @@ const BillingHistory: React.FC = () => {
     };
 
     fetchInvoices();
-  }, []);
+  }, [page, pageSize]);
+
+  const totalPages = Math.ceil(total / pageSize);
 
   if (loading) {
     return (
@@ -146,6 +159,30 @@ const BillingHistory: React.FC = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {total > pageSize && (
+          <div className="p-4 border-t border-slate-100 bg-slate-50/30 flex items-center justify-between">
+            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              Page {page} of {totalPages}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                disabled={page === 1}
+                className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white border border-slate-200 text-charcoal hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={page === totalPages}
+                className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white border border-slate-200 text-charcoal hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>
