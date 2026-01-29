@@ -85,12 +85,6 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
     // Check if voice is enabled first
     if (voice.is_active === false) return false;
 
-    // Filter by gender if not 'all' (Double check in case API returns mismatched data)
-    if (genderFilter !== 'all') {
-      const voiceGender = voice.gender?.toLowerCase() || '';
-      if (voiceGender !== genderFilter) return false;
-    }
-
     // If voice has an explicit accent/language field that matches
     const selectedLangBase = settings.language.toLowerCase().split('-')[0];
     if (voice.accent && voice.accent.toLowerCase().includes(selectedLangBase)) {
@@ -138,19 +132,23 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
               Voice Persona
             </Label>
             <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 shadow-sm shrink-0">
-              {(['all', 'male', 'female'] as const).map((gender) => (
+              {[
+                { label: 'All', value: 'all' },
+                { label: 'Masculine', value: 'male' },
+                { label: 'Feminine', value: 'female' }
+              ].map((option) => (
                 <button
-                  key={gender}
-                  onClick={() => setGenderFilter(gender)}
+                  key={option.value}
+                  onClick={() => setGenderFilter(option.value as 'all' | 'male' | 'female')}
                   className={`
                     px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider transition-all
-                    ${genderFilter === gender
+                    ${genderFilter === option.value
                       ? 'bg-white text-indigo-600 shadow-sm'
                       : 'text-slate-400 hover:text-slate-600'
                     }
                   `}
                 >
-                  {gender}
+                  {option.label}
                 </button>
               ))}
             </div>
@@ -188,7 +186,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                       )}
                     </div>
                     <span className="text-[10px] font-medium text-slate-500 truncate block">
-                      {voice.gender} • {voice.accent}
+                      {voice.gender === 'male' ? 'Masculine' : voice.gender === 'female' ? 'Feminine' : voice.gender} • {voice.accent}
                     </span>
                   </div>
 
