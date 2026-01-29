@@ -46,7 +46,7 @@ export const ReviewOverview = ({ stats, loading }: ReviewOverviewProps) => {
       const redirectUrl = `${window.location.origin}/auth/callback`;
 
       // Get the Google Auth URL from backend with necessary business permissions
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}&scope=business_profile`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
 
       if (!response.ok) throw new Error('Failed to get auth URL');
 
