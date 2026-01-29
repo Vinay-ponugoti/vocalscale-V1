@@ -52,8 +52,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     sessionRef.current = session;
   }, [session]);
 
-  const refreshProfile = useCallback(async () => {
-    const currentSession = sessionRef.current;
+  const refreshProfile = useCallback(async (manualSession?: Session) => {
+    const currentSession = manualSession || sessionRef.current;
     if (!currentSession?.access_token) return;
 
     try {
@@ -87,6 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setSession(validatedSession);
           setUser(validatedSession.user ?? null);
           storeSession(validatedSession);
+          refreshProfile(validatedSession);
         } else {
           setSession(null);
           setUser(null);
@@ -159,7 +160,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             syncGoogleTokens(validatedSession);
 
             // Unified profile refresh for all users
-            refreshProfile();
+            refreshProfile(validatedSession);
 
             console.log("Auth initialized successfully");
           } else {
@@ -360,14 +361,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 avatar_url: newSession.user?.user_metadata?.avatar_url
               })
             });
-            refreshProfile();
+            refreshProfile(newSession);
           } catch (e) {
             console.error("Background token sync failed", e);
-            refreshProfile();
+            refreshProfile(newSession);
           }
         })();
       } else {
-        refreshProfile();
+        refreshProfile(newSession);
       }
     }
   }, [refreshProfile]);
