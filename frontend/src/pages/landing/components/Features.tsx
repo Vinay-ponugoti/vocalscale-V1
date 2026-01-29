@@ -1,9 +1,64 @@
-import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, User } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, User, Play, Pause, Volume2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { VoiceInput } from './VoiceInput';
+import { api } from '@/lib/api';
+
+interface Voice {
+  id: string;
+  name: string;
+  provider_voice_id: string;
+  sample_audio_url: string;
+  accent: string;
+}
 
 function AiReceptionistVisual() {
+  const [voices, setVoices] = useState<Voice[]>([]);
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    async function fetchVoices() {
+      try {
+        const response = await api.getVoices();
+        // Filter to get some diversity or specific ones
+        const allVoices = response.data || [];
+        const featured = allVoices.filter((v: any) =>
+          ['Asteria', 'Zeus', 'Orion', 'Agathe'].includes(v.name)
+        ).slice(0, 3);
+
+        // If not enough specific ones, just take the first 3
+        if (featured.length < 3) {
+          setVoices(allVoices.slice(0, 3));
+        } else {
+          setVoices(featured);
+        }
+      } catch (error) {
+        console.error('Error fetching voices for landing page:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchVoices();
+  }, []);
+
+  const handleTogglePlay = (voice: Voice) => {
+    if (playingId === voice.id) {
+      audioRef.current?.pause();
+      setPlayingId(null);
+    } else {
+      if (!audioRef.current) {
+        audioRef.current = new Audio();
+        audioRef.current.onended = () => setPlayingId(null);
+      }
+      audioRef.current.src = voice.sample_audio_url;
+      audioRef.current.play();
+      setPlayingId(voice.id);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center w-full h-full min-h-[220px]">
       <div className="flex items-center gap-8 mb-8">
@@ -17,21 +72,45 @@ function AiReceptionistVisual() {
         </div>
 
         {/* Voice Selection */}
-        <div className="flex flex-col gap-2.5">
-          {['Emma (US)', 'James (US)', 'Alice (UK)'].map((voice, i) => (
-            <div
-              key={voice}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold cursor-pointer transition-all hover:scale-105 shadow-sm",
-                i === 0
-                  ? "bg-blue-600 border-blue-600 text-white shadow-blue-500/30"
-                  : "bg-white border-slate-200 text-slate-500 hover:border-blue-200 hover:text-blue-600"
-              )}
-            >
-              {i === 0 && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
-              {voice}
-            </div>
-          ))}
+        <div className="flex flex-col gap-2.5 min-w-[140px]">
+          {isLoading ? (
+            [1, 2, 3].map((i) => (
+              <div key={i} className="h-8 w-32 bg-slate-100 animate-pulse rounded-full" />
+            ))
+          ) : voices.length > 0 ? (
+            voices.map((voice) => (
+              <div
+                key={voice.id}
+                onClick={() => handleTogglePlay(voice)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold cursor-pointer transition-all hover:scale-105 shadow-sm group/voice",
+                  playingId === voice.id
+                    ? "bg-blue-600 border-blue-600 text-white shadow-blue-500/30"
+                    : "bg-white border-slate-200 text-slate-500 hover:border-blue-200 hover:text-blue-600"
+                )}
+              >
+                {playingId === voice.id ? (
+                  <div className="flex gap-0.5 items-center mr-0.5">
+                    {[1, 2, 3].map((bar) => (
+                      <div
+                        key={bar}
+                        className="w-0.5 bg-white rounded-full animate-wave"
+                        style={{
+                          height: '8px',
+                          animationDelay: `${bar * 0.1}s`
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <Play className="w-3 h-3 group-hover/voice:text-blue-600 transition-colors" fill="currentColor" />
+                )}
+                {voice.name} ({voice.accent})
+              </div>
+            ))
+          ) : (
+            <div className="text-slate-400 text-xs italic">Voices loading...</div>
+          )}
         </div>
       </div>
 

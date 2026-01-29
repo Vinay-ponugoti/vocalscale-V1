@@ -4,6 +4,7 @@
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -14,6 +15,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -23,6 +25,7 @@
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
@@ -85,4 +88,20 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+@keyframes wave {
+
+  0%,
+  100% {
+    height: 4px;
+  }
+
+  50% {
+    height: 12px;
+  }
+}
+
+.animate-wave {
+  animation: wave 1s ease-in-out infinite;
 }
