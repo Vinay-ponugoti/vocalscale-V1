@@ -141,7 +141,7 @@ const Plans: React.FC = () => {
           'Call history & transcripts',
           '1 Local phone number',
         ],
-        cta: 'Start 14-day free trial',
+        cta: 'Upgrade to Starter',
         current: false,
         icon: Zap,
         psychology: 'Essential',
