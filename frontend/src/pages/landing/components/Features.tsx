@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, User, Play, Pause, Volume2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { VoiceInput } from './VoiceInput';
-import { api } from '@/lib/api';
 
 interface Voice {
   id: string;
@@ -17,7 +15,7 @@ const VOICES: Voice[] = [
   { id: '1', name: 'Asteria', accent: 'US - Professional', provider_voice_id: 'asteria', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-asteria-en.mp3' },
   { id: '2', name: 'Zeus', accent: 'US - Energetic', provider_voice_id: 'zeus', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-zeus-en.mp3' },
   { id: '3', name: 'Janus', accent: 'UK - Sophisticated', provider_voice_id: 'janus', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-janus-en.mp3' },
-  { id: '4', name: 'Amalthea', accent: 'Filipino - Friendly', provider_voice_id: 'amalthea', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-amalthea-en.mp3' },
+  { id: '4', name: 'Arcas', accent: 'Filipino - Friendly', provider_voice_id: 'arcas', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-arcas-en.mp3' },
   { id: '5', name: 'Agathe', accent: 'French - Elegant', provider_voice_id: 'agathe', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-agathe-fr.mp3' },
   { id: '6', name: 'Orion', accent: 'US - Calm', provider_voice_id: 'orion', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-orion-en.mp3' },
 ];
@@ -124,10 +122,6 @@ function AiReceptionistVisual() {
             <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-0 group-hover:opacity-100" />
           </button>
         ))}
-      </div>
-
-      <div className="mt-12 w-full flex justify-center">
-        <VoiceInput className="bg-white/50 backdrop-blur-sm border-slate-200 shadow-lg px-6 py-3 rounded-2xl" />
       </div>
     </div>
   );
