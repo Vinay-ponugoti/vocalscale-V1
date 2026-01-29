@@ -50,8 +50,8 @@ const BusinessSetupContent = () => {
         {/* Top Header - Fixed Height */}
         <div className="flex-none px-4 md:px-8 py-5 border-b border-slate-200 bg-white flex items-center justify-between z-10 shrink-0">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900">AI Configuration</h1>
-            <p className="hidden md:block text-sm text-slate-500 mt-1">Optimize your AI Receptionist's identity, availability, and knowledge base.</p>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900">Business Setup</h1>
+            <p className="hidden md:block text-sm text-slate-500 mt-1">Configure your AI agent's core parameters.</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-2 text-sm font-medium mr-4">
@@ -137,8 +137,8 @@ const BusinessSetupContent = () => {
                 {activeSection === 'identity' && (
                   <div className="space-y-6">
                     <div className="mb-6 md:mb-8">
-                      <h2 className="text-2xl font-bold text-slate-900">Brand Identity</h2>
-                      <p className="text-slate-500 mt-1">Establish your AI Receptionist's professional persona and contact details.</p>
+                      <h2 className="text-2xl font-bold text-slate-900">Business Identity</h2>
+                      <p className="text-slate-500 mt-1">Manage public-facing business details and branding.</p>
                     </div>
                     <BusinessDetails />
                   </div>
@@ -147,8 +147,8 @@ const BusinessSetupContent = () => {
                 {activeSection === 'availability' && (
                   <div className="space-y-6">
                     <div className="mb-6 md:mb-8">
-                      <h2 className="text-2xl font-bold text-slate-900">Smart Availability</h2>
-                      <p className="text-slate-500 mt-1">Configure automated call handling windows and 24/7 routing logic.</p>
+                      <h2 className="text-2xl font-bold text-slate-900">Availability Rules</h2>
+                      <p className="text-slate-500 mt-1">Set operating hours, breaks, and holiday schedules.</p>
                     </div>
                     <BusinessHoursSettings />
                   </div>
@@ -157,8 +157,8 @@ const BusinessSetupContent = () => {
                 {activeSection === 'services' && (
                   <div className="space-y-6">
                     <div className="mb-6 md:mb-8">
-                      <h2 className="text-2xl font-bold text-slate-900">Expert Knowledge Base</h2>
-                      <p className="text-slate-500 mt-1">Train your AI agent on your services, pricing, and business documentation.</p>
+                      <h2 className="text-2xl font-bold text-slate-900">Service Catalog</h2>
+                      <p className="text-slate-500 mt-1">Define services, pricing, and knowledge base items.</p>
                     </div>
                     <Services />
                   </div>

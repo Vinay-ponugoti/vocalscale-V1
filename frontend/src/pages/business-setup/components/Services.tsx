@@ -606,20 +606,7 @@ export const Services: React.FC = () => {
             </div>
           )}
         </AnimatePresence>
-      </ div >
-
-      {/* Final Step Tip */}
-      <div className="mt-8 p-5 bg-indigo-50 border border-indigo-100 rounded-xl flex gap-4 text-indigo-900">
-        <div className="p-2 bg-white rounded-lg text-indigo-600 shrink-0 shadow-sm border border-indigo-100">
-          <Brain size={20} />
-        </div>
-        <div>
-          <h4 className="text-sm font-bold text-indigo-900 mb-1">Final Step: Training Your AI Agent</h4>
-          <p className="text-xs leading-relaxed text-indigo-700/80">
-            By listing your services and uploading knowledge documents, you're training VocalScale to act as a subject matter expert. Once saved, your AI will be ready to handle bookings and FAQs with precision.
-          </p>
-        </div>
-      </div>
-    </ div >
+      </div >
+    </div >
   );
 };

@@ -643,9 +643,9 @@ export const BusinessDetails: React.FC = () => {
               <Zap size={20} />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-1">Next Step: AI Personality Calibration</h4>
+              <h4 className="text-sm font-bold text-white mb-1">Next Step</h4>
               <p className="text-xs leading-relaxed text-slate-400">
-                Your business identity helps VocalScale define a unique brand voice. In the next stages, you'll configure how your AI Receptionist interacts with customers using this data.
+                Customizing the AI personality and knowledge base happens in the upcoming configuration stages.
               </p>
             </div>
           </div>
