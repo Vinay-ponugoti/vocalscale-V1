@@ -77,8 +77,8 @@ class BillingAPI {
     return this.request('/subscription/usage');
   }
 
-  async getInvoices() {
-    return this.request('/billing/invoices');
+  async getInvoices(page = 1, size = 10) {
+    return this.request(`/billing/invoices?page=${page}&size=${size}`);
   }
 
   async getPaymentMethod() {
