@@ -73,6 +73,18 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
     };
   }
 
+  // Check local expiration first for immediate feedback
+  if (isSessionExpired(session)) {
+    console.warn('Session expired (local check). Clearing storage.');
+    storeSession(null);
+    return {
+      isValid: false,
+      session: null,
+      error: 'Session expired',
+      backendReachable: true
+    };
+  }
+
   // Backend validation - enforce backend dependency
   try {
     const controller = new AbortController();
