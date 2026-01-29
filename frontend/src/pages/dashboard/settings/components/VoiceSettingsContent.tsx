@@ -1,7 +1,9 @@
-import React from 'react';
-import { Globe } from 'lucide-react';
+import React, { useState } from 'react';
+import { Globe, Volume2, Loader2 } from 'lucide-react';
 import { Label, Textarea } from '../../components/SettingsComponents';
 import type { VoiceSettingsProps } from '../../../../types/settings';
+import { useVoicePreview } from '../../../../hooks/useVoicePreview';
+import { api } from '../../../../lib/api';
 
 // Internal Component: Custom Toggle Switch
 const CustomToggle: React.FC<{ active: boolean; onChange: () => void }> = ({ active, onChange }) => (
@@ -23,6 +25,27 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
   availableVoices,
   onChange,
 }) => {
+  const { isLoading, isPlaying, playVoice, stopVoice } = useVoicePreview();
+  const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+
+  const handleVoicePreview = async (voiceId: string, providerVoiceId: string | null, sampleUrl: string | null) => {
+    if (playingVoiceId === voiceId && isPlaying) {
+      stopVoice();
+      setPlayingVoiceId(null);
+    } else {
+      const urlToPlay = sampleUrl || (providerVoiceId ? api.getVoiceSampleUrl(providerVoiceId) : null);
+
+      if (!urlToPlay) {
+        console.warn('No sample source available for this voice');
+        return;
+      }
+
+      setPlayingVoiceId(voiceId);
+      await playVoice(urlToPlay);
+      setPlayingVoiceId(null);
+    }
+  };
+
   // Get ONLY active voices for currently selected language
   const languageVoices = availableVoices.filter(voice => {
     // Check if voice is enabled first
@@ -73,30 +96,68 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
           <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
             Voice Persona
           </Label>
-          <div className="relative group">
-            <select
-              className="w-full appearance-none bg-slate-50 border border-slate-100 text-slate-900 text-[13px] font-bold py-3 px-4 rounded-xl focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 focus:bg-white focus:outline-none transition-all cursor-pointer hover:border-slate-200 shadow-sm"
-              value={settings.voice_id}
-              onChange={(e) => {
-                const selectedVoice = languageVoices.find(v => v.id === e.target.value);
-                onChange({
-                  voice_id: e.target.value,
-                  model_name: selectedVoice?.name || ''
-                });
-              }}
-            >
-              <option value="" disabled>Select a persona</option>
-              {languageVoices.map(voice => (
-                <option key={voice.id} value={voice.id}>
-                  {voice.name} — {voice.gender} ({voice.accent})
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-indigo-500 transition-colors">
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
+          <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+            {languageVoices.map(voice => {
+              const isSelected = settings.voice_id === voice.id;
+              const isVoicePlaying = playingVoiceId === voice.id && isPlaying;
+              const isVoiceLoading = playingVoiceId === voice.id && isLoading;
+
+              return (
+                <div
+                  key={voice.id}
+                  className={`
+                    relative flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer group
+                    ${isSelected
+                      ? 'bg-indigo-50 border-indigo-200 shadow-sm'
+                      : 'bg-slate-50 border-slate-100 hover:border-indigo-200 hover:bg-white'
+                    }
+                  `}
+                  onClick={() => {
+                    onChange({
+                      voice_id: voice.id,
+                      model_name: voice.name || ''
+                    });
+                  }}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[13px] font-bold ${isSelected ? 'text-indigo-900' : 'text-slate-900'}`}>
+                        {voice.name}
+                      </span>
+                      {isSelected && (
+                        <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+                      )}
+                    </div>
+                    <span className="text-[11px] font-medium text-slate-500">
+                      {voice.gender} • {voice.accent}
+                    </span>
+                  </div>
+
+                  {/* Preview Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleVoicePreview(voice.id, voice.provider_voice_id || null, voice.sample_audio_url || null);
+                    }}
+                    className={`
+                      flex items-center justify-center w-8 h-8 rounded-lg transition-all
+                      ${isVoicePlaying
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                        : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50'
+                      }
+                    `}
+                    disabled={isVoiceLoading}
+                  >
+                    {isVoiceLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Volume2 className={`w-4 h-4 ${isVoicePlaying ? 'animate-pulse' : ''}`} />
+                    )}
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
 

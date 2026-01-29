@@ -6,7 +6,7 @@ const API_BASE = env.API_URL;
 
 export async function getAuthHeader(): Promise<Record<string, string>> {
   const token = getAuthToken();
-  
+
   // Debug: Log token retrieval
   console.log(`DEBUG: getAuthHeader - token exists: ${!!token}, token length: ${token?.length || 0}`);
 
@@ -93,8 +93,8 @@ export const api = {
     }, 120000);
 
     if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Upload failed');
+      const errorText = await response.text();
+      throw new Error(errorText || 'Upload failed');
     }
     return response.json(); // { url: string }
   },
@@ -111,8 +111,8 @@ export const api = {
     }, 30000);
 
     if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Processing failed');
+      const errorText = await response.text();
+      throw new Error(errorText || 'Processing failed');
     }
     return response.json(); // { audio_url: string | null, clone_id: string, status: string }
   },
@@ -182,6 +182,13 @@ export const api = {
     }, 15000);
     if (!response.ok) throw new Error('Failed to fetch voices');
     return response.json(); // { data: Voice[], count: number }
+  },
+
+  getVoiceSampleUrl(voiceId: string, text?: string) {
+    const params = new URLSearchParams();
+    if (text) params.append('text', text);
+    const queryString = params.toString();
+    return `${API_BASE}/voices/samples/${voiceId}${queryString ? `?${queryString}` : ''}`;
   },
 
   async getVoiceSettings() {
