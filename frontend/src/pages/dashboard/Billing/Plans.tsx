@@ -118,14 +118,16 @@ const Plans: React.FC = () => {
         }
       });
 
-      return Object.values(groupedPlans).map(plan => ({
-        ...plan,
-        cta: plan.current ? 'Current Plan' : (plan.name === 'Elite' ? 'Contact Sales' : `Upgrade to ${plan.name}`),
-        stripe_price_id: isAnnual ? (plan.annualPriceId || plan.monthlyPriceId) : (plan.monthlyPriceId || plan.annualPriceId),
-        monthlyPrice: plan.monthlyPrice || plan.annualPrice * 1.2,
-        annualPrice: plan.annualPrice || plan.monthlyPrice * 0.8,
-        contactUs: plan.name === 'Elite'
-      }));
+      return Object.values(groupedPlans)
+        .filter(plan => plan.name !== 'Elite')
+        .map(plan => ({
+          ...plan,
+          cta: plan.current ? 'Current Plan' : `Upgrade to ${plan.name}`,
+          stripe_price_id: isAnnual ? (plan.annualPriceId || plan.monthlyPriceId) : (plan.monthlyPriceId || plan.annualPriceId),
+          monthlyPrice: plan.monthlyPrice || plan.annualPrice * 1.2,
+          annualPrice: plan.annualPrice || plan.monthlyPrice * 0.8,
+          contactUs: false
+        }));
     }
 
     return [
@@ -134,7 +136,7 @@ const Plans: React.FC = () => {
         description: 'Perfect for ambitious solo pros. Automated 24/7 AI Receptionist.',
         monthlyPrice: 69,
         originalMonthlyPrice: 99,
-        annualPrice: 59, // Assuming annual discount around 20% ~ 55, setting to 59
+        annualPrice: 59,
         features: [
           '300 AI minutes included',
           'Extra minutes: $0.094/min',
@@ -147,7 +149,8 @@ const Plans: React.FC = () => {
         cta: 'Upgrade to Starter',
         current: false,
         icon: Zap,
-        psychology: 'Essential',
+        popular: false,
+        color: 'blue',
         stripe_price_id: 'price_starter',
         promoText: 'Grab Early! First 3 months same price if you subscribe now.'
       },
@@ -156,7 +159,7 @@ const Plans: React.FC = () => {
         description: 'Powerhouse for growing teams. Auto-schedule appointments & scale.',
         monthlyPrice: 118,
         originalMonthlyPrice: 169,
-        annualPrice: 99, // Assuming ~$100 annual
+        annualPrice: 99,
         features: [
           '1000 AI minutes included',
           'Extra minutes: $0.094/min',
@@ -171,31 +174,10 @@ const Plans: React.FC = () => {
         cta: 'Upgrade to Professional',
         current: false,
         icon: Star,
-        psychology: 'Most Popular',
+        popular: true,
+        color: 'indigo',
         stripe_price_id: 'price_pro',
         promoText: 'Grab Early! First 3 months same price if you subscribe now.'
-      },
-      {
-        name: 'Elite',
-        description: 'Maximum power for high-volume businesses and agencies.',
-        monthlyPrice: 0, // Contact Us
-        annualPrice: 0,
-        features: [
-          'Custom AI minutes',
-          'Dedicated account manager',
-          'Custom voice cloning',
-          'API access & webhooks',
-          'White-label options',
-          'Unlimited phone numbers',
-          'Advanced analytics dashboard',
-          'Custom CRM development'
-        ],
-        cta: 'Contact Sales',
-        current: false,
-        icon: Crown,
-        psychology: 'Ultimate',
-        stripe_price_id: 'price_elite',
-        contactUs: true
       }
     ];
   };
@@ -345,24 +327,23 @@ const Plans: React.FC = () => {
                     </div>
 
                     <div className="mb-8">
-                      <div className="flex items-baseline gap-2">
-                        {!plan.contactUs && plan.originalMonthlyPrice > 0 && !isAnnual && (
-                          <span className="text-lg font-bold text-slate-400 line-through decoration-slate-400/50 decoration-2">
-                            ${plan.originalMonthlyPrice}
-                          </span>
+                      <div className="flex flex-col gap-1">
+                        {!isAnnual && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-slate-400 line-through decoration-slate-400/50 decoration-2">
+                              ${plan.originalMonthlyPrice}
+                            </span>
+                            <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase rounded border border-emerald-200">
+                              30% OFF
+                            </span>
+                          </div>
                         )}
                         <div className="flex items-baseline gap-1">
-                          {plan.contactUs ? (
-                            <span className="text-4xl font-black tracking-tighter text-slate-900">Custom</span>
-                          ) : (
-                            <>
-                              <span className="text-4xl font-black tracking-tighter text-slate-900">$</span>
-                              <span className="text-5xl font-black tracking-tighter text-slate-900">
-                                {Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
-                              </span>
-                              <span className="text-slate-500 font-bold ml-1 text-sm">/mo</span>
-                            </>
-                          )}
+                          <span className="text-4xl font-black text-charcoal tracking-tighter">$</span>
+                          <span className="text-5xl font-black text-charcoal tracking-tighter">
+                            {Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
+                          </span>
+                          <span className="text-slate-500 font-bold ml-1 text-sm">/mo</span>
                         </div>
                       </div>
 
