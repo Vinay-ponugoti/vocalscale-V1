@@ -91,12 +91,12 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
       {/* SECTION: Voice & Language */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 2xl:gap-10">
 
-        {/* Voice Persona */}
+        {/* Voice Persona - Grid Layout */}
         <div className="space-y-3">
           <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
             Voice Persona
           </Label>
-          <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+          <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
             {languageVoices.map(voice => {
               const isSelected = settings.voice_id === voice.id;
               const isVoicePlaying = playingVoiceId === voice.id && isPlaying;
@@ -106,7 +106,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                 <div
                   key={voice.id}
                   className={`
-                    relative flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer group
+                    relative flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer group
                     ${isSelected
                       ? 'bg-indigo-50 border-indigo-200 shadow-sm'
                       : 'bg-slate-50 border-slate-100 hover:border-indigo-200 hover:bg-white'
@@ -119,16 +119,16 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                     });
                   }}
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[13px] font-bold ${isSelected ? 'text-indigo-900' : 'text-slate-900'}`}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-[12px] font-bold truncate ${isSelected ? 'text-indigo-900' : 'text-slate-900'}`}>
                         {voice.name}
                       </span>
                       {isSelected && (
-                        <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse shrink-0" />
                       )}
                     </div>
-                    <span className="text-[11px] font-medium text-slate-500">
+                    <span className="text-[10px] font-medium text-slate-500 truncate block">
                       {voice.gender} • {voice.accent}
                     </span>
                   </div>
@@ -141,7 +141,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                       handleVoicePreview(voice.id, voice.provider_voice_id || null, voice.sample_audio_url || null);
                     }}
                     className={`
-                      flex items-center justify-center w-8 h-8 rounded-lg transition-all
+                      flex items-center justify-center w-7 h-7 rounded-lg transition-all shrink-0 ml-2
                       ${isVoicePlaying
                         ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
                         : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50'
@@ -150,9 +150,9 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                     disabled={isVoiceLoading}
                   >
                     {isVoiceLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
-                      <Volume2 className={`w-4 h-4 ${isVoicePlaying ? 'animate-pulse' : ''}`} />
+                      <Volume2 className={`w-3.5 h-3.5 ${isVoicePlaying ? 'animate-pulse' : ''}`} />
                     )}
                   </button>
                 </div>
