@@ -112,20 +112,32 @@ const Billing: React.FC = () => {
 
   // Derived Values for Top Bar
   const hasSubscription = subscription && subscription.status === 'active';
-  const plan = subscription?.plan || { name: 'NO ACTIVE PLAN', price_amount: 0, limits: { ai_minutes: 0 } };
+  const planName = subscription?.plan_name || subscription?.plan?.name || (subscription?.plan_id ? 'Starter' : 'NO ACTIVE PLAN');
+  const plan = subscription?.plan || { name: planName, price_amount: 0, limits: { ai_minutes: 0 } };
   const status = subscription?.status || 'inactive';
-  const cycleStart = hasSubscription && subscription?.current_period_start
-    ? format(new Date(subscription.current_period_start * 1000), 'MMM d')
-    : format(startOfMonth(new Date()), 'MMM d');
-  const cycleEnd = hasSubscription && subscription?.current_period_end
-    ? format(new Date(subscription.current_period_end * 1000), 'MMM d')
-    : format(endOfMonth(new Date()), 'MMM d');
 
-  const totalMinutes = hasSubscription ? (usage?.minutes_limit || plan.limits?.ai_minutes || 0) : 0;
-  const usedMinutes = hasSubscription ? (usage?.minutes_used || 0) : 0;
-  // const remainingMinutes = hasSubscription ? (usage?.remaining_minutes || 0) : 0;
+  // Helper to parse dates from various formats (Stripe unix seconds or RFC3339)
+  const parseBillingDate = (dateVal: any) => {
+    if (!dateVal) return null;
+    if (typeof dateVal === 'number') return new Date(dateVal * 1000);
+    try {
+      return new Date(dateVal);
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const periodStart = parseBillingDate(subscription?.current_period_start || subscription?.period_start);
+  const periodEnd = parseBillingDate(subscription?.current_period_end || subscription?.period_end || subscription?.next_billing || subscription?.trial_ends_at);
+
+  const cycleStart = periodStart ? format(periodStart, 'MMM d') : format(startOfMonth(new Date()), 'MMM d');
+  const cycleEnd = periodEnd ? format(periodEnd, 'MMM d') : format(endOfMonth(new Date()), 'MMM d');
+
+  // Usage Calculation: Should show data if usage object exists, even if subscription is "inactive" (e.g. trial or recently expired)
+  const totalMinutes = usage?.total_minutes || usage?.minutes_limit || plan.limits?.ai_minutes || 0;
+  const usedMinutes = usage?.used_minutes || usage?.minutes_used || 0;
   const remainingPercentage = totalMinutes > 0 ? Math.min(100, Math.max(0, Math.round(((totalMinutes - usedMinutes) / totalMinutes) * 100))) : 0;
-  const overageMinutes = Math.max(0, usedMinutes - totalMinutes);
+  const overageMinutes = Math.max(0, usedMinutes - (totalMinutes || 0));
 
   const mobileTabs = [
     { id: 'overview', label: 'Overview' },
@@ -178,7 +190,7 @@ const Billing: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-black text-slate-900">{plan.name}</span>
+                  <span className="text-sm font-black text-slate-900">{planName}</span>
                   {!hasSubscription && (
                     <Link to="/dashboard/billing/plans" className="text-[10px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-0.5 transition-colors">
                       Upgrade <ChevronRight size={10} />
