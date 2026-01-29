@@ -10,12 +10,14 @@ import { env } from '../config/env';
 interface AuthContextType {
   session: Session | null;
   user: User | null;
+  profile: any | null;
   loading: boolean;
   isSigningOut: boolean;
   securityMessage: string | null;
   signOut: () => Promise<void>;
   isConfigured: boolean;
   refreshSession: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
   validateSession: () => Promise<void>;
   setAuthSession: (session: Session) => void;
 }
@@ -23,12 +25,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
+  profile: null,
   loading: true,
   isSigningOut: false,
   securityMessage: null,
   signOut: async () => { },
   isConfigured: true,
   refreshSession: async () => { },
+  refreshProfile: async () => { },
   validateSession: async () => { },
   setAuthSession: () => { }
 });
@@ -36,10 +40,41 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [securityMessage, setSecurityMessage] = useState<string | null>(null);
   const mounted = useRef(true);
+  const sessionRef = useRef<Session | null>(null);
+
+  // Sync sessionRef with session state
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+
+  const refreshProfile = useCallback(async () => {
+    const currentSession = sessionRef.current;
+    if (!currentSession?.access_token) return;
+
+    try {
+      const response = await fetch(`${env.API_URL}/profile`, {
+        headers: {
+          'Authorization': `Bearer ${currentSession.access_token}`,
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (mounted.current) {
+          setProfile(data);
+          console.log("✅ Profile refreshed:", data.full_name);
+        }
+      }
+    } catch (err) {
+      console.error("Error refreshing profile:", err);
+    }
+  }, []);
 
   const refreshSession = useCallback(async () => {
     setSecurityMessage("Refreshing security session...");
@@ -122,6 +157,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             // Sync tokens if this is a fresh login or session check
             syncGoogleTokens(validatedSession);
+
+            // Unified profile refresh for all users
+            refreshProfile();
 
             console.log("Auth initialized successfully");
           } else {
@@ -322,22 +360,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 avatar_url: newSession.user?.user_metadata?.avatar_url
               })
             });
-          } catch (e) { console.error("Background token sync failed", e); }
+            refreshProfile();
+          } catch (e) {
+            console.error("Background token sync failed", e);
+            refreshProfile();
+          }
         })();
+      } else {
+        refreshProfile();
       }
     }
-  }, []);
+  }, [refreshProfile]);
 
   return (
     <AuthContext.Provider value={{
       session,
       user,
+      profile,
       loading,
       isSigningOut,
       securityMessage,
       signOut,
       isConfigured: true,
       refreshSession,
+      refreshProfile,
       validateSession,
       setAuthSession
     }}>
