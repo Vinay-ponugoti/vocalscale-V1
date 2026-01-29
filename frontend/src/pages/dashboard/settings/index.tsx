@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Save, Volume2, Bell, AlertTriangle, CheckCircle, ChevronRight, Zap
+  Save, Volume2, Bell, AlertTriangle, CheckCircle, ChevronRight, Zap, Link2
 } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { api } from '../../../lib/api';
 import { BookingRequirementsContent } from './components/BookingRequirementsContent';
 import { VoiceSettingsContent } from './components/VoiceSettingsContent';
 import { NotificationSettingsContent } from './components/NotificationSettingsContent';
+import IntegrationsContent from './components/IntegrationsContent';
 import type { NotificationSettings, Voice, VoiceSettings } from '../../../types/settings';
 
 const Settings = () => {
@@ -188,6 +189,7 @@ const Settings = () => {
     { id: 'voice', label: 'AI Voice', icon: Volume2, description: 'Sound & Persona' },
     { id: 'booking', label: 'Booking', icon: Zap, description: 'Rules & Requirements' },
     { id: 'notifications', label: 'Alerts', icon: Bell, description: 'System Notifications' },
+    { id: 'integrations', label: 'Integrations', icon: Link2, description: 'Connected Apps' },
   ];
 
   return (
@@ -353,6 +355,18 @@ const Settings = () => {
                         settings={notifications}
                         onChange={handleNotificationChange}
                       />
+                    </div>
+                  </div>
+                )}
+
+                {activeSection === 'integrations' && (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-xl font-black text-slate-900 tracking-tight">Integrations</h2>
+                      <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-1">Connected Apps & Services</p>
+                    </div>
+                    <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
+                      <IntegrationsContent />
                     </div>
                   </div>
                 )}
