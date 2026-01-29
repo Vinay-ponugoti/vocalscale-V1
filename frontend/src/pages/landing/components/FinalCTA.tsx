@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowRight, Sparkles, Send, CheckCircle2, Loader2, Mail, MessageSquare } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
@@ -115,10 +116,10 @@ export function FinalCTA() {
                     size="lg"
                     className="w-full sm:w-auto h-14 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-base shadow-xl shadow-blue-600/20 active:scale-95 transition-all"
                   >
-                    <a href="/signup" className="flex items-center gap-2">
+                    <Link to="/signup" className="flex items-center gap-2">
                       Get Started Now
                       <ArrowRight className="h-5 w-5" />
-                    </a>
+                    </Link>
                   </Button>
 
                   <Button

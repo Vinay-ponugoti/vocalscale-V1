@@ -164,8 +164,8 @@ export function Features() {
     },
     {
       icon: ShieldCheck,
-      title: 'Bank-Level Security',
-      description: 'Protected with SOC 2 certified encryption.',
+      title: 'PCI DSS Compliance',
+      description: 'Enterprise-grade security with end-to-end encryption for every interaction.',
       className: 'md:col-span-4 md:row-span-2 bg-gradient-to-bl from-emerald-50/50 via-white/50 to-white/50',
       iconBg: 'bg-emerald-100',
       iconColor: 'text-emerald-600',
