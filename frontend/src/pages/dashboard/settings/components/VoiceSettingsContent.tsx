@@ -27,7 +27,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 }) => {
   const { isLoading, isPlaying, playVoice, stopVoice } = useVoicePreview();
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
-  const [genderFilter, setGenderFilter] = useState<'all' | 'male' | 'female'>('all');
+  const [genderFilter, setGenderFilter] = useState<'all' | 'Masculine' | 'Feminine'>('all');
 
   const handleVoicePreview = async (voiceId: string, providerVoiceId: string | null, sampleUrl: string | null) => {
     if (playingVoiceId === voiceId && isPlaying) {
@@ -54,6 +54,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
   const [isFiltering, setIsFiltering] = useState(false);
 
   // Sync prop changes to state (e.g. initial load)
+  // Ensure we map any legacy "male"/"female" values if they come from props, though props come from DB which relies on schema.
   React.useEffect(() => {
     // Only reset if we haven't manually filtered yet, or if we want to ensure we have the latest list
     if (genderFilter === 'all') {
@@ -134,12 +135,12 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 shadow-sm shrink-0">
               {[
                 { label: 'All', value: 'all' },
-                { label: 'Masculine', value: 'male' },
-                { label: 'Feminine', value: 'female' }
+                { label: 'Masculine', value: 'Masculine' },
+                { label: 'Feminine', value: 'Feminine' }
               ].map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => setGenderFilter(option.value as 'all' | 'male' | 'female')}
+                  onClick={() => setGenderFilter(option.value as 'all' | 'Masculine' | 'Feminine')}
                   className={`
                     px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider transition-all
                     ${genderFilter === option.value
