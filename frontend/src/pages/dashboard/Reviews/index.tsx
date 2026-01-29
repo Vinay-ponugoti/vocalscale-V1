@@ -18,8 +18,6 @@ const Reviews = () => {
         <AISummary
           summary={summary.data}
           loading={summary.loading}
-          onRegenerate={summary.regenerate}
-          isRegenerating={summary.isRegenerating}
         />
 
         <RecentReviews
