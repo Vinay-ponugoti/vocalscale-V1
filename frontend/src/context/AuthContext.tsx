@@ -4,6 +4,7 @@ import {
   validateSession as validateSessionUtil,
   storeSession
 } from '../utils/sessionUtils';
+import { safeLocalStorage, safeSessionStorage } from '../utils/storageUtils';
 import { env } from '../config/env';
 
 interface AuthContextType {
@@ -233,11 +234,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(null);
         setUser(null);
 
-        // 2. Clear ALL localStorage (complete wipe for fresh login)
-        localStorage.clear();
+        // 2. Clear ALL localStorage safely
+        safeLocalStorage.clear();
 
-        // 3. Clear sessionStorage as well
-        sessionStorage.clear();
+        // 3. Clear sessionStorage safely
+        safeSessionStorage.clear();
 
         // 4. Clear React Query cache completely
         const queryClient = (window as any).__reactQueryClient;
@@ -252,8 +253,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Error signing out:', error);
       // Still clear data even on error
       if (mounted.current) {
-        localStorage.clear();
-        sessionStorage.clear();
+        safeLocalStorage.clear();
+        safeSessionStorage.clear();
         setSession(null);
         setUser(null);
       }

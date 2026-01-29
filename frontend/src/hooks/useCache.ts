@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { safeLocalStorage } from '../utils/storageUtils';
 
 interface CachedData<T> {
   data: T;
@@ -18,14 +19,14 @@ export const useLocalStorageCache = <T>({
 }: UseLocalStorageCacheOptions<T>) => {
   const [data, setData] = useState<T>(() => {
     try {
-      const cached = localStorage.getItem(key);
+      const cached = safeLocalStorage.getItem(key);
       if (cached) {
         const parsed: CachedData<T> = JSON.parse(cached);
         const now = Date.now();
         if (now - parsed.timestamp < ttl) {
           return parsed.data;
         }
-        localStorage.removeItem(key);
+        safeLocalStorage.removeItem(key);
       }
     } catch (error) {
       console.warn(`Error reading from localStorage during initialization (${key}):`, error);
@@ -38,14 +39,14 @@ export const useLocalStorageCache = <T>({
   if (key !== prevKey) {
     setPrevKey(key);
     try {
-      const cached = localStorage.getItem(key);
+      const cached = safeLocalStorage.getItem(key);
       if (cached) {
         const parsed: CachedData<T> = JSON.parse(cached);
         const now = Date.now();
         if (now - parsed.timestamp < ttl) {
           setData(parsed.data);
         } else {
-          localStorage.removeItem(key);
+          safeLocalStorage.removeItem(key);
           setData(defaultValue);
         }
       } else {
@@ -63,7 +64,7 @@ export const useLocalStorageCache = <T>({
           data: newData,
           timestamp: Date.now(),
         };
-        localStorage.setItem(key, JSON.stringify(cacheItem));
+        safeLocalStorage.setItem(key, JSON.stringify(cacheItem));
         setData(newData);
       } catch (error) {
         console.warn(`Error writing to localStorage (${key}):`, error);
@@ -74,14 +75,14 @@ export const useLocalStorageCache = <T>({
 
   const clearCache = useCallback(() => {
     try {
-      localStorage.removeItem(key);
+      safeLocalStorage.removeItem(key);
       setData(defaultValue);
     } catch (error) {
       console.warn(`Error clearing localStorage (${key}):`, error);
     }
   }, [key, defaultValue]);
 
-  return { data, updateCache, clearCache, isCached: !!localStorage.getItem(key) };
+  return { data, updateCache, clearCache, isCached: !!safeLocalStorage.getItem(key) };
 };
 
 export const useMemoryCache = <T>(ttl: number = 300000) => {

@@ -17,14 +17,23 @@ export const lazyImport = <T extends ComponentType<any>>(
             if (isDynamicImportError || isChunkLoadError) {
                 // Prevent infinite reload loops
                 const storageKey = `lazyImport_reload_${window.location.pathname}`;
-                const lastReload = sessionStorage.getItem(storageKey);
-                const now = Date.now();
 
-                // If we haven't reloaded for this path in the last 10 seconds, reload
-                if (!lastReload || now - parseInt(lastReload) > 10000) {
-                    sessionStorage.setItem(storageKey, now.toString());
+                try {
+                    const lastReload = sessionStorage.getItem(storageKey);
+                    const now = Date.now();
+
+                    // If we haven't reloaded for this path in the last 10 seconds, reload
+                    if (!lastReload || now - parseInt(lastReload) > 10000) {
+                        sessionStorage.setItem(storageKey, now.toString());
+                        window.location.reload();
+                        // Return a never-resolving promise to keep the suspense fallback shown while we reload
+                        return new Promise(() => { });
+                    }
+                } catch (e) {
+                    console.warn('sessionStorage access failed in lazyImport:', e);
+                    // If sessionStorage fails, we can't track reloads effectively, 
+                    // but we should still попытаться reload once to recover from chunk load errors.
                     window.location.reload();
-                    // Return a never-resolving promise to keep the suspense fallback shown while we reload
                     return new Promise(() => { });
                 }
             }

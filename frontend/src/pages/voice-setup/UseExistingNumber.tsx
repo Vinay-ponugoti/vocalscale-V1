@@ -82,9 +82,14 @@ const UseExistingNumber = () => {
   }, []);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText('*72 (555) 123-4567');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      navigator.clipboard.writeText('*72 (555) 123-4567');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      console.error('Failed to copy to clipboard:', e);
+      alert('Failed to copy code. Please copy it manually.');
+    }
   };
 
   const handleConfirm = async () => {
