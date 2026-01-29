@@ -6,6 +6,7 @@ import AuthLayout from '../layouts/AuthLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
 import { useQueryClient } from '@tanstack/react-query';
+import { isSessionExpired } from '../../utils/sessionUtils';
 import { env } from '../../config/env';
 import Button from '../../components/ui/Button';
 
@@ -16,7 +17,7 @@ const Login = () => {
   const { showToast } = useToast();
 
   useEffect(() => {
-    if (session) {
+    if (session && !isSessionExpired(session)) {
       navigate('/dashboard', { replace: true });
     }
   }, [session, navigate]);
