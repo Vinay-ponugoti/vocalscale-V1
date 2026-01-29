@@ -175,9 +175,16 @@ export const api = {
 
   // --- Voice Settings API ---
 
-  async getVoices() {
+  async getVoices(filters?: { gender?: string; language?: string }) {
     const headers = await getAuthHeader();
-    const response = await fetchWithTimeout(`${API_BASE}/voices`, {
+    const params = new URLSearchParams();
+    if (filters?.gender && filters.gender !== 'all') params.append('gender', filters.gender);
+    if (filters?.language) params.append('language', filters.language);
+
+    const queryString = params.toString();
+    const url = `${API_BASE}/voices${queryString ? `?${queryString}` : ''}`;
+
+    const response = await fetchWithTimeout(url, {
       headers,
     }, 15000);
     if (!response.ok) throw new Error('Failed to fetch voices');
