@@ -24,6 +24,7 @@ const Signup = () => {
     phone: '',
     businessType: 'Restaurant',
   });
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const passwordStrength = useMemo(() => {
     const p = formData.password;
@@ -195,10 +196,34 @@ const Signup = () => {
             </div>
           </div>
 
+          {/* Terms Agreement */}
+          <div className="flex items-start gap-3 px-1 mt-4">
+            <div className="relative flex items-center h-5">
+              <input
+                id="terms"
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="w-5 h-5 rounded border-slate-200 bg-slate-50 text-slate-900 focus:ring-slate-900 transition-all cursor-pointer accent-slate-900"
+              />
+            </div>
+            <label htmlFor="terms" className="text-xs font-medium text-slate-500 leading-relaxed cursor-pointer select-none">
+              I agree to the{' '}
+              <Link to="/terms" className="text-slate-900 font-bold hover:underline underline-offset-4">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy" className="text-slate-900 font-bold hover:underline underline-offset-4">
+                Privacy Policy
+              </Link>
+            </label>
+          </div>
+
           <Button
             type="submit"
             isLoading={loading}
-            className="w-full h-14 bg-[#1e293b] hover:bg-[#020617] text-white rounded-[1rem] font-bold text-[16px] shadow-lg shadow-slate-950/20 active:scale-[0.98] transition-all mt-6"
+            disabled={!agreedToTerms || loading}
+            className="w-full h-14 bg-[#1e293b] hover:bg-[#020617] text-white rounded-[1rem] font-bold text-[16px] shadow-lg shadow-slate-950/20 active:scale-[0.98] transition-all mt-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale disabled:scale-100"
           >
             Get Started
           </Button>
