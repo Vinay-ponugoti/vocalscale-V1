@@ -83,7 +83,15 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
                   <Timer size={16} />
                 </div>
                 <div>
-                  <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest mb-1">Avg Duration</p>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest">Avg Duration</p>
+                    <div
+                      title="The average duration of all calls in this period."
+                      className="cursor-help text-slate-400 hover:text-indigo-600 transition-colors"
+                    >
+                      <AlertCircle size={10} />
+                    </div>
+                  </div>
                   <p className="text-lg font-black text-charcoal tracking-tight">{avgDurationFormatted}</p>
                 </div>
               </CardContent>
@@ -95,7 +103,15 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
                   <CheckCircle2 size={16} />
                 </div>
                 <div>
-                  <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest mb-1">Success Rate</p>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest">Success Rate</p>
+                    <div
+                      title="Percentage of completed calls vs total call attempts in this billing period."
+                      className="cursor-help text-slate-400 hover:text-indigo-600 transition-colors"
+                    >
+                      <AlertCircle size={10} />
+                    </div>
+                  </div>
                   <p className="text-lg font-black text-charcoal tracking-tight">{usage?.success_rate || 100}%</p>
                 </div>
               </CardContent>
@@ -107,7 +123,15 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
                   <Timer size={16} />
                 </div>
                 <div>
-                  <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest mb-1">Overage</p>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest">Overage</p>
+                    <div
+                      title="Minutes used beyond your plan limit. Overage is billed separately."
+                      className="cursor-help text-slate-400 hover:text-indigo-600 transition-colors"
+                    >
+                      <AlertCircle size={10} />
+                    </div>
+                  </div>
                   <p className="text-lg font-black text-charcoal tracking-tight">
                     {usage?.overage_minutes > 0 ? `${parseFloat(usage.overage_minutes).toFixed(1)}m` : '0m'}
                   </p>
