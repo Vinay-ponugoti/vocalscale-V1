@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useSpring, useTransform, animate } from 'framer-motion';
 import { PhoneMissed, Zap, ArrowUpRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export const ROILiveTicker = () => {
     const navigate = useNavigate();
@@ -86,15 +86,19 @@ export const ROILiveTicker = () => {
                             INSTANTLY.
                         </p>
 
-                        <motion.button
+                        <motion.div
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            onClick={() => navigate('/signup')}
-                            className="mt-8 px-8 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-3 mx-auto shadow-lg shadow-slate-900/20 hover:shadow-slate-900/40 transition-all hover:bg-slate-800"
+                            className="inline-block"
                         >
-                            Start Saving Revenue
-                            <Zap size={18} fill="currentColor" />
-                        </motion.button>
+                            <Link
+                                to="/signup"
+                                className="mt-8 px-8 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-3 mx-auto shadow-lg shadow-slate-900/20 hover:shadow-slate-900/40 transition-all hover:bg-slate-800"
+                            >
+                                Start Saving Revenue
+                                <Zap size={18} fill="currentColor" />
+                            </Link>
+                        </motion.div>
                     </motion.div>
 
                     {/* Proof Stat */}
