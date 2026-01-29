@@ -9,12 +9,10 @@ export function Footer() {
       { label: 'Use Cases', href: '#' }
     ],
     Company: [
-      { label: 'About Us', href: '#' },
+      { label: 'About Us', href: '/terms' },
       { label: 'Blog', href: '#' },
-      { label: 'Contact', href: '#' }
     ],
     Support: [
-      { label: 'Security', href: '#' },
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms', href: '/terms' }
     ]

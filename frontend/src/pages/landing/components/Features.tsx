@@ -132,7 +132,7 @@ export function Features() {
     {
       icon: BrainCircuit,
       title: 'AI Receptionist',
-      description: 'Natural, human-like conversations that handle inquiries and route calls intelligently—available 24/7.',
+      description: 'Human-like conversations powered by Deepgram Aura-2, featuring 40+ high-fidelity, ultra-low latency voices for a natural 24/7 receptionist experience.',
       className: 'md:col-span-8 md:row-span-2 bg-gradient-to-br from-blue-50/50 via-white/50 to-white/50',
       iconBg: 'bg-blue-100',
       iconColor: 'text-blue-600',
