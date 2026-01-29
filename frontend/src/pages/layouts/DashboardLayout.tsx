@@ -58,14 +58,7 @@ interface DashboardLayoutProps {
   secondaryNav?: React.ReactNode;
 }
 
-interface BusinessProfile {
-  id: string;
-  business_name: string;
-  business_type?: string;
-  phone_number?: string;
-  full_name?: string;
-  avatar_url?: string;
-}
+// --- UI COMPONENTS ---
 
 // --- UI COMPONENTS ---
 
@@ -124,7 +117,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { notifications, unreadCount, dismissNotification } = useNotifications();
   const { searchQuery, setSearchQuery, setIsSearchFocused, clearSearch } = useSearch();
 
@@ -180,45 +173,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     };
   }, [mobileMenuOpen]);
 
-  const { data: businessProfile } = useQuery<BusinessProfile | null>({
-    queryKey: ['business-profile', user?.id],
-    queryFn: async ({ signal }) => {
-      if (!user?.id) return null;
-
-      try {
-        const headers = await getAuthHeader();
-        const response = await fetch(`${env.API_URL}/profile`, {
-          headers,
-          signal,
-        });
-
-        if (!response.ok) {
-          console.error('Profile fetch failed:', response.status, response.statusText);
-          throw new Error(`API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Profile Data Fetched:', data);
-
-        if (!data) return null;
-
-        return {
-          id: user.id,
-          business_name: data.business_name,
-          business_type: data.business_type,
-          phone_number: data.contact_phone || data.phone,
-          full_name: data.full_name,
-          avatar_url: data.avatar_url
-        };
-      } catch (err) {
-        console.error('Error fetching business profile:', err);
-        return null;
-      }
-    },
-    enabled: !!user?.id,
-    staleTime: 1000 * 60 * 5, // Reduced stale time for debugging
-    retry: 1,
-  });
 
   const { data: subscription, isLoading: isLoadingSubscription } = useQuery({
     queryKey: ['subscription', user?.id],
@@ -236,10 +190,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const userEmail = user?.email || '';
   // Split display logic:
   // 1. Dashboard Header: Priorities Business Name -> "New Business"
-  const businessName = businessProfile?.business_name || 'New Business';
+  const businessName = profile?.business_name || 'New Business';
 
   // 2. Profile Dropdown: Priorities API Profile Name -> Session User Name -> Email -> "User"
-  const userFullName = businessProfile?.full_name || user?.full_name || user?.user_metadata?.full_name || userEmail;
+  const userFullName = profile?.full_name || user?.full_name || user?.user_metadata?.full_name || userEmail;
 
   const hasActiveSubscription = subscription && (subscription.status === 'active' || subscription.status === 'trialing');
 
@@ -551,7 +505,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   onSignOut={handleSignOut}
                   displayName={userFullName}
                   email={userEmail}
-                  avatarUrl={businessProfile?.avatar_url || user?.avatar_url}
+                  avatarUrl={profile?.avatar_url || user?.avatar_url}
                 />
               </div>
             </div>
