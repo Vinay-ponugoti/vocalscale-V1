@@ -229,9 +229,9 @@ export const BusinessHoursSettings: React.FC = () => {
           <Clock size={18} className="text-indigo-600" />
         </div>
         <div>
-          <p className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900 mb-0.5">Off-Hours Protocol</p>
+          <p className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900 mb-0.5">Next Step: 24/7 Availability Logic</p>
           <p className="text-sm text-slate-500 leading-relaxed">
-            When calls arrive outside active windows, the AI will automatically switch to voicemail mode or route to emergency contacts based on your priority handling settings.
+            Defined operating hours enable VocalScale to handle after-hours inquiries with intelligent routing, ensuring your AI Answering Service never misses a lead, even while you sleep.
           </p>
         </div>
       </div>
