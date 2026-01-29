@@ -47,9 +47,9 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                     displayName.charAt(0).toUpperCase()
                   )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-slate-900 truncate">{displayName}</p>
-                  <p className="text-xs font-medium text-slate-500 truncate">{email}</p>
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  <p className="font-bold text-sm text-slate-900 truncate leading-tight mb-0.5">{displayName}</p>
+                  <p className="text-xs font-medium text-slate-500 truncate leading-tight">{email}</p>
                 </div>
               </div>
             </div>
