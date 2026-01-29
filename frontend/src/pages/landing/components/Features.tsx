@@ -13,36 +13,18 @@ interface Voice {
   accent: string;
 }
 
+const VOICES: Voice[] = [
+  { id: '1', name: 'Asteria', accent: 'US - Professional', provider_voice_id: 'asteria', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-asteria-en.mp3' },
+  { id: '2', name: 'Zeus', accent: 'US - Energetic', provider_voice_id: 'zeus', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-zeus-en.mp3' },
+  { id: '3', name: 'Janus', accent: 'UK - Sophisticated', provider_voice_id: 'janus', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-janus-en.mp3' },
+  { id: '4', name: 'Amalthea', accent: 'Filipino - Friendly', provider_voice_id: 'amalthea', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-amalthea-en.mp3' },
+  { id: '5', name: 'Agathe', accent: 'French - Elegant', provider_voice_id: 'agathe', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-agathe-fr.mp3' },
+  { id: '6', name: 'Orion', accent: 'US - Calm', provider_voice_id: 'orion', sample_audio_url: 'https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/aura-2-orion-en.mp3' },
+];
+
 function AiReceptionistVisual() {
-  const [voices, setVoices] = useState<Voice[]>([]);
   const [playingId, setPlayingId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    async function fetchVoices() {
-      try {
-        const response = await api.getVoices();
-        // Filter to get some diversity or specific ones
-        const allVoices = response.data || [];
-        const featured = allVoices.filter((v: any) =>
-          ['Asteria', 'Zeus', 'Orion', 'Agathe'].includes(v.name)
-        ).slice(0, 3);
-
-        // If not enough specific ones, just take the first 3
-        if (featured.length < 3) {
-          setVoices(allVoices.slice(0, 3));
-        } else {
-          setVoices(featured);
-        }
-      } catch (error) {
-        console.error('Error fetching voices for landing page:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchVoices();
-  }, []);
 
   const handleTogglePlay = (voice: Voice) => {
     if (playingId === voice.id) {
@@ -54,68 +36,98 @@ function AiReceptionistVisual() {
         audioRef.current.onended = () => setPlayingId(null);
       }
       audioRef.current.src = voice.sample_audio_url;
-      audioRef.current.play();
+      audioRef.current.play().catch(e => console.error("Playback failed:", e));
       setPlayingId(voice.id);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full min-h-[220px]">
-      <div className="flex items-center gap-8 mb-8">
-        {/* Big Icon */}
-        <div className="relative">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200 flex items-center justify-center shadow-xl shadow-blue-500/10">
-            <User className="w-12 h-12 text-blue-600" strokeWidth={1.5} />
+    <div className="relative w-full py-8 md:py-12 flex flex-col items-center">
+      {/* Central AI Core */}
+      <div className="relative mb-10 md:mb-14">
+        <div className={cn(
+          "w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center transition-all duration-1000 bg-white border border-slate-200 shadow-xl",
+          playingId && "animate-glow-pulse"
+        )}>
+          <div className={cn(
+            "w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-all duration-700",
+            playingId
+              ? "bg-blue-600 text-white shadow-2xl shadow-blue-500/40"
+              : "bg-gradient-to-br from-blue-50 to-white text-blue-600 shadow-inner"
+          )}>
+            <BrainCircuit className={cn("w-10 h-10 md:w-12 md:h-12 transition-transform duration-700", playingId && "scale-110")} strokeWidth={1.5} />
           </div>
-          {/* Status dot */}
-          <div className="absolute top-1 right-1 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full shadow-sm" />
         </div>
 
-        {/* Voice Selection */}
-        <div className="flex flex-col gap-2.5 min-w-[140px]">
-          {isLoading ? (
-            [1, 2, 3].map((i) => (
-              <div key={i} className="h-8 w-32 bg-slate-100 animate-pulse rounded-full" />
-            ))
-          ) : voices.length > 0 ? (
-            voices.map((voice) => (
-              <div
-                key={voice.id}
-                onClick={() => handleTogglePlay(voice)}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold cursor-pointer transition-all hover:scale-105 shadow-sm group/voice",
-                  playingId === voice.id
-                    ? "bg-blue-600 border-blue-600 text-white shadow-blue-500/30"
-                    : "bg-white border-slate-200 text-slate-500 hover:border-blue-200 hover:text-blue-600"
-                )}
-              >
-                {playingId === voice.id ? (
-                  <div className="flex gap-0.5 items-center mr-0.5">
-                    {[1, 2, 3].map((bar) => (
-                      <div
-                        key={bar}
-                        className="w-0.5 bg-white rounded-full animate-wave"
-                        style={{
-                          height: '8px',
-                          animationDelay: `${bar * 0.1}s`
-                        }}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <Play className="w-3 h-3 group-hover/voice:text-blue-600 transition-colors" fill="currentColor" />
-                )}
-                {voice.name} ({voice.accent})
-              </div>
-            ))
-          ) : (
-            <div className="text-slate-400 text-xs italic">Voices loading...</div>
-          )}
-        </div>
+        {/* Orbiting Elements */}
+        {playingId && (
+          <>
+            <div className="absolute inset-0 -m-4 border border-blue-200/50 rounded-full animate-spin [animation-duration:8s] opacity-60" />
+            <div className="absolute inset-0 -m-8 border border-blue-100/30 rounded-full animate-spin [animation-duration:12s] [animation-direction:reverse] opacity-40" />
+          </>
+        )}
       </div>
 
-      <div>
-        <VoiceInput />
+      {/* Premium Visualizer */}
+      <div className="h-20 flex items-center justify-center gap-[3px] mb-12 px-6 w-full max-w-[380px]">
+        {Array.from({ length: 32 }).map((_, i) => (
+          <div
+            key={i}
+            className={cn(
+              "w-1 rounded-full transition-all duration-300",
+              playingId
+                ? "bg-blue-600 animate-sound-bar-alt"
+                : "h-1.5 bg-slate-200 opacity-50"
+            )}
+            style={{
+              animationDelay: `${i * 0.05}s`,
+              animationDuration: `${0.6 + Math.random() * 0.8}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Premium Voice Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-2xl">
+        {VOICES.map((voice) => (
+          <button
+            key={voice.id}
+            onClick={() => handleTogglePlay(voice)}
+            className={cn(
+              "relative px-4 py-4 rounded-3xl border transition-all duration-500 flex flex-col items-start gap-1 text-left group overflow-hidden",
+              playingId === voice.id
+                ? "bg-blue-600 border-blue-500 text-white shadow-2xl shadow-blue-500/30 -translate-y-1 scale-[1.02]"
+                : "bg-white/80 backdrop-blur-sm border-slate-200 text-slate-900 hover:border-blue-400 hover:bg-white hover:shadow-xl hover:-translate-y-1 active:scale-95 shadow-sm"
+            )}
+          >
+            <div className="flex items-center gap-2.5 w-full relative z-10">
+              <div className={cn(
+                "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300",
+                playingId === voice.id
+                  ? "bg-white text-blue-600"
+                  : "bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white"
+              )}>
+                {playingId === voice.id ? <Pause size={12} fill="currentColor" /> : <Play size={12} className="ml-0.5" fill="currentColor" />}
+              </div>
+              <span className="font-bold text-sm leading-none">{voice.name}</span>
+            </div>
+            <span className={cn(
+              "text-[10px] font-black uppercase tracking-[0.15em] relative z-10",
+              playingId === voice.id ? "text-blue-100" : "text-slate-500 group-hover:text-blue-600"
+            )}>
+              {voice.accent}
+            </span>
+
+            {/* Hover visual effects */}
+            <div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-[0.03] transition-opacity" />
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-blue-600 opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0 duration-500" />
+            <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-0 group-hover:opacity-100" />
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-12 w-full flex justify-center">
+        <VoiceInput className="bg-white/50 backdrop-blur-sm border-slate-200 shadow-lg px-6 py-3 rounded-2xl" />
       </div>
     </div>
   );
