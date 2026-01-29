@@ -227,13 +227,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // 2. Proactive check on window focus or visibility change
     const handleFocus = () => {
       console.log('Window focused - re-validating security context');
-      checkSession(true);
+      // Use standard debounce (false) to prevent 429 spam on rapid switching
+      checkSession(false);
     };
 
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         console.log('Tab visible - re-validating security context');
-        checkSession(true);
+        // Use standard debounce (false) to prevent 429 spam
+        checkSession(false);
       }
     };
 
