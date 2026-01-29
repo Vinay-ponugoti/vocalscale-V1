@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Zap, Star, Sparkles, ArrowRight, Crown } from 'lucide-react';
+import { Check, Zap, Star, Sparkles, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
@@ -23,7 +23,7 @@ export function Pricing() {
         'Call history & transcripts',
         '1 Local phone number'
       ],
-      cta: 'Start 14-day free trial',
+      cta: 'Get Started Now',
       popular: false,
       icon: Zap,
       color: 'blue'
@@ -45,32 +45,10 @@ export function Pricing() {
         'Sentiment analysis',
         'CRM integrations'
       ],
-      cta: 'Start 14-day free trial',
+      cta: 'Get Started Now',
       popular: true,
       icon: Star,
       color: 'indigo'
-    },
-    {
-      name: 'Elite',
-      description: 'Maximum power for high-volume businesses and agencies.',
-      monthlyPrice: 0,
-      annualPrice: 0,
-      originalPrice: 0,
-      features: [
-        'Custom AI minutes',
-        'Dedicated account manager',
-        'Custom voice cloning',
-        'API access & webhooks',
-        'White-label options',
-        'Unlimited phone numbers',
-        'Advanced analytics dashboard',
-        'Custom CRM development'
-      ],
-      cta: 'Contact Sales',
-      popular: false,
-      icon: Crown,
-      color: 'violet',
-      contactUs: true
     }
   ];
 
@@ -132,7 +110,7 @@ export function Pricing() {
           </motion.div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -169,24 +147,23 @@ export function Pricing() {
                 </div>
 
                 <div className="mb-8 md:mb-10">
-                  <div className="flex items-baseline gap-2">
-                    {!plan.contactUs && plan.originalPrice > 0 && (
-                      <span className="text-xl md:text-2xl font-bold text-slate-400 line-through decoration-slate-400/50 decoration-2">
-                        ${plan.originalPrice}
-                      </span>
+                  <div className="flex flex-col gap-1">
+                    {!isAnnual && plan.originalPrice > 0 && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl md:text-2xl font-bold text-slate-400 line-through decoration-slate-400/50 decoration-2">
+                          ${plan.originalPrice}
+                        </span>
+                        <span className="px-2 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase rounded border border-emerald-200">
+                          30% OFF
+                        </span>
+                      </div>
                     )}
                     <div className="flex items-baseline gap-1">
-                      {plan.contactUs ? (
-                        <span className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900">Custom</span>
-                      ) : (
-                        <>
-                          <span className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900">$</span>
-                          <span className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900">
-                            {isAnnual ? plan.annualPrice : plan.monthlyPrice}
-                          </span>
-                          <span className="text-slate-500 font-bold ml-1 text-base md:text-lg">/mo</span>
-                        </>
-                      )}
+                      <span className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900">$</span>
+                      <span className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900">
+                        {isAnnual ? plan.annualPrice : plan.monthlyPrice}
+                      </span>
+                      <span className="text-slate-500 font-bold ml-1 text-base md:text-lg">/mo</span>
                     </div>
                   </div>
                   {isAnnual && (
@@ -223,7 +200,7 @@ export function Pricing() {
                     plan.popular ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-slate-900 hover:bg-slate-800 text-white"
                   )}
                 >
-                  <a href={plan.contactUs ? "mailto:sales@vocalscale.com" : "/signup"}>{plan.cta}</a>
+                  <a href="/signup">{plan.cta}</a>
                 </Button>
               </div>
             </motion.div>
@@ -233,4 +210,3 @@ export function Pricing() {
     </section>
   );
 }
-
