@@ -8,6 +8,7 @@ import {
 } from '../../../../components/ui/Card';
 import { Badge } from '../../../../components/ui/Badge';
 import { Button } from '../../../../components/ui/Button';
+import { Progress } from '../../../../components/ui/Progress';
 import type { Review } from '../../../../types/review';
 
 interface RecentReviewsProps {
@@ -20,9 +21,13 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
     return (
       <div className="space-y-6">
         <div className="h-10 bg-slate-100 rounded-xl w-64 mb-4 animate-pulse"></div>
-        <div className="grid grid-cols-1 gap-6">
-          <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 space-y-4">
             {[1, 2, 3].map(i => <div key={i} className="h-48 bg-slate-50 rounded-2xl border border-slate-100 animate-pulse"></div>)}
+          </div>
+          <div className="lg:col-span-4 space-y-4">
+            <div className="h-64 bg-slate-50 rounded-2xl border border-slate-100 animate-pulse"></div>
+            <div className="h-48 bg-indigo-50 rounded-2xl border border-indigo-100 animate-pulse"></div>
           </div>
         </div>
       </div>
@@ -62,8 +67,8 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 2xl:gap-10">
-        <div className="space-y-4 2xl:space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 2xl:gap-10">
+        <div className="lg:col-span-8 2xl:col-span-9 space-y-4 2xl:space-y-6">
           {reviews.length === 0 ? (
             <Card className="border-dashed border-slate-200 bg-slate-50/50">
               <CardContent className="py-12 sm:py-20 flex flex-col items-center justify-center text-center">
@@ -154,6 +159,43 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        <div className="hidden lg:block lg:col-span-4">
+          <div className="sticky top-6 space-y-4">
+            <Card className="border-slate-100 shadow-sm overflow-hidden">
+              <CardHeader className="pb-6 border-b border-slate-50">
+                <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-[0.2em]">Live Sources</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-6">
+                {[
+                  { name: 'Google Business', icon: 'G', color: 'bg-blue-50 text-blue-600', status: 'Healthy' },
+                  { name: 'Yelp Reviews', icon: 'Y', color: 'bg-red-50 text-red-600', status: 'Active' },
+                  { name: 'TripAdvisor', icon: 'T', color: 'bg-emerald-50 text-emerald-600', status: 'Healthy' },
+                  { name: 'OpenTable', icon: 'O', color: 'bg-rose-50 text-rose-600', status: 'Active' }
+                ].map((source, i) => (
+                  <div key={i} className="flex items-center justify-between group cursor-pointer">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-xl ${source.color} flex items-center justify-center font-black text-xs shadow-sm group-hover:scale-110 transition-transform`}>
+                        {source.icon}
+                      </div>
+                      <div>
+                        <span className="text-sm font-bold text-slate-700 block group-hover:text-indigo-600 transition-colors">{source.name}</span>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{source.status}</span>
+                      </div>
+                    </div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]"></div>
+                  </div>
+                ))}
+
+                <Button variant="outline" className="w-full mt-4 border-dashed border-slate-200 rounded-xl text-[11px] font-bold text-slate-400 uppercase tracking-widest h-11 hover:bg-slate-50 hover:text-slate-600 transition-all">
+                  Connect New Source +
+                </Button>
+              </CardContent>
+            </Card>
+
+
+          </div>
         </div>
       </div>
     </div>
