@@ -83,8 +83,6 @@ const Plans: React.FC = () => {
   };
 
   const getDisplayPlans = () => {
-    const currentPlanId = subscription?.plans?.id;
-
     if (plansData.length > 0) {
       const groupedPlans: Record<string, any> = {};
 
@@ -112,14 +110,32 @@ const Plans: React.FC = () => {
           groupedPlans[plan.name].annualPriceId = plan.stripe_price_id;
         }
 
-        if (plan.id === currentPlanId) {
+        if (plan.id === subscription?.plan || plan.stripe_price_id === subscription?.stripe_price_id) {
           groupedPlans[plan.name].current = true;
           groupedPlans[plan.name].currentInterval = plan.interval;
         }
       });
 
+      const currentPlanName = subscription?.plan_name || '';
+
       return Object.values(groupedPlans)
-        .filter(plan => plan.name !== 'Elite')
+        .filter(plan => {
+          // Remove Elite always
+          if (plan.name === 'Elite') return false;
+
+          // If on Starter, only show Professional (as upgrade)
+          if (currentPlanName === 'Starter') {
+            return plan.name === 'Professional';
+          }
+
+          // If on Professional, show nothing (we'll handle empty state in render)
+          if (currentPlanName === 'Professional') {
+            return false;
+          }
+
+          // Otherwise (no subscription/trial), show both
+          return true;
+        })
         .map(plan => ({
           ...plan,
           cta: plan.current ? 'Current Plan' : `Upgrade to ${plan.name}`,
@@ -287,115 +303,136 @@ const Plans: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8 pt-4">
-              {plans.map((plan) => (
-                <div
-                  key={plan.name}
-                  className={cn(
-                    "group relative p-1 rounded-[2.5rem] transition-all duration-500",
-                    plan.popular ? "bg-gradient-to-b from-blue-200 to-indigo-200 shadow-2xl shadow-blue-200/50" : "bg-transparent border border-transparent",
-                    plan.current && "ring-2 ring-blue-600 ring-offset-4 ring-offset-white"
-                  )}
-                >
-                  <div className={cn(
-                    "relative bg-white rounded-[2.4rem] p-8 h-full flex flex-col border",
-                    plan.popular ? "border-white/50" : "border-slate-200 shadow-xl shadow-slate-200/50"
-                  )}>
-                    {plan.current && (
-                      <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg shadow-emerald-500/30">
-                        <Check size={12} strokeWidth={4} />
-                        Current Plan
-                      </div>
+            {plans.length > 0 ? (
+              <div className="grid lg:grid-cols-3 gap-8 pt-4">
+                {plans.map((plan) => (
+                  <div
+                    key={plan.name}
+                    className={cn(
+                      "group relative p-1 rounded-[2.5rem] transition-all duration-500",
+                      plan.popular ? "bg-gradient-to-b from-blue-200 to-indigo-200 shadow-2xl shadow-blue-200/50" : "bg-transparent border border-transparent",
+                      plan.current && "opacity-75" // Lock UI simple
                     )}
+                  >
+                    <div className={cn(
+                      "relative bg-white rounded-[2.4rem] p-8 h-full flex flex-col border",
+                      plan.popular ? "border-white/50" : "border-slate-200 shadow-xl shadow-slate-200/50"
+                    )}>
+                      {plan.current && (
+                        <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg">
+                          <Shield size={12} />
+                          Active Subscription
+                        </div>
+                      )}
 
-                    {!plan.current && plan.popular && (
-                      <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg shadow-blue-500/30">
-                        <Star className="w-3 h-3 fill-current" />
-                        Most Popular
+                      {!plan.current && plan.popular && (
+                        <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg shadow-blue-500/30">
+                          <Star className="w-3 h-3 fill-current" />
+                          Most Popular
+                        </div>
+                      )}
+
+                      <div className="mb-6">
+                        <div className={cn(
+                          "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 bg-white border border-slate-100 shadow-sm",
+                          plan.popular ? "text-blue-600" : "text-slate-400"
+                        )}>
+                          <plan.icon className="w-6 h-6" strokeWidth={1.5} />
+                        </div>
+                        <h3 className="text-2xl font-black tracking-tight text-slate-900 mb-2">{plan.name}</h3>
+                        <p className="text-slate-600 font-medium text-xs leading-relaxed">{plan.description}</p>
                       </div>
-                    )}
 
-                    <div className="mb-6">
-                      <div className={cn(
-                        "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-500 bg-white border border-slate-100 shadow-sm",
-                        plan.popular ? "text-blue-600" : "text-slate-400"
-                      )}>
-                        <plan.icon className="w-6 h-6" strokeWidth={1.5} />
-                      </div>
-                      <h3 className="text-2xl font-black tracking-tight text-slate-900 mb-2">{plan.name}</h3>
-                      <p className="text-slate-600 font-medium text-xs leading-relaxed">{plan.description}</p>
-                    </div>
-
-                    <div className="mb-8">
-                      <div className="flex flex-col gap-1">
-                        {!isAnnual && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-slate-400 line-through decoration-slate-400/50 decoration-2">
-                              ${plan.originalMonthlyPrice}
+                      <div className="mb-8">
+                        <div className="flex flex-col gap-1">
+                          {!isAnnual && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold text-slate-400 line-through decoration-slate-400/50 decoration-2">
+                                ${plan.originalMonthlyPrice}
+                              </span>
+                              <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase rounded border border-emerald-200">
+                                30% OFF
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-4xl font-black text-charcoal tracking-tighter">$</span>
+                            <span className="text-5xl font-black text-charcoal tracking-tighter">
+                              {Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
                             </span>
-                            <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase rounded border border-emerald-200">
-                              30% OFF
-                            </span>
+                            <span className="text-slate-500 font-bold ml-1 text-sm">/mo</span>
                           </div>
+                        </div>
+
+                        {isAnnual && !plan.contactUs && (
+                          <p className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1">Billed annually</p>
                         )}
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-4xl font-black text-charcoal tracking-tighter">$</span>
-                          <span className="text-5xl font-black text-charcoal tracking-tighter">
-                            {Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
-                          </span>
-                          <span className="text-slate-500 font-bold ml-1 text-sm">/mo</span>
-                        </div>
                       </div>
 
-                      {isAnnual && !plan.contactUs && (
-                        <p className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1">Billed annually</p>
-                      )}
-
-                      {plan.promoText && (
-                        <div className="mt-3 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg inline-block border border-emerald-100">
-                          {plan.promoText}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-4 mb-8 flex-grow">
-                      {plan.features.map((feature: string) => (
-                        <div key={feature} className="flex items-start gap-3">
-                          <div className={cn(
-                            "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                            plan.popular ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-400"
-                          )}>
-                            <Check className="w-3 h-3 stroke-[3px]" />
+                      <div className="space-y-4 mb-8 flex-grow">
+                        {plan.features.map((feature: string) => (
+                          <div key={feature} className="flex items-start gap-3">
+                            <div className={cn(
+                              "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+                              plan.popular ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-400"
+                            )}>
+                              <Check className="w-3 h-3 stroke-[3px]" />
+                            </div>
+                            <span className="text-sm font-medium text-slate-600">{feature}</span>
                           </div>
-                          <span className="text-sm font-medium text-slate-600">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
 
-                    <button
-                      disabled={plan.current || loading === plan.name}
-                      onClick={() => {
-                        if (plan.contactUs) {
-                          window.location.href = 'mailto:sales@vocalscale.com';
-                        } else {
-                          handleUpgrade(plan.stripe_price_id, plan.name);
-                        }
-                      }}
-                      className={cn(
-                        "w-full rounded-2xl h-14 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-xl shadow-blue-500/10 flex items-center justify-center gap-2",
-                        plan.current
-                          ? "bg-slate-50 text-slate-400 border border-slate-200 cursor-default"
-                          : plan.popular
-                            ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"
-                            : "bg-slate-900 hover:bg-slate-800 text-white shadow-slate-900/20"
-                      )}
-                    >
-                      {loading === plan.name ? <Loader2 size={16} className="animate-spin" /> : plan.cta}
-                    </button>
+                      <button
+                        disabled={plan.current || loading === plan.name}
+                        onClick={() => {
+                          if (plan.contactUs) {
+                            window.location.href = 'mailto:sales@vocalscale.com';
+                          } else {
+                            handleUpgrade(plan.stripe_price_id, plan.name);
+                          }
+                        }}
+                        className={cn(
+                          "w-full rounded-2xl h-14 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-xl shadow-blue-500/10 flex items-center justify-center gap-2",
+                          plan.current
+                            ? "bg-slate-50 text-slate-400 border border-slate-200 cursor-default"
+                            : plan.popular
+                              ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"
+                              : "bg-slate-900 hover:bg-slate-800 text-white shadow-slate-900/20"
+                        )}
+                      >
+                        {loading === plan.name ? <Loader2 size={16} className="animate-spin" /> : plan.cta}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : subscription?.status === 'active' ? (
+              <div className="flex flex-col items-center justify-center py-20 px-8 bg-white border border-slate-200 rounded-[2.5rem] shadow-xl shadow-slate-200/50 text-center gap-6">
+                <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <Shield size={40} className="text-emerald-600" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">You're on the Professional Plan</h3>
+                  <p className="text-slate-600 font-medium max-w-md mx-auto">
+                    You're currently using our most powerful standard plan. All features are unlocked and your AI is running at full capacity.
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 py-3 px-6 bg-slate-50 rounded-2xl border border-slate-100">
+                  <div className="flex flex-col items-start gap-1">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Current Status</span>
+                    <span className="text-sm font-black text-emerald-600 uppercase">Active & Secured</span>
+                  </div>
+                  <div className="w-px h-8 bg-slate-200 mx-2" />
+                  <div className="flex flex-col items-start gap-1">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Next Billing</span>
+                    <span className="text-sm font-black text-slate-900 uppercase">
+                      {subscription.next_billing ? new Date(subscription.next_billing).toLocaleDateString() : 'N/A'}
+                    </span>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : null}
 
             {/* Enterprise Section - Compact */}
             <Card className="mt-8 border-none shadow-xl shadow-charcoal/5 bg-gradient-to-br from-charcoal to-charcoal-dark text-white">

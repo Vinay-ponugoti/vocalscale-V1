@@ -21,7 +21,8 @@ interface RawAppointment {
   id: string | number;
   service_type: string;
   customer_name: string;
-  scheduled_at: string;
+  scheduled_time?: string;  // Database column name
+  scheduled_at?: string;     // Legacy/alternative field name
   status: string;
   notes?: string;
 }
@@ -42,16 +43,21 @@ export function useAppointments() {
       }
 
       const rawData = await response.json();
-      return (rawData.items || []).map((appt: RawAppointment) => ({
-        id: appt.id.toString(),
-        title: `${appt.service_type || 'Appointment'}: ${appt.customer_name || 'Customer'}`,
-        customer_name: appt.customer_name || 'Customer',
-        start_time: appt.scheduled_at,
-        end_time: appt.scheduled_at ? addHours(parseISO(appt.scheduled_at), 1).toISOString() : new Date().toISOString(),
-        status: appt.status || 'Scheduled',
-        type: appt.service_type || 'Appointment',
-        notes: appt.notes
-      }));
+      return (rawData.items || []).map((appt: RawAppointment) => {
+        // Handle both scheduled_time (DB column) and scheduled_at (legacy)
+        const scheduledTime = appt.scheduled_time || appt.scheduled_at || new Date().toISOString();
+
+        return {
+          id: appt.id.toString(),
+          title: `${appt.service_type || 'Appointment'}: ${appt.customer_name || 'Customer'}`,
+          customer_name: appt.customer_name || 'Customer',
+          start_time: scheduledTime,
+          end_time: scheduledTime ? addHours(parseISO(scheduledTime), 1).toISOString() : new Date().toISOString(),
+          status: appt.status || 'Scheduled',
+          type: appt.service_type || 'Appointment',
+          notes: appt.notes
+        };
+      });
     },
     placeholderData: keepPreviousData,
     staleTime: 60000, // 1 minute
@@ -60,7 +66,7 @@ export function useAppointments() {
   const updateMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string, updates: Partial<Appointment> }) => {
       const headers = await getAuthHeader();
-      
+
       const payload = {
         ...(updates.start_time && { scheduled_time: updates.start_time }),
         ...(updates.customer_name && { customer_name: updates.customer_name }),
