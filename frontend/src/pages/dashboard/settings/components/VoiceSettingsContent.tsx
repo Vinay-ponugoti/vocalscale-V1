@@ -49,12 +49,43 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
     }
   };
 
-  // Get ONLY active voices for currently selected language and gender filter
-  const languageVoices = availableVoices.filter(voice => {
+  // State for voices (initialized from props, but updated via API for server-side filtering)
+  const [displayVoices, setDisplayVoices] = useState<typeof availableVoices>(availableVoices);
+  const [isFiltering, setIsFiltering] = useState(false);
+
+  // Sync prop changes to state (e.g. initial load)
+  React.useEffect(() => {
+    // Only reset if we haven't manually filtered yet, or if we want to ensure we have the latest list
+    if (genderFilter === 'all') {
+      setDisplayVoices(availableVoices);
+    }
+  }, [availableVoices]);
+
+  // Server-side filtering when gender changes
+  React.useEffect(() => {
+    const fetchFilteredVoices = async () => {
+      setIsFiltering(true);
+      try {
+        const response = await api.getVoices({ gender: genderFilter });
+        if (response.data) {
+          setDisplayVoices(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to filter voices:', error);
+      } finally {
+        setIsFiltering(false);
+      }
+    };
+
+    fetchFilteredVoices();
+  }, [genderFilter]);
+
+  // Client-side Language Filtering (still needed as backend only filters gender for now)
+  const languageVoices = displayVoices.filter(voice => {
     // Check if voice is enabled first
     if (voice.is_active === false) return false;
 
-    // Filter by gender if not 'all'
+    // Filter by gender if not 'all' (Double check in case API returns mismatched data)
     if (genderFilter !== 'all') {
       const voiceGender = voice.gender?.toLowerCase() || '';
       if (voiceGender !== genderFilter) return false;
