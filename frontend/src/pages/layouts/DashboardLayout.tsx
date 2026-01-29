@@ -494,8 +494,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     }`}
                 >
                   <div className="hidden lg:flex flex-col items-end text-right">
-                    <span className="text-xs font-bold text-slate-900 leading-tight">{userFullName}</span>
-                    <span className="text-[10px] font-medium text-slate-500 leading-tight">{userEmail}</span>
+                    <span className="text-xs font-bold text-slate-900 leading-tight">{businessName}</span>
+                    <span className="text-[10px] font-medium text-slate-500 leading-tight">{userFullName}</span>
                   </div>
 
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm bg-gradient-to-br from-blue-500 to-indigo-600 ring-2 ring-white">
