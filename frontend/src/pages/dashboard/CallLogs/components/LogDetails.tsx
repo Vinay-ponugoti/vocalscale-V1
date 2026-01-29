@@ -80,11 +80,21 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
   const formattedDate = format(parseISO(log.created_at), 'MMM dd, yyyy');
   const formattedTime = format(parseISO(log.created_at), 'h:mm a');
 
-  const [visibleMessages, setVisibleMessages] = React.useState(20);
-  const transcriptMessages = parseTranscript(log.transcript);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 20;
   
-  const handleLoadMore = () => {
-    setVisibleMessages(prev => prev + 20);
+  const transcriptMessages = parseTranscript(log.transcript);
+  const totalPages = Math.ceil(transcriptMessages.length / itemsPerPage);
+  
+  const currentMessages = transcriptMessages.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
   };
 
   return (
@@ -141,57 +151,68 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
               </Badge>
             </CardHeader>
 
-            <CardContent className="p-0">
-              {transcriptMessages.length > 0 ? (
-                <div className="flex flex-col">
-                  <div className="flex flex-col divide-y divide-slate-100">
-                    {transcriptMessages.slice(0, visibleMessages).map((msg, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-6 transition-all duration-300 hover:bg-slate-50/50 ${msg.role === 'assistant' ? 'bg-slate-50/30' : 'bg-white'
-                          }`}
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm border ring-2 ring-white ${msg.role === 'assistant'
-                            ? 'bg-gradient-to-br from-slate-900 to-slate-800 text-white border-slate-700'
-                            : 'bg-white text-slate-600 border-slate-200'
+            <CardContent className="p-8 space-y-6 bg-white min-h-[400px] flex flex-col justify-between">
+              {currentMessages.length > 0 ? (
+                <>
+                  <div className="space-y-6">
+                    {currentMessages.map((msg) => {
+                      const isAI = msg.role === 'assistant';
+
+                      return (
+                        <div key={msg.id} className={`flex gap-3 ${isAI ? '' : 'flex-row-reverse'}`}>
+                          <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 border text-[10px] font-black shadow-sm ring-1 ${isAI
+                            ? "bg-[#4285F4] border-blue-400 text-white shadow-sm"
+                            : "bg-slate-50 border-slate-100 text-slate-700"
                             }`}>
-                            {msg.role === 'assistant' ? <Bot size={14} /> : <span className="text-[10px] font-black">U</span>}
+                            {isAI ? <Bot size={14} /> : (log.caller_name || 'Unknown').substring(0, 1).toUpperCase()}
                           </div>
-                          <div className="space-y-1.5 flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <span className={`text-[10px] font-black uppercase tracking-widest ${msg.role === 'assistant' ? 'text-slate-900' : 'text-slate-500'
-                                }`}>
-                                {msg.role === 'assistant' ? 'AI Assistant' : 'Caller'}
-                              </span>
-                            </div>
-                            <p className="text-sm font-medium text-slate-600 leading-relaxed whitespace-pre-wrap">
+                          <div className={`space-y-1 max-w-[85%] ${isAI ? '' : 'flex flex-col items-end'}`}>
+                            <div className={`px-4 py-3 text-[13px] leading-relaxed transition-all font-medium ${isAI
+                              ? 'bg-slate-50 text-slate-900 rounded-xl rounded-tl-none border border-slate-100'
+                              : 'bg-white text-slate-900 rounded-xl rounded-tr-none border border-slate-200 shadow-sm'
+                              }`}>
                               {msg.content}
-                            </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
-                  
-                  {visibleMessages < transcriptMessages.length && (
-                    <div className="p-4 border-t border-slate-100 flex justify-center bg-slate-50/30">
-                      <Button 
-                        variant="outline" 
-                        onClick={handleLoadMore}
-                        className="text-xs font-bold text-slate-600 border-slate-200 hover:bg-white hover:text-slate-900 shadow-sm"
-                      >
-                        Load More Messages ({transcriptMessages.length - visibleMessages} remaining)
-                      </Button>
+
+                  {totalPages > 1 && (
+                    <div className="pt-8 border-t border-slate-100 flex items-center justify-between mt-auto">
+                      <div className="text-xs font-semibold text-slate-400">
+                        Page {currentPage} of {totalPages}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={currentPage === 1}
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          className="text-xs font-bold"
+                        >
+                          Previous
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={currentPage === totalPages}
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          className="text-xs font-bold"
+                        >
+                          Next
+                        </Button>
+                      </div>
                     </div>
                   )}
-                </div>
+                </>
               ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4">
-                    <FileText size={24} className="text-slate-300" />
+                <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 py-16">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-3 ring-1 ring-slate-100">
+                    <FileText size={20} className="text-slate-200" />
                   </div>
-                  <p className="text-slate-500 font-medium text-sm">No transcript available for this call.</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest">No transcript data available</p>
                 </div>
               )}
             </CardContent>
