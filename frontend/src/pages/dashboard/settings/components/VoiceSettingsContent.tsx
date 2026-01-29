@@ -27,13 +27,16 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 }) => {
   const { isLoading, isPlaying, playVoice, stopVoice } = useVoicePreview();
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+  const [genderFilter, setGenderFilter] = useState<'all' | 'male' | 'female'>('all');
 
   const handleVoicePreview = async (voiceId: string, providerVoiceId: string | null, sampleUrl: string | null) => {
     if (playingVoiceId === voiceId && isPlaying) {
       stopVoice();
       setPlayingVoiceId(null);
     } else {
-      const urlToPlay = sampleUrl || (providerVoiceId ? api.getVoiceSampleUrl(providerVoiceId) : null);
+      // Always prefer the proxy URL if we have a provider ID.
+      // This avoids CSP issues with direct Supabase URLs and ensures we use the self-healing backend route.
+      const urlToPlay = providerVoiceId ? api.getVoiceSampleUrl(providerVoiceId) : sampleUrl;
 
       if (!urlToPlay) {
         console.warn('No sample source available for this voice');
@@ -46,10 +49,16 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
     }
   };
 
-  // Get ONLY active voices for currently selected language
+  // Get ONLY active voices for currently selected language and gender filter
   const languageVoices = availableVoices.filter(voice => {
     // Check if voice is enabled first
     if (voice.is_active === false) return false;
+
+    // Filter by gender if not 'all'
+    if (genderFilter !== 'all') {
+      const voiceGender = voice.gender?.toLowerCase() || '';
+      if (voiceGender !== genderFilter) return false;
+    }
 
     // If voice has an explicit accent/language field that matches
     const selectedLangBase = settings.language.toLowerCase().split('-')[0];
@@ -93,9 +102,28 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 
         {/* Voice Persona - Grid Layout */}
         <div className="space-y-3">
-          <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
-            Voice Persona
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
+              Voice Persona
+            </Label>
+            <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 shadow-sm shrink-0">
+              {(['all', 'male', 'female'] as const).map((gender) => (
+                <button
+                  key={gender}
+                  onClick={() => setGenderFilter(gender)}
+                  className={`
+                    px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider transition-all
+                    ${genderFilter === gender
+                      ? 'bg-white text-indigo-600 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-600'
+                    }
+                  `}
+                >
+                  {gender}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
             {languageVoices.map(voice => {
               const isSelected = settings.voice_id === voice.id;
