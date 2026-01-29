@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Mail, MapPin } from 'lucide-react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 
@@ -214,21 +215,55 @@ const Terms = () => {
                             {/* Section 8: Contact */}
                             <section id="contact" className="scroll-mt-32">
                                 <SectionHeader number="8" title="Contact Us" />
-                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl border border-slate-200 text-center shadow-sm">
-                                    <h3 className="text-2xl font-bold text-slate-900 mb-4">Have questions?</h3>
-                                    <p className="text-slate-600 mb-8">
-                                        In order to resolve a complaint regarding the Services or to receive further information regarding use of the Services, please contact us at:
-                                    </p>
-                                    <div className="space-y-2 text-slate-700 mb-8">
-                                        <p className="font-bold">vocalscale</p>
-                                        <p>220 elm st</p>
-                                        <p>clemson, SC 29631</p>
-                                        <p>United States</p>
-                                        <p>Phone: 8646489322</p>
-                                    </div>
-                                    <div className="flex flex-wrap justify-center gap-4">
-                                        <a href="mailto:support@vocalscale.com" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20">
-                                            support@vocalscale.com
+                                <div className="relative group overflow-hidden bg-white border border-slate-200 p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-slate-200/50 transition-all duration-500 hover:border-blue-300 hover:shadow-2xl hover:shadow-blue-500/10">
+                                    {/* Decorative background pulse */}
+                                    <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                                    <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-indigo-50/50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                                    <div className="relative z-10 flex flex-col items-center">
+                                        <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-8 transform group-hover:rotate-12 transition-transform duration-500">
+                                            <span className="text-3xl">📧</span>
+                                        </div>
+
+                                        <h3 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Get in Touch</h3>
+                                        <p className="text-slate-600 mb-10 max-w-lg mx-auto font-medium text-lg leading-relaxed text-center">
+                                            Our support team is ready to help you with any questions or concerns regarding our services.
+                                        </p>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl text-left mb-12">
+                                            <div className="flex items-start gap-4 p-6 rounded-2xl bg-slate-50 border border-slate-100 group/item hover:bg-white hover:border-blue-200 transition-all">
+                                                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-blue-600 group-hover/item:border-blue-500 transition-colors">
+                                                    <MapPin size={20} />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-slate-900 font-bold text-sm mb-1 uppercase tracking-wider">Office</h4>
+                                                    <p className="text-slate-600 text-sm font-medium leading-relaxed">
+                                                        220 elm st, clemson<br />
+                                                        SC 29631, United States
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-start gap-4 p-6 rounded-2xl bg-slate-50 border border-slate-100 group/item hover:bg-white hover:border-blue-200 transition-all">
+                                                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-blue-600 group-hover/item:border-blue-500 transition-colors">
+                                                    <Mail size={20} />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-slate-900 font-bold text-sm mb-1 uppercase tracking-wider">Support</h4>
+                                                    <p className="text-slate-600 text-sm font-medium mb-1">Available 24/7</p>
+                                                    <a href="mailto:support@vocalscale.com" className="text-blue-600 font-bold text-sm hover:underline">
+                                                        support@vocalscale.com
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <a
+                                            href="mailto:support@vocalscale.com"
+                                            className="group relative inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-full font-bold transition-all hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/25 active:scale-95"
+                                        >
+                                            <span>Send us a Message</span>
+                                            <Mail className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                         </a>
                                     </div>
                                 </div>
