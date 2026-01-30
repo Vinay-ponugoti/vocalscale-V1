@@ -315,30 +315,30 @@ const GetNewNumber = () => {
 
             {/* Limit Reached Warning */}
             {limitReached ? (
-              <div className="bg-amber-500/5 dark:bg-amber-500/5 rounded-[2.5rem] border border-amber-500/20 p-12 relative overflow-hidden group">
+              <div className="bg-amber-500/5 dark:bg-amber-500/5 rounded-[2.5rem] border border-amber-500/20 p-6 md:p-12 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-amber-500/10 transition-all duration-1000" />
                 <div className="flex flex-col items-center text-center gap-6 relative z-10">
-                  <div className="w-20 h-20 rounded-3xl bg-amber-500/20 flex items-center justify-center text-amber-600 shadow-sm border border-amber-500/10">
-                    <ShieldAlert size={40} />
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-amber-500/20 flex items-center justify-center text-amber-600 shadow-sm border border-amber-500/10">
+                    <ShieldAlert size={32} className="md:w-10 md:h-10" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-black text-foreground tracking-tight mb-3">
+                    <h3 className="text-xl md:text-2xl font-black text-foreground tracking-tight mb-3">
                       Allocation Limit <span className="text-amber-500">Exceeded</span>
                     </h3>
-                    <p className="text-muted-foreground font-medium max-w-lg mx-auto leading-relaxed">
+                    <p className="text-muted-foreground font-medium max-w-lg mx-auto leading-relaxed text-sm md:text-base">
                       {limitMessage} Upgrade your workspace capacity to provision additional telecommunication nodes.
                     </p>
                   </div>
-                  <div className="flex gap-4 mt-4">
+                  <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
                     <button
                       onClick={() => navigate('/dashboard/voice-setup')}
-                      className="px-8 py-3.5 rounded-2xl bg-muted text-muted-foreground font-black uppercase tracking-widest text-[10px] hover:bg-muted/80 transition-all border border-border"
+                      className="px-8 py-3.5 rounded-2xl bg-muted text-muted-foreground font-black uppercase tracking-widest text-[10px] hover:bg-muted/80 transition-all border border-border w-full sm:w-auto"
                     >
                       Dismiss
                     </button>
                     <Link
                       to="/dashboard/billing"
-                      className="px-8 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[10px] shadow-glow-amber transition-all hover:-translate-y-1"
+                      className="px-8 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[10px] shadow-glow-amber transition-all hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center"
                     >
                       Expand Plan
                     </Link>
@@ -346,7 +346,7 @@ const GetNewNumber = () => {
                 </div>
               </div>
             ) : checkingLimits ? (
-              <div className="bg-card rounded-[2.5rem] border border-border p-24 flex items-center justify-center">
+              <div className="bg-card rounded-[2.5rem] border border-border p-12 md:p-24 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                   <Loader2 className="w-10 h-10 text-primary animate-spin" />
                   <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest animate-pulse">Checking quota...</span>
@@ -512,14 +512,14 @@ const GetNewNumber = () => {
 
             {/* Empty State - Initial */}
             {!searching && numbers.length === 0 && !hasSearched && !limitReached && !checkingLimits && (
-              <div className="flex flex-col items-center justify-center py-32 bg-card rounded-[2.5rem] border-2 border-dashed border-border relative overflow-hidden group">
+              <div className="flex flex-col items-center justify-center py-16 md:py-32 bg-card rounded-[2.5rem] border-2 border-dashed border-border relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full -ml-32 -mt-32 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                <div className="w-24 h-24 rounded-[2rem] bg-muted/50 border border-border flex items-center justify-center mb-8 shadow-sm group-hover:rotate-12 transition-transform duration-500">
-                  <MapPin className="w-10 h-10 text-muted-foreground/30" />
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-[2rem] bg-muted/50 border border-border flex items-center justify-center mb-6 md:mb-8 shadow-sm group-hover:rotate-12 transition-transform duration-500">
+                  <MapPin className="w-8 h-8 md:w-10 md:h-10 text-muted-foreground/30" />
                 </div>
-                <div className="text-center max-w-sm mx-auto space-y-4">
-                  <p className="text-2xl font-black text-foreground tracking-tight leading-none">Awaiting Location Logic</p>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest opacity-60 leading-relaxed">
+                <div className="text-center max-w-sm mx-auto space-y-3 md:space-y-4 px-4">
+                  <p className="text-xl md:text-2xl font-black text-foreground tracking-tight leading-none">Awaiting Location Logic</p>
+                  <p className="text-[10px] md:text-xs font-medium text-muted-foreground uppercase tracking-widest opacity-60 leading-relaxed">
                     Input a geographic identifier above to fetch active telecom infrastructure available in your desired region.
                   </p>
                 </div>
