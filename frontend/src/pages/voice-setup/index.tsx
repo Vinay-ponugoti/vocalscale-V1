@@ -188,116 +188,120 @@ const VoiceSetup = () => {
               </div>
             </div>
 
-            {/* List Area */}
-            <div className="p-2 sm:p-4">
-              {loading ? (
-                <div className="space-y-4 p-6">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-28 rounded-[2rem] border border-border bg-muted/20 animate-pulse" />
-                  ))}
-                </div>
-              ) : numbers.length > 0 ? (
-                <div className="grid grid-cols-1 gap-3">
-                  {numbers.map((num: PhoneNumber) => (
-                    <div
-                      key={num.id}
-                      onClick={() => navigate(`/dashboard/voice-setup/numbers/${num.id}`)}
-                      className="group flex flex-col sm:flex-row sm:items-center gap-6 p-8 rounded-[2rem] border border-border bg-card hover:border-primary/30 hover:shadow-premium-sm transition-all cursor-pointer relative overflow-hidden"
-                    >
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity rounded-full -mr-16 -mt-16 blur-2xl" />
-
-                      {/* Left: Info Card */}
-                      <div className="flex items-center gap-6 flex-1 min-w-0 relative z-10">
-                        <div className="w-16 h-16 rounded-[1.25rem] bg-muted border border-border flex items-center justify-center shrink-0 group-hover:bg-primary/[0.03] group-hover:border-primary/20 transition-all duration-500">
-                          <Phone className={`w-6 h-6 ${num.status === 'active' ? 'text-primary' : 'text-muted-foreground/30'}`} />
-                        </div>
-                        <div className="min-w-0">
-                          <h3 className="text-xl font-black text-foreground tracking-tight mb-1 group-hover:text-primary transition-colors">
-                            {num.phone_number || num.phoneNumber}
-                          </h3>
+            {/* List Area - Full Width Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-border bg-slate-50/50">
+                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-1/4">Number</th>
+                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-1/4">Alias</th>
+                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-1/6">Status</th>
+                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-1/6">Capabilities</th>
+                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right w-1/6">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/50">
+                  {loading ? (
+                    [1, 2, 3].map((i) => (
+                      <tr key={i} className="animate-pulse">
+                        <td className="px-8 py-6"><div className="h-6 w-32 bg-muted/50 rounded-lg"></div></td>
+                        <td className="px-8 py-6"><div className="h-6 w-24 bg-muted/50 rounded-lg"></div></td>
+                        <td className="px-8 py-6"><div className="h-6 w-16 bg-muted/50 rounded-lg"></div></td>
+                        <td className="px-8 py-6"><div className="h-6 w-20 bg-muted/50 rounded-lg"></div></td>
+                        <td className="px-8 py-6"><div className="h-8 w-8 bg-muted/50 rounded-lg ml-auto"></div></td>
+                      </tr>
+                    ))
+                  ) : numbers.length > 0 ? (
+                    numbers.map((num: PhoneNumber) => (
+                      <tr
+                        key={num.id}
+                        onClick={() => navigate(`/dashboard/voice-setup/numbers/${num.id}`)}
+                        className="group hover:bg-slate-50/50 transition-colors cursor-pointer"
+                      >
+                        <td className="px-8 py-6">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                              <Phone className="w-5 h-5" />
+                            </div>
+                            <span className="text-lg font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
+                              {num.phone_number || num.phoneNumber}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-slate-600 truncate max-w-[200px]">
+                              {num.friendly_name || num.number || '-'}
+                            </span>
+                            <button
+                              onClick={(e) => handleEditClick(num, e)}
+                              className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-600 transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                              <Settings2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6">
                           <div className="flex items-center gap-3">
-                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Alias:</span>
-                            <span className="text-[10px] font-bold text-foreground truncate lowercase opacity-80">{num.friendly_name || num.number}</span>
+                            <button
+                              onClick={(e) => handleStatusChange(num.id, num.status || 'inactive', e)}
+                              className={`relative inline-flex h-6 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${num.status === 'active' ? 'bg-primary' : 'bg-slate-200'}`}
+                            >
+                              <span
+                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${num.status === 'active' ? 'translate-x-4' : 'translate-x-0'}`}
+                              />
+                            </button>
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${num.status === 'active' ? 'text-primary' : 'text-slate-400'}`}>
+                              {num.status === 'active' ? 'Active' : 'Inactive'}
+                            </span>
                           </div>
-                        </div>
-                      </div>
-
-                      {/* Middle: Capabilities */}
-                      <div className="flex items-center gap-3 bg-muted/30 px-5 py-3 rounded-2xl border border-border/50 relative z-10">
-                        {num.capabilities?.voice && (
-                          <div className="flex items-center gap-2 pr-3 border-r border-border/50 last:border-0 last:pr-0">
-                            <Settings2 size={12} className="text-primary/60" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-foreground/70">Voice</span>
+                        </td>
+                        <td className="px-8 py-6">
+                          <div className="flex items-center gap-3">
+                            {num.capabilities?.voice && (
+                              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
+                                <span className="text-[9px] font-bold uppercase tracking-wider">Voice</span>
+                              </div>
+                            )}
+                            {num.capabilities?.sms && (
+                              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                <span className="text-[9px] font-bold uppercase tracking-wider">SMS</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                        {num.capabilities?.sms && (
-                          <div className="flex items-center gap-2 last:border-0 last:pr-0">
-                            <LinkIcon size={12} className="text-indigo-400" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-foreground/70">Secure SMS</span>
+                        </td>
+                        <td className="px-8 py-6 text-right">
+                          <div className="flex items-center justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-900 transition-colors">
+                              <ChevronRight className="w-5 h-5" />
+                            </button>
                           </div>
-                        )}
-                      </div>
-
-                      {/* Right: Controls */}
-                      <div className="flex items-center justify-between sm:justify-end gap-10 relative z-10 border-t sm:border-t-0 pt-6 sm:pt-0 border-border/50">
-                        <div
-                          className="flex items-center gap-4"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <div className="text-right hidden sm:block">
-                            <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 mb-1">Operational State</p>
-                            <p className={`text-[10px] font-black uppercase tracking-widest ${num.status === 'active' ? 'text-primary' : 'text-muted-foreground'}`}>
-                              {num.status === 'active' ? 'Routing Active' : 'Suspended'}
-                            </p>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5}>
+                        <div className="flex flex-col items-center justify-center py-24 text-center">
+                          <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center mb-6">
+                            <Smartphone className="w-8 h-8 text-slate-300" />
                           </div>
+                          <h3 className="text-xl font-bold text-slate-900 mb-2">No Numbers Found</h3>
+                          <p className="text-slate-500 text-sm max-w-sm mx-auto mb-8">You haven't added any phone numbers yet.</p>
                           <button
-                            onClick={(e) => handleStatusChange(num.id, num.status || 'inactive', e)}
-                            className={`relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-4 border-transparent transition-all duration-500 shadow-inner ${num.status === 'active' ? 'bg-primary' : 'bg-muted'
-                              }`}
-                            role="switch"
+                            onClick={() => navigate('/dashboard/voice-setup/buy')}
+                            className="px-6 py-2.5 bg-primary text-white font-bold rounded-xl text-xs uppercase tracking-wider hover:bg-primary/90 transition-all"
                           >
-                            <span
-                              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-xl ring-0 transition-all duration-500 ${num.status === 'active' ? 'translate-x-6' : 'translate-x-0'
-                                }`}
-                            />
+                            Get Your First Number
                           </button>
                         </div>
-
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => handleEditClick(num, e)}
-                            className="p-3 bg-muted hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-xl transition-all border border-border hover:border-primary/20"
-                          >
-                            <Settings2 className="w-5 h-5" />
-                          </button>
-                          <div className="p-3 bg-primary/5 rounded-xl border border-primary/10 group-hover:translate-x-1 transition-transform">
-                            <ChevronRight className="w-5 h-5 text-primary" strokeWidth={3} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                /* Empty Identity State */
-                <div className="flex flex-col items-center justify-center py-32 px-10 text-center relative overflow-hidden group">
-                  <div className="absolute top-0 left-0 w-full h-full bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 -z-10" />
-                  <div className="w-24 h-24 bg-muted rounded-[2rem] border border-border flex items-center justify-center mb-10 shadow-premium-sm group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                    <Phone className="w-10 h-10 text-muted-foreground/30" strokeWidth={1.5} />
-                  </div>
-                  <h3 className="text-3xl font-black text-foreground tracking-tighter mb-4">Zero Nodes Assigned.</h3>
-                  <p className="text-muted-foreground max-w-sm mb-12 text-base font-medium leading-relaxed italic opacity-80">
-                    Your allocation pool is currently empty. Initialize a new communication endpoint to power your AI.
-                  </p>
-                  <button
-                    onClick={() => navigate('/dashboard/voice-setup/buy')}
-                    className="inline-flex items-center gap-4 bg-primary hover:bg-primary/95 text-primary-foreground px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-glow-blue transition-all hover:-translate-y-1 active:scale-95"
-                  >
-                    <Plus className="w-5 h-5" strokeWidth={3} />
-                    Acquire Initial Node
-                  </button>
-                </div>
-              )}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
 
             {/* Premium Table Footer */}
