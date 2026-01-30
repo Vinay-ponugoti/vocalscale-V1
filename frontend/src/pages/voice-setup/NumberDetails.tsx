@@ -36,6 +36,7 @@ const NumberDetails = () => {
     useEffect(() => {
         if (number) {
             fetchLogs();
+            setIsTrafficActive(number.status === 'active');
         }
     }, [number]);
 
@@ -47,7 +48,6 @@ const NumberDetails = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                // Filter logs for this specific number (matching either from or to)
                 const filtered = data.filter((log: any) =>
                     log.from === number?.phone_number || log.to === number?.phone_number
                 );
@@ -64,7 +64,7 @@ const NumberDetails = () => {
         return (
             <DashboardLayout>
                 <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
             </DashboardLayout>
         );
@@ -74,11 +74,11 @@ const NumberDetails = () => {
         return (
             <DashboardLayout>
                 <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <ShieldAlert className="w-12 h-12 text-slate-400" />
-                    <h2 className="text-xl font-bold text-slate-900">Number Not Found</h2>
+                    <ShieldAlert className="w-12 h-12 text-muted-foreground" />
+                    <h2 className="text-xl font-bold text-foreground">Number Not Found</h2>
                     <button
                         onClick={() => navigate('/dashboard/voice-setup')}
-                        className="px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold"
+                        className="px-6 py-2 bg-primary text-primary-foreground rounded-xl font-bold"
                     >
                         Back to List
                     </button>
@@ -97,244 +97,292 @@ const NumberDetails = () => {
 
     return (
         <DashboardLayout fullWidth>
-            <main className="flex-1 flex flex-col overflow-y-auto bg-[#f6f7f8] dark:bg-[#111c21] min-h-screen">
+            <main className="flex-1 flex flex-col overflow-y-auto bg-background dark:bg-slate-950 min-h-screen scrollbar-premium">
                 {/* Top Header */}
-                <header className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-8 py-4 sticky top-0 z-10 shadow-sm">
+                <header className="flex items-center justify-between border-b border-border bg-card px-8 py-4 sticky top-0 z-10 shadow-sm transition-all">
                     <div className="flex items-center gap-8">
-                        <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Number Details</h2>
+                        <h2 className="text-lg font-bold tracking-tight text-foreground">Number Details</h2>
                         <div className="hidden md:flex items-center gap-6">
-                            <a href="#" className="text-slate-500 text-sm font-medium hover:text-indigo-600 transition-colors">Docs</a>
-                            <a href="#" className="text-slate-500 text-sm font-medium hover:text-indigo-600 transition-colors">Support</a>
-                            <div className="flex items-center gap-1.5">
-                                <div className="size-2 rounded-full bg-green-500"></div>
-                                <span className="text-slate-500 text-sm font-medium">System Status</span>
+                            <a href="#" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors">Docs</a>
+                            <a href="#" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors">Support</a>
+                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-success/10 border border-success/20">
+                                <div className="size-1.5 rounded-full bg-success animate-pulse"></div>
+                                <span className="text-success text-[10px] font-black uppercase tracking-wider">System Operational</span>
                             </div>
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="hidden sm:flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-1.5 border border-slate-200 dark:border-slate-700">
-                            <Search className="text-slate-400 w-4 h-4" />
+                        <div className="hidden sm:flex items-center bg-muted rounded-xl px-4 py-2 border border-border group focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                            <Search className="text-muted-foreground w-4 h-4 group-focus-within:text-primary transition-colors" />
                             <input
-                                className="bg-transparent border-none focus:ring-0 text-sm w-40 dark:text-white placeholder-slate-400"
-                                placeholder="Search SIDs..."
+                                className="bg-transparent border-none focus:ring-0 text-sm w-48 text-foreground placeholder-muted-foreground ml-2"
+                                placeholder="Search Call Logs..."
                                 type="text"
                             />
                         </div>
-                        <button className="bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 px-4 py-2 rounded-lg text-sm font-bold transition-all border border-red-100 dark:border-red-900/30">
+                        <button className="bg-destructive/10 text-destructive hover:bg-destructive/20 px-5 py-2 rounded-xl text-sm font-bold transition-all border border-destructive/20">
                             Release Number
                         </button>
                     </div>
                 </header>
 
-                <div className="p-8 max-w-6xl mx-auto w-full">
+                <div className="p-8 max-w-6xl mx-auto w-full space-y-10">
                     {/* Breadcrumbs */}
-                    <nav className="flex items-center gap-2 mb-4 text-sm font-medium">
-                        <Link to="/dashboard/voice-setup" className="text-slate-500 hover:text-indigo-600 transition-colors capitalize">Phone Numbers</Link>
-                        <ChevronRight className="text-slate-400 w-4 h-4" />
-                        <span className="text-indigo-600 font-bold">{number.phone_number}</span>
+                    <nav className="flex items-center gap-2 text-xs font-black uppercase tracking-widest">
+                        <Link to="/dashboard/voice-setup" className="text-muted-foreground hover:text-primary transition-colors">Phone Numbers</Link>
+                        <ChevronRight className="text-muted-foreground/40 w-3.5 h-3.5" />
+                        <span className="text-primary font-black">{number.phone_number}</span>
                     </nav>
 
                     {/* Page Heading */}
-                    <div className="flex flex-wrap justify-between items-end gap-4 mb-8">
-                        <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-3">
-                                <h1 className="text-4xl font-black tracking-tighter text-slate-900 dark:text-white">{number.phone_number}</h1>
-                                <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${number.status === 'active'
-                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                        : 'bg-slate-100 text-slate-600'
+                    <div className="flex flex-wrap justify-between items-end gap-6">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20">
+                                    <Phone className="w-8 h-8 text-primary" />
+                                </div>
+                                <div>
+                                    <h1 className="text-4xl font-black tracking-tighter text-foreground leading-none">{number.phone_number}</h1>
+                                    <p className="text-muted-foreground text-lg font-medium mt-1.5">{number.friendly_name || 'Business Line'}</p>
+                                </div>
+                                <span className={`ml-4 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${number.status === 'active'
+                                        ? 'bg-success/10 text-success border border-success/20'
+                                        : 'bg-muted text-muted-foreground border border-border'
                                     }`}>
                                     {number.status || 'Active'}
                                 </span>
                             </div>
-                            <p className="text-slate-500 text-lg font-medium">{number.friendly_name || 'Marketing Line — California, US'}</p>
                         </div>
                         <div className="flex gap-3">
                             <button
                                 onClick={() => navigate('/dashboard/voice-setup')}
-                                className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-all shadow-sm group"
+                                className="flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-card text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-muted transition-all shadow-sm group"
                             >
-                                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                                Back to List
+                                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                                Return
                             </button>
-                            <button className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-bold shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all">
+                            <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-black uppercase tracking-widest shadow-glow-blue hover:scale-[1.02] active:scale-95 transition-all">
                                 <Settings className="w-4 h-4" />
                                 Configure
                             </button>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Left Column: General Info & Actions */}
-                        <div className="lg:col-span-2 space-y-6">
-                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
-                                <h3 className="text-lg font-bold mb-8 text-slate-900 dark:text-white">General Information</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-12">
+                        <div className="lg:col-span-2 space-y-8">
+                            <div className="bg-card rounded-3xl border border-border p-10 shadow-premium-sm relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-primary/10 transition-all duration-1000" />
+
+                                <h3 className="text-xl font-black mb-10 text-foreground flex items-center gap-3">
+                                    General Information
+                                    <div className="h-1 w-8 bg-primary/20 rounded-full" />
+                                </h3>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-10 gap-x-16">
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Type</p>
-                                        <p className="text-base font-bold text-slate-900 dark:text-white">Local (10-Digit)</p>
+                                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 opacity-60">Number Type</p>
+                                        <p className="text-lg font-bold text-foreground">Local (10-Digit)</p>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Origin</p>
-                                        <p className="text-base font-bold text-slate-900 dark:text-white">United States</p>
+                                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 opacity-60">Country Origin</p>
+                                        <p className="text-lg font-bold text-foreground flex items-center gap-2">
+                                            United States
+                                        </p>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Account SID</p>
-                                        <p className="text-base font-mono font-bold text-indigo-600 truncate">{number.id.substring(0, 16)}...</p>
+                                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 opacity-60">Account Identifier (ID)</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-sm font-mono font-black text-primary truncate max-w-[200px]">{number.id}</p>
+                                            <button className="p-1 hover:bg-primary/10 rounded transition-colors">
+                                                <ExternalLink className="w-3.5 h-3.5 text-primary" />
+                                            </button>
+                                        </div>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Purchased On</p>
-                                        <p className="text-base font-bold text-slate-900 dark:text-white">{formattedDate}</p>
+                                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 opacity-60">Activation Date</p>
+                                        <p className="text-lg font-bold text-foreground">{formattedDate}</p>
                                     </div>
                                 </div>
 
-                                <div className="my-10 h-px bg-slate-100 dark:bg-slate-800" />
+                                <div className="my-12 h-px bg-border/50" />
 
-                                <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider mb-6">Capabilities</h4>
-                                <div className="flex flex-wrap gap-4">
-                                    <CapabilityBadge icon={Mic} label="Voice" active={!!number.capabilities?.voice} />
-                                    <CapabilityBadge icon={MessageSquare} label="SMS" active={!!number.capabilities?.sms} />
-                                    <CapabilityBadge icon={ImageIcon} label="MMS" active={!!number.capabilities?.mms} />
-                                    <CapabilityBadge icon={Printer} label="Fax" active={false} />
+                                <h4 className="text-xs font-black text-foreground uppercase tracking-[0.2em] mb-8 opacity-80">Line Capabilities</h4>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                    <CapabilityCard icon={Mic} label="Voice" active={!!number.capabilities?.voice} />
+                                    <CapabilityCard icon={MessageSquare} label="SMS" active={!!number.capabilities?.sms} />
+                                    <CapabilityCard icon={ImageIcon} label="MMS" active={!!number.capabilities?.mms} />
+                                    <CapabilityCard icon={Printer} label="Fax" active={false} />
                                 </div>
                             </div>
 
                             {/* Action Panel */}
-                            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
-                                <div className="flex flex-col gap-1">
-                                    <p className="text-slate-900 dark:text-white text-base font-bold">Inbound Traffic Status</p>
-                                    <p className="text-slate-500 text-sm font-medium max-w-md">This phone number is currently active and receiving traffic. Toggle to pause incoming calls.</p>
+                            <div className="bg-card rounded-3xl border border-border p-10 flex flex-col sm:flex-row items-center justify-between gap-8 shadow-premium-sm transition-all hover:border-primary/20">
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`size-3 rounded-full ${isTrafficActive ? 'bg-success shadow-glow-green' : 'bg-muted-foreground/30'}`} />
+                                        <p className="text-foreground text-lg font-black tracking-tight">Inbound Traffic Routing</p>
+                                    </div>
+                                    <p className="text-muted-foreground text-sm font-medium max-w-md leading-relaxed">
+                                        Toggle this switch to pause or resume all incoming calls to this number. Pausing routing does not affect billing.
+                                    </p>
                                 </div>
                                 <button
                                     onClick={() => setIsTrafficActive(!isTrafficActive)}
-                                    className={`relative flex h-8 w-14 cursor-pointer items-center rounded-full transition-all border-2 border-transparent focus:outline-none ${isTrafficActive ? 'bg-indigo-600' : 'bg-slate-200 dark:bg-slate-700'}`}
+                                    className={`relative flex h-10 w-18 cursor-pointer items-center rounded-full transition-all duration-300 px-1 border-2 ${isTrafficActive ? 'bg-primary border-primary/20' : 'bg-muted border-border'}`}
                                 >
-                                    <div className={`h-6 w-6 rounded-full bg-white shadow-md transition-all ${isTrafficActive ? 'translate-x-6' : 'translate-x-0'}`} />
+                                    <div className={`h-7 w-7 rounded-full bg-white shadow-xl transition-all duration-300 transform ${isTrafficActive ? 'translate-x-8' : 'translate-x-0'}`} />
                                 </button>
                             </div>
                         </div>
 
                         {/* Right Column: Billing */}
-                        <div className="space-y-6">
-                            <div className="bg-indigo-600 dark:bg-indigo-700 text-white rounded-2xl p-8 shadow-xl shadow-indigo-200 dark:shadow-none h-full flex flex-col">
-                                <div className="flex items-center justify-between mb-10">
-                                    <h3 className="text-lg font-bold">Billing & Pricing</h3>
-                                    <div className="bg-white/10 p-2.5 rounded-xl border border-white/10">
-                                        <Wallet className="w-5 h-5" />
+                        <div className="space-y-8">
+                            <div className="bg-primary text-primary-foreground rounded-3xl p-10 shadow-premium-lg relative overflow-hidden flex flex-col min-h-[480px]">
+                                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48 blur-3xl animate-pulse" />
+
+                                <div className="flex items-center justify-between mb-16 relative z-10">
+                                    <h3 className="text-xl font-black tracking-tight">Billing Portfolio</h3>
+                                    <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md border border-white/20">
+                                        <Wallet className="w-6 h-6" />
                                     </div>
                                 </div>
 
-                                <div className="mb-10">
-                                    <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest mb-2 opacity-80">Monthly Recurring Cost</p>
-                                    <div className="flex items-baseline gap-1.5 mt-1">
-                                        <span className="text-5xl font-black">${number.monthly_cost?.toFixed(2) || '2.00'}</span>
-                                        <span className="text-indigo-100/70 font-bold">/ month</span>
+                                <div className="mb-16 relative z-10">
+                                    <p className="text-primary-foreground/60 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Monthly Recurring Rate</p>
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-6xl font-black tracking-tighter">${number.monthly_cost?.toFixed(2) || '2.00'}</span>
+                                        <span className="text-primary-foreground/50 font-black text-sm uppercase tracking-widest">USD / MO</span>
                                     </div>
                                 </div>
 
-                                <div className="space-y-5 mb-10">
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-indigo-100/70 font-medium">Renewal Date</span>
-                                        <span className="font-black tracking-tight">{formattedRenewal}</span>
+                                <div className="space-y-6 mb-16 relative z-10">
+                                    <div className="flex justify-between items-center group">
+                                        <span className="text-primary-foreground/60 text-xs font-bold uppercase">Next Billing Cycle</span>
+                                        <span className="font-black text-sm tracking-tight">{formattedRenewal}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-indigo-100/70 font-medium">Payment Method</span>
-                                        <span className="font-black tracking-tight uppercase">Visa •••• 4242</span>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-primary-foreground/60 text-xs font-bold uppercase">Payment Profile</span>
+                                        <span className="font-black text-sm tracking-tight uppercase flex items-center gap-2">
+                                            <div className="size-1.5 rounded-full bg-white/40" />
+                                            Visa •••• 4242
+                                        </span>
                                     </div>
                                     <div className="h-px bg-white/10 w-full" />
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-indigo-100/70 font-medium font-bold">YTD Spend</span>
-                                        <span className="font-black tracking-tight">$24.00</span>
+                                    <div className="flex justify-between items-center pt-2">
+                                        <span className="text-primary-foreground/80 text-xs font-black uppercase tracking-widest">Total Usage YTD</span>
+                                        <div className="flex flex-col items-end">
+                                            <span className="font-black text-2xl tracking-tighter">$24.00</span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <button className="mt-auto w-full bg-white text-indigo-600 font-black uppercase tracking-widest text-xs py-4 rounded-xl hover:bg-slate-50 transition-all shadow-lg hover:-translate-y-0.5 active:translate-y-0">
-                                    Renew Immediately
+                                <button className="mt-auto w-full bg-white text-primary font-black uppercase tracking-[0.2em] text-[10px] py-5 rounded-2xl hover:bg-white/90 active:scale-95 transition-all shadow-xl hover:-translate-y-1 relative z-10">
+                                    Manage Subscription
                                 </button>
+                            </div>
+
+                            <div className="bg-card rounded-3xl border border-border p-8 shadow-premium-sm">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="p-2 bg-warning/10 rounded-xl">
+                                        <ShieldAlert className="w-5 h-5 text-warning" />
+                                    </div>
+                                    <h4 className="text-sm font-black uppercase tracking-widest">System Advisory</h4>
+                                </div>
+                                <p className="text-xs font-medium text-muted-foreground leading-relaxed">
+                                    Avoid releasing numbers if they are tied to active marketing campaigns. Released numbers may not be retrievable.
+                                </p>
                             </div>
                         </div>
                     </div>
 
                     {/* Activity Table */}
-                    <div className="mt-10 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-                        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                            <div>
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Activity</h3>
-                                <p className="text-xs font-medium text-slate-400 mt-1">Live updates for calls and messages on this line</p>
+                    <div className="bg-card rounded-3xl border border-border overflow-hidden shadow-premium-sm">
+                        <div className="px-10 py-8 border-b border-border flex flex-col sm:flex-row justify-between items-center gap-6">
+                            <div className="flex flex-col gap-1 text-center sm:text-left">
+                                <h3 className="text-xl font-black text-foreground tracking-tight">Communication Logs</h3>
+                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest opacity-60">Verified live traffic activity</p>
                             </div>
-                            <Link to="/dashboard/calls" className="text-indigo-600 text-xs font-black uppercase tracking-widest hover:text-indigo-700 transition-colors flex items-center gap-2">
-                                View Full Logs
-                                <ArrowUpRight className="w-4 h-4" />
+                            <Link to="/dashboard/calls" className="px-6 py-2.5 bg-muted hover:bg-primary/10 hover:text-primary rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 group">
+                                Full History Log
+                                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                             </Link>
                         </div>
 
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto scrollbar-thin">
                             <table className="w-full text-left">
-                                <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+                                <thead className="bg-muted/30 border-b border-border">
                                     <tr>
-                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date & Time</th>
-                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</th>
-                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Direction</th>
-                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">From/To</th>
-                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Duration</th>
-                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Cost</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Timestamp</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Channel</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Flow</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Counterparty</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Duration</th>
+                                        <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-right">Settlement</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                <tbody className="divide-y divide-border/50">
                                     {logsLoading ? (
                                         <tr>
-                                            <td colSpan={6} className="px-8 py-12 text-center">
-                                                <div className="flex flex-col items-center gap-3">
-                                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
-                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading Logs...</span>
+                                            <td colSpan={6} className="px-10 py-24 text-center">
+                                                <div className="flex flex-col items-center gap-4">
+                                                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+                                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] animate-pulse">Syncing logs...</span>
                                                 </div>
                                             </td>
                                         </tr>
                                     ) : logs.length > 0 ? (
                                         logs.map((log, idx) => (
-                                            <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group">
-                                                <td className="px-8 py-5 text-sm font-bold text-slate-600 dark:text-slate-400 whitespace-nowrap">
-                                                    {new Date(log.created_at).toLocaleString()}
+                                            <tr key={idx} className="hover:bg-muted/20 transition-all group">
+                                                <td className="px-10 py-6 text-xs font-bold text-foreground/80 whitespace-nowrap">
+                                                    {new Date(log.created_at).toLocaleString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    })}
                                                 </td>
-                                                <td className="px-8 py-5">
-                                                    <div className="flex items-center gap-2.5">
-                                                        <div className="p-1.5 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                                                            <Phone className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                                                <td className="px-10 py-6">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="p-2 bg-primary/5 rounded-xl border border-primary/10 group-hover:bg-primary/10 transition-colors">
+                                                            <Phone className="w-4 h-4 text-primary" />
                                                         </div>
-                                                        <span className="text-sm font-bold text-slate-900 dark:text-white">Voice</span>
+                                                        <span className="text-xs font-black uppercase tracking-widest text-foreground">Voice</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-5">
-                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${log.direction === 'inbound'
-                                                            ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20'
-                                                            : 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20'
+                                                <td className="px-10 py-6">
+                                                    <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest border ${log.direction === 'inbound'
+                                                            ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                                                            : 'bg-primary/10 text-primary border-primary/20'
                                                         }`}>
                                                         {log.direction || 'Inbound'}
                                                     </span>
                                                 </td>
-                                                <td className="px-8 py-5 text-sm font-mono font-bold text-slate-600 dark:text-slate-400">
+                                                <td className="px-10 py-6 text-xs font-mono font-black text-foreground/70">
                                                     {log.from === number.phone_number ? log.to : log.from}
                                                 </td>
-                                                <td className="px-8 py-5 text-sm font-bold text-slate-900 dark:text-white">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                                                        {log.duration || '2m 14s'}
-                                                    </div>
+                                                <td className="px-10 py-6 text-xs font-bold text-foreground flex items-center gap-2">
+                                                    <Clock className="w-4 h-4 text-muted-foreground" />
+                                                    {log.duration || '0m 45s'}
                                                 </td>
-                                                <td className="px-8 py-5 text-sm font-black text-slate-900 dark:text-white text-right">
-                                                    ${log.cost?.toFixed(4) || '0.0170'}
+                                                <td className="px-10 py-6 text-xs font-black text-foreground text-right">
+                                                    <span className="text-muted-foreground/50 mr-1">$</span>
+                                                    {log.cost?.toFixed(4) || '0.0150'}
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className="px-8 py-16 text-center">
-                                                <div className="flex flex-col items-center gap-4">
-                                                    <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center opacity-40">
-                                                        <Clock className="w-8 h-8 text-slate-400" />
+                                            <td colSpan={6} className="px-10 py-32 text-center">
+                                                <div className="flex flex-col items-center gap-6">
+                                                    <div className="w-20 h-20 bg-muted rounded-3xl flex items-center justify-center opacity-40">
+                                                        <Clock className="w-10 h-10 text-muted-foreground" />
                                                     </div>
-                                                    <div className="flex flex-col gap-1">
-                                                        <p className="text-sm font-bold text-slate-900 dark:text-white">No Recent Activity</p>
-                                                        <p className="text-xs font-medium text-slate-400">Activity logs will appear here as they occur</p>
+                                                    <div className="flex flex-col gap-2">
+                                                        <p className="text-lg font-black text-foreground tracking-tight">No Activity Records</p>
+                                                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest max-w-[200px] mx-auto leading-relaxed">
+                                                            Logs will be automatically archived here as traffic occurs.
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -345,10 +393,15 @@ const NumberDetails = () => {
                         </div>
                     </div>
 
-                    {/* Footer */}
-                    <footer className="mt-12 py-10 border-t border-slate-200 dark:border-slate-800 text-center">
-                        <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em]">
-                            © 2024 VocalScale Cloud. All rates are in USD.
+                    {/* Detailed Legal Footer */}
+                    <footer className="mt-16 py-12 border-t border-border flex flex-col items-center gap-4">
+                        <div className="flex items-center gap-8 mb-4">
+                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors cursor-pointer">Privacy</span>
+                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors cursor-pointer">Terms</span>
+                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors cursor-pointer">Status</span>
+                        </div>
+                        <p className="text-muted-foreground/40 text-[9px] font-black uppercase tracking-[0.3em] text-center max-w-lg leading-relaxed">
+                            VocalScale Intelligence Platform. Secure Unified Communications Infrastructure. All transactions processed via encrypted Stripe channels.
                         </p>
                     </footer>
                 </div>
@@ -357,21 +410,17 @@ const NumberDetails = () => {
     );
 };
 
-const CapabilityBadge = ({ icon: Icon, label, active }: { icon: any, label: string, active: boolean }) => (
-    <div className={`flex items-center gap-3 px-5 py-3 rounded-xl border transition-all ${active
-            ? 'bg-white dark:bg-slate-800 border-indigo-200 dark:border-indigo-900/50 shadow-sm'
-            : 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-800 opacity-60'
+const CapabilityCard = ({ icon: Icon, label, active }: { icon: any, label: string, active: boolean }) => (
+    <div className={`flex flex-col items-center gap-4 p-6 rounded-2xl border transition-all duration-300 ${active
+            ? 'bg-card border-primary/20 shadow-premium-sm hover:border-primary/40'
+            : 'bg-muted/20 border-border opacity-40 grayscale'
         }`}>
-        <div className={`p-1.5 rounded-lg ${active ? 'bg-green-50 dark:bg-green-900/20' : 'bg-slate-100 dark:bg-slate-700'}`}>
-            {active ? (
-                <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
-            ) : (
-                <XCircle className="w-4 h-4 text-slate-400" />
-            )}
+        <div className={`p-3 rounded-2xl ${active ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+            <Icon className="w-6 h-6" />
         </div>
-        <div className="flex items-center gap-2">
-            <Icon className={`w-4 h-4 ${active ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400'}`} />
-            <span className={`text-sm font-bold ${active ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>{label}</span>
+        <div className="flex flex-col items-center gap-1">
+            <span className={`text-[10px] font-black uppercase tracking-widest ${active ? 'text-foreground' : 'text-muted-foreground'}`}>{label}</span>
+            {active && <span className="text-[8px] font-black text-success uppercase tracking-wider px-1.5 py-0.5 bg-success/10 rounded-full">Active</span>}
         </div>
     </div>
 );
