@@ -3,14 +3,15 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
+  MapPin,
   Check,
+  Smartphone,
   ArrowRight,
+  ArrowLeft,
   Loader2,
   AlertCircle,
-  Smartphone,
-  Info,
-  MapPin,
-  ArrowLeft
+  ShieldAlert,
+  Info
 } from 'lucide-react';
 import { env } from '../../config/env';
 import { getAuthHeader } from '../../lib/api';
@@ -127,10 +128,16 @@ const GetNewNumber = () => {
   if (checkingSubaccount) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            <p className="text-muted-foreground font-medium">Verifying your business account...</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center animate-pulse">
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 size-4 bg-success rounded-full border-2 border-background animate-bounce" />
+          </div>
+          <div className="text-center">
+            <h3 className="text-lg font-black uppercase tracking-widest text-foreground mb-1">Authenticating</h3>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.2em] opacity-60">Verifying enterprise subaccount status</p>
           </div>
         </div>
       </DashboardLayout>
@@ -142,28 +149,29 @@ const GetNewNumber = () => {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[60vh] p-6">
-          <div className="max-w-md w-full bg-card rounded-2xl border border-border shadow-premium-lg p-8 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto mb-6">
-              <AlertCircle className="w-8 h-8" />
+          <div className="max-w-md w-full bg-card rounded-[2.5rem] border border-border shadow-premium p-10 text-center relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-destructive" />
+            <div className="w-20 h-20 rounded-3xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto mb-8 shadow-sm">
+              <AlertCircle className="w-10 h-10" />
             </div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">Verification Problem</h2>
-            <p className="text-muted-foreground mb-8">{error}</p>
-            <div className="flex flex-col gap-3">
+            <h2 className="text-3xl font-black text-foreground mb-3 tracking-tight leading-none">Status Mismatch</h2>
+            <p className="text-muted-foreground font-medium mb-10 leading-relaxed text-sm">{error}</p>
+            <div className="flex flex-col gap-4">
               <button
                 onClick={() => {
                   setError(null);
                   setCheckingSubaccount(true);
                   checkSubaccountStatus();
                 }}
-                className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all shadow-glow-blue flex items-center justify-center gap-2"
+                className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-glow-blue flex items-center justify-center gap-2"
               >
-                Try Again
+                Retry Verification
               </button>
               <button
                 onClick={() => navigate('/dashboard/voice-setup')}
-                className="w-full py-3 bg-secondary text-secondary-foreground font-semibold rounded-xl hover:bg-secondary/80 transition-all"
+                className="w-full py-4 bg-muted text-muted-foreground font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-muted/80 transition-all border border-border"
               >
-                Go Back
+                Return to Overview
               </button>
             </div>
           </div>
@@ -193,7 +201,7 @@ const GetNewNumber = () => {
         body: JSON.stringify({
           location: searchQuery,
           type_filter: typeFilter === 'toll-free' ? 'tollfree' : typeFilter,
-          limit: 8
+          limit: 12
         }),
       });
 
@@ -204,7 +212,6 @@ const GetNewNumber = () => {
 
       const data = await response.json();
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mappedNumbers: PhoneNumber[] = (data.available || []).map((item: any) => ({
         phone_number: item.phone_number,
         number: item.friendly_name,
@@ -220,7 +227,6 @@ const GetNewNumber = () => {
       } else {
         setSelectedNumber(null);
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to find numbers. Please try a different location.");
@@ -260,7 +266,6 @@ const GetNewNumber = () => {
       } else {
         throw new Error(result.error || 'Failed to purchase number');
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to activate number. Please try again.");
@@ -271,277 +276,317 @@ const GetNewNumber = () => {
 
   return (
     <DashboardLayout>
-      {/* Main scrollable container */}
-      <div className="min-h-full pb-32">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          
-          {/* Back Button & Header */}
-          <div className="mb-8">
+      <div className="flex-1 flex flex-col bg-background dark:bg-slate-950 min-h-screen scrollbar-premium">
+        {/* Progress Header */}
+        <header className="border-b border-border bg-card px-8 py-5 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+          <div className="flex items-center gap-6">
             <button
               onClick={() => navigate('/dashboard/voice-setup')}
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground font-medium mb-4 transition-colors"
+              className="p-2.5 rounded-xl hover:bg-muted transition-colors group"
             >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Voice Setup
+              <ArrowLeft className="w-5 h-5 text-muted-foreground group-hover:text-foreground group-active:-translate-x-1 transition-all" />
             </button>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-              Get a New Number
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Establish a local presence or go toll-free. Your AI receptionist is ready immediately.
-            </p>
+            <div className="flex flex-col">
+              <h2 className="text-base font-black tracking-tight text-foreground uppercase">Provision Infrastructure</h2>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest opacity-60">Step 2: Number Acquisition</p>
+            </div>
           </div>
+          <div className="flex items-center gap-2">
+            {[1, 2, 3].map((step) => (
+              <div
+                key={step}
+                className={`h-1.5 w-8 rounded-full transition-all duration-500 ${step <= 2 ? 'bg-primary shadow-glow-blue' : 'bg-muted'}`}
+              />
+            ))}
+          </div>
+        </header>
 
-          {/* Limit Reached Warning */}
-          {limitReached ? (
-            <div className="bg-amber-50 dark:bg-amber-950 rounded-2xl border border-amber-200 dark:border-amber-800 p-6 sm:p-8 mb-8">
-              <div className="flex flex-col items-center text-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center text-amber-600 dark:text-amber-400">
-                  <AlertCircle size={28} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-amber-800 dark:text-amber-200 mb-2">
-                    Phone Number Limit Reached
-                  </h3>
-                  <p className="text-sm text-amber-700 dark:text-amber-300 max-w-lg mx-auto">
-                    {limitMessage}
-                  </p>
-                  <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                    Please upgrade your plan to add more numbers.
-                  </p>
-                </div>
-                <div className="flex gap-3 mt-2">
-                  <button
-                    onClick={() => navigate('/dashboard/voice-setup')}
-                    className="px-5 py-2.5 rounded-xl border border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 font-semibold text-sm hover:bg-amber-100 dark:hover:bg-amber-900 transition-all bg-white dark:bg-transparent"
-                  >
-                    Cancel
-                  </button>
-                  <Link
-                    to="/dashboard/billing"
-                    className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm shadow-md transition-all flex items-center gap-2"
-                  >
-                    Upgrade Plan
-                  </Link>
+        <div className="flex-1 overflow-y-auto pb-40">
+          <div className="max-w-5xl mx-auto px-6 py-12 w-full space-y-12">
+
+            <div className="space-y-4">
+              <h1 className="text-5xl font-black text-foreground tracking-tighter leading-none mb-6">
+                Acquire Local <span className="text-primary italic">Presence.</span>
+              </h1>
+              <p className="text-muted-foreground text-lg font-medium max-w-2xl leading-relaxed">
+                Choose a local or toll-free identity for your AI. Search by region or area code to match your business footprint.
+              </p>
+            </div>
+
+            {/* Limit Reached Warning */}
+            {limitReached ? (
+              <div className="bg-amber-500/5 dark:bg-amber-500/5 rounded-[2.5rem] border border-amber-500/20 p-12 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-amber-500/10 transition-all duration-1000" />
+                <div className="flex flex-col items-center text-center gap-6 relative z-10">
+                  <div className="w-20 h-20 rounded-3xl bg-amber-500/20 flex items-center justify-center text-amber-600 shadow-sm border border-amber-500/10">
+                    <ShieldAlert size={40} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-foreground tracking-tight mb-3">
+                      Allocation Limit <span className="text-amber-500">Exceeded</span>
+                    </h3>
+                    <p className="text-muted-foreground font-medium max-w-lg mx-auto leading-relaxed">
+                      {limitMessage} Upgrade your workspace capacity to provision additional telecommunication nodes.
+                    </p>
+                  </div>
+                  <div className="flex gap-4 mt-4">
+                    <button
+                      onClick={() => navigate('/dashboard/voice-setup')}
+                      className="px-8 py-3.5 rounded-2xl bg-muted text-muted-foreground font-black uppercase tracking-widest text-[10px] hover:bg-muted/80 transition-all border border-border"
+                    >
+                      Dismiss
+                    </button>
+                    <Link
+                      to="/dashboard/billing"
+                      className="px-8 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[10px] shadow-glow-amber transition-all hover:-translate-y-1"
+                    >
+                      Expand Plan
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : checkingLimits ? (
-            <div className="bg-card rounded-2xl border border-border p-12 mb-8 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 text-primary animate-spin" />
-            </div>
-          ) : (
-            /* Search Card */
-            <div className="bg-card rounded-2xl border border-border shadow-premium-sm p-4 sm:p-6 mb-8">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <div className="flex-grow relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <input
-                    className="w-full h-12 pl-12 pr-4 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all text-sm font-medium"
-                    placeholder="Search by City, State, or ZIP (e.g. 90210)"
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && searchNumbers()}
-                  />
+            ) : checkingLimits ? (
+              <div className="bg-card rounded-[2.5rem] border border-border p-24 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                  <Loader2 className="w-10 h-10 text-primary animate-spin" />
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest animate-pulse">Checking quota...</span>
                 </div>
+              </div>
+            ) : (
+              /* Search Card */
+              <div className="bg-card rounded-[2.5rem] border border-border shadow-premium-lg p-8 group relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-2xl group-hover:bg-primary/10 transition-all duration-700" />
+
+                <div className="flex flex-col sm:flex-row gap-4 relative z-10">
+                  <div className="flex-grow relative group/input">
+                    <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+                      <MapPin className="w-6 h-6 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
+                    </div>
+                    <input
+                      className="w-full h-18 pl-16 pr-6 rounded-[1.25rem] border border-border bg-muted/30 text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-lg font-bold"
+                      placeholder="Enter City, State, or area code (e.g. 212)"
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && searchNumbers()}
+                    />
+                  </div>
+                  <button
+                    onClick={searchNumbers}
+                    disabled={searching}
+                    className="h-18 px-10 bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-[0.15em] text-[11px] rounded-[1.25rem] transition-all shadow-glow-blue flex items-center justify-center gap-3 disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5"
+                  >
+                    {searching ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        <Search className="w-5 h-5" />
+                        Execute Search
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Results Header */}
+            {!limitReached && !checkingLimits && hasSearched && (
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
+                    <Smartphone className="w-5 h-5" />
+                  </div>
+                  Available Nodes
+                </h3>
+                <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-xl border border-border">
+                  <div className="size-1.5 rounded-full bg-success animate-pulse" />
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                    {numbers.length} Results Filtered
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {error && !error.includes('business account') && (
+              <div className="bg-destructive/5 border border-destructive/20 text-destructive p-6 rounded-2xl flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                <div className="p-2 bg-destructive/10 rounded-xl">
+                  <ShieldAlert className="w-5 h-5 shrink-0" />
+                </div>
+                <p className="text-xs font-black uppercase tracking-widest">{error}</p>
+              </div>
+            )}
+
+            {/* Loading Grid Skeleton */}
+            {searching && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="h-48 rounded-[2rem] bg-card border border-border animate-pulse flex flex-col p-8 gap-4">
+                    <div className="h-6 w-3/4 bg-muted rounded-full" />
+                    <div className="h-4 w-1/2 bg-muted rounded-full" />
+                    <div className="mt-auto h-8 w-full bg-muted rounded-xl" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Results Grid */}
+            {!searching && numbers.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {numbers.map((item, index) => {
+                  const isSelected = selectedNumber?.phone_number === item.phone_number;
+                  return (
+                    <div
+                      key={item.phone_number}
+                      onClick={() => setSelectedNumber(item)}
+                      className={`group relative flex flex-col rounded-[2rem] p-8 cursor-pointer transition-all duration-500 border-2 overflow-hidden ${isSelected
+                        ? 'border-primary bg-primary/5 shadow-premium-lg translate-y-[-4px]'
+                        : 'border-border bg-card hover:border-primary/30 hover:bg-muted/50 hover:shadow-premium-sm hover:-translate-y-1'
+                        }`}
+                    >
+                      {/* Selection indicator */}
+                      <div className={`absolute top-6 right-6 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${isSelected
+                        ? 'bg-primary scale-110 shadow-glow-blue'
+                        : 'border-2 border-border group-hover:border-primary/50 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0'
+                        }`}>
+                        {isSelected && <Check className="w-4 h-4 text-primary-foreground" strokeWidth={3} />}
+                      </div>
+
+                      {/* Badge */}
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {index === 0 && !item.badge && (
+                          <span className="px-3 py-1 text-[8px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 rounded-lg border border-primary/20">
+                            Optimal Match
+                          </span>
+                        )}
+                        {item.badge && (
+                          <span className="px-3 py-1 text-[8px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 rounded-lg border border-primary/20">
+                            {item.badge}
+                          </span>
+                        )}
+                        <span className="px-3 py-1 text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground bg-muted rounded-lg border border-border/50">
+                          Local
+                        </span>
+                      </div>
+
+                      {/* Number */}
+                      <h4 className={`text-2xl font-black tracking-tighter mb-2 ${isSelected ? 'text-primary' : 'text-foreground'
+                        }`}>
+                        {item.number}
+                      </h4>
+
+                      {/* Location */}
+                      <p className="text-xs text-muted-foreground font-black uppercase tracking-widest flex items-center gap-2 opacity-60">
+                        <MapPin className="w-3.5 h-3.5" />
+                        {item.location}
+                      </p>
+
+                      {/* Price */}
+                      <div className="mt-12 pt-6 border-t border-border/50 flex items-center justify-between">
+                        <span className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">Monthly Cycle</span>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-[10px] text-muted-foreground/50 font-black">$</span>
+                          <span className="text-2xl font-black text-foreground">{item.monthly_cost.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Empty State - No Results */}
+            {!searching && numbers.length === 0 && hasSearched && !error && (
+              <div className="flex flex-col items-center justify-center py-24 bg-card rounded-[2.5rem] border-2 border-dashed border-border group">
+                <div className="w-24 h-24 rounded-[2rem] bg-muted border border-border flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-500">
+                  <Search className="w-10 h-10 text-muted-foreground/30" />
+                </div>
+                <div className="text-center">
+                  <p className="text-xl font-black text-foreground tracking-tight mb-2">Zero Coverage Found</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest opacity-60 max-w-[240px] leading-relaxed mx-auto">
+                    Global inventory fluctuates daily. Try a neighboring area code or search by city name.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Empty State - Initial */}
+            {!searching && numbers.length === 0 && !hasSearched && !limitReached && !checkingLimits && (
+              <div className="flex flex-col items-center justify-center py-32 bg-card rounded-[2.5rem] border-2 border-dashed border-border relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full -ml-32 -mt-32 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                <div className="w-24 h-24 rounded-[2rem] bg-muted/50 border border-border flex items-center justify-center mb-8 shadow-sm group-hover:rotate-12 transition-transform duration-500">
+                  <MapPin className="w-10 h-10 text-muted-foreground/30" />
+                </div>
+                <div className="text-center max-w-sm mx-auto space-y-4">
+                  <p className="text-2xl font-black text-foreground tracking-tight leading-none">Awaiting Location Logic</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest opacity-60 leading-relaxed">
+                    Input a geographic identifier above to fetch active telecom infrastructure available in your desired region.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Dynamic Action Bar */}
+        {!limitReached && !checkingLimits && (
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-4xl z-50 animate-in slide-in-from-bottom-8 duration-500">
+            <div className={`bg-slate-900 text-white rounded-[2.5rem] p-4 pl-8 shadow-premium-2xl border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 transition-all duration-500 ${selectedNumber ? 'opacity-100 scale-100' : 'opacity-40 scale-95 grayscale pointer-events-none'}`}>
+
+              {/* Selected Number Info */}
+              <div className="flex items-center gap-6 w-full sm:w-auto">
+                {selectedNumber ? (
+                  <div className="flex items-center gap-6 w-full">
+                    <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10 shadow-inner group">
+                      <Smartphone className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div>
+                      <p className="text-[9px] text-white/40 uppercase font-black tracking-[0.3em] mb-1">Configuration Target</p>
+                      <h4 className="text-2xl font-black text-white tracking-tighter leading-none">{selectedNumber.number}</h4>
+                    </div>
+                    <div className="h-10 w-px bg-white/10 hidden md:block" />
+                    <div className="hidden md:block">
+                      <p className="text-[9px] text-white/40 uppercase font-black tracking-[0.3em] mb-1">Provision Cost</p>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-xl font-black text-white">${selectedNumber.monthly_cost.toFixed(2)}</span>
+                        <span className="text-[8px] text-white/30 font-black uppercase tracking-wider">/ MO</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-4 text-white/40">
+                    <div className="size-10 rounded-full border border-white/10 flex items-center justify-center">
+                      <Info className="w-4 h-4" />
+                    </div>
+                    <p className="text-xs font-black uppercase tracking-widest">Select a Node to Provision</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 w-full sm:w-auto">
                 <button
-                  onClick={searchNumbers}
-                  disabled={searching}
-                  className="h-12 px-6 sm:px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all shadow-glow-blue flex items-center justify-center gap-2 min-w-[140px] disabled:opacity-50"
+                  onClick={handleActivate}
+                  disabled={!selectedNumber || loading}
+                  className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-[0.2em] text-[10px] shadow-glow-blue transition-all flex items-center justify-center gap-3 disabled:bg-white/5 disabled:text-white/20 disabled:shadow-none hover:-translate-y-1 active:scale-95"
                 >
-                  {searching ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Initializing...
+                    </>
                   ) : (
                     <>
-                      <Search className="w-4 h-4" />
-                      Search
+                      Secure Number
+                      <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
               </div>
             </div>
-          )}
-
-          {/* Results Header */}
-          {!limitReached && !checkingLimits && (
-            <div className="mb-6 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                  <Smartphone className="w-4 h-4" />
-                </div>
-                Available Numbers
-              </h3>
-              <span className="text-xs font-medium text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
-                {numbers.length} found
-              </span>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {error && !error.includes('business account') && (
-            <div className="mb-6 bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <p className="text-sm font-medium">{error}</p>
-            </div>
-          )}
-
-          {/* Loading State */}
-          {searching && (
-            <div className="flex flex-col items-center justify-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed border-border">
-              <div className="w-16 h-16 rounded-full bg-card border border-border flex items-center justify-center mb-4 shadow-sm">
-                <Loader2 className="w-8 h-8 text-primary animate-spin" />
-              </div>
-              <p className="text-muted-foreground font-medium text-sm">Finding available numbers...</p>
-            </div>
-          )}
-
-          {/* Results Grid */}
-          {!searching && numbers.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {numbers.map((item, index) => {
-                const isSelected = selectedNumber?.phone_number === item.phone_number;
-                return (
-                  <div
-                    key={item.phone_number}
-                    onClick={() => setSelectedNumber(item)}
-                    className={`group relative flex flex-col rounded-2xl p-5 cursor-pointer transition-all duration-200 border-2 ${
-                      isSelected
-                        ? 'border-primary bg-primary/5 shadow-md ring-4 ring-primary/10'
-                        : 'border-border bg-card hover:border-primary/30 hover:shadow-premium hover:-translate-y-1'
-                    }`}
-                  >
-                    {/* Selection indicator */}
-                    <div className={`absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                      isSelected
-                        ? 'bg-primary scale-110 shadow-glow-blue'
-                        : 'border-2 border-border group-hover:border-primary/50'
-                    }`}>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-primary-foreground" strokeWidth={3} />}
-                    </div>
-
-                    {/* Badge */}
-                    {index === 0 && !item.badge && (
-                      <span className="inline-flex self-start px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 rounded-md mb-3">
-                        Best Match
-                      </span>
-                    )}
-                    {item.badge && (
-                      <span className="inline-flex self-start px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 rounded-md mb-3">
-                        {item.badge}
-                      </span>
-                    )}
-
-                    {/* Number */}
-                    <h4 className={`text-xl font-bold tracking-tight font-mono mb-1 ${
-                      isSelected ? 'text-primary' : 'text-foreground'
-                    }`}>
-                      {item.number}
-                    </h4>
-                    
-                    {/* Location */}
-                    <p className="text-xs text-muted-foreground flex items-center gap-1 mb-4">
-                      <MapPin className="w-3 h-3" />
-                      {item.location}
-                    </p>
-
-                    {/* Price */}
-                    <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground font-medium">Monthly</span>
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="text-xs text-muted-foreground">$</span>
-                        <span className="text-lg font-bold text-foreground">{item.monthly_cost.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Empty State - No Results */}
-          {!searching && numbers.length === 0 && hasSearched && !error && (
-            <div className="flex flex-col items-center justify-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed border-border">
-              <div className="w-16 h-16 rounded-full bg-card border border-border flex items-center justify-center mb-4 shadow-sm">
-                <Search className="w-8 h-8 text-muted-foreground/50" />
-              </div>
-              <p className="text-muted-foreground font-medium text-sm">No numbers found. Try a different location.</p>
-            </div>
-          )}
-
-          {/* Empty State - Initial */}
-          {!searching && numbers.length === 0 && !hasSearched && !limitReached && !checkingLimits && (
-            <div className="flex flex-col items-center justify-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed border-border">
-              <div className="w-16 h-16 rounded-full bg-card border border-border flex items-center justify-center mb-4 shadow-sm">
-                <MapPin className="w-8 h-8 text-muted-foreground/50" />
-              </div>
-              <p className="text-muted-foreground font-medium text-sm">Enter a location to find available numbers</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Fixed Footer Bar */}
-      {!limitReached && !checkingLimits && (
-        <div className="fixed bottom-0 left-0 right-0 md:left-[288px] bg-card/95 backdrop-blur-lg border-t border-border p-4 sm:p-5 z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            
-            {/* Selected Number Info */}
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              {selectedNumber ? (
-                <div className="flex items-center gap-4 w-full">
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <Smartphone className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-grow min-w-0">
-                    <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mb-0.5">Selected</p>
-                    <p className="text-base sm:text-lg font-bold text-primary font-mono truncate">{selectedNumber.number}</p>
-                  </div>
-                  <div className="h-10 w-px bg-border hidden sm:block" />
-                  <div className="hidden sm:block">
-                    <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mb-0.5">Monthly</p>
-                    <p className="text-base sm:text-lg font-bold text-foreground">
-                      ${selectedNumber.monthly_cost.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <Info className="w-5 h-5" />
-                  <p className="text-sm font-medium">Select a number to continue</p>
-                </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <button
-                onClick={() => navigate('/dashboard/voice-setup')}
-                className="flex-1 sm:flex-none px-6 py-3 rounded-xl border border-border bg-background text-muted-foreground font-semibold text-sm hover:bg-muted hover:text-foreground transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleActivate}
-                disabled={!selectedNumber || loading}
-                className="flex-[2] sm:flex-none px-8 py-3 rounded-xl bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground text-primary-foreground font-semibold text-sm shadow-glow-blue transition-all flex items-center justify-center gap-2 disabled:shadow-none"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Activating...
-                  </>
-                ) : (
-                  <>
-                    Activate Number
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-</div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </DashboardLayout>
   );
 };
