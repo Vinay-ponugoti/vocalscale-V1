@@ -6,13 +6,11 @@ import {
   PlusCircle,
   Search,
   Link as LinkIcon,
-  Filter,
-  Download,
-  Settings2,
   Phone,
-  ArrowUpRight,
+  Settings2,
   X,
-  Loader2
+  Loader2,
+  ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePhoneNumbers } from '../../hooks/usePhoneNumbers';
@@ -21,39 +19,16 @@ import { getAuthHeader } from '../../lib/api';
 
 import type { PhoneNumber } from '../../types/voice';
 
-// ============ CUSTOM HOOKS ============
-const useWindowSize = () => {
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
-    height: typeof window !== 'undefined' ? window.innerHeight : 800,
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return windowSize;
-};
-
 const VoiceSetup = () => {
   const navigate = useNavigate();
-  const { width } = useWindowSize();
-  const isMobile = width < 768;
   const { numbers, loading, error, refetch, updateLocalNumber, setNumbers } = usePhoneNumbers();
 
   const [editingNumber, setEditingNumber] = useState<PhoneNumber | null>(null);
   const [editName, setEditName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleEditClick = (num: PhoneNumber) => {
+  const handleEditClick = (num: PhoneNumber, e: React.MouseEvent) => {
+    e.stopPropagation();
     setEditingNumber(num);
     setEditName(num.friendly_name || num.number || num.phone_number);
   };
@@ -89,7 +64,8 @@ const VoiceSetup = () => {
     }
   };
 
-  const handleStatusChange = async (id: string, currentStatus: string) => {
+  const handleStatusChange = async (id: string, currentStatus: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!id) return;
 
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
@@ -129,25 +105,30 @@ const VoiceSetup = () => {
   };
 
   return (
-    <DashboardLayout fullWidth>
-      <div className={`w-full ${isMobile ? 'p-3' : 'p-4 md:p-8 2xl:p-12'} space-y-4 md:space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full`}>
-
+    <DashboardLayout>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
         {/* Header Section */}
-        <div className={`flex flex-col ${isMobile ? 'gap-1' : 'gap-2'}`}>
-          <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-black text-slate-900 tracking-tight`}>Phone Numbers</h1>
-          <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-slate-500 font-medium`}>Manage your Twilio numbers and provision new lines.</p>
+        <div className="mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+            Phone Numbers
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your phone numbers and provision new lines for your AI receptionist.
+          </p>
         </div>
 
+        {/* Error Alert */}
         {error && (
-          <div className="bg-red-50 border border-red-100 text-red-700 px-6 py-4 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2">
+          <div className="mb-6 bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl flex items-center gap-3">
             <Plus className="w-5 h-5 shrink-0 rotate-45" />
-            <div className="flex flex-col">
-              <p className="text-sm font-bold">Error loading phone numbers</p>
-              <p className="text-xs font-medium opacity-80">{error}</p>
+            <div className="flex-1">
+              <p className="text-sm font-semibold">Error loading phone numbers</p>
+              <p className="text-xs opacity-80">{error}</p>
             </div>
             <button
               onClick={() => refetch()}
-              className="ml-auto text-xs font-black uppercase tracking-widest bg-white border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors"
+              className="text-xs font-semibold bg-card border border-destructive/20 px-4 py-2 rounded-lg hover:bg-destructive/5 transition-colors"
             >
               Retry
             </button>
@@ -155,206 +136,148 @@ const VoiceSetup = () => {
         )}
 
         {/* Main Content Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
-
-          {/* Tabs */}
-          <div className="flex border-b border-slate-100 px-1 md:px-2 pt-1 md:pt-2 shrink-0 bg-slate-50/30 overflow-x-auto scrollbar-hide">
-            <button className={`flex items-center gap-2 md:gap-3 ${isMobile ? 'px-4 py-3 text-xs' : 'px-6 py-4 text-sm'} font-bold border-b-2 border-indigo-600 bg-white text-indigo-700 shadow-sm rounded-t-lg transition-colors mb-[-1px] whitespace-nowrap`}>
-              <Smartphone className={`${isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
-              My Numbers
-              <span className={`ml-1 md:ml-2 bg-indigo-50 text-indigo-600 ${isMobile ? 'text-[10px]' : 'text-xs'} py-0.5 px-2 rounded-full border border-indigo-100`}>{numbers.length}</span>
-            </button>
-            <button
-              onClick={() => navigate('/dashboard/voice-setup/setup-subaccount')}
-              className={`flex items-center gap-2 md:gap-3 ${isMobile ? 'px-4 py-3 text-xs' : 'px-6 py-4 text-sm'} font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm rounded-t-lg transition-all whitespace-nowrap`}
-            >
-              <PlusCircle className={`${isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
-              Get New Number
-            </button>
-          </div>
-
-          {/* Toolbar */}
-          <div className={`${isMobile ? 'p-3' : 'p-4'} border-b border-slate-100 flex flex-col xl:flex-row xl:items-center justify-between gap-3 md:gap-4 shrink-0 bg-white`}>
-            <div className="relative w-full xl:w-[400px] group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
-              </div>
+        <div className="bg-card border border-border rounded-2xl shadow-premium-sm overflow-hidden">
+          
+          {/* Action Bar */}
+          <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+            {/* Search */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
-                className={`block w-full pl-10 pr-4 ${isMobile ? 'py-2' : 'py-2.5'} border border-slate-200 rounded-xl leading-5 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium shadow-sm`}
+                className="w-full pl-10 pr-4 py-2.5 border border-input rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all text-sm"
                 placeholder="Search numbers..."
                 type="text"
               />
             </div>
-            <div className={`flex ${isMobile ? 'grid grid-cols-2' : 'flex-wrap'} gap-2 md:gap-3`}>
+            
+            {/* Action Buttons */}
+            <div className="flex gap-3">
               <button
                 onClick={() => navigate('/dashboard/voice-setup/existing')}
-                className={`flex items-center justify-center gap-2 ${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2.5 text-sm'} border border-slate-200 bg-white rounded-xl font-bold text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md transition-all group`}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border bg-background rounded-xl font-medium text-sm text-muted-foreground hover:border-primary/30 hover:text-foreground transition-all"
               >
-                <LinkIcon className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
-                {isMobile ? 'Add' : 'Add Existing'}
+                <LinkIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Add Existing</span>
+                <span className="sm:hidden">Add</span>
               </button>
-              <div className="h-9 w-px bg-slate-200 hidden xl:block"></div>
-              <button className={`flex items-center justify-center gap-2 ${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2.5 text-sm'} border border-slate-200 bg-white rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm`}>
-                <Filter className="w-4 h-4" />
-                Filter
-              </button>
-              <button className={`flex items-center justify-center gap-2 ${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2.5 text-sm'} border border-slate-200 bg-white rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm ${isMobile ? 'hidden' : ''}`}>
-                <Download className="w-4 h-4" />
-                Export
+              <button
+                onClick={() => navigate('/dashboard/voice-setup/buy')}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm shadow-glow-blue hover:bg-primary/90 transition-all"
+              >
+                <PlusCircle className="w-4 h-4" />
+                <span className="hidden sm:inline">Get New Number</span>
+                <span className="sm:hidden">New</span>
               </button>
             </div>
           </div>
 
           {/* Content Area */}
-          <div className={`${isMobile ? 'p-3' : 'p-6'} flex flex-col bg-white min-h-[400px]`}>
-
+          <div className="p-4 sm:p-6">
+            
+            {/* Loading State */}
             {loading ? (
-              <div className="flex flex-col gap-4">
+              <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className={`${isMobile ? 'flex flex-col gap-3 p-4' : 'grid grid-cols-12 px-6 py-5 items-center'} rounded-2xl border border-slate-100 bg-slate-50/50`}>
-                    <div className={`${isMobile ? 'w-full' : 'col-span-4'} flex items-center gap-4`}>
-                      <div className="w-12 h-12 rounded-full bg-slate-200 animate-pulse" />
-                      <div className="flex flex-col gap-2.5">
-                        <div className="h-4 w-32 bg-slate-200 rounded animate-pulse" />
-                        <div className="h-3.5 w-24 bg-slate-200 rounded animate-pulse" />
-                      </div>
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-muted/30 animate-pulse">
+                    <div className="w-12 h-12 rounded-xl bg-muted" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-32 bg-muted rounded" />
+                      <div className="h-3 w-24 bg-muted rounded" />
                     </div>
-                    {!isMobile && (
-                      <>
-                        <div className="col-span-3">
-                          <div className="h-7 w-20 bg-slate-200 rounded-full animate-pulse" />
-                        </div>
-                        <div className="col-span-3 flex gap-2">
-                          <div className="h-6 w-16 bg-slate-200 rounded animate-pulse" />
-                          <div className="h-6 w-16 bg-slate-200 rounded animate-pulse" />
-                        </div>
-                        <div className="col-span-2" />
-                      </>
-                    )}
+                    <div className="h-6 w-16 bg-muted rounded-full" />
                   </div>
                 ))}
               </div>
             ) : numbers.length > 0 ? (
-              <div className="flex flex-col gap-3">
-                {/* Header Row - Hide on mobile */}
-                {!isMobile && (
-                  <div className="grid grid-cols-12 px-6 py-3 text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
-                    <div className="col-span-4">Number Details</div>
-                    <div className="col-span-3">Status</div>
-                    <div className="col-span-3">Capabilities</div>
-                    <div className="col-span-2 text-right">Actions</div>
-                  </div>
-                )}
-
-                {/* Items */}
-                {numbers.map((num: PhoneNumber, idx) => (
+              <div className="space-y-3">
+                {numbers.map((num: PhoneNumber) => (
                   <div
-                    key={idx}
+                    key={num.id}
                     onClick={() => navigate(`/dashboard/voice-setup/numbers/${num.id}`)}
-                    className={`group cursor-pointer ${isMobile ? 'flex flex-col p-4 gap-4' : 'grid grid-cols-12 px-6 py-5 items-center'} rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all bg-white relative overflow-hidden`}
+                    className="group flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:border-primary/30 hover:shadow-premium transition-all cursor-pointer"
                   >
-                    {/* Hover state indicator */}
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                    <div className={`${isMobile ? 'w-full' : 'col-span-4'} flex items-center justify-between`}>
-                      <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-slate-50 text-indigo-600 flex items-center justify-center border border-slate-100 shrink-0 group-hover:bg-indigo-50 transition-colors`}>
-                          <Phone className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="font-black text-slate-900 text-sm md:text-base tracking-tight">{num.phone_number || num.phoneNumber || '(415) 555-0123'}</p>
-                          <p className="text-[10px] md:text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">{num.friendly_name || num.number || 'Main Business Line'}</p>
-                        </div>
-                      </div>
-                      {isMobile && (
-                        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            onClick={() => handleEditClick(num)}
-                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
-                          >
-                            <Settings2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
+                    {/* Icon */}
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
+                      <Phone className="w-5 h-5" />
                     </div>
-
-                    <div
-                      className={`${isMobile ? 'flex items-center justify-between w-full pt-3 border-t border-slate-50' : 'col-span-3 flex items-center'}`}
+                    
+                    {/* Details */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-foreground truncate">
+                        {num.phone_number || num.phoneNumber || '(415) 555-0123'}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {num.friendly_name || num.number || 'Main Business Line'}
+                      </p>
+                    </div>
+                    
+                    {/* Status Toggle */}
+                    <div 
+                      className="flex items-center gap-3"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <div className="flex items-center">
-                        <button
-                          onClick={() => handleStatusChange(num.id, num.status || 'inactive')}
-                          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${num.status === 'active' ? 'bg-indigo-600' : 'bg-slate-200 dark:bg-slate-700'}`}
-                          role="switch"
-                          aria-checked={num.status === 'active'}
-                        >
-                          <span
-                            aria-hidden="true"
-                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${num.status === 'active' ? 'translate-x-5' : 'translate-x-0'}`}
-                          />
-                        </button>
-                        <span className={`ml-3 text-[10px] md:text-xs font-black uppercase tracking-widest ${num.status === 'active' ? 'text-indigo-600' : 'text-slate-400'}`}>
-                          {num.status === 'active' ? 'Active' : 'Inactive'}
+                      <button
+                        onClick={(e) => handleStatusChange(num.id, num.status || 'inactive', e)}
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                          num.status === 'active' ? 'bg-primary' : 'bg-muted'
+                        }`}
+                        role="switch"
+                        aria-checked={num.status === 'active'}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition duration-200 ${
+                            num.status === 'active' ? 'translate-x-5' : 'translate-x-0'
+                          }`}
+                        />
+                      </button>
+                      <span className={`text-xs font-semibold min-w-[50px] ${
+                        num.status === 'active' ? 'text-primary' : 'text-muted-foreground'
+                      }`}>
+                        {num.status === 'active' ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                    
+                    {/* Capabilities */}
+                    <div className="hidden sm:flex items-center gap-2">
+                      {num.capabilities?.voice && (
+                        <span className="px-2 py-1 bg-muted text-muted-foreground rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                          Voice
                         </span>
-                      </div>
-
-                      {isMobile && (
-                        <div className="flex items-center gap-1.5">
-                          {num.capabilities?.voice && (
-                            <span className="px-2 py-0.5 bg-slate-50 text-slate-500 rounded-md text-[9px] font-black uppercase tracking-wider border border-slate-100">Voice</span>
-                          )}
-                          {num.capabilities?.sms && (
-                            <span className="px-2 py-0.5 bg-slate-50 text-slate-500 rounded-md text-[9px] font-black uppercase tracking-wider border border-slate-100">SMS</span>
-                          )}
-                        </div>
+                      )}
+                      {num.capabilities?.sms && (
+                        <span className="px-2 py-1 bg-muted text-muted-foreground rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                          SMS
+                        </span>
                       )}
                     </div>
-
-                    {!isMobile && (
-                      <>
-                        <div className="col-span-3 flex items-center gap-2">
-                          {num.capabilities?.voice && (
-                            <span className="px-3 py-1 bg-slate-50 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-100">Voice</span>
-                          )}
-                          {num.capabilities?.sms && (
-                            <span className="px-3 py-1 bg-slate-50 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-100">SMS</span>
-                          )}
-                        </div>
-                        <div className="col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            onClick={() => handleEditClick(num)}
-                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-100 rounded-xl transition-all"
-                            title="Quick Edit"
-                          >
-                            <Settings2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => navigate(`/dashboard/voice-setup/numbers/${num.id}`)}
-                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-100 rounded-xl transition-all"
-                            title="View Details"
-                          >
-                            <ArrowUpRight className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </>
-                    )}
+                    
+                    {/* Actions */}
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={(e) => handleEditClick(num, e)}
+                        className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                        title="Edit"
+                      >
+                        <Settings2 className="w-4 h-4" />
+                      </button>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-
-              <div className="flex flex-col items-center justify-center flex-1 h-full py-12 text-center">
-                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 border border-slate-200">
-                  <Smartphone className="w-8 h-8 text-slate-400" />
+              /* Empty State */
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+                  <Smartphone className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">No Phone Numbers</h3>
-                <p className="text-slate-500 max-w-sm mb-8 text-sm leading-relaxed">
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Phone Numbers</h3>
+                <p className="text-muted-foreground max-w-sm mb-8 text-sm">
                   You haven't connected any phone numbers yet. Get started by provisioning a new line.
                 </p>
                 <button
-                  onClick={() => navigate('/dashboard/voice-setup/setup-subaccount')}
-                  className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition-all hover:-translate-y-0.5"
+                  onClick={() => navigate('/dashboard/voice-setup/buy')}
+                  className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-xl font-semibold shadow-glow-blue transition-all"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Get New Number</span>
@@ -363,69 +286,75 @@ const VoiceSetup = () => {
             )}
           </div>
 
-          {/* Pagination Footer */}
-          <div className={`flex flex-col sm:flex-row items-center justify-between border-t border-slate-100 ${isMobile ? 'p-3' : 'p-4'} shrink-0 bg-slate-50/30`}>
-            <p className="text-[10px] md:text-xs text-slate-500 mb-3 sm:mb-0 font-medium">
-              Showing <span className="font-bold text-slate-900">{numbers.length > 0 ? 1 : 0}</span> to <span className="font-bold text-slate-900">{numbers.length}</span> of <span className="font-bold text-slate-900">{numbers.length}</span> results
-            </p>
-            <div className={`flex gap-2 ${isMobile ? 'w-full' : 'w-auto'}`}>
-              <button disabled className={`${isMobile ? 'flex-1 py-2' : 'px-4 py-2.5'} text-[10px] md:text-xs border border-slate-200 rounded-xl bg-white text-slate-400 cursor-not-allowed font-bold`}>Previous</button>
-              <button disabled className={`${isMobile ? 'flex-1 py-2' : 'px-4 py-2.5'} text-[10px] md:text-xs border border-slate-200 rounded-xl bg-white text-slate-400 cursor-not-allowed font-bold`}>Next</button>
+          {/* Footer */}
+          {numbers.length > 0 && (
+            <div className="flex items-center justify-between border-t border-border px-4 sm:px-6 py-4 bg-muted/30">
+              <p className="text-xs text-muted-foreground">
+                Showing <span className="font-semibold text-foreground">{numbers.length}</span> number{numbers.length !== 1 ? 's' : ''}
+              </p>
+              <div className="flex gap-2">
+                <button disabled className="px-3 py-1.5 text-xs border border-border rounded-lg bg-background text-muted-foreground cursor-not-allowed">
+                  Previous
+                </button>
+                <button disabled className="px-3 py-1.5 text-xs border border-border rounded-lg bg-background text-muted-foreground cursor-not-allowed">
+                  Next
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
       {/* Edit Modal */}
       {editingNumber && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-lg">Edit Details</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border">
+            <div className="flex items-center justify-between p-5 border-b border-border">
+              <h3 className="font-semibold text-foreground text-lg">Edit Number Details</h3>
               <button
                 onClick={() => setEditingNumber(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
+                className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 flex flex-col gap-5">
+            <div className="p-6 space-y-5">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                   Phone Number
                 </label>
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-slate-700 font-mono text-sm font-medium">
+                <div className="p-3.5 bg-muted rounded-xl text-foreground font-mono text-sm">
                   {editingNumber.phone_number}
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                   Friendly Name
                 </label>
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full p-3.5 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-sm font-bold text-slate-900 bg-white shadow-sm"
+                  className="w-full p-3.5 rounded-xl border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all text-sm font-medium"
                   placeholder="e.g. Main Office Line"
                   autoFocus
                 />
               </div>
             </div>
 
-            <div className="p-5 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+            <div className="p-5 bg-muted/50 border-t border-border flex justify-end gap-3">
               <button
                 onClick={() => setEditingNumber(null)}
-                className="px-4 py-2.5 text-sm font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground bg-background border border-border hover:bg-muted rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
                 disabled={isSaving}
-                className="px-4 py-2.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-4 py-2.5 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-xl shadow-glow-blue transition-all disabled:opacity-50 flex items-center gap-2"
               >
                 {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
                 Save Changes

@@ -516,7 +516,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* PAGE CONTENT */}
           <main
-            className={`flex-1 ${fullWidth ? 'p-0 overflow-hidden' : 'p-4 md:p-8 overflow-y-auto'}`}
+            className={`flex-1 overflow-y-auto ${fullWidth ? 'p-0' : ''}`}
             style={{ backgroundColor: DS.offWhite }}
             onDoubleClick={() => {
               if (sidebarOpen) setSidebarOpen(false);
