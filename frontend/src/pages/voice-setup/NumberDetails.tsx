@@ -97,7 +97,7 @@ const NumberDetails = () => {
 
     return (
         <DashboardLayout fullWidth>
-            <main className="flex-1 flex flex-col overflow-y-auto bg-background dark:bg-slate-950 min-h-screen scrollbar-premium">
+            <main className="flex-1 flex flex-col overflow-y-auto bg-background dark:bg-slate-950 h-full scrollbar-premium">
 
 
                 <div className="px-4 py-8 md:px-8 md:py-12 max-w-6xl mx-auto w-full space-y-8 md:space-y-10">
