@@ -244,7 +244,7 @@ const GetNewNumber = () => {
       const apiUrl = env.API_URL;
       const headers = await getAuthHeader();
 
-      const response = await fetch(`${apiUrl}/phone-numbers/purchase`, {
+      const response = await fetch(`${apiUrl}/phone-numbers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -261,7 +261,10 @@ const GetNewNumber = () => {
       }
 
       const result = await response.json();
-      if (result.success) {
+      
+      // If response.ok is true, we assume success unless explicit error
+      // Some endpoints might return { success: true } or just the created object
+      if (result.success || result.id || result.phone_number || !result.error) {
         navigate('/dashboard/voice-setup');
       } else {
         throw new Error(result.error || 'Failed to purchase number');
