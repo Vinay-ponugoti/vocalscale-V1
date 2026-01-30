@@ -37,45 +37,28 @@ const IntegrationsContent = () => {
         fetchStatus();
     }, [fetchStatus]);
 
-    // Handle OAuth callback
+    // Handle redirect from OAuth callback
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const state = urlParams.get('state');
-        const oauthError = urlParams.get('error');
+        const gcalParam = urlParams.get('gcal');
+        const errorParam = urlParams.get('error');
 
-        if (code && state) {
-            handleOAuthCallback(code, state);
+        if (gcalParam === 'connected') {
+            // Refresh status after successful connection
+            fetchStatus();
             // Clean URL
             window.history.replaceState({}, '', window.location.pathname);
-        } else if (oauthError) {
-            setError('Authorization was denied. Please try again.');
+        } else if (errorParam) {
+            const errorMessages: Record<string, string> = {
+                'auth_denied': 'Authorization was denied. Please try again.',
+                'invalid_request': 'Invalid request. Please try again.',
+                'token_exchange_failed': 'Failed to exchange authorization code. Please try again.',
+                'save_failed': 'Failed to save connection. Please try again.',
+            };
+            setError(errorMessages[errorParam] || 'An error occurred. Please try again.');
             window.history.replaceState({}, '', window.location.pathname);
         }
-    }, []);
-
-    const handleOAuthCallback = async (code: string, state: string) => {
-        setConnecting(true);
-        setError(null);
-        try {
-            const headers = await getAuthHeader();
-            const response = await fetch(
-                `${env.API_URL}/integrations/google-calendar/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`,
-                { headers }
-            );
-            if (response.ok) {
-                await fetchStatus();
-            } else {
-                const data = await response.json();
-                setError(data.error || 'Failed to connect Google Calendar');
-            }
-        } catch (err) {
-            setError('Failed to connect. Please try again.');
-            console.error('OAuth callback error:', err);
-        } finally {
-            setConnecting(false);
-        }
-    };
+    }, [fetchStatus]);
 
     const handleConnect = async () => {
         setConnecting(true);
