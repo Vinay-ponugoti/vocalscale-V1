@@ -129,7 +129,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
         {/* Voice Persona - Grid Layout */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
+            <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 mb-4">
               Voice Persona
             </Label>
             <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 shadow-sm shrink-0">
@@ -261,7 +261,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
       {/* SECTION: Speaking Speed */}
       <div className="space-y-4">
         <div className="flex justify-between items-end">
-          <Label className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
+          <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 mb-4">
             Speaking Speed
           </Label>
           <span className="font-mono text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100">
@@ -295,7 +295,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 
       {/* SECTION: Conversation Tone */}
       <div className="space-y-4">
-        <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
+        <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 mb-4">
           Conversation Tone
         </Label>
         <div className="grid grid-cols-3 gap-3">
@@ -323,7 +323,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 
       {/* SECTION: Custom Greeting */}
       <div className="space-y-3">
-        <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
+        <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 mb-4">
           Custom Greeting
         </Label>
         <div className="relative group">

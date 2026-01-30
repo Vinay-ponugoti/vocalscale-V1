@@ -131,12 +131,33 @@ export function useAppointments() {
     }
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const headers = await getAuthHeader();
+      const response = await fetch(`${env.API_URL}/dashboard/appointments/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments-calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+    }
+  });
+
   return {
     loading: isLoading,
     isPlaceholderData,
     appointments: data || [],
     error: error instanceof Error ? error.message : null,
     updateAppointment: (id: string, updates: Partial<Appointment>) => updateMutation.mutateAsync({ id, updates }),
-    createAppointment: (appointment: Omit<Appointment, 'id'>) => createMutation.mutateAsync(appointment)
+    createAppointment: (appointment: Omit<Appointment, 'id'>) => createMutation.mutateAsync(appointment),
+    deleteAppointment: (id: string) => deleteMutation.mutateAsync(id)
   };
 }
