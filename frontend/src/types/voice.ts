@@ -12,7 +12,8 @@ export interface PhoneNumber {
   voice_url?: string;
   sms_url?: string;
   is_beta?: boolean;
-  
+  created_at?: string;
+
   // Local/UI properties
   number?: string; // Often used as a friendly label or formatted number
   phoneNumber?: string; // Alternative key for phone number

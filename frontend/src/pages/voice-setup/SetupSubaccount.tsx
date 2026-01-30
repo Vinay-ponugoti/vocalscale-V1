@@ -13,6 +13,8 @@ import { env } from '../../config/env';
 import { getAuthHeader } from '../../lib/api';
 
 import type { Subaccount } from '../../types/voice';
+import { billingApi } from '../../api/billing';
+import { useAuth } from '../../context/AuthContext';
 
 const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState({
@@ -43,11 +45,30 @@ const SetupSubaccount = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const { profile } = useAuth();
   const [existingSubaccount, setExistingSubaccount] = useState<Subaccount | null>(null);
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
 
   useEffect(() => {
     checkExistingSubaccount();
-  }, []);
+    checkSubscriptionStatus();
+  }, [profile]);
+
+  const checkSubscriptionStatus = async () => {
+    try {
+      const sub = await billingApi.getSubscription();
+      if (sub && sub.status === 'active') {
+        setHasSubscription(true);
+      } else {
+        setHasSubscription(false);
+      }
+    } catch (err) {
+      console.error('Error checking subscription:', err);
+      // If profile is still loading, wait
+      if (!profile) return;
+      setHasSubscription(false);
+    }
+  };
 
   const checkExistingSubaccount = async () => {
     try {
@@ -322,8 +343,8 @@ const SetupSubaccount = () => {
 
                   <button
                     onClick={handleCreateSubaccount}
-                    disabled={loading || !businessName.trim()}
-                    className={`${isMobile ? 'mt-4' : 'mt-6 lg:mt-8'} w-full flex items-center justify-center gap-3 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white font-black uppercase tracking-widest text-[10px] lg:text-xs rounded-xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-1`}
+                    disabled={loading || !businessName.trim() || hasSubscription === false}
+                    className={`${isMobile ? 'mt-4' : 'mt-6 lg:mt-8'} w-full flex items-center justify-center gap-3 px-8 py-4 ${hasSubscription === false ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200'} font-black uppercase tracking-widest text-[10px] lg:text-xs rounded-xl transition-all hover:-translate-y-1`}
                   >
                     {loading ? (
                       <>
@@ -332,11 +353,25 @@ const SetupSubaccount = () => {
                       </>
                     ) : (
                       <>
-                        Initialize Account
+                        {hasSubscription === false ? 'Subscription Required' : 'Initialize Account'}
                         <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5" />
                       </>
                     )}
                   </button>
+
+                  {hasSubscription === false && (
+                    <div className="mt-4 flex flex-col items-center">
+                      <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-3">
+                        Active Plan Required to initialize voice features
+                      </p>
+                      <button
+                        onClick={() => navigate('/dashboard/plans')}
+                        className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-700 underline decoration-2 underline-offset-4 transition-colors"
+                      >
+                        View Subscription Plans
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

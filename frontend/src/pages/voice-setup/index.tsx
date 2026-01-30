@@ -9,6 +9,7 @@ import {
   Filter,
   Download,
   Settings2,
+  Phone,
   ArrowUpRight,
   X,
   Loader2
@@ -247,19 +248,26 @@ const VoiceSetup = () => {
 
                 {/* Items */}
                 {numbers.map((num: PhoneNumber, idx) => (
-                  <div key={idx} className={`group ${isMobile ? 'flex flex-col p-4 gap-4' : 'grid grid-cols-12 px-6 py-5 items-center'} rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all bg-white`}>
+                  <div
+                    key={idx}
+                    onClick={() => navigate(`/dashboard/voice-setup/numbers/${num.id}`)}
+                    className={`group cursor-pointer ${isMobile ? 'flex flex-col p-4 gap-4' : 'grid grid-cols-12 px-6 py-5 items-center'} rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all bg-white relative overflow-hidden`}
+                  >
+                    {/* Hover state indicator */}
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+
                     <div className={`${isMobile ? 'w-full' : 'col-span-4'} flex items-center justify-between`}>
                       <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shrink-0`}>
-                          <Smartphone className="w-5 h-5" />
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-slate-50 text-indigo-600 flex items-center justify-center border border-slate-100 shrink-0 group-hover:bg-indigo-50 transition-colors`}>
+                          <Phone className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="font-bold text-slate-900 text-sm md:text-base font-mono">{num.phone_number || num.phoneNumber || '(415) 555-0123'}</p>
-                          <p className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wide mt-0.5">{num.friendly_name || num.number || 'Main Business Line'}</p>
+                          <p className="font-black text-slate-900 text-sm md:text-base tracking-tight">{num.phone_number || num.phoneNumber || '(415) 555-0123'}</p>
+                          <p className="text-[10px] md:text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">{num.friendly_name || num.number || 'Main Business Line'}</p>
                         </div>
                       </div>
                       {isMobile && (
-                        <div className="flex gap-1">
+                        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => handleEditClick(num)}
                             className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
@@ -270,11 +278,14 @@ const VoiceSetup = () => {
                       )}
                     </div>
 
-                    <div className={`${isMobile ? 'flex items-center justify-between w-full pt-3 border-t border-slate-50' : 'col-span-3 flex items-center'}`}>
+                    <div
+                      className={`${isMobile ? 'flex items-center justify-between w-full pt-3 border-t border-slate-50' : 'col-span-3 flex items-center'}`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <div className="flex items-center">
                         <button
                           onClick={() => handleStatusChange(num.id, num.status || 'inactive')}
-                          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${num.status === 'active' ? 'bg-indigo-600' : 'bg-slate-200'}`}
+                          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${num.status === 'active' ? 'bg-indigo-600' : 'bg-slate-200 dark:bg-slate-700'}`}
                           role="switch"
                           aria-checked={num.status === 'active'}
                         >
@@ -283,7 +294,7 @@ const VoiceSetup = () => {
                             className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${num.status === 'active' ? 'translate-x-5' : 'translate-x-0'}`}
                           />
                         </button>
-                        <span className={`ml-3 text-[10px] md:text-xs font-black uppercase tracking-wide ${num.status === 'active' ? 'text-indigo-600' : 'text-slate-400'}`}>
+                        <span className={`ml-3 text-[10px] md:text-xs font-black uppercase tracking-widest ${num.status === 'active' ? 'text-indigo-600' : 'text-slate-400'}`}>
                           {num.status === 'active' ? 'Active' : 'Inactive'}
                         </span>
                       </div>
@@ -291,10 +302,10 @@ const VoiceSetup = () => {
                       {isMobile && (
                         <div className="flex items-center gap-1.5">
                           {num.capabilities?.voice && (
-                            <span className="px-2 py-0.5 bg-slate-50 text-slate-600 rounded-md text-[9px] font-bold uppercase border border-slate-200">Voice</span>
+                            <span className="px-2 py-0.5 bg-slate-50 text-slate-500 rounded-md text-[9px] font-black uppercase tracking-wider border border-slate-100">Voice</span>
                           )}
                           {num.capabilities?.sms && (
-                            <span className="px-2 py-0.5 bg-slate-50 text-slate-600 rounded-md text-[9px] font-bold uppercase border border-slate-200">SMS</span>
+                            <span className="px-2 py-0.5 bg-slate-50 text-slate-500 rounded-md text-[9px] font-black uppercase tracking-wider border border-slate-100">SMS</span>
                           )}
                         </div>
                       )}
@@ -304,20 +315,25 @@ const VoiceSetup = () => {
                       <>
                         <div className="col-span-3 flex items-center gap-2">
                           {num.capabilities?.voice && (
-                            <span className="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg text-[10px] font-bold uppercase border border-slate-200">Voice</span>
+                            <span className="px-3 py-1 bg-slate-50 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-100">Voice</span>
                           )}
                           {num.capabilities?.sms && (
-                            <span className="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg text-[10px] font-bold uppercase border border-slate-200">SMS</span>
+                            <span className="px-3 py-1 bg-slate-50 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-100">SMS</span>
                           )}
                         </div>
-                        <div className="col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => handleEditClick(num)}
-                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
+                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-100 rounded-xl transition-all"
+                            title="Quick Edit"
                           >
                             <Settings2 className="w-4 h-4" />
                           </button>
-                          <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors">
+                          <button
+                            onClick={() => navigate(`/dashboard/voice-setup/numbers/${num.id}`)}
+                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-100 rounded-xl transition-all"
+                            title="View Details"
+                          >
                             <ArrowUpRight className="w-4 h-4" />
                           </button>
                         </div>
