@@ -301,8 +301,8 @@ const GetNewNumber = () => {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto pb-40">
-          <div className="max-w-5xl mx-auto px-6 py-12 w-full space-y-12">
+        <div className="flex-1 overflow-y-auto pb-40 md:pb-40">
+          <div className="max-w-5xl mx-auto px-4 py-8 md:px-6 md:py-12 w-full space-y-8 md:space-y-12">
 
             <div className="space-y-4">
               <h1 className="text-5xl font-black text-foreground tracking-tighter leading-none mb-6">
@@ -419,9 +419,9 @@ const GetNewNumber = () => {
 
             {/* Loading Grid Skeleton */}
             {searching && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="h-48 rounded-[2rem] bg-card border border-border animate-pulse flex flex-col p-8 gap-4">
+                  <div key={i} className="h-40 md:h-48 rounded-[2rem] bg-card border border-border animate-pulse flex flex-col p-6 md:p-8 gap-4">
                     <div className="h-6 w-3/4 bg-muted rounded-full" />
                     <div className="h-4 w-1/2 bg-muted rounded-full" />
                     <div className="mt-auto h-8 w-full bg-muted rounded-xl" />
@@ -432,14 +432,14 @@ const GetNewNumber = () => {
 
             {/* Results Grid */}
             {!searching && numbers.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-24 md:pb-0">
                 {numbers.map((item, index) => {
                   const isSelected = selectedNumber?.phone_number === item.phone_number;
                   return (
                     <div
                       key={item.phone_number}
                       onClick={() => setSelectedNumber(item)}
-                      className={`group relative flex flex-col rounded-[2rem] p-8 cursor-pointer transition-all duration-500 border-2 overflow-hidden ${isSelected
+                      className={`group relative flex flex-col rounded-[2rem] p-6 md:p-8 cursor-pointer transition-all duration-500 border-2 overflow-hidden ${isSelected
                         ? 'border-primary bg-primary/5 shadow-premium-lg translate-y-[-4px]'
                         : 'border-border bg-card hover:border-primary/30 hover:bg-muted/50 hover:shadow-premium-sm hover:-translate-y-1'
                         }`}

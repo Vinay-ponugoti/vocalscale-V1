@@ -124,12 +124,6 @@ const VoiceSetup = () => {
 
           <div className="flex items-center gap-3 w-full md:w-auto">
             <button
-              onClick={() => navigate('/dashboard/voice-setup/existing')}
-              className="flex-1 md:flex-none px-4 md:px-5 py-2.5 bg-background hover:bg-muted text-muted-foreground font-black uppercase tracking-widest text-[9px] md:text-[10px] rounded-xl border border-border transition-all hover:border-foreground/20 whitespace-nowrap"
-            >
-              Link Existing
-            </button>
-            <button
               onClick={() => navigate('/dashboard/voice-setup/buy')}
               className="flex-1 md:flex-none px-4 md:px-5 py-2.5 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[9px] md:text-[10px] rounded-xl shadow-glow-blue hover:bg-primary/95 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap"
             >
