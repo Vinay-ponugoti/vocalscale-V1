@@ -47,7 +47,6 @@ const VoiceSetup = lazyImport(() => import('./pages/voice-setup'));
 const NumberDetails = lazyImport(() => import('./pages/voice-setup/NumberDetails'));
 const SetupSubaccount = lazyImport(() => import('./pages/voice-setup/SetupSubaccount'));
 const GetNewNumber = lazyImport(() => import('./pages/voice-setup/GetNewNumber'));
-const UseExistingNumber = lazyImport(() => import('./pages/voice-setup/UseExistingNumber'));
 const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
 
 function App() {
@@ -108,7 +107,6 @@ function App() {
                   <Route path="/dashboard/voice-setup/numbers/:numberId" element={<NumberDetails />} />
                   <Route path="/dashboard/voice-setup/setup-subaccount" element={<SetupSubaccount />} />
                   <Route path="/dashboard/voice-setup/buy" element={<GetNewNumber />} />
-                  <Route path="/dashboard/voice-setup/existing" element={<UseExistingNumber />} />
                   <Route path="/dashboard/business-details" element={<BusinessSetup />} />
 
                   {/* Voice Model Setup Routes (Moved inside Dashboard) */}
