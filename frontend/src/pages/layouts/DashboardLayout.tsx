@@ -97,9 +97,9 @@ const NavItem = ({
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-blue-600 rounded-r-full" />
       )}
 
-      <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
+      <div className={`flex items-center gap-4 ${isCollapsed ? 'justify-center' : ''}`}>
         <Icon size={18} strokeWidth={2.5} className={isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-700 transition-colors'} />
-        {!isCollapsed && <span className="transition-colors">{item.label}</span>}
+        {!isCollapsed && <span className="transition-colors leading-relaxed py-0.5">{item.label}</span>}
       </div>
       {!isCollapsed && item.badge && (
         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors ${isActive ? 'bg-blue-200 text-blue-800' : item.badgeColor || 'bg-blue-100 text-blue-700'}`}>

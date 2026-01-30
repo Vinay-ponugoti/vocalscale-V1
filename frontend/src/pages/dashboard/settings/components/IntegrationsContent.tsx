@@ -23,13 +23,16 @@ interface GoogleCalendarStatus {
     lastSyncedAt?: string;
     reviewsVerified?: boolean;
     businessAccountId?: string | null;
+    calendarEnabled?: boolean;
+    reviewsEnabled?: boolean;
 }
 
 const IntegrationsContent = () => {
     const [status, setStatus] = useState<GoogleCalendarStatus>({ connected: false });
     const [loading, setLoading] = useState(true);
-    const [connecting, setConnecting] = useState(false);
-    const [disconnecting, setDisconnecting] = useState(false);
+    // Track which feature is processing
+    const [connecting, setConnecting] = useState<string | null>(null);
+    const [disconnecting, setDisconnecting] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [syncEnabled, setSyncEnabled] = useState(true);
     const [syncUpdating, setSyncUpdating] = useState(false);
@@ -100,12 +103,13 @@ const IntegrationsContent = () => {
         }
     }, [fetchStatus]);
 
-    const handleConnect = async () => {
-        setConnecting(true);
+    const handleConnect = async (feature: 'calendar' | 'reviews') => {
+        setConnecting(feature);
         setError(null);
         try {
             const headers = await getAuthHeader();
-            const response = await fetch(`${env.API_URL}/integrations/google-calendar/connect`, {
+            // Pass feature param
+            const response = await fetch(`${env.API_URL}/integrations/google-calendar/connect?feature=${feature}`, {
                 method: 'POST',
                 headers,
             });
@@ -118,29 +122,30 @@ const IntegrationsContent = () => {
             } else {
                 const data = await response.json();
                 setError(data.error || 'Failed to initiate connection');
-                setConnecting(false);
+                setConnecting(null);
             }
         } catch (err) {
             setError('Failed to connect. Please try again.');
-            setConnecting(false);
+            setConnecting(null);
             console.error('Connect error:', err);
         }
     };
 
-    const handleDisconnect = async () => {
-        if (!confirm('Are you sure you want to disconnect Google Calendar? Future appointments will no longer sync automatically.')) {
+    const handleDisconnect = async (feature: 'calendar' | 'reviews') => {
+        if (!confirm(`Are you sure you want to disconnect Google ${feature === 'calendar' ? 'Calendar' : 'Reviews'}?`)) {
             return;
         }
-        setDisconnecting(true);
+        setDisconnecting(feature);
         setError(null);
         try {
             const headers = await getAuthHeader();
-            const response = await fetch(`${env.API_URL}/integrations/google-calendar/disconnect`, {
+            const response = await fetch(`${env.API_URL}/integrations/google-calendar/disconnect?feature=${feature}`, {
                 method: 'DELETE',
                 headers,
             });
             if (response.ok) {
-                setStatus({ connected: false });
+                // Refresh full status to reflect partial disconnect
+                await fetchStatus();
             } else {
                 const data = await response.json();
                 setError(data.error || 'Failed to disconnect');
@@ -149,7 +154,7 @@ const IntegrationsContent = () => {
             setError('Failed to disconnect. Please try again.');
             console.error('Disconnect error:', err);
         } finally {
-            setDisconnecting(false);
+            setDisconnecting(null);
         }
     };
 
@@ -176,6 +181,9 @@ const IntegrationsContent = () => {
         );
     }
 
+    const isCalendarConnected = status.connected && status.calendarEnabled;
+    const isReviewsConnected = status.connected && status.reviewsEnabled;
+
     return (
         <div className="space-y-6">
             {error && (
@@ -184,14 +192,14 @@ const IntegrationsContent = () => {
                 </div>
             )}
 
-            {/* Google Calendar Integration Card */}
-            <div className={`p-6 rounded-2xl border-2 transition-all ${status.connected
+            {/* Google Calendar Card */}
+            <div className={`p-6 rounded-2xl border-2 transition-all ${isCalendarConnected
                 ? 'bg-emerald-50/50 border-emerald-200'
                 : 'bg-slate-50 border-slate-200 hover:border-indigo-200'
                 }`}>
                 <div className="flex items-start gap-4">
                     {/* Icon */}
-                    <div className={`p-3 rounded-xl ${status.connected
+                    <div className={`p-3 rounded-xl ${isCalendarConnected
                         ? 'bg-emerald-100 text-emerald-600'
                         : 'bg-white text-slate-400 border border-slate-200'
                         }`}>
@@ -201,8 +209,8 @@ const IntegrationsContent = () => {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-base font-black text-slate-900">Google Account</h3>
-                            {status.connected && (
+                            <h3 className="text-base font-black text-slate-900">Google Calendar</h3>
+                            {isCalendarConnected && (
                                 <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-wide">
                                     <CheckCircle size={10} />
                                     Connected
@@ -211,60 +219,31 @@ const IntegrationsContent = () => {
                         </div>
 
                         <p className="text-slate-500 text-sm mb-4">
-                            {status.connected
-                                ? 'Your Google account is connected for Calendar and Reviews.'
-                                : 'Connect your Google account to sync appointments and manage reviews.'}
+                            {isCalendarConnected
+                                ? 'Appointments sync automatically to your Google Calendar.'
+                                : 'Connect your Google account to sync appointments automatically.'}
                         </p>
 
-                        {status.connected && (
-                            <div className="flex flex-wrap gap-4 text-xs text-slate-500 mb-4">
-                                {status.connectedAt && (
-                                    <span>Connected: {formatDate(status.connectedAt)}</span>
-                                )}
-                                {status.lastSyncedAt && (
-                                    <span>Last synced: {formatDate(status.lastSyncedAt)}</span>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Reviews Status */}
-                        {status.connected && (
-                            <div className="mb-5 p-3 bg-white/50 rounded-lg border border-slate-200">
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className="text-xs font-bold text-slate-700">Google Reviews</span>
-                                    {status.reviewsVerified ? (
-                                        <span className="flex items-center gap-1 text-emerald-600 text-[10px] font-bold uppercase">
-                                            <CheckCircle size={10} /> Active
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center gap-1 text-amber-600 text-[10px] font-bold uppercase">
-                                            <AlertCircle size={10} /> Not Verified
-                                        </span>
+                        {isCalendarConnected ? (
+                            <>
+                                <div className="flex flex-wrap gap-4 text-xs text-slate-500 mb-4">
+                                    {status.connectedAt && (
+                                        <span>Connected: {formatDate(status.connectedAt)}</span>
+                                    )}
+                                    {status.lastSyncedAt && (
+                                        <span>Last synced: {formatDate(status.lastSyncedAt)}</span>
                                     )}
                                 </div>
-                                <p className="text-[10px] text-slate-500">
-                                    {status.reviewsVerified
-                                        ? 'We can access and reply to your business reviews.'
-                                        : 'We could not verify a Business Profile with this account.'}
-                                </p>
-                            </div>
-                        )}
 
-                        {/* Sync Toggle */}
-                        {status.connected && (
-                            <div className="flex items-center gap-3 mb-5 p-3 bg-white/50 rounded-lg border border-emerald-100/50">
-                                <Toggle active={syncEnabled} onChange={handleSyncToggle} disabled={syncUpdating} />
-                                <div className="flex flex-col">
-                                    <span className="text-xs font-bold text-slate-700">Auto-Sync Appointments</span>
-                                    <span className="text-[10px] text-slate-500">Automatically add booked appointments to this calendar</span>
+                                <div className="flex items-center gap-3 mb-5 p-3 bg-white/50 rounded-lg border border-emerald-100/50">
+                                    <Toggle active={syncEnabled} onChange={handleSyncToggle} disabled={syncUpdating} />
+                                    <div className="flex flex-col">
+                                        <span className="text-xs font-bold text-slate-700">Auto-Sync Appointments</span>
+                                        <span className="text-[10px] text-slate-500">Automatically add booked appointments to this calendar</span>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
 
-                        {/* Actions */}
-                        <div className="flex flex-wrap gap-3">
-                            {status.connected ? (
-                                <>
+                                <div className="flex flex-wrap gap-3">
                                     <a
                                         href="https://calendar.google.com"
                                         target="_blank"
@@ -275,33 +254,112 @@ const IntegrationsContent = () => {
                                         Open Calendar
                                     </a>
                                     <button
-                                        onClick={handleDisconnect}
-                                        disabled={disconnecting}
+                                        onClick={() => handleDisconnect('calendar')}
+                                        disabled={disconnecting === 'calendar'}
                                         className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
                                     >
-                                        {disconnecting ? (
+                                        {disconnecting === 'calendar' ? (
                                             <RefreshCw size={14} className="animate-spin" />
                                         ) : (
                                             <Unlink size={14} />
                                         )}
-                                        {disconnecting ? 'Disconnecting...' : 'Disconnect'}
+                                        {disconnecting === 'calendar' ? 'Disconnecting...' : 'Disconnect'}
                                     </button>
-                                </>
-                            ) : (
-                                <button
-                                    onClick={handleConnect}
-                                    disabled={connecting}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all disabled:opacity-50 shadow-lg shadow-indigo-200"
-                                >
-                                    {connecting ? (
-                                        <RefreshCw size={14} className="animate-spin" />
-                                    ) : (
-                                        <Link size={14} />
-                                    )}
-                                    {connecting ? 'Connecting...' : 'Connect Google Account'}
-                                </button>
+                                </div>
+                            </>
+                        ) : (
+                            <button
+                                onClick={() => handleConnect('calendar')}
+                                disabled={connecting === 'calendar'}
+                                className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all disabled:opacity-50 shadow-lg shadow-indigo-200"
+                            >
+                                {connecting === 'calendar' ? (
+                                    <RefreshCw size={14} className="animate-spin" />
+                                ) : (
+                                    <Link size={14} />
+                                )}
+                                {connecting === 'calendar' ? 'Connecting...' : 'Connect Google Calendar'}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Google Reviews Card */}
+            <div className={`p-6 rounded-2xl border-2 transition-all ${isReviewsConnected
+                ? 'bg-emerald-50/50 border-emerald-200'
+                : 'bg-slate-50 border-slate-200 hover:border-indigo-200'
+                }`}>
+                <div className="flex items-start gap-4">
+                    {/* Icon */}
+                    <div className={`p-3 rounded-xl ${isReviewsConnected
+                        ? 'bg-emerald-100 text-emerald-600'
+                        : 'bg-white text-slate-400 border border-slate-200'
+                        }`}>
+                        <AlertCircle size={24} />
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-base font-black text-slate-900">Google Reviews</h3>
+                            {isReviewsConnected && status.reviewsVerified && (
+                                <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-wide">
+                                    <CheckCircle size={10} />
+                                    Active
+                                </span>
                             )}
                         </div>
+
+                        <p className="text-slate-500 text-sm mb-4">
+                            {isReviewsConnected
+                                ? status.reviewsVerified
+                                    ? 'We can access and reply to your business reviews.'
+                                    : 'Connect a verified Google Business Profile to manage reviews.'
+                                : 'Connect your Google account to manage reviews.'}
+                        </p>
+
+                        {!isReviewsConnected ? (
+                            <button
+                                onClick={() => handleConnect('reviews')}
+                                disabled={connecting === 'reviews'}
+                                className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all disabled:opacity-50 shadow-lg shadow-indigo-200"
+                            >
+                                {connecting === 'reviews' ? (
+                                    <RefreshCw size={14} className="animate-spin" />
+                                ) : (
+                                    <Link size={14} />
+                                )}
+                                {connecting === 'reviews' ? 'Connecting...' : 'Connect Google Reviews'}
+                            </button>
+                        ) : (
+                            <div className="flex flex-col gap-2">
+                                {status.reviewsVerified ? (
+                                    <div className="p-3 bg-white/50 rounded-lg border border-emerald-100/50">
+                                        <p className="text-xs text-slate-600">
+                                            Everything is set up! New reviews will appear in your dashboard.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="p-3 bg-amber-50 rounded-lg border border-amber-100 text-xs text-amber-800">
+                                        <div className="flex items-center gap-2 font-bold mb-1">
+                                            <AlertCircle size={14} />
+                                            Verification Needed
+                                        </div>
+                                        We could not verify a Business Profile with this account. Please ensure your Google account manages a verified business.
+                                    </div>
+                                )}
+                                <div className="mt-2">
+                                    <button
+                                        onClick={() => handleDisconnect('reviews')}
+                                        disabled={disconnecting === 'reviews'}
+                                        className="text-xs text-red-500 hover:text-red-700 hover:underline"
+                                    >
+                                        Disconnect Google Reviews
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -310,14 +368,14 @@ const IntegrationsContent = () => {
             <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
                 <h4 className="text-sm font-bold text-blue-800 mb-1">How it works</h4>
                 <ul className="text-xs text-blue-700 space-y-1">
+                    <li>• Connecting either card links your Google Account for that specific feature</li>
                     <li>• New appointments created in the dashboard sync to Google Calendar</li>
                     <li>• Drag-and-drop time changes update Google Calendar automatically</li>
                     <li>• Appointments booked via AI voice calls sync to Google Calendar</li>
-                    <li>• Reply to Google Reviews directly from your dashboard (if verified)</li>
-                    <li>• You can view synced appointments directly in Google Calendar</li>
+                    <li>• Verified businesses can reply to Google Reviews from the dashboard</li>
                 </ul>
             </div>
-        </div >
+        </div>
     );
 };
 
