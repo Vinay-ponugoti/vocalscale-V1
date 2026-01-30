@@ -7,8 +7,6 @@ const API_BASE = env.API_URL;
 export async function getAuthHeader(): Promise<Record<string, string>> {
   const token = getAuthToken();
 
-  // Debug: Log token retrieval
-  console.log(`DEBUG: getAuthHeader - token exists: ${!!token}, token length: ${token?.length || 0}`);
 
   return {
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),

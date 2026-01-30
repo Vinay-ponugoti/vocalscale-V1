@@ -17,7 +17,7 @@ import { Badge } from '../../../components/ui/Badge';
 import { useAuth } from '../../../context/AuthContext';
 
 const Plans: React.FC = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [isAnnual, setIsAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -60,10 +60,19 @@ const Plans: React.FC = () => {
     setLoading(planName);
     setError(null);
     try {
-      if (!user?.email) {
-        throw new Error('User email is required for checkout');
+      let email = profile?.business_email || user?.email || profile?.email;
+
+      if (!email) {
+        const promptedEmail = window.prompt('Please enter your email for the checkout receipt:');
+        if (!promptedEmail || !promptedEmail.includes('@')) {
+          setError('A valid email is required to proceed with the checkout.');
+          setLoading(null);
+          return;
+        }
+        email = promptedEmail;
       }
-      const { url } = await billingApi.createCheckoutSession(priceId, user.email);
+
+      const { url } = await billingApi.createCheckoutSession(priceId, email);
       if (url) {
         window.location.href = url;
       }

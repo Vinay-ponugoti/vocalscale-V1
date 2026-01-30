@@ -32,7 +32,7 @@ export const getStoredSession = (): Session | null => {
 
 export const getAuthToken = (): string | null => {
   const session = getStoredSession();
-  console.log(`DEBUG: getAuthToken - session exists: ${!!session}, access_token exists: ${!!session?.access_token}`);
+
   return session?.access_token || null;
 };
 
