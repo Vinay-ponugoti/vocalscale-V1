@@ -112,12 +112,12 @@ const UseExistingNumber = () => {
       if (response.ok) {
         navigate('/dashboard/voice-setup');
       } else {
-        console.error('Failed to import number');
-        alert('Failed to add number. Please try again.');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Failed to import number:', errorData);
+        // User requested to remove the "toggle" (alert/toast)
       }
     } catch (e) {
       console.error('Error importing number', e);
-      alert('An error occurred. Please check your connection.');
     }
   };
 
