@@ -305,10 +305,10 @@ const GetNewNumber = () => {
           <div className="max-w-5xl mx-auto px-4 py-8 md:px-6 md:py-12 w-full space-y-8 md:space-y-12">
 
             <div className="space-y-4">
-              <h1 className="text-5xl font-black text-foreground tracking-tighter leading-none mb-6">
+              <h1 className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter leading-none mb-3">
                 Acquire Local <span className="text-primary italic">Presence.</span>
               </h1>
-              <p className="text-muted-foreground text-lg font-medium max-w-2xl leading-relaxed">
+              <p className="text-muted-foreground text-sm font-medium max-w-2xl leading-relaxed text-balance">
                 Choose a local or toll-free identity for your AI. Search by region or area code to match your business footprint.
               </p>
             </div>
@@ -359,11 +359,11 @@ const GetNewNumber = () => {
 
                 <div className="flex flex-col sm:flex-row gap-4 relative z-10">
                   <div className="flex-grow relative group/input">
-                    <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                      <MapPin className="w-6 h-6 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+                      <MapPin className="w-5 h-5 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
                     </div>
                     <input
-                      className="w-full h-18 pl-16 pr-6 rounded-[1.25rem] border border-border bg-muted/30 text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-lg font-bold"
+                      className="w-full h-14 pl-12 pr-6 rounded-2xl border border-border bg-muted/30 text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-base font-bold"
                       placeholder="Enter City, State, or area code (e.g. 212)"
                       type="text"
                       value={searchQuery}
@@ -374,13 +374,13 @@ const GetNewNumber = () => {
                   <button
                     onClick={searchNumbers}
                     disabled={searching}
-                    className="h-18 px-10 bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-[0.15em] text-[11px] rounded-[1.25rem] transition-all shadow-glow-blue flex items-center justify-center gap-3 disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5"
+                    className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-[0.15em] text-[10px] rounded-2xl transition-all shadow-glow-blue flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5"
                   >
                     {searching ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <>
-                        <Search className="w-5 h-5" />
+                        <Search className="w-4 h-4" />
                         Execute Search
                       </>
                     )}
