@@ -100,7 +100,7 @@ const NumberDetails = () => {
             <main className="flex-1 flex flex-col overflow-y-auto bg-background dark:bg-slate-950 min-h-screen scrollbar-premium">
 
 
-                <div className="p-8 max-w-6xl mx-auto w-full space-y-10">
+                <div className="px-8 py-12 max-w-6xl mx-auto w-full space-y-10">
                     {/* Breadcrumbs */}
                     <nav className="flex items-center gap-2 text-xs font-black uppercase tracking-widest pt-4">
                         <Link to="/dashboard/voice-setup" className="text-muted-foreground hover:text-slate-900 dark:hover:text-white transition-colors">Phone Numbers</Link>
@@ -135,8 +135,11 @@ const NumberDetails = () => {
                                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                                 Return
                             </button>
+                            <button className="flex items-center gap-2 px-6 py-3 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-sm font-black uppercase tracking-widest hover:bg-destructive/10 transition-all">
+                                Release
+                            </button>
                             <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black text-sm font-black uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
-                                <Settings className="w-4 h-4" />
+                                <Settings className="w-4 h-4" strokeWidth={3} />
                                 Configure
                             </button>
                         </div>
@@ -247,42 +250,6 @@ const NumberDetails = () => {
                                 <button className="mt-auto w-full bg-white dark:bg-black text-black dark:text-white font-black uppercase tracking-[0.2em] text-[10px] py-5 rounded-2xl hover:opacity-90 active:scale-95 transition-all shadow-xl relative z-10">
                                     Manage Subscription
                                 </button>
-                            </div>
-
-                            {/* Resources & Actions Card */}
-                            <div className="bg-card rounded-3xl border border-border p-10 shadow-premium-sm space-y-8">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Resources & Actions</h3>
-                                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-wider border border-emerald-500/20">Included in Plan</span>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-4">
-                                    <a href="#" className="flex items-center justify-between p-4 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 hover:border-border transition-all group">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-background rounded-xl border border-border shadow-sm">
-                                                <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
-                                            </div>
-                                            <span className="text-xs font-bold text-foreground">Developer Docs</span>
-                                        </div>
-                                        <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-all" />
-                                    </a>
-                                    <a href="#" className="flex items-center justify-between p-4 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 hover:border-border transition-all group">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-background rounded-xl border border-border shadow-sm">
-                                                <Mic className="w-3.5 h-3.5 text-muted-foreground" />
-                                            </div>
-                                            <span className="text-xs font-bold text-foreground">Support Center</span>
-                                        </div>
-                                        <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-all" />
-                                    </a>
-                                </div>
-
-                                <div className="pt-4 border-t border-border/50">
-                                    <button className="w-full px-4 py-4 rounded-2xl bg-destructive/5 hover:bg-destructive/10 text-destructive text-[10px] font-black uppercase tracking-widest border border-destructive/10 transition-all">
-                                        Release Number
-                                    </button>
-                                    <p className="text-[9px] text-muted-foreground/60 text-center mt-3 font-medium">Releasing numbers is irreversible and takes immediate effect.</p>
-                                </div>
                             </div>
 
                             <div className="bg-card rounded-3xl border border-border p-8 shadow-premium-sm">
