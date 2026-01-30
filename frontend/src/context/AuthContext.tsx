@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const data = await response.json();
         if (mounted.current) {
           setProfile(data);
-          console.log("✅ Profile refreshed:", data.full_name);
+          setProfile(data);
         }
       }
     } catch (err) {
@@ -116,8 +116,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Only sync if we have a provider token (indicates OAuth login)
       if (!session.provider_token) return;
 
+
       try {
-        console.log("Syncing Google tokens...");
         const response = await fetch(`${env.API_URL}/auth/google-sync`, {
           method: 'POST',
           headers: {
@@ -134,13 +134,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           })
         });
 
-        if (response.ok) {
-          console.log("✅ Google tokens synced successfully");
-        } else {
-          console.warn("Failed to sync Google tokens");
+        if (!response.ok) {
+          // Silent failure for sync is acceptable
         }
       } catch (err) {
-        console.error("Error syncing Google tokens:", err);
+        // Silent
       }
     };
 
@@ -162,7 +160,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             // Unified profile refresh for all users
             refreshProfile(validatedSession);
 
-            console.log("Auth initialized successfully");
+            // Unified profile refresh for all users
+            refreshProfile(validatedSession);
           } else {
             // Only clear session if explicitly invalid (401 from backend)
             setSession(null);
@@ -226,14 +225,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // 2. Proactive check on window focus or visibility change
     const handleFocus = () => {
-      console.log('Window focused - re-validating security context');
       // Use standard debounce (false) to prevent 429 spam on rapid switching
       checkSession(false);
     };
 
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        console.log('Tab visible - re-validating security context');
         // Use standard debounce (false) to prevent 429 spam
         checkSession(false);
       }
@@ -285,10 +282,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const queryClient = (window as any).__reactQueryClient;
         if (queryClient) {
           queryClient.clear();
-          console.log('✅ React Query cache cleared');
         }
-
-        console.log('✅ Logout complete - all data cleared');
       }
     } catch (error) {
       console.error('Error signing out:', error);

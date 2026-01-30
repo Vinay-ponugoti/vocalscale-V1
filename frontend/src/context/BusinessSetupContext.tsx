@@ -228,32 +228,23 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
   }, []);
 
   const updateBusiness = useCallback((data: Partial<BusinessDetails>) => {
-    console.log('🔄 Updating business details:', data);
     dispatch({ type: 'UPDATE_BUSINESS', payload: data });
   }, []);
 
   const updateBusinessHours = useCallback((hours: BusinessHour[]) => {
-    console.log('🔄 Updating business hours:', hours);
     dispatch({ type: 'UPDATE_BUSINESS_HOURS', payload: hours });
-    console.log('✅ Business hours updated in state');
   }, []);
 
   const updateServices = useCallback((services: Service[]) => {
-    console.log('🔄 Updating services:', services);
     dispatch({ type: 'UPDATE_SERVICES', payload: services });
-    console.log('✅ Services updated in state');
   }, []);
 
   const updateUrgentCallRules = useCallback((rules: UrgentCallRule[]) => {
-    console.log('🔄 Updating urgent call rules:', rules);
     dispatch({ type: 'UPDATE_URGENT_CALL_RULES', payload: rules });
-    console.log('✅ Urgent call rules updated in state');
   }, []);
 
   const updateBookingRequirements = useCallback((requirements: BookingRequirement[]) => {
-    console.log('🔄 Updating booking requirements:', requirements);
     dispatch({ type: 'UPDATE_BOOKING_REQUIREMENTS', payload: requirements });
-    console.log('✅ Booking requirements updated in state');
   }, []);
 
   const resetDirty = useCallback(() => {

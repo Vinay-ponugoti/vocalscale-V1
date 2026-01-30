@@ -145,20 +145,16 @@ const Settings = () => {
           language: voiceSettings.language,
           is_active: voiceSettings.is_active
         };
-        console.log('🔍 Saving voice updates:', voiceUpdates);
         const result = await api.updateVoiceSettings(voiceUpdates);
-        console.log('✅ Save result:', result);
       }
 
       if (unsavedChangesRef.current.notifications) {
-        console.log('🔍 Saving notification settings:', notifications);
         await api.updateNotificationSettings(notifications as unknown as Record<string, unknown>);
         // Clean up legacy localStorage
         localStorage.removeItem('notification_settings');
       }
 
       if (unsavedChangesRef.current.bookingRequirements) {
-        console.log('[Settings] Triggering booking requirements save...');
         const promises: Promise<unknown>[] = [];
         window.dispatchEvent(new CustomEvent('booking-requirements-save', {
           detail: { registerPromise: (p: Promise<unknown>) => promises.push(p) }
