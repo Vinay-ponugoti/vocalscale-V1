@@ -1,7 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Calendar, Link, Unlink, CheckCircle, ExternalLink, RefreshCw } from 'lucide-react';
 import { env } from '../../../../config/env';
-import { getAuthHeader } from '../../../../lib/api';
+import { api, getAuthHeader } from '../../../../lib/api';
+
+// Internal Component: Simple Toggle
+const Toggle: React.FC<{ active: boolean; onChange: () => void; disabled?: boolean }> = ({ active, onChange, disabled }) => (
+    <button
+        type="button"
+        onClick={onChange}
+        disabled={disabled}
+        className={`w-11 h-6 rounded-full p-1 transition-all duration-200 ease-out focus:outline-none ${active ? 'bg-indigo-600' : 'bg-slate-200'} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+    >
+        <div
+            className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-out ${active ? 'translate-x-5' : 'translate-x-0'}`}
+        />
+    </button>
+);
 
 interface GoogleCalendarStatus {
     connected: boolean;
@@ -15,6 +29,8 @@ const IntegrationsContent = () => {
     const [connecting, setConnecting] = useState(false);
     const [disconnecting, setDisconnecting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [syncEnabled, setSyncEnabled] = useState(true);
+    const [syncUpdating, setSyncUpdating] = useState(false);
 
     const fetchStatus = useCallback(async () => {
         try {
@@ -35,7 +51,29 @@ const IntegrationsContent = () => {
 
     useEffect(() => {
         fetchStatus();
+        // Fetch voice settings for sync status
+        api.getVoiceSettings().then(settings => {
+            if (settings && typeof settings.sync_google_calendar === 'boolean') {
+                setSyncEnabled(settings.sync_google_calendar);
+            }
+        }).catch(err => console.error('Failed to fetch voice settings for sync status:', err));
     }, [fetchStatus]);
+
+    const handleSyncToggle = async () => {
+        if (syncUpdating) return;
+        setSyncUpdating(true);
+        const newState = !syncEnabled;
+        setSyncEnabled(newState); // Optimistic update
+        try {
+            await api.updateVoiceSettings({ sync_google_calendar: newState });
+        } catch (err) {
+            console.error('Failed to update sync settings:', err);
+            setSyncEnabled(!newState); // Revert on error
+            setError('Failed to update sync settings');
+        } finally {
+            setSyncUpdating(false);
+        }
+    };
 
     // Handle redirect from OAuth callback
     useEffect(() => {
@@ -184,6 +222,17 @@ const IntegrationsContent = () => {
                                 {status.lastSyncedAt && (
                                     <span>Last synced: {formatDate(status.lastSyncedAt)}</span>
                                 )}
+                            </div>
+                        )}
+
+                        {/* Sync Toggle */}
+                        {status.connected && (
+                            <div className="flex items-center gap-3 mb-5 p-3 bg-white/50 rounded-lg border border-emerald-100/50">
+                                <Toggle active={syncEnabled} onChange={handleSyncToggle} disabled={syncUpdating} />
+                                <div className="flex flex-col">
+                                    <span className="text-xs font-bold text-slate-700">Auto-Sync Appointments</span>
+                                    <span className="text-[10px] text-slate-500">Automatically add booked appointments to this calendar</span>
+                                </div>
                             </div>
                         )}
 
