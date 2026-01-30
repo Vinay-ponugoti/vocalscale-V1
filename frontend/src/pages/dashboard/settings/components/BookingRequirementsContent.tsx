@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Trash2, GripVertical, Settings2, ShieldCheck, User, Phone, Mail, MapPin, Calendar, Link } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Settings2, ShieldCheck, User, Phone, Mail, MapPin, Calendar } from 'lucide-react';
 import { m, AnimatePresence } from 'framer-motion';
 import { api } from '../../../../lib/api';
-import { env } from '../../../../config/env';
-import { getAuthToken } from '../../../../utils/sessionUtils';
 import type { BookingRequirement } from '../../../../types/settings';
 
 const FIELD_ICONS: Record<string, React.ElementType> = {
@@ -29,30 +27,6 @@ export const BookingRequirementsContent: React.FC = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [isAddingField, setIsAddingField] = useState(false);
   const [newFieldName, setNewFieldName] = useState('');
-  const [connecting, setConnecting] = useState(false);
-
-  const handleConnectGoogle = async () => {
-    setConnecting(true);
-    try {
-      const token = getAuthToken();
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch(`${env.API_URL}/auth/google-url?redirect_to=${window.location.origin}/dashboard/settings`, {
-        headers
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Failed to initiate Google connection:', error);
-      setConnecting(false);
-    }
-  };
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -169,39 +143,7 @@ export const BookingRequirementsContent: React.FC = () => {
         )}
       </div>
 
-      {/* Google Calendar Integration Card */}
-      <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-indigo-100/50" />
 
-        <div className="flex items-center justify-between relative z-10">
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm">
-              <Calendar size={24} className="text-indigo-600" />
-            </div>
-            <div>
-              <h3 className="text-sm font-black text-slate-900 tracking-tight">Google Account Connection</h3>
-              <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wide">
-                Connect your account for synchronization
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={handleConnectGoogle}
-            disabled={connecting}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all hover:scale-105 shadow-lg shadow-slate-200 disabled:opacity-70 disabled:hover:scale-100"
-          >
-            {connecting ? (
-              <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <Link size={14} />
-            )}
-            <span className="text-[10px] font-black uppercase tracking-widest">
-              {connecting ? 'Connecting...' : 'Connect Account'}
-            </span>
-          </button>
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 gap-3 2xl:gap-5">
         <AnimatePresence mode="popLayout">

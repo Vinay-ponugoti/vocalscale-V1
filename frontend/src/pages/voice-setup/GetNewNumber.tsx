@@ -275,8 +275,8 @@ const GetNewNumber = () => {
   };
 
   return (
-    <DashboardLayout>
-      <div className="flex-1 flex flex-col bg-background dark:bg-slate-950 min-h-screen scrollbar-premium">
+    <DashboardLayout fullWidth>
+      <div className="flex-1 flex flex-col bg-background dark:bg-slate-950 h-full scrollbar-premium">
         {/* Progress Header */}
         <header className="border-b border-border bg-card px-8 py-5 flex items-center justify-between sticky top-0 z-30 shadow-sm">
           <div className="flex items-center gap-6">
