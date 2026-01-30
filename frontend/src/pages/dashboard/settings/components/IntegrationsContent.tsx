@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calendar, Link, Unlink, CheckCircle, ExternalLink, RefreshCw } from 'lucide-react';
+import { Calendar, Link, Unlink, CheckCircle, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react';
 import { env } from '../../../../config/env';
 import { api, getAuthHeader } from '../../../../lib/api';
 
@@ -21,6 +21,8 @@ interface GoogleCalendarStatus {
     connected: boolean;
     connectedAt?: string;
     lastSyncedAt?: string;
+    reviewsVerified?: boolean;
+    businessAccountId?: string | null;
 }
 
 const IntegrationsContent = () => {
@@ -199,7 +201,7 @@ const IntegrationsContent = () => {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-base font-black text-slate-900">Google Calendar</h3>
+                            <h3 className="text-base font-black text-slate-900">Google Account</h3>
                             {status.connected && (
                                 <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-wide">
                                     <CheckCircle size={10} />
@@ -210,8 +212,8 @@ const IntegrationsContent = () => {
 
                         <p className="text-slate-500 text-sm mb-4">
                             {status.connected
-                                ? 'Appointments sync automatically to your Google Calendar when created or updated.'
-                                : 'Connect your Google Calendar to sync appointments automatically.'}
+                                ? 'Your Google account is connected for Calendar and Reviews.'
+                                : 'Connect your Google account to sync appointments and manage reviews.'}
                         </p>
 
                         {status.connected && (
@@ -222,6 +224,29 @@ const IntegrationsContent = () => {
                                 {status.lastSyncedAt && (
                                     <span>Last synced: {formatDate(status.lastSyncedAt)}</span>
                                 )}
+                            </div>
+                        )}
+
+                        {/* Reviews Status */}
+                        {status.connected && (
+                            <div className="mb-5 p-3 bg-white/50 rounded-lg border border-slate-200">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs font-bold text-slate-700">Google Reviews</span>
+                                    {status.reviewsVerified ? (
+                                        <span className="flex items-center gap-1 text-emerald-600 text-[10px] font-bold uppercase">
+                                            <CheckCircle size={10} /> Active
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center gap-1 text-amber-600 text-[10px] font-bold uppercase">
+                                            <AlertCircle size={10} /> Not Verified
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-[10px] text-slate-500">
+                                    {status.reviewsVerified
+                                        ? 'We can access and reply to your business reviews.'
+                                        : 'We could not verify a Business Profile with this account.'}
+                                </p>
                             </div>
                         )}
 
@@ -273,7 +298,7 @@ const IntegrationsContent = () => {
                                     ) : (
                                         <Link size={14} />
                                     )}
-                                    {connecting ? 'Connecting...' : 'Connect Google Calendar'}
+                                    {connecting ? 'Connecting...' : 'Connect Google Account'}
                                 </button>
                             )}
                         </div>
@@ -288,10 +313,11 @@ const IntegrationsContent = () => {
                     <li>• New appointments created in the dashboard sync to Google Calendar</li>
                     <li>• Drag-and-drop time changes update Google Calendar automatically</li>
                     <li>• Appointments booked via AI voice calls sync to Google Calendar</li>
+                    <li>• Reply to Google Reviews directly from your dashboard (if verified)</li>
                     <li>• You can view synced appointments directly in Google Calendar</li>
                 </ul>
             </div>
-        </div>
+        </div >
     );
 };
 
