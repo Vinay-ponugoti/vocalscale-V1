@@ -3,19 +3,28 @@ import { Calendar, Link, Unlink, CheckCircle, ExternalLink, RefreshCw, AlertCirc
 import { env } from '../../../../config/env';
 import { api, getAuthHeader } from '../../../../lib/api';
 
-// Internal Component: Simple Toggle
-const Toggle: React.FC<{ active: boolean; onChange: () => void; disabled?: boolean }> = ({ active, onChange, disabled }) => (
-    <button
-        type="button"
-        onClick={onChange}
-        disabled={disabled}
-        className={`w-11 h-6 rounded-full p-1 transition-all duration-200 ease-out focus:outline-none ${active ? 'bg-indigo-600' : 'bg-slate-200'} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-    >
-        <div
-            className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-out ${active ? 'translate-x-5' : 'translate-x-0'}`}
-        />
-    </button>
-);
+// Internal Component: Premium Toggle Switch
+const Toggle: React.FC<{ active: boolean; onChange: () => void; disabled?: boolean; size?: 'sm' | 'md' }> = ({ active, onChange, disabled, size = 'md' }) => {
+    const baseClasses = "relative inline-flex items-center rounded-full transition-colors focus:outline-none";
+    const sizeClasses = size === 'sm' ? "h-5 w-9" : "h-6 w-11";
+    const colorClasses = active ? 'bg-indigo-600' : 'bg-slate-200';
+    const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
+
+    return (
+        <button
+            type="button"
+            onClick={onChange}
+            disabled={disabled}
+            className={`${baseClasses} ${sizeClasses} ${colorClasses} ${disabledClasses}`}
+        >
+            <span
+                className={`${size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'
+                    } transform bg-white rounded-full transition-transform ease-in-out duration-200 shadow-sm ${active ? (size === 'sm' ? 'translate-x-5' : 'translate-x-6') : 'translate-x-1'
+                    }`}
+            />
+        </button>
+    );
+};
 
 interface GoogleCalendarStatus {
     connected: boolean;
@@ -34,6 +43,8 @@ const IntegrationsContent = () => {
     const [connecting, setConnecting] = useState<string | null>(null);
     const [disconnecting, setDisconnecting] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [itemToDisconnect, setItemToDisconnect] = useState<'calendar' | 'reviews' | null>(null);
     const [syncEnabled, setSyncEnabled] = useState(true);
     const [syncUpdating, setSyncUpdating] = useState(false);
 
@@ -131,12 +142,19 @@ const IntegrationsContent = () => {
         }
     };
 
-    const handleDisconnect = async (feature: 'calendar' | 'reviews') => {
-        if (!confirm(`Are you sure you want to disconnect Google ${feature === 'calendar' ? 'Calendar' : 'Reviews'}?`)) {
-            return;
-        }
+    const handleDisconnectClick = (feature: 'calendar' | 'reviews') => {
+        setItemToDisconnect(feature);
+        setModalOpen(true);
+    };
+
+    const confirmDisconnect = async () => {
+        if (!itemToDisconnect) return;
+        const feature = itemToDisconnect;
+
         setDisconnecting(feature);
+        setModalOpen(false); // Close modal immediately to show loading state on toggle if preferred, or keep open. Let's close and show loading.
         setError(null);
+
         try {
             const headers = await getAuthHeader();
             const response = await fetch(`${env.API_URL}/integrations/google-calendar/disconnect?feature=${feature}`, {
@@ -155,6 +173,15 @@ const IntegrationsContent = () => {
             console.error('Disconnect error:', err);
         } finally {
             setDisconnecting(null);
+            setItemToDisconnect(null);
+        }
+    };
+
+    const handleToggle = (feature: 'calendar' | 'reviews', isConnected: boolean) => {
+        if (isConnected) {
+            handleDisconnectClick(feature);
+        } else {
+            handleConnect(feature);
         }
     };
 
@@ -193,188 +220,174 @@ const IntegrationsContent = () => {
             )}
 
             {/* Google Calendar Card */}
-            <div className={`p-6 rounded-2xl border-2 transition-all ${isCalendarConnected
-                ? 'bg-emerald-50/50 border-emerald-200'
-                : 'bg-slate-50 border-slate-200 hover:border-indigo-200'
-                }`}>
-                <div className="flex items-start gap-4">
-                    {/* Icon */}
-                    <div className={`p-3 rounded-xl ${isCalendarConnected
-                        ? 'bg-emerald-100 text-emerald-600'
-                        : 'bg-white text-slate-400 border border-slate-200'
-                        }`}>
-                        <Calendar size={24} />
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-base font-black text-slate-900">Google Calendar</h3>
-                            {isCalendarConnected && (
-                                <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-wide">
-                                    <CheckCircle size={10} />
-                                    Connected
-                                </span>
-                            )}
+            <div className={`p-6 rounded-2xl border transition-all ${isCalendarConnected ? 'bg-white border-slate-200' : 'bg-white border-slate-200'}`}>
+                <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4">
+                        {/* Icon */}
+                        <div className={`p-3 rounded-xl ${isCalendarConnected
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'bg-slate-50 text-slate-400'
+                            }`}>
+                            <Calendar size={24} />
                         </div>
-
-                        <p className="text-slate-500 text-sm mb-4">
-                            {isCalendarConnected
-                                ? 'Appointments sync automatically to your Google Calendar.'
-                                : 'Connect your Google account to sync appointments automatically.'}
-                        </p>
-
-                        {isCalendarConnected ? (
-                            <>
-                                <div className="flex flex-wrap gap-4 text-xs text-slate-500 mb-4">
-                                    {status.connectedAt && (
-                                        <span>Connected: {formatDate(status.connectedAt)}</span>
-                                    )}
-                                    {status.lastSyncedAt && (
-                                        <span>Last synced: {formatDate(status.lastSyncedAt)}</span>
-                                    )}
-                                </div>
-
-                                <div className="flex items-center gap-3 mb-5 p-3 bg-white/50 rounded-lg border border-emerald-100/50">
-                                    <Toggle active={syncEnabled} onChange={handleSyncToggle} disabled={syncUpdating} />
-                                    <div className="flex flex-col">
-                                        <span className="text-xs font-bold text-slate-700">Auto-Sync Appointments</span>
-                                        <span className="text-[10px] text-slate-500">Automatically add booked appointments to this calendar</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-wrap gap-3">
-                                    <a
-                                        href="https://calendar.google.com"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:border-indigo-300 hover:text-indigo-600 transition-all"
-                                    >
-                                        <ExternalLink size={14} />
-                                        Open Calendar
-                                    </a>
-                                    <button
-                                        onClick={() => handleDisconnect('calendar')}
-                                        disabled={disconnecting === 'calendar'}
-                                        className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
-                                    >
-                                        {disconnecting === 'calendar' ? (
-                                            <RefreshCw size={14} className="animate-spin" />
-                                        ) : (
-                                            <Unlink size={14} />
-                                        )}
-                                        {disconnecting === 'calendar' ? 'Disconnecting...' : 'Disconnect'}
-                                    </button>
-                                </div>
-                            </>
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <h3 className="text-base font-bold text-slate-900">Google Calendar</h3>
+                            </div>
+                            <p className="text-slate-500 text-sm max-w-sm">
+                                Automatically sync your appointments to Google Calendar.
+                            </p>
+                        </div>
+                    </div>
+                    {/* Master Toggle */}
+                    <div className="flex items-center gap-3">
+                        {connecting === 'calendar' || disconnecting === 'calendar' ? (
+                            <RefreshCw size={20} className="text-indigo-600 animate-spin" />
                         ) : (
-                            <button
-                                onClick={() => handleConnect('calendar')}
-                                disabled={connecting === 'calendar'}
-                                className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all disabled:opacity-50 shadow-lg shadow-indigo-200"
-                            >
-                                {connecting === 'calendar' ? (
-                                    <RefreshCw size={14} className="animate-spin" />
-                                ) : (
-                                    <Link size={14} />
-                                )}
-                                {connecting === 'calendar' ? 'Connecting...' : 'Connect Google Calendar'}
-                            </button>
+                            <Toggle
+                                active={!!isCalendarConnected}
+                                onChange={() => handleToggle('calendar', !!isCalendarConnected)}
+                            />
                         )}
                     </div>
                 </div>
+
+                {isCalendarConnected && (
+                    <div className="mt-6 pt-6 border-t border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {/* Auto Sync Sub-setting */}
+                        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl mb-4">
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold text-slate-900">Auto-Sync</span>
+                                <span className="text-xs text-slate-500">Add booked appointments to calendar automatically</span>
+                            </div>
+                            <Toggle
+                                active={syncEnabled}
+                                onChange={handleSyncToggle}
+                                disabled={syncUpdating}
+                                size="sm"
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs">
+                            <div className="flex gap-4 text-slate-500">
+                                {status.lastSyncedAt && <span>Last synced: {formatDate(status.lastSyncedAt)}</span>}
+                            </div>
+                            <a
+                                href="https://calendar.google.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-indigo-600 font-medium hover:text-indigo-700 hover:underline"
+                            >
+                                Open Calendar
+                                <ExternalLink size={12} />
+                            </a>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Google Reviews Card */}
-            <div className={`p-6 rounded-2xl border-2 transition-all ${isReviewsConnected
-                ? 'bg-emerald-50/50 border-emerald-200'
-                : 'bg-slate-50 border-slate-200 hover:border-indigo-200'
-                }`}>
-                <div className="flex items-start gap-4">
-                    {/* Icon */}
-                    <div className={`p-3 rounded-xl ${isReviewsConnected
-                        ? 'bg-emerald-100 text-emerald-600'
-                        : 'bg-white text-slate-400 border border-slate-200'
-                        }`}>
-                        <AlertCircle size={24} />
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-base font-black text-slate-900">Google Reviews</h3>
-                            {isReviewsConnected && status.reviewsVerified && (
-                                <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-wide">
-                                    <CheckCircle size={10} />
-                                    Active
-                                </span>
-                            )}
+            <div className={`p-6 rounded-2xl border transition-all ${isReviewsConnected ? 'bg-white border-slate-200' : 'bg-white border-slate-200'}`}>
+                <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4">
+                        {/* Icon */}
+                        <div className={`p-3 rounded-xl ${isReviewsConnected
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'bg-slate-50 text-slate-400'
+                            }`}>
+                            <AlertCircle size={24} />
                         </div>
-
-                        <p className="text-slate-500 text-sm mb-4">
-                            {isReviewsConnected
-                                ? status.reviewsVerified
-                                    ? 'We can access and reply to your business reviews.'
-                                    : 'Connect a verified Google Business Profile to manage reviews.'
-                                : 'Connect your Google account to manage reviews.'}
-                        </p>
-
-                        {!isReviewsConnected ? (
-                            <button
-                                onClick={() => handleConnect('reviews')}
-                                disabled={connecting === 'reviews'}
-                                className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all disabled:opacity-50 shadow-lg shadow-indigo-200"
-                            >
-                                {connecting === 'reviews' ? (
-                                    <RefreshCw size={14} className="animate-spin" />
-                                ) : (
-                                    <Link size={14} />
-                                )}
-                                {connecting === 'reviews' ? 'Connecting...' : 'Connect Google Reviews'}
-                            </button>
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <h3 className="text-base font-bold text-slate-900">Google Reviews</h3>
+                            </div>
+                            <p className="text-slate-500 text-sm max-w-sm">
+                                Read and reply to your Google Business reviews.
+                            </p>
+                        </div>
+                    </div>
+                    {/* Master Toggle */}
+                    <div className="flex items-center gap-3">
+                        {connecting === 'reviews' || disconnecting === 'reviews' ? (
+                            <RefreshCw size={20} className="text-indigo-600 animate-spin" />
                         ) : (
-                            <div className="flex flex-col gap-2">
-                                {status.reviewsVerified ? (
-                                    <div className="p-3 bg-white/50 rounded-lg border border-emerald-100/50">
-                                        <p className="text-xs text-slate-600">
-                                            Everything is set up! New reviews will appear in your dashboard.
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div className="p-3 bg-amber-50 rounded-lg border border-amber-100 text-xs text-amber-800">
-                                        <div className="flex items-center gap-2 font-bold mb-1">
-                                            <AlertCircle size={14} />
-                                            Verification Needed
-                                        </div>
-                                        We could not verify a Business Profile with this account. Please ensure your Google account manages a verified business.
-                                    </div>
-                                )}
-                                <div className="mt-2">
-                                    <button
-                                        onClick={() => handleDisconnect('reviews')}
-                                        disabled={disconnecting === 'reviews'}
-                                        className="text-xs text-red-500 hover:text-red-700 hover:underline"
-                                    >
-                                        Disconnect Google Reviews
-                                    </button>
+                            <Toggle
+                                active={!!isReviewsConnected}
+                                onChange={() => handleToggle('reviews', !!isReviewsConnected)}
+                            />
+                        )}
+                    </div>
+                </div>
+
+                {isReviewsConnected && (
+                    <div className="mt-6 pt-6 border-t border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {status.reviewsVerified ? (
+                            <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg w-fit">
+                                <CheckCircle size={14} />
+                                <span className="text-xs font-bold">Business Profile Verified</span>
+                            </div>
+                        ) : (
+                            <div className="p-3 bg-amber-50 rounded-lg border border-amber-100 text-xs text-amber-800 flex items-start gap-2">
+                                <AlertCircle size={14} className="mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <span className="font-bold block mb-0.5">Verification Needed</span>
+                                    We could not verify a Business Profile. Ensure this account manages a business.
                                 </div>
                             </div>
                         )}
                     </div>
+                )}
+            </div>
+
+            {/* Simple Info Footer */}
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <AlertCircle className="w-5 h-5 text-slate-400 mt-0.5" />
+                <div className="text-xs text-slate-500 leading-relaxed">
+                    <p>Connecting connects your Google Account for distinct features:</p>
+                    <ul className="list-disc ml-4 mt-1 space-y-0.5">
+                        <li>Calendar: Syncs appointments two-way.</li>
+                        <li>Reviews: Fetches reviews and allows AI replies.</li>
+                    </ul>
                 </div>
             </div>
 
-            {/* Info Box */}
-            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                <h4 className="text-sm font-bold text-blue-800 mb-1">How it works</h4>
-                <ul className="text-xs text-blue-700 space-y-1">
-                    <li>• Connecting either card links your Google Account for that specific feature</li>
-                    <li>• New appointments created in the dashboard sync to Google Calendar</li>
-                    <li>• Drag-and-drop time changes update Google Calendar automatically</li>
-                    <li>• Appointments booked via AI voice calls sync to Google Calendar</li>
-                    <li>• Verified businesses can reply to Google Reviews from the dashboard</li>
-                </ul>
-            </div>
+            {/* Disconnect Modal */}
+            {modalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setModalOpen(false)} />
+                    <div className="relative bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 transform transition-all scale-100">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+                                <Unlink size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-slate-900">Disconnect Integration?</h3>
+                                <p className="text-xs text-slate-500">Stop syncing data</p>
+                            </div>
+                        </div>
+
+                        <p className="text-sm text-slate-600 mb-6">
+                            Are you sure you want to disconnect <strong>Google {itemToDisconnect === 'calendar' ? 'Calendar' : 'Reviews'}</strong>?
+                            This will stop all sync features immediately.
+                        </p>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setModalOpen(false)}
+                                className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-bold transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDisconnect}
+                                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-red-200"
+                            >
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
