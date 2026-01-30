@@ -110,42 +110,34 @@ const VoiceSetup = () => {
     <DashboardLayout fullWidth>
       <div className="flex-1 flex flex-col bg-background dark:bg-slate-950 min-h-screen scrollbar-premium">
 
-        {/* Hero Section */}
-        <section className="px-8 py-12 border-b border-border bg-card/50 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -mr-48 -mt-48" />
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-8 relative z-10">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-glow-blue">
-                  <Smartphone className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Core Infrastructure</span>
-              </div>
-              <h1 className="text-5xl font-black text-foreground tracking-tighter leading-none">
-                Telephony <span className="text-primary italic">Nodes.</span>
-              </h1>
-              <p className="text-muted-foreground text-lg font-medium max-w-xl leading-relaxed">
-                Assign and manage dedicated communication channels for your AI receptionist ecosystem.
-              </p>
+        {/* Standard Page Header */}
+        <header className="px-8 py-6 border-b border-border bg-card/50 flex flex-col md:flex-row md:items-center justify-between gap-6 sticky top-0 z-10 backdrop-blur-xl">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
+              <Smartphone className="w-6 h-6 text-primary" strokeWidth={1.5} />
             </div>
-
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate('/dashboard/voice-setup/existing')}
-                className="px-8 py-4 bg-muted text-muted-foreground font-black uppercase tracking-widest text-[10px] rounded-2xl border border-border hover:bg-muted/80 transition-all"
-              >
-                Link Existing
-              </button>
-              <button
-                onClick={() => navigate('/dashboard/voice-setup/buy')}
-                className="px-8 py-4 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-glow-blue hover:bg-primary/95 transition-all hover:-translate-y-1 active:scale-95 flex items-center gap-3"
-              >
-                <Plus className="w-4 h-4" strokeWidth={3} />
-                Acquire New
-              </button>
+            <div>
+              <h1 className="text-2xl font-black text-foreground tracking-tight">Phone Numbers</h1>
+              <p className="text-xs font-medium text-muted-foreground mt-1">Manage your active communication lines.</p>
             </div>
           </div>
-        </section>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/dashboard/voice-setup/existing')}
+              className="px-5 py-2.5 bg-background hover:bg-muted text-muted-foreground font-black uppercase tracking-widest text-[10px] rounded-xl border border-border transition-all hover:border-foreground/20"
+            >
+              Link Existing
+            </button>
+            <button
+              onClick={() => navigate('/dashboard/voice-setup/buy')}
+              className="px-5 py-2.5 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] rounded-xl shadow-glow-blue hover:bg-primary/95 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-2"
+            >
+              <Plus className="w-3.5 h-3.5" strokeWidth={3} />
+              Acquire New
+            </button>
+          </div>
+        </header>
 
         <main className="flex-1 max-w-6xl mx-auto w-full px-8 py-12">
 
