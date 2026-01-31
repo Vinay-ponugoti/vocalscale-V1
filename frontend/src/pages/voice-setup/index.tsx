@@ -88,14 +88,24 @@ const VoiceSetup = () => {
       }
 
       const data = await response.json();
-      const recoveredCount = data.summary?.recovered_count || 0;
+      const summary = data.summary || {};
+      const recoveredCount = summary.recovered_count || 0;
+      const totalInTwilio = summary.total_in_twilio || 0;
+      const totalInDatabase = summary.total_in_database || 0;
+      const failedCount = summary.failed_count || 0;
       
       if (recoveredCount > 0) {
         setSyncMessage(`Successfully recovered ${recoveredCount} phone number${recoveredCount > 1 ? 's' : ''} from Twilio`);
         // Refresh the numbers list
         refetch();
+      } else if (failedCount > 0) {
+        setSyncMessage(`Failed to recover ${failedCount} phone number${failedCount > 1 ? 's' : ''}. Check logs for details.`);
+      } else if (totalInTwilio === 0) {
+        setSyncMessage('No phone numbers found in Twilio account');
+      } else if (totalInTwilio === totalInDatabase) {
+        setSyncMessage(`All ${totalInDatabase} phone number${totalInDatabase > 1 ? 's are' : ' is'} already synced`);
       } else {
-        setSyncMessage('All phone numbers are already synced');
+        setSyncMessage(`Found ${totalInTwilio} in Twilio, ${totalInDatabase} in database. Sync may have issues.`);
       }
     } catch (err: any) {
       console.error('Error syncing phone numbers:', err);
