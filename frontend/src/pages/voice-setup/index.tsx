@@ -12,7 +12,8 @@ import {
   Loader2,
   ChevronRight,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  RefreshCw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePhoneNumbers } from '../../hooks/usePhoneNumbers';
@@ -28,6 +29,8 @@ const VoiceSetup = () => {
   const [editingNumber, setEditingNumber] = useState<PhoneNumber | null>(null);
   const [editName, setEditName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   const handleEditClick = (num: PhoneNumber, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -63,6 +66,44 @@ const VoiceSetup = () => {
       console.error('Error updating number', e);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSyncFromTwilio = async () => {
+    setIsSyncing(true);
+    setSyncMessage(null);
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetch(`${env.API_URL}/phone-numbers/sync`, {
+        method: 'POST',
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to sync phone numbers');
+      }
+
+      const data = await response.json();
+      const recoveredCount = data.summary?.recovered_count || 0;
+      
+      if (recoveredCount > 0) {
+        setSyncMessage(`Successfully recovered ${recoveredCount} phone number${recoveredCount > 1 ? 's' : ''} from Twilio`);
+        // Refresh the numbers list
+        refetch();
+      } else {
+        setSyncMessage('All phone numbers are already synced');
+      }
+    } catch (err: any) {
+      console.error('Error syncing phone numbers:', err);
+      setSyncMessage(err.message || 'Failed to sync phone numbers');
+    } finally {
+      setIsSyncing(false);
+      // Clear message after 5 seconds
+      setTimeout(() => setSyncMessage(null), 5000);
     }
   };
 
@@ -124,6 +165,14 @@ const VoiceSetup = () => {
 
           <div className="flex items-center gap-3 w-full md:w-auto">
             <button
+              onClick={handleSyncFromTwilio}
+              disabled={isSyncing}
+              className="flex-1 md:flex-none px-4 md:px-5 py-2.5 bg-muted text-muted-foreground font-black uppercase tracking-widest text-[9px] md:text-[10px] rounded-xl border border-border hover:bg-muted/80 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} strokeWidth={2.5} />
+              {isSyncing ? 'Syncing...' : 'Sync from Twilio'}
+            </button>
+            <button
               onClick={() => navigate('/dashboard/voice-setup/buy')}
               className="flex-1 md:flex-none px-4 md:px-5 py-2.5 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[9px] md:text-[10px] rounded-xl shadow-glow-blue hover:bg-primary/95 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap"
             >
@@ -134,6 +183,47 @@ const VoiceSetup = () => {
         </header>
 
         <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8 md:px-8 md:py-12">
+
+          {/* Sync Success Message */}
+          {syncMessage && (
+            <div className={`mb-10 border p-6 rounded-[2rem] flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 ${
+              syncMessage.includes('Successfully') 
+                ? 'bg-success/5 border-success/20 text-success' 
+                : syncMessage.includes('already synced')
+                ? 'bg-muted/50 border-border text-muted-foreground'
+                : 'bg-destructive/5 border-destructive/20 text-destructive'
+            }`}>
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  syncMessage.includes('Successfully') 
+                    ? 'bg-success/10' 
+                    : syncMessage.includes('already synced')
+                    ? 'bg-muted'
+                    : 'bg-destructive/10'
+                }`}>
+                  {syncMessage.includes('Successfully') ? (
+                    <ShieldCheck className="w-6 h-6" />
+                  ) : syncMessage.includes('already synced') ? (
+                    <Smartphone className="w-6 h-6" />
+                  ) : (
+                    <X className="w-6 h-6" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest">
+                    {syncMessage.includes('Successfully') ? 'Sync Successful' : syncMessage.includes('already synced') ? 'Already Synced' : 'Sync Failed'}
+                  </p>
+                  <p className="text-sm font-medium opacity-80">{syncMessage}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSyncMessage(null)}
+                className="p-2 hover:bg-black/5 rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
 
           {/* Error Alert */}
           {error && (
