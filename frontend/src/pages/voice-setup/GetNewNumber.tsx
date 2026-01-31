@@ -48,6 +48,19 @@ const GetNewNumber = () => {
 
       const subscription = await billingApi.getSubscription().catch(() => null);
 
+      // Check subscription status - backend requires active or trialing subscription
+      const subscriptionStatus = subscription?.status?.toLowerCase();
+      if (!subscription || (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing')) {
+        setLimitReached(true);
+        setLimitMessage(
+          subscriptionStatus 
+            ? `Active subscription required to add phone numbers (current status: ${subscriptionStatus})`
+            : 'Active subscription required to add phone numbers. Please subscribe to a plan first.'
+        );
+        setCheckingLimits(false);
+        return;
+      }
+
       const numbersResp = await fetch(`${apiUrl}/phone-numbers`, {
         headers: { 'Content-Type': 'application/json', ...headers }
       });
@@ -108,7 +121,7 @@ const GetNewNumber = () => {
         }
       } else {
         const errData = await response.json().catch(() => ({}));
-        setError(errData.detail || 'Failed to verify business account status');
+        setError(errData.error || errData.detail || 'Failed to verify business account status');
       }
     } catch (err) {
       console.error('Error checking subaccount:', err);
@@ -207,7 +220,7 @@ const GetNewNumber = () => {
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.detail || 'Failed to fetch numbers');
+        throw new Error(errData.error || errData.detail || 'Failed to fetch numbers');
       }
 
       const data = await response.json();
@@ -239,6 +252,23 @@ const GetNewNumber = () => {
   const handleActivate = async () => {
     if (!selectedNumber) return;
 
+    // Double-check subscription status before making request
+    try {
+      const subscription = await billingApi.getSubscription().catch(() => null);
+      const subscriptionStatus = subscription?.status?.toLowerCase();
+      if (!subscription || (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing')) {
+        setError(
+          subscriptionStatus 
+            ? `Active subscription required (current status: ${subscriptionStatus})`
+            : 'Active subscription required to add phone numbers. Please subscribe to a plan first.'
+        );
+        return;
+      }
+    } catch (err) {
+      console.error('Error checking subscription:', err);
+      // Continue anyway - backend will validate
+    }
+
     setLoading(true);
     try {
       const apiUrl = env.API_URL;
@@ -257,7 +287,7 @@ const GetNewNumber = () => {
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.detail || 'Failed to purchase number');
+        throw new Error(errData.error || errData.detail || 'Failed to purchase number');
       }
 
       const result = await response.json();
