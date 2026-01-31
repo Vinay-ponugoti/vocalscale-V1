@@ -45,7 +45,10 @@ const NumberDetails = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                const filtered = data.filter((log: any) =>
+                // Handle paginated response structure { items: [], ... }
+                const items = Array.isArray(data) ? data : (data.items || []);
+
+                const filtered = items.filter((log: any) =>
                     log.from === number?.phone_number || log.to === number?.phone_number
                 );
                 setLogs(filtered);
