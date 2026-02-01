@@ -56,7 +56,10 @@ export const Header = () => {
                             <button
                                 onClick={() => setMenuState(!menuState)}
                                 aria-label={menuState ? 'Close Menu' : 'Open Menu'}
-                                className="relative z-[102] -m-2.5 block cursor-pointer p-2.5 lg:hidden text-white transition-all active:scale-95">
+                                className={cn(
+                                    "relative z-[102] -m-2.5 block cursor-pointer p-2.5 lg:hidden transition-all active:scale-95",
+                                    isScrolled || menuState ? "text-white" : "text-slate-900"
+                                )}>
                                 <AnimatePresence mode="wait">
                                     {menuState ? (
                                         <m.div
@@ -88,7 +91,10 @@ export const Header = () => {
                                     <li key={index}>
                                         <a
                                             href={item.href}
-                                            className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 hover:text-white transition-colors">
+                                            className={cn(
+                                                "text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 transition-colors",
+                                                isScrolled ? "hover:text-white" : "hover:text-slate-900"
+                                            )}>
                                             {item.name}
                                         </a>
                                     </li>
@@ -98,7 +104,12 @@ export const Header = () => {
 
                         {/* Desktop CRM/CTA */}
                         <div className="hidden lg:flex items-center gap-6">
-                            <Link to="/login" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors px-4">
+                            <Link
+                                to="/login"
+                                className={cn(
+                                    "text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 transition-colors px-4",
+                                    isScrolled ? "hover:text-white" : "hover:text-slate-900"
+                                )}>
                                 Login
                             </Link>
                             <Button
@@ -147,9 +158,9 @@ export const Header = () => {
                                 <div className="h-px w-full bg-white/10 mb-6" />
                                 <Button
                                     asChild
-                                    variant="outline"
+                                    variant="secondary"
                                     size="lg"
-                                    className="rounded-[1.5rem] border-white/10 text-white font-black h-14 uppercase tracking-[0.2em] text-[10px] bg-white/5 active:scale-95">
+                                    className="rounded-[1.5rem] bg-white text-slate-900 hover:bg-slate-200 font-black h-14 uppercase tracking-[0.2em] text-[10px] shadow-lg active:scale-95">
                                     <Link to="/login" onClick={() => setMenuState(false)}>
                                         Login to Account
                                     </Link>
