@@ -121,7 +121,7 @@ export const Header = () => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.2, ease: "easeOut" }}
-                            className="fixed inset-0 bg-slate-950/98 backdrop-blur-2xl z-[90] lg:hidden pt-32 pb-12 px-8 flex flex-col justify-between h-screen">
+                            className="fixed inset-0 bg-[#020617]/98 backdrop-blur-2xl z-[90] lg:hidden pt-32 pb-12 px-8 flex flex-col justify-between h-screen">
 
                             {/* Animated Grid Background for Menu */}
                             <div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]" />
