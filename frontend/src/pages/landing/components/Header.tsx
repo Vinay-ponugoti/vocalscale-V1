@@ -39,7 +39,7 @@ export const Header = () => {
             <nav className="fixed z-[100] w-full px-2 group">
                 <div className={cn(
                     'mx-auto mt-4 max-w-6xl transition-all duration-500 relative z-[101]',
-                    isScrolled
+                    isScrolled || menuState
                         ? 'bg-slate-900/80 max-w-4xl rounded-full border border-white/5 backdrop-blur-xl px-4 md:px-5 py-2.5 shadow-2xl shadow-black/20'
                         : 'px-6 lg:px-12 py-4'
                 )}>
