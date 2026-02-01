@@ -93,7 +93,7 @@ export function HeroSection() {
                                             size="lg"
                                             className="rounded-xl px-8 h-12 text-base font-black bg-blue-600 hover:bg-blue-700 text-white shadow-xl shadow-blue-500/20 w-full md:w-auto transition-all active:scale-95">
                                             <Link to="/signup">
-                                                <span className="text-nowrap">Start Free Trial</span>
+                                                <span className="text-nowrap">Get Started Now</span>
                                             </Link>
                                         </Button>
                                     </div>
