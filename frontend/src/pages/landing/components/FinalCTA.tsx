@@ -63,7 +63,7 @@ export function FinalCTA() {
   };
 
   return (
-    <section id="book-demo" className="py-20 md:py-32 px-6 relative overflow-hidden bg-transparent">
+    <section id="book-demo" className="py-20 md:py-32 px-6 md:px-8 relative overflow-hidden bg-transparent">
       <div className="max-w-7xl mx-auto">
         <div
           className="relative p-10 md:p-24 bg-white backdrop-blur-3xl rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-2xl shadow-blue-900/10 border border-slate-200"

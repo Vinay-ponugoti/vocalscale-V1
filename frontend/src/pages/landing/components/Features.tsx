@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, User, Play, Pause, Volume2 } from 'lucide-react';
+import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, User, Play, Pause, Volume2, Network, BarChart, Lock, Globe2, PhoneCall, Bot, Zap, MessageSquare, Headphones } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -131,8 +131,8 @@ export function Features() {
   const features = [
     {
       icon: BrainCircuit,
-      title: 'AI Receptionist',
-      description: 'Human-like conversations powered by Deepgram Aura-2, featuring 40+ high-fidelity, ultra-low latency voices for a natural 24/7 receptionist experience.',
+      title: 'Advanced AI Receptionist',
+      description: 'Our AI receptionist utilizes Deepgram Aura-2 technology to provide human-like conversations with 40+ high-fidelity voices. It handles calls with ultra-low latency, ensuring a natural flow that mimics human interaction perfectly. The system is capable of understanding complex queries, managing interruptions, and maintaining context throughout the conversation.',
       className: 'md:col-span-8 md:row-span-2 bg-gradient-to-br from-blue-50/50 via-white/50 to-white/50',
       iconBg: 'bg-blue-100',
       iconColor: 'text-blue-600',
@@ -140,48 +140,79 @@ export function Features() {
     },
     {
       icon: Timer,
-      title: 'Smart Scheduling',
-      description: 'Automated booking that syncs with your calendar.',
+      title: 'Smart Scheduling & Calendar Sync',
+      description: 'Automate your entire booking process with intelligent calendar integration. Our system syncs in real-time with Google Calendar, Outlook, and other major platforms to prevent double bookings. It can negotiate times, handle rescheduling requests, and send automated confirmations to both parties.',
       className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-indigo-50/50 via-white/50 to-white/50',
       iconBg: 'bg-indigo-100',
       iconColor: 'text-indigo-600',
     },
     {
       icon: Activity,
-      title: 'Deep Analytics',
-      description: 'Insights into call patterns and sentiment.',
+      title: 'Deep Analytics & Insights',
+      description: 'Gain valuable business intelligence from every call. Our analytics engine tracks call volume, duration, peak times, and customer sentiment. Get detailed reports on common customer queries, resolution rates, and agent performance metrics to optimize your operations.',
       className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-violet-50/50 via-white/50 to-white/50',
       iconBg: 'bg-violet-100',
       iconColor: 'text-violet-600',
     },
     {
       icon: Languages,
-      title: 'Global Scale',
-      description: 'Speak to customers in over 50 languages. Provide a local experience, everywhere.',
+      title: 'Global Language Support',
+      description: 'Break down language barriers with support for over 50 languages and dialects. Our AI automatically detects the caller\'s language and switches instantly to provide a native-like experience. Perfect for businesses serving diverse communities or operating internationally.',
       className: 'md:col-span-4 md:row-span-2 bg-gradient-to-tr from-cyan-50/50 via-white/50 to-white/50',
       iconBg: 'bg-cyan-100',
       iconColor: 'text-cyan-600',
     },
     {
       icon: ShieldCheck,
-      title: 'PCI DSS Compliance',
-      description: 'Enterprise-grade security with end-to-end encryption for every interaction.',
+      title: 'Enterprise-Grade Security',
+      description: 'Rest easy knowing your data is protected by bank-level security. We are fully PCI DSS compliant and utilize end-to-end encryption for all calls and data storage. Our infrastructure includes automated backups, role-based access control, and comprehensive audit logs.',
       className: 'md:col-span-4 md:row-span-2 bg-gradient-to-bl from-emerald-50/50 via-white/50 to-white/50',
       iconBg: 'bg-emerald-100',
       iconColor: 'text-emerald-600',
     },
     {
       icon: Smartphone,
-      title: 'Mobile Control',
-      description: 'Manage your agent and review transcripts from any device, anywhere in the world.',
+      title: 'Mobile Control Center',
+      description: 'Take full control of your AI agent from anywhere. Our mobile-responsive dashboard allows you to monitor live calls, review transcripts, update scripts, and manage settings on the go. Receive instant notifications for urgent matters or missed opportunities.',
       className: 'md:col-span-4 md:row-span-2 bg-gradient-to-br from-amber-50/50 via-white/50 to-white/50',
       iconBg: 'bg-amber-100',
       iconColor: 'text-amber-600',
     }
   ];
 
+  const additionalFeatures = [
+    {
+      icon: Bot,
+      title: 'Custom Knowledge Base',
+      description: 'Train your AI on your specific business data. Upload FAQs, pricing sheets, and policy documents to create a knowledgeable agent that represents your brand accurately.',
+      iconBg: 'bg-rose-100',
+      iconColor: 'text-rose-600'
+    },
+    {
+      icon: PhoneCall,
+      title: 'Call Transfer & Routing',
+      description: 'Intelligent routing ensures calls reach the right department. The AI can warm transfer calls to human agents when complex issues arise or specific expertise is needed.',
+      iconBg: 'bg-orange-100',
+      iconColor: 'text-orange-600'
+    },
+    {
+      icon: MessageSquare,
+      title: 'SMS Follow-up',
+      description: 'Automatically send text messages after calls with booking confirmations, links to resources, or satisfaction surveys to keep customers engaged.',
+      iconBg: 'bg-teal-100',
+      iconColor: 'text-teal-600'
+    },
+    {
+      icon: Headphones,
+      title: 'Call Recording & Transcription',
+      description: 'Every call is recorded and transcribed in real-time with speaker diarization. Searchable transcripts make it easy to review conversations and extract key information.',
+      iconBg: 'bg-purple-100',
+      iconColor: 'text-purple-600'
+    }
+  ];
+
   return (
-    <section id="features" className="py-16 md:py-32 px-4 md:px-6 relative overflow-hidden bg-transparent">
+    <section id="features" className="py-16 md:py-32 px-6 md:px-8 relative overflow-hidden bg-transparent">
       {/* Background elements */}
       <div className="absolute inset-0 z-0 bg-grid-slate-900/[0.03] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
 
@@ -202,13 +233,14 @@ export function Features() {
           </h2>
 
           <p
-            className="text-base md:text-xl text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed"
+            className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed"
           >
-            We've combined state-of-the-art Voice AI with business-grade tools to help you provide world-class service, 24/7.
+            We've combined state-of-the-art Voice AI with business-grade tools to help you provide world-class service, 24/7. 
+            Our comprehensive platform includes everything from intelligent call routing to detailed analytics, designed to help your business grow.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6 mb-16">
           {features.map((feature, index) => (
             <div
               key={index}
@@ -246,6 +278,27 @@ export function Features() {
             </div>
           ))}
         </div>
+
+        {/* Additional Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {additionalFeatures.map((feature, index) => (
+            <div 
+              key={index}
+              className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300"
+            >
+              <div className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center mb-4",
+                feature.iconBg
+              )}>
+                <feature.icon className={cn("w-5 h-5", feature.iconColor)} />
+              </div>
+              <h3 className="font-bold text-slate-900 mb-2">{feature.title}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+
+
       </div>
     </section>
   );

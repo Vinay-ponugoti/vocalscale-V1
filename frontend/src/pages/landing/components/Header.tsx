@@ -38,10 +38,10 @@ export const Header = () => {
         <header>
             <nav className="fixed z-[100] w-full px-2 group">
                 <div className={cn(
-                    'mx-auto mt-4 max-w-6xl transition-all duration-500 relative z-[101]',
+                    'mx-auto mt-4 transition-all duration-500 relative z-[101]',
                     isScrolled || menuState
                         ? 'bg-slate-900/80 max-w-4xl rounded-full border border-white/5 backdrop-blur-xl px-4 md:px-5 py-2.5 shadow-2xl shadow-black/20'
-                        : 'px-6 lg:px-12 py-4'
+                        : 'max-w-7xl px-6 md:px-8 py-4'
                 )}>
                     <div className="relative flex items-center justify-between gap-6 lg:gap-0">
                         <div className="flex w-full justify-between lg:w-auto items-center">
