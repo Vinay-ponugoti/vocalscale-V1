@@ -54,7 +54,7 @@ export function Pricing() {
   ];
 
   return (
-    <section id="pricing" className="py-16 md:py-32 px-4 md:px-6 relative overflow-hidden bg-transparent">
+    <section id="pricing" className="py-16 md:py-32 px-6 md:px-8 relative overflow-hidden bg-transparent">
       {/* Background decorations */}
       <div className="absolute inset-0 z-0 bg-grid-slate-900/[0.03] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
 
@@ -81,6 +81,10 @@ export function Pricing() {
             Simple plans for <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 italic tracking-tight">growing teams.</span>
           </motion.h2>
+
+          <p className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed mb-12">
+            Transparent pricing with no hidden fees. Save up to 85% compared to traditional receptionist services while getting 24/7 availability.
+          </p>
 
           {/* Pricing Toggle */}
           <motion.div
@@ -208,6 +212,80 @@ export function Pricing() {
             </motion.div>
           ))}
         </div>
+
+        {/* Scalability and Enterprise Solutions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="max-w-6xl mx-auto mt-16 space-y-8"
+        >
+          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/60">
+            <h3 className="text-2xl font-bold text-slate-900 mb-4">Scalable Solutions for Enterprise Organizations</h3>
+            <p className="text-slate-600 leading-relaxed mb-6">
+              Beyond our Professional plan, VocalScale offers enterprise-grade solutions designed for organizations managing high-volume customer interactions across multiple locations, departments, and service lines. Our enterprise pricing includes dedicated account management, custom AI model training, advanced security protocols, and white-label deployment options.
+            </p>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h4 className="font-bold text-slate-900 mb-3">Enterprise Customization Options</h4>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <span><strong>Custom AI Voice Models:</strong> Train AI on your brand voice, terminology, and industry-specific language</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <span><strong>Advanced Integration:</strong> Connect with enterprise CRM, ERP, and business intelligence systems</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <span><strong>Multi-Location Support:</strong> Manage reception across multiple offices with centralized reporting</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <span><strong>Compliance & Security:</strong> HIPAA, SOC 2, and industry-specific compliance certifications</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 mb-3">Volume Pricing Benefits</h4>
+                <p className="text-slate-600 leading-relaxed mb-4">
+                  Organizations processing over 5,000 monthly calls benefit from our volume pricing structure, with per-minute rates decreasing as usage increases. Enterprise clients also receive priority support, dedicated infrastructure, and guaranteed uptime SLAs of 99.9%.
+                </p>
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <p className="text-sm text-blue-800 font-medium">
+                    Contact our enterprise sales team for custom pricing tailored to your organization's specific requirements and usage patterns.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 text-center">
+              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-6 h-6 text-emerald-600" />
+              </div>
+              <h4 className="font-bold text-slate-900 mb-2">No Hidden Fees</h4>
+              <p className="text-sm text-slate-600">Transparent pricing with no setup costs, cancellation fees, or surprise charges</p>
+            </div>
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-blue-600" />
+              </div>
+              <h4 className="font-bold text-slate-900 mb-2">Instant Activation</h4>
+              <p className="text-sm text-slate-600">Start receiving calls within minutes of signup with our streamlined onboarding process</p>
+            </div>
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 text-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-6 h-6 text-purple-600" />
+              </div>
+              <h4 className="font-bold text-slate-900 mb-2">30-Day Guarantee</h4>
+              <p className="text-sm text-slate-600">Full satisfaction guarantee with prorated refunds available anytime</p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

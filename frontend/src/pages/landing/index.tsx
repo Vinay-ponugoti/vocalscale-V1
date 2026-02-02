@@ -1,18 +1,26 @@
 import { motion } from 'framer-motion';
 import { HeroSection } from './components/HeroSection';
-import { SocialProof } from './components/SocialProof';
-import { Highlights } from './components/Highlights';
 import { Features } from './components/Features';
 import { HowItWorks } from './components/HowItWorks';
 import { Pricing } from './components/Pricing';
-import { FAQ } from './components/FAQ';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
 import { ROILiveTicker } from './components/ROILiveTicker';
+import SchemaMarkup, { webPageSchema, organizationSchema, productSchema } from '@/components/SchemaMarkup';
 
 const Landing = () => {
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+      {/* Schema Markup for SEO */}
+      <SchemaMarkup schema={webPageSchema(
+        "AI Voice Agent for Business | VocalScale",
+        "VocalScale's AI voice agents handle customer calls, book appointments, and answer inquiries 24/7. Automate your business phone line with advanced AI receptionist technology.",
+        "/"
+      )} type="WebPage" />
+      
+      <SchemaMarkup schema={organizationSchema} type="Organization" />
+      
+      <SchemaMarkup schema={productSchema} type="Product" />
       {/* Background Effects - "Luminous Enterprise" */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {/* Soft Modern Gradients */}
@@ -69,14 +77,11 @@ const Landing = () => {
 
       <div className="relative z-10 flex flex-col">
         <HeroSection />
-        <SocialProof />
-        <Highlights />
         <ROILiveTicker />
         <main className="flex flex-col space-y-24 pb-24">
           <Features />
           <HowItWorks />
           <Pricing />
-          <FAQ />
           <FinalCTA />
         </main>
         <Footer />

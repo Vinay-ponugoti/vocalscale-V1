@@ -25,12 +25,12 @@ export const ROILiveTicker = () => {
     }, [count, springCount]);
 
     return (
-        <section className="relative py-24 md:py-32 overflow-hidden bg-white">
+        <section className="relative py-24 md:py-32 overflow-hidden bg-transparent">
             {/* Subtle Gradient Background */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_70%)]" />
 
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6">
+            <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8">
                 <div className="flex flex-col items-center text-center space-y-8">
 
                     {/* Badge */}
@@ -81,7 +81,7 @@ export const ROILiveTicker = () => {
                         <div className="absolute inset-0 bg-blue-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
 
                         <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed relative z-10">
-                            Every missed call is a missed appointment, a lost sale, and an frustrated client.
+                            Every missed call is a missed appointment, a lost sale, and a frustrated client.
                             <span className="text-slate-900 font-black px-1">VocalScale would have answered 100% of them.</span>
                             INSTANTLY.
                         </p>
@@ -99,25 +99,25 @@ export const ROILiveTicker = () => {
                                 <Zap size={18} fill="currentColor" />
                             </Link>
                         </motion.div>
-                    </motion.div>
 
-                    {/* Proof Stat */}
-                    <div className="flex items-center gap-6 pt-8">
-                        <div className="flex flex-col items-center">
-                            <span className="text-2xl font-black text-slate-900">100%</span>
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Answer Rate</span>
+                        {/* Proof Stat */}
+                        <div className="flex items-center justify-center gap-6 pt-8 mt-4 border-t border-slate-100">
+                            <div className="flex flex-col items-center">
+                                <span className="text-2xl font-black text-slate-900">100%</span>
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Answer Rate</span>
+                            </div>
+                            <div className="w-px h-8 bg-slate-200" />
+                            <div className="flex flex-col items-center">
+                                <span className="text-2xl font-black text-slate-900">0s</span>
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Wait Time</span>
+                            </div>
+                            <div className="w-px h-8 bg-slate-200" />
+                            <div className="flex flex-col items-center">
+                                <span className="text-2xl font-black text-slate-900">24/7</span>
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Availability</span>
+                            </div>
                         </div>
-                        <div className="w-px h-8 bg-slate-200" />
-                        <div className="flex flex-col items-center">
-                            <span className="text-2xl font-black text-slate-900">0s</span>
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Wait Time</span>
-                        </div>
-                        <div className="w-px h-8 bg-slate-200" />
-                        <div className="flex flex-col items-center">
-                            <span className="text-2xl font-black text-slate-900">24/7</span>
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Availability</span>
-                        </div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </section>

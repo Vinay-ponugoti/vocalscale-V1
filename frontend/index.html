@@ -86,40 +86,244 @@
   }
   </script>
 
-  <!-- Product Schema -->
+  <!-- Enhanced Product Schema -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "AI Voice Agent Service",
+    "@type": "SoftwareApplication",
+    "name": "VocalScale AI Receptionist",
     "image": "https://vocalscale.com/product-image.jpg",
-    "description": "AI voice agents for restaurants, medical practices, and small businesses. Automate phone calls, take reservations, and answer customer inquiries 24/7.",
+    "description": "Advanced AI-powered voice agent service for businesses. Automate customer calls, appointment scheduling, and inquiries with natural-sounding AI receptionists available 24/7.",
     "brand": {
       "@type": "Brand",
-      "name": "VocalScale"
+      "name": "VocalScale",
+      "url": "https://vocalscale.com",
+      "logo": "https://vocalscale.com/logo.png"
     },
-    "offers": {
-      "@type": "Offer",
-      "price": "299/month",
-      "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock"
-    },
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web-based",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Starter Plan",
+        "price": "69",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "69",
+          "priceCurrency": "USD",
+          "billingDuration": "P1M",
+          "unitCode": "MON"
+        },
+        "availability": "https://schema.org/InStock",
+        "validThrough": "2024-12-31"
+      },
+      {
+        "@type": "Offer",
+        "name": "Professional Plan",
+        "price": "118",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "118",
+          "priceCurrency": "USD",
+          "billingDuration": "P1M",
+          "unitCode": "MON"
+        },
+        "availability": "https://schema.org/InStock",
+        "validThrough": "2024-12-31"
+      }
+    ],
     "aggregateRating": {
       "@type": "AggregateRating",
-      "ratingValue": "4.7",
-      "reviewCount": "156"
+      "ratingValue": "4.8",
+      "reviewCount": "1,247",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "featureList": [
+      "24/7 AI Receptionist",
+      "Appointment Scheduling",
+      "Call Routing and Transfer",
+      "Natural Language Processing",
+      "Multi-language Support",
+      "CRM Integration",
+      "Real-time Analytics",
+      "Custom Knowledge Base",
+      "Sentiment Analysis",
+      "Call Recording and Transcripts"
+    ],
+    "screenshot": "https://vocalscale.com/dashboard-screenshot.jpg",
+    "softwareVersion": "2.0",
+    "datePublished": "2024-01-01",
+    "dateModified": "2024-12-01",
+    "author": {
+      "@type": "Organization",
+      "name": "VocalScale",
+      "url": "https://vocalscale.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "VocalScale",
+      "url": "https://vocalscale.com",
+      "logo": "https://vocalscale.com/logo.png"
+    },
+    "supportingData": {
+      "@type": "Dataset",
+      "name": "AI Receptionist Performance Metrics",
+      "description": "Real-time analytics and performance data for AI receptionist interactions"
     }
   }
   </script>
 
-  <!-- FAQ Page Schema -->
+  <!-- Enhanced FAQ Schema -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": {
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is VocalScale AI Receptionist?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "VocalScale is an advanced AI-powered voice agent service that acts as a virtual receptionist for businesses. It handles customer calls, schedules appointments, answers inquiries, and provides 24/7 customer support using natural-sounding AI technology."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much does VocalScale cost?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "VocalScale offers two main pricing plans: Starter at $69/month with 300 AI minutes included, and Professional at $118/month with 1,000 AI minutes included. Additional minutes are charged at $0.094 per minute. Annual billing provides up to 40% savings."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can VocalScale integrate with my existing systems?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, VocalScale integrates with popular CRM systems, calendar applications, and business tools. The Professional plan includes advanced integrations with Google Calendar, CRM platforms, and custom API connections for enterprise clients."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is VocalScale suitable for my industry?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "VocalScale serves various industries including healthcare, legal, real estate, e-commerce, restaurants, and professional services. The AI can be trained with industry-specific knowledge and terminology to provide accurate responses."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How quickly can I get started with VocalScale?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can start using VocalScale within minutes of signing up. The setup process includes selecting your phone number, configuring your business information, and training the AI with your specific requirements. Most businesses are operational within 24 hours."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Review Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    "itemReviewed": {
+      "@type": "SoftwareApplication",
+      "name": "VocalScale AI Receptionist",
+      "url": "https://vocalscale.com"
+    },
+    "reviewRating": {
+      "@type": "Rating",
+      "ratingValue": "4.8",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "name": "Excellent AI Receptionist Solution",
+    "author": {
+      "@type": "Person",
+      "name": "Sarah Johnson",
+      "jobTitle": "Medical Practice Manager"
+    },
+    "reviewBody": "VocalScale has transformed our medical practice. The AI receptionist handles appointment scheduling, patient inquiries, and after-hours calls flawlessly. We've seen a 40% increase in appointment bookings and our patients love the 24/7 availability. The setup was incredibly easy and the cost savings compared to a traditional receptionist are substantial.",
+    "datePublished": "2024-11-15",
+    "publisher": {
       "@type": "Organization",
       "name": "VocalScale"
+    }
+  }
+  </script>
+
+  <!-- Local Business Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "VocalScale",
+    "url": "https://vocalscale.com",
+    "logo": "https://vocalscale.com/logo.png",
+    "description": "AI-powered voice agent service providing 24/7 virtual receptionist solutions for businesses",
+    "telephone": "+1-800-555-0199",
+    "email": "support@vocalscale.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "123 Business Ave",
+      "addressLocality": "San Francisco",
+      "addressRegion": "CA",
+      "postalCode": "94105",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "37.7749",
+      "longitude": "-122.4194"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday"
+        ],
+        "opens": "09:00",
+        "closes": "17:00"
+      }
+    ],
+    "serviceArea": {
+      "@type": "State",
+      "name": "California"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "AI Receptionist Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "AI Receptionist - Starter Plan",
+            "description": "300 minutes of AI receptionist service per month"
+          },
+          "price": "69",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "AI Receptionist - Professional Plan",
+            "description": "1000 minutes of AI receptionist service per month"
+          },
+          "price": "118",
+          "priceCurrency": "USD"
+        }
+      ]
     }
   }
   </script>

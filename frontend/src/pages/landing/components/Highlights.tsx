@@ -21,7 +21,7 @@ export function Highlights() {
             {/* Tactical Grid Background */}
             <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] bg-[size:32px_32px]" />
 
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
                     {items.map((item, index) => (
                         <motion.div

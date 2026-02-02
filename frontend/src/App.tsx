@@ -29,10 +29,18 @@ const Processing = lazyImport(() => import('./pages/setup/Processing'));
 const Preview = lazyImport(() => import('./pages/setup/Preview'));
 
 // Landing Page
-const Landing = lazyImport(() => import('./pages/landing/index'));
+import Landing from './pages/landing/index';
 
 const Privacy = lazyImport(() => import('./pages/landing/Privacy'));
 const Terms = lazyImport(() => import('./pages/landing/Terms'));
+
+// Blog Pages
+const BlogIndex = lazyImport(() => import('./pages/blog/index'));
+const BlogPost1 = lazyImport(() => import('./pages/blog/ai-receptionists-healthcare-2024'));
+const BlogPost2 = lazyImport(() => import('./pages/blog/roi-ai-receptionists-complete-analysis'));
+const BlogPost3 = lazyImport(() => import('./pages/blog/legal-firms-never-miss-calls'));
+const BlogPost4 = lazyImport(() => import('./pages/blog/small-business-ai-receptionist-guide'));
+const BlogPost5 = lazyImport(() => import('./pages/blog/ai-vs-human-receptionists-performance'));
 
 // Dashboard Pages
 const DashboardHome = lazyImport(() => import('./pages/dashboard/Home'));
@@ -60,6 +68,14 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            
+            {/* Blog Routes */}
+            <Route path="/blog" element={<BlogIndex />} />
+            <Route path="/blog/ai-receptionists-healthcare-2024" element={<BlogPost1 />} />
+            <Route path="/blog/roi-ai-receptionists-complete-analysis" element={<BlogPost2 />} />
+            <Route path="/blog/legal-firms-never-miss-calls" element={<BlogPost3 />} />
+            <Route path="/blog/small-business-ai-receptionist-guide" element={<BlogPost4 />} />
+            <Route path="/blog/ai-vs-human-receptionists-performance" element={<BlogPost5 />} />
 
             {/* Auth Routes with separate skeleton */}
             <Route element={

@@ -19,7 +19,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative bg-white py-12 md:py-16 px-6 overflow-hidden border-t border-slate-200">
+    <footer className="relative bg-white py-12 md:py-16 px-6 md:px-8 overflow-hidden border-t border-slate-200">
       {/* Footer Background Gradients */}
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-blue-50 to-transparent opacity-50 pointer-events-none" />
 
