@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/useToast';
+import { trackLeadGeneration } from '@/lib/analytics';
 
 export function FinalCTA() {
   const [isBooking, setIsBooking] = useState(false);

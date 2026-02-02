@@ -3,6 +3,7 @@ import { Check, Zap, Star, Sparkles, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { trackStartDemo } from '@/lib/analytics';
 
 export function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
@@ -194,6 +195,7 @@ export function Pricing() {
 
                 <Button
                   asChild
+                  onClick={trackStartDemo}
                   size="lg"
                   className={cn(
                     "w-full rounded-2xl h-14 text-base font-black transition-all active:scale-95 shadow-xl shadow-blue-500/10",
