@@ -47,6 +47,7 @@ const DashboardHome = lazyImport(() => import('./pages/dashboard/Home'));
 const CallLogs = lazyImport(() => import('./pages/dashboard/CallLogs'));
 const Appointments = lazyImport(() => import('./pages/dashboard/Appointments'));
 const Reviews = lazyImport(() => import('./pages/dashboard/Reviews/index'));
+const Chat = lazyImport(() => import('./pages/dashboard/Chat'));
 const HelpCenter = lazyImport(() => import('./pages/dashboard/HelpCenter'));
 const Settings = lazyImport(() => import('./pages/dashboard/settings'));
 const Billing = lazyImport(() => import('./pages/dashboard/Billing'));
@@ -115,6 +116,7 @@ function App() {
                   <Route path="/dashboard/calls/:callId" element={<CallLogs />} />
                   <Route path="/dashboard/appointments" element={<Appointments />} />
                   <Route path="/dashboard/reviews" element={<Reviews />} />
+                  <Route path="/dashboard/chat" element={<Chat />} />
                   <Route path="/dashboard/settings" element={<Settings />} />
                   <Route path="/dashboard/billing" element={<Billing />} />
                   <Route path="/dashboard/billing/plans" element={<Plans />} />
