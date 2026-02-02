@@ -3,9 +3,10 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useDashboardData } from '../../hooks/useDashboardData';
 import { subDays, addDays } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
-import { ArrowLeft, ArrowRight, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Clock, Brain, Sparkles, MessageSquare } from 'lucide-react';
 import { useBusinessSetup } from '../../context/BusinessSetupContext';
 import { formatDate } from '../../lib/dateUtils';
+import { toggleFloatingChat } from '../../components/FloatingChat';
 
 // Import sub-components
 import StatsGrid from '../../components/dashboard/StatsGrid';
@@ -126,6 +127,43 @@ const Home = () => {
                 <RecentTranscripts calls={recentCalls} />
               </div>
 
+            </div>
+
+            {/* Knowledge Chat Discovery Card */}
+            <div className="w-full relative overflow-hidden bg-gradient-to-br from-indigo-600 via-blue-600 to-blue-500 rounded-3xl p-8 shadow-xl shadow-blue-200 group">
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-white/20 transition-all duration-700" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl -ml-10 -mb-10" />
+
+              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="flex-1 text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-[10px] font-black uppercase tracking-widest mb-4 ring-1 ring-white/30">
+                    <Sparkles size={12} className="text-blue-100" />
+                    New Feature
+                  </div>
+                  <h2 className="text-3xl font-black text-white mb-3 tracking-tight">Meet Your Knowledge Assistant</h2>
+                  <p className="text-blue-50 text-base font-medium leading-relaxed max-w-xl">
+                    Ask questions about your business documents, website content, and internal policies. Get instant, accurate answers trained specifically on your data.
+                  </p>
+                </div>
+
+                <div className="shrink-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                  <button
+                    onClick={toggleFloatingChat}
+                    className="px-8 py-4 bg-white text-blue-600 rounded-2xl font-black text-sm tracking-tight hover:bg-blue-50 transition-all shadow-lg active:scale-[0.98] flex items-center justify-center gap-2"
+                  >
+                    <MessageSquare size={18} />
+                    Start Fast Chat
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/dashboard/chat'}
+                    className="px-8 py-4 bg-transparent border-2 border-white/30 text-white rounded-2xl font-black text-sm tracking-tight hover:bg-white/10 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  >
+                    <Brain size={18} />
+                    Full Experience
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Review Insights - Moved to full width */}
