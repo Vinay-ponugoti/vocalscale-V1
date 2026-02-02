@@ -64,12 +64,12 @@ export function HeroSection() {
                                     </Link>
 
                                     <h1
-                                        className="mt-6 md:mt-12 max-w-5xl mx-auto text-balance text-4xl sm:text-5xl md:text-7xl xl:text-[5.5rem] font-black tracking-[-0.03em] text-slate-900 leading-[1.1] md:leading-[1.05]">
-                                        AI Voice Agents for Business: <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 italic pb-2 tracking-tight">24/7 Automated Customer Service</span>
+                                        className="mt-6 md:mt-10 max-w-4xl mx-auto text-balance text-4xl sm:text-5xl md:text-6xl font-black tracking-[-0.03em] text-slate-900 leading-[1.1]">
+                                        AI Voice Agents for <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 italic pb-2 tracking-tight">Business</span>
                                     </h1>
                                     <p
-                                        className="mx-auto mt-6 md:mt-10 max-w-2xl text-balance text-base md:text-xl text-slate-600 leading-relaxed font-medium">
-                                        <span className="font-bold text-slate-900">VocalScale's</span> AI receptionists handle calls, take reservations, and answer customer inquiries automatically. Starting from just $299/month.
+                                        className="mx-auto mt-6 max-w-2xl text-balance text-base md:text-lg text-slate-600 leading-relaxed font-medium">
+                                        <span className="font-bold text-slate-900">VocalScale's</span> AI receptionists handle calls, take reservations, and answer customer inquiries automatically.
                                     </p>
                                 </AnimatedGroup>
 
