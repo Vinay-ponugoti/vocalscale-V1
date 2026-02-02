@@ -7,6 +7,11 @@ Disallow: /dashboard/
 Disallow: /setup/
 Disallow: /login
 Disallow: /signup
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+
+Crawl-delay: 1
 
 # AI Crawlers
 User-agent: GPTBot
@@ -24,4 +29,4 @@ Disallow: /dashboard/
 User-agent: CCBot
 Disallow: /
 
-Sitemap: https://vocalscale.ai/sitemap.xml
+Sitemap: https://vocalscale.com/sitemap.xml

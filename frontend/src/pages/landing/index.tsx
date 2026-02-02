@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
 import { HeroSection } from './components/HeroSection';
+import { SocialProof } from './components/SocialProof';
 import { Highlights } from './components/Highlights';
 import { Features } from './components/Features';
 import { HowItWorks } from './components/HowItWorks';
 import { Pricing } from './components/Pricing';
+import { FAQ } from './components/FAQ';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
 import { ROILiveTicker } from './components/ROILiveTicker';
@@ -67,12 +69,14 @@ const Landing = () => {
 
       <div className="relative z-10 flex flex-col">
         <HeroSection />
+        <SocialProof />
         <Highlights />
         <ROILiveTicker />
         <main className="flex flex-col space-y-24 pb-24">
           <Features />
           <HowItWorks />
           <Pricing />
+          <FAQ />
           <FinalCTA />
         </main>
         <Footer />

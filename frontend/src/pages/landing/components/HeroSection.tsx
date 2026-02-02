@@ -5,6 +5,7 @@ import { type Variants } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { Header } from './Header'
+import { trackStartDemo } from '@/lib/analytics'
 
 const transitionVariants: { item: Variants } = {
     item: {
@@ -64,11 +65,11 @@ export function HeroSection() {
 
                                     <h1
                                         className="mt-6 md:mt-12 max-w-5xl mx-auto text-balance text-4xl sm:text-5xl md:text-7xl xl:text-[5.5rem] font-black tracking-[-0.03em] text-slate-900 leading-[1.1] md:leading-[1.05]">
-                                        Give your front desk <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 italic pb-2 tracking-tight">superpowers.</span>
+                                        AI Voice Agents for Business: <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 italic pb-2 tracking-tight">24/7 Automated Customer Service</span>
                                     </h1>
                                     <p
                                         className="mx-auto mt-6 md:mt-10 max-w-2xl text-balance text-base md:text-xl text-slate-600 leading-relaxed font-medium">
-                                        <span className="font-bold text-slate-900">VocalScale</span> automates your customer calls with human-like intelligence. Answer questions, schedule bookings, and grow your business while you sleep.
+                                        <span className="font-bold text-slate-900">VocalScale's</span> AI receptionists handle calls, take reservations, and answer customer inquiries automatically. Starting from just $299/month.
                                     </p>
                                 </AnimatedGroup>
 
@@ -91,6 +92,7 @@ export function HeroSection() {
                                         <Button
                                             asChild
                                             size="lg"
+                                            onClick={trackStartDemo}
                                             className="rounded-xl px-8 h-12 text-base font-black bg-blue-600 hover:bg-blue-700 text-white shadow-xl shadow-blue-500/20 w-full md:w-auto transition-all active:scale-95">
                                             <Link to="/signup">
                                                 <span className="text-nowrap">Get Started Now</span>
