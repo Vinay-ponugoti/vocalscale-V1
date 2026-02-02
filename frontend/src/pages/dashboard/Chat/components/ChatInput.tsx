@@ -3,7 +3,8 @@
  * Auto-resizing textarea with file upload support
  */
 
-import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import type { KeyboardEvent } from 'react';
 import { Button } from '../../../../components/ui/Button';
 import { Send, Paperclip, X, FileText, Loader2 } from 'lucide-react';
 import type { FileAttachment } from '../../../../types/chat';
