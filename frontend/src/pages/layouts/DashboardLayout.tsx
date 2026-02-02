@@ -640,8 +640,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
         )}
-        <FloatingChat />
       </div>
+      <FloatingChat />
     </>
   );
 };
