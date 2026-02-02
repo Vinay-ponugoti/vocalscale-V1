@@ -31,6 +31,7 @@ import { NavigationGuard } from '../../utils/navigationGuard';
 
 import { env } from '../../config/env';
 import { getAuthHeader } from '../../lib/api';
+import FloatingChat from '../../components/FloatingChat';
 
 // --- DESIGN SYSTEM COLORS ---
 const DS = {
@@ -639,6 +640,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
         )}
+        <FloatingChat />
       </div>
     </>
   );

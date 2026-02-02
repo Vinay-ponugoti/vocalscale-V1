@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Rocket, Receipt, ArrowRight, Play, MessageSquare, Ticket, Phone, X, CheckCircle2, Info } from 'lucide-react';
+import { Search, Rocket, Receipt, ArrowRight, Play, MessageSquare, Ticket, Phone, X, CheckCircle2, Info, Brain } from 'lucide-react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';
+import { toggleFloatingChat } from '../../components/FloatingChat';
 
 const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/main%20-%201%20(1).mp4";
 
@@ -359,13 +360,16 @@ const HelpCenter = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-20">
-            <div className="bg-white p-8 rounded-3xl border border-slate-100 text-center hover:shadow-xl hover:border-indigo-100 transition-all duration-500 group">
-              <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 group-hover:scale-110">
-                <MessageSquare size={32} />
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 text-center hover:shadow-xl hover:border-blue-100 transition-all duration-500 group">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 group-hover:scale-110">
+                <Brain size={32} />
               </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Live Chat</h3>
-              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Connect with a support agent instantly.<br />Average wait time: <span className="text-indigo-600 font-bold">&lt; 2 mins</span>.</p>
-              <button className="w-full bg-indigo-600 text-white py-4 rounded-xl font-black text-[13px] tracking-tight hover:bg-indigo-700 transition-all shadow-sm hover:shadow-indigo-200 active:scale-[0.98]">
+              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Knowledge Assistant</h3>
+              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Get instant answers from your knowledge base.<br />Average response time: <span className="text-blue-600 font-bold">&lt; 1 sec</span>.</p>
+              <button
+                onClick={toggleFloatingChat}
+                className="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-[13px] tracking-tight hover:bg-blue-700 transition-all shadow-sm hover:shadow-blue-200 active:scale-[0.98]"
+              >
                 Start Chat
               </button>
             </div>
