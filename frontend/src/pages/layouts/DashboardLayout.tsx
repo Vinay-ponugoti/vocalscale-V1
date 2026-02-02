@@ -17,7 +17,8 @@ import {
   Layers,
   CreditCard,
   Command,
-  Star
+  Star,
+  Brain
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -277,6 +278,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/reviews')}
+            />
+            <NavItem
+              item={{ path: '/dashboard/chat', label: 'Knowledge Chat', icon: Brain }}
+              isCollapsed={!sidebarOpen}
+              isActive={isActive('/dashboard/chat')}
             />
 
             <SectionLabel label="Configuration" sidebarOpen={sidebarOpen} />
@@ -567,6 +573,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   <NavItem
                     item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
                     isActive={isActive('/dashboard/reviews')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  <NavItem
+                    item={{ path: '/dashboard/chat', label: 'Knowledge Chat', icon: Brain }}
+                    isActive={isActive('/dashboard/chat')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
                 </div>
