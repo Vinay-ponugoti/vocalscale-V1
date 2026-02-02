@@ -136,20 +136,24 @@ export function HeroSection() {
                                 <div className="inset-shadow-2xs ring-slate-900/10 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-300/50 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 opacity-100">
                                     <video
                                         ref={videoRef}
-                                        src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/0126.mov"
                                         autoPlay
                                         muted
                                         loop
                                         playsInline
+                                        preload="auto"
+                                        crossOrigin="anonymous"
                                         className="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
-                                    />
+                                    >
+                                        <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/main%20-%201%20(1).mp4" type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
                                 </div>
-                                
+
                                 {/* Video caption with expanded content */}
                                 <div className="mt-16 text-center max-w-4xl mx-auto">
                                     <p className="text-sm text-slate-600 leading-relaxed">
-                                        Watch how VocalScale's AI voice agent seamlessly handles customer interactions, 
-                                        demonstrating natural conversation flow, intelligent responses, and professional 
+                                        Watch how VocalScale's AI voice agent seamlessly handles customer interactions,
+                                        demonstrating natural conversation flow, intelligent responses, and professional
                                         service delivery that rivals human receptionists while operating 24/7 without fatigue.
                                     </p>
                                 </div>
@@ -229,7 +233,7 @@ export function HeroSection() {
                                             Intelligent Call Routing
                                         </h4>
                                         <p className="text-sm text-slate-600 mb-4">Advanced AI understands caller intent and routes to appropriate departments, schedules appointments, or provides instant answers based on your business knowledge base.</p>
-                                        
+
                                         <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
                                             <Clock className="w-4 h-4 text-emerald-600" />
                                             24/7 Availability
@@ -242,7 +246,7 @@ export function HeroSection() {
                                             Multi-Language Support
                                         </h4>
                                         <p className="text-sm text-slate-600 mb-4">Serve customers in over 50 languages with native-level fluency, expanding your market reach and providing inclusive service to diverse customer bases.</p>
-                                        
+
                                         <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
                                             <Shield className="w-4 h-4 text-amber-600" />
                                             Enterprise Security
@@ -261,13 +265,13 @@ export function HeroSection() {
                                         Transform Your Customer Service Operations
                                     </h2>
                                     <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                                        Traditional customer service models are expensive, inconsistent, and limited by human constraints. 
-                                        VocalScale revolutionizes this paradigm by providing AI-powered voice agents that deliver 
+                                        Traditional customer service models are expensive, inconsistent, and limited by human constraints.
+                                        VocalScale revolutionizes this paradigm by providing AI-powered voice agents that deliver
                                         consistent, professional, and intelligent customer interactions at a fraction of the cost.
                                     </p>
                                     <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                                        Our advanced AI technology understands context, remembers previous interactions, and adapts 
-                                        responses based on customer history and preferences. This creates a personalized experience 
+                                        Our advanced AI technology understands context, remembers previous interactions, and adapts
+                                        responses based on customer history and preferences. This creates a personalized experience
                                         that builds customer loyalty while reducing operational overhead by up to 70%.
                                     </p>
                                     <div className="space-y-4">

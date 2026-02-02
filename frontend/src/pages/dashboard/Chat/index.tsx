@@ -62,7 +62,7 @@ const Chat = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="h-[calc(100vh-4rem)] flex bg-white-light/30">
+      <div className="h-full flex bg-white-light/30">
         {/* Sidebar */}
         <ChatSidebar
           sessions={sessions}
