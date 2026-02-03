@@ -1,9 +1,6 @@
-/**
- * Chat API client with SSE streaming support
- */
-
 import { env } from '../config/env';
 import { getAuthHeader } from '../lib/api';
+import { getAuthToken } from '../utils/sessionUtils';
 import type {
   ChatRequest,
   ChatSession,
@@ -18,6 +15,24 @@ const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
 
 class ChatAPI {
   /**
+   * Get the current user ID for header isolation
+   */
+  private getUserId(): string | undefined {
+    // Try to get from the token/session utils
+    const token = getAuthToken();
+    if (!token) return undefined;
+
+    // In this app, we store user in session state, but for the API call,
+    // we need the UUID. We can decode it from the JWT or get it from storage.
+    try {
+      const session = JSON.parse(localStorage.getItem('vocalscale_session') || '{}');
+      return session?.user?.id;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
    * Send a chat message and receive streaming response via SSE
    */
   async sendMessageStream(
@@ -26,7 +41,8 @@ class ChatAPI {
     onDone: (sessionId: string, sources: Source[]) => void,
     onError: (error: Error) => void
   ): Promise<void> {
-    const headers = await getAuthHeader();
+    const userId = this.getUserId();
+    const headers = await getAuthHeader(userId);
 
     try {
       const response = await fetch(`${KNOWLEDGE_URL}/chat`, {
@@ -37,6 +53,7 @@ class ChatAPI {
         },
         body: JSON.stringify(request),
       });
+      // ... (rest of the content)
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
@@ -111,7 +128,8 @@ class ChatAPI {
    * Upload a file to attach to chat
    */
   async uploadFile(file: File): Promise<FileUploadResponse> {
-    const headers = await getAuthHeader();
+    const userId = this.getUserId();
+    const headers = await getAuthHeader(userId);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -136,7 +154,8 @@ class ChatAPI {
    * Get list of chat sessions
    */
   async getSessions(): Promise<ChatSession[]> {
-    const headers = await getAuthHeader();
+    const userId = this.getUserId();
+    const headers = await getAuthHeader(userId);
 
     const response = await fetch(`${KNOWLEDGE_URL}/chat/sessions`, {
       headers: {
@@ -157,7 +176,8 @@ class ChatAPI {
    * Get messages for a specific session
    */
   async getMessages(sessionId: string): Promise<ChatMessage[]> {
-    const headers = await getAuthHeader();
+    const userId = this.getUserId();
+    const headers = await getAuthHeader(userId);
 
     const response = await fetch(`${KNOWLEDGE_URL}/chat/sessions/${sessionId}/messages`, {
       headers: {
@@ -178,7 +198,8 @@ class ChatAPI {
    * Delete a chat session
    */
   async deleteSession(sessionId: string): Promise<void> {
-    const headers = await getAuthHeader();
+    const userId = this.getUserId();
+    const headers = await getAuthHeader(userId);
 
     const response = await fetch(`${KNOWLEDGE_URL}/chat/sessions/${sessionId}`, {
       method: 'DELETE',

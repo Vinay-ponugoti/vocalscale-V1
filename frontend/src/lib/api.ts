@@ -4,12 +4,13 @@ import { metrics } from './metrics';
 
 const API_BASE = env.API_URL;
 
-export async function getAuthHeader(): Promise<Record<string, string>> {
+export async function getAuthHeader(userId?: string): Promise<Record<string, string>> {
   const token = getAuthToken();
 
 
   return {
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...(userId ? { 'X-User-Id': userId } : {}),
     'ngrok-skip-browser-warning': 'true'
   };
 }
