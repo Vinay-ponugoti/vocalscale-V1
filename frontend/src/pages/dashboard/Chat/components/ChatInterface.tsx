@@ -17,7 +17,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         streamingContent,
         uploadFile,
         pendingFiles,
-        removeFile
+        removeFile,
+        error,
+        clearError
     } = useChat(sessionId || null);
 
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -42,8 +44,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-y-auto w-full custom-scrollbar"
+                className="flex-1 overflow-y-auto w-full custom-scrollbar relative"
             >
+                {/* Error Banner */}
+                {error && (
+                    <div className="sticky top-0 z-10 p-4 bg-red-50 border-b border-red-200 text-red-700 flex items-center justify-between animate-in slide-in-from-top-2">
+                        <div className="flex items-center gap-2 text-sm">
+                            <span className="font-semibold">Error:</span> {error}
+                        </div>
+                        <button
+                            onClick={clearError}
+                            className="text-red-500 hover:text-red-800 p-1 hover:bg-red-100 rounded"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
                 {!sessionId && messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500">
                         <div className="w-16 h-16 rounded-3xl bg-white shadow-xl flex items-center justify-center mb-6 relative group">

@@ -7,7 +7,7 @@ export interface CallLog {
   category: 'Booking' | 'Inquiry' | 'Urgent' | 'General' | string;
   summary: string;
   transcript?: string;
-  status: 'Completed' | 'Missed' | 'Action Req' | 'Handled' | string;
+  status: 'Completed' | 'Missed' | 'pending' | 'Handled' | string;
   is_urgent: boolean;
   recording_url?: string;
   lead_score?: number;
