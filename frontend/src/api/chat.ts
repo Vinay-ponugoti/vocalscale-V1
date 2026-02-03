@@ -12,6 +12,7 @@ import type {
 } from '../types/chat';
 
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
+console.log('[ChatAPI] Initialized with URL:', KNOWLEDGE_URL);
 
 class ChatAPI {
   /**
