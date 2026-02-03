@@ -6,7 +6,7 @@ import { toZonedTime } from 'date-fns-tz';
 import { ArrowLeft, ArrowRight, Clock, Brain, Sparkles, MessageSquare } from 'lucide-react';
 import { useBusinessSetup } from '../../context/BusinessSetupContext';
 import { formatDate } from '../../lib/dateUtils';
-import { toggleFloatingChat } from '../../components/FloatingChat';
+// FloatingChat removed
 
 // Import sub-components
 import StatsGrid from '../../components/dashboard/StatsGrid';
@@ -149,11 +149,11 @@ const Home = () => {
 
                 <div className="shrink-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                   <button
-                    onClick={toggleFloatingChat}
+                    onClick={() => window.location.href = '/dashboard/chat'}
                     className="px-8 py-4 bg-white text-blue-600 rounded-2xl font-black text-sm tracking-tight hover:bg-blue-50 transition-all shadow-lg active:scale-[0.98] flex items-center justify-center gap-2"
                   >
                     <MessageSquare size={18} />
-                    Start Fast Chat
+                    Open Chat
                   </button>
                   <button
                     onClick={() => window.location.href = '/dashboard/chat'}

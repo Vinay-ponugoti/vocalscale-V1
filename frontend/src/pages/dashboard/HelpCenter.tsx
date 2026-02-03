@@ -3,7 +3,7 @@ import { Search, Rocket, Receipt, ArrowRight, Play, MessageSquare, Ticket, Phone
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';
-import { toggleFloatingChat } from '../../components/FloatingChat';
+// FloatingChat removed
 
 const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/main%20-%201%20(1).mp4";
 
@@ -367,10 +367,10 @@ const HelpCenter = () => {
               <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Knowledge Assistant</h3>
               <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Get instant answers from your knowledge base.<br />Average response time: <span className="text-blue-600 font-bold">&lt; 1 sec</span>.</p>
               <button
-                onClick={toggleFloatingChat}
+                onClick={() => window.location.href = '/dashboard/chat'}
                 className="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-[13px] tracking-tight hover:bg-blue-700 transition-all shadow-sm hover:shadow-blue-200 active:scale-[0.98]"
               >
-                Start Chat
+                Go to Chat
               </button>
             </div>
 
