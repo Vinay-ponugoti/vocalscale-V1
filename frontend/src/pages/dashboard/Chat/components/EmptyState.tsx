@@ -31,19 +31,8 @@ const suggestions = [
 const EmptyState = ({ onSuggestionClick }: EmptyStateProps) => {
   return (
     <div className="h-full flex flex-col items-center justify-center max-w-2xl mx-auto text-center px-4 py-8" style={{ backgroundColor: '#ffffff' }}>
-      {/* Logo / Brand */}
-      <div className="mb-8">
-        <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center text-white mb-4 mx-auto shadow-lg">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-            <line x1="12" x2="12" y1="19" y2="22" />
-          </svg>
-        </div>
-        <h1 className="text-2xl font-semibold text-black">
-          VocalScale
-        </h1>
-      </div>
+      {/* Logo / Brand - Removed */}
+      <div className="mb-4" />
 
       {/* Welcome message */}
       <h2 className="text-xl text-gray-600 mb-2">
