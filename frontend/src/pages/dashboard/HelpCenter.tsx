@@ -167,7 +167,7 @@ const HelpCenter = () => {
 
         {/* ARTICLE MODAL */}
         {selectedArticle && (
-          <div className="fixed inset-0 z-[100] flex items-start justify-center pt-20 p-4 sm:p-6">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center pb-32 p-4 sm:p-6">
             <div
               className="absolute inset-0 transition-opacity"
               onClick={() => setSelectedArticle(null)}
