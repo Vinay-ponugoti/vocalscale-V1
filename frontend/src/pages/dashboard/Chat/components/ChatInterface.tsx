@@ -66,13 +66,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
                             <div className="absolute inset-0 bg-blue-500/10 rounded-3xl blur-xl group-hover:bg-blue-500/20 transition-all duration-500" />
                             <Brain size={32} className="text-blue-600 relative z-10" />
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900 mb-2">How can I help you today?</h2>
+                        <h2 className="text-2xl font-bold text-slate-900 mb-2">How can I help grow your business?</h2>
                         <p className="text-slate-500 max-w-md mb-8">
-                            I'm your AI assistant. I can help you analyze your call logs, manage appointments, or answer questions about your business configuration.
+                            I'm your business growth assistant. I can help you get more customers, create marketing content, analyze your performance, and provide actionable advice.
                         </p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl">
-                            {['Summarize my recent calls', 'Draft a follow-up SMS', 'Explain my missed calls', 'Review appointment status'].map((suggestion) => (
+                            {['How can I get more customers?', 'Write a promotional SMS for my services', 'Analyze my call performance', 'Create a social media post'].map((suggestion) => (
                                 <button
                                     key={suggestion}
                                     onClick={() => handleSendMessage(suggestion)}
