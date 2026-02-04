@@ -89,7 +89,7 @@ export const ROILiveTicker = () => {
                         <motion.div
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className="inline-block"
+                            className="inline-block relative z-10"
                         >
                             <Link
                                 to="/signup"
