@@ -152,9 +152,8 @@ export function HeroSection() {
                                 {/* Video caption with expanded content */}
                                 <div className="mt-16 text-center max-w-4xl mx-auto">
                                     <p className="text-sm text-slate-600 leading-relaxed">
-                                        Watch how VocalScale's AI voice agent seamlessly handles customer interactions,
-                                        demonstrating natural conversation flow, intelligent responses, and professional
-                                        service delivery that rivals human receptionists while operating 24/7 without fatigue.
+                                        Explore VocalScale's powerful dashboard found at the heart of your operation. Seamlessly manage your AI workforce,
+                                        analyze real-time performance metrics, and configure advanced settings—all from a single, intuitive interface.
                                     </p>
                                 </div>
                             </div>
