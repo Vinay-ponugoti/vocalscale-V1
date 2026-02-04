@@ -200,7 +200,7 @@ export const ReviewOverview = ({ stats, loading }: ReviewOverviewProps) => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-[280px] w-full">
+            <div className="h-[280px] w-full min-w-0">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={reviewVolumeData} barGap={8}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
@@ -255,7 +255,7 @@ export const ReviewOverview = ({ stats, loading }: ReviewOverviewProps) => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-[180px] w-full">
+            <div className="h-[180px] w-full min-w-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie

@@ -1,9 +1,9 @@
 /**
  * Empty State Component
- * Welcome screen with suggestions for new conversations
+ * Welcome screen with business growth focused suggestions
  */
 
-import { Brain, FileText, Search, Sparkles, MessageSquare } from 'lucide-react';
+import { Brain, TrendingUp, MessageSquare, Target, PenTool, BarChart3 } from 'lucide-react';
 
 interface EmptyStateProps {
   onSuggestionClick: (message: string) => void;
@@ -11,24 +11,34 @@ interface EmptyStateProps {
 
 const suggestions = [
   {
-    icon: FileText,
-    text: 'Summarize my uploaded documents',
-    description: 'Get a quick overview of your knowledge base',
+    icon: TrendingUp,
+    text: 'How can I get more customers this month?',
+    description: 'Get marketing ideas tailored to your business',
   },
   {
-    icon: Search,
-    text: 'What information do you have about my business?',
-    description: 'Explore what the AI knows about you',
+    icon: PenTool,
+    text: 'Write a follow-up SMS for customers who missed their appointment',
+    description: 'Generate ready-to-send messages',
   },
   {
-    icon: Sparkles,
-    text: 'Find connections between different topics',
-    description: 'Discover insights across your documents',
+    icon: BarChart3,
+    text: 'Analyze my call patterns and suggest improvements',
+    description: 'Get insights from your AI receptionist data',
+  },
+  {
+    icon: Target,
+    text: 'Create a social media post promoting my services',
+    description: 'Generate engaging content for your business',
   },
   {
     icon: MessageSquare,
-    text: 'Help me draft a response based on past conversations',
-    description: 'Use your chat history as reference',
+    text: 'Help me respond to a negative customer review',
+    description: 'Draft professional responses',
+  },
+  {
+    icon: TrendingUp,
+    text: 'What are 3 quick wins I can implement today to grow?',
+    description: 'Actionable tips you can start now',
   },
 ];
 
@@ -42,14 +52,14 @@ const EmptyState = ({ onSuggestionClick }: EmptyStateProps) => {
 
       {/* Title */}
       <h2 className="text-2xl font-black text-charcoal mb-3">
-        Chat with Your Knowledge Base
+        Your Business Growth Assistant
       </h2>
 
       {/* Description */}
       <p className="text-charcoal-light mb-8 leading-relaxed max-w-md">
-        Ask questions about your documents and data. The AI searches your
-        knowledge graph to provide accurate, contextual answers based on
-        everything you've uploaded.
+        I'm here to help you grow your business. Ask me for marketing ideas,
+        customer communication templates, business insights, or anything else
+        to help you succeed.
       </p>
 
       {/* Suggestions */}
@@ -86,15 +96,15 @@ const EmptyState = ({ onSuggestionClick }: EmptyStateProps) => {
         <div className="flex flex-wrap justify-center gap-6 text-xs text-charcoal-light">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            Persistent Memory
+            Knows Your Business
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-blue-electric" />
-            Knowledge Graph Search
+            Actionable Advice
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-purple-500" />
-            File Attachments
+            Ready-to-Use Content
           </div>
         </div>
       </div>

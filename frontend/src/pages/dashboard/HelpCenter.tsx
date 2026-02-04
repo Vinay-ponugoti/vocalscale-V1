@@ -315,6 +315,7 @@ const HelpCenter = () => {
 
               <div className="space-y-6">
                 {/* Featured Video Card - Always Visible */}
+                <h3 className="text-sm font-black text-slate-900 mb-3 uppercase tracking-wider">How to Train AI in 5min</h3>
                 <div className="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 animate-in fade-in zoom-in duration-300 relative aspect-video group border border-slate-800">
                   <VideoPlayer src={VIDEO_URL} />
                 </div>
