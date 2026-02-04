@@ -93,7 +93,7 @@ export const ROILiveTicker = () => {
                         >
                             <Link
                                 to="/signup"
-                                className="mt-8 px-8 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-3 mx-auto shadow-lg shadow-slate-900/20 hover:shadow-slate-900/40 transition-all hover:bg-slate-800"
+                                className="mt-8 px-8 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-3 mx-auto shadow-lg shadow-slate-900/20 hover:shadow-slate-900/40 transition-all hover:bg-slate-800 hover:no-underline"
                             >
                                 Start Saving Revenue
                                 <Zap size={18} fill="currentColor" />
