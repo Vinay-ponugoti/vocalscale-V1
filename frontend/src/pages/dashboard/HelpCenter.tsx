@@ -74,6 +74,20 @@ const HelpCenter = () => {
           </div>
 
           <div className="space-y-3">
+            <h4 className="font-black text-slate-900 text-sm">How to Train Effectively</h4>
+            <div className="text-[13px] text-slate-600 leading-relaxed space-y-3">
+              <p><strong>Step 1: Gather Your Data</strong></p>
+              <p>Collect all relevant business documents. This includes your latest pricing sheets, service descriptions, cancellation policies, and operational manuals.</p>
+
+              <p><strong>Step 2: Upload to Knowledge Base</strong></p>
+              <p>Navigate to the "Knowledge Base" tab in your dashboard. Use the "Upload" button to add your PDF or Docx files. Alternatively, paste your website's FAQ URL.</p>
+
+              <p><strong>Step 3: Test and Refine</strong></p>
+              <p>After uploading, use the test chat to ask questions. If the AI misses something, add a specific "Q&A" entry to cover that gap.</p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
             <h4 className="font-black text-slate-900 text-sm">Best Practices for Training</h4>
             <p className="text-[13px] text-slate-500 leading-relaxed">
               1. Keep documents concise and clear.<br />
@@ -153,7 +167,7 @@ const HelpCenter = () => {
 
         {/* ARTICLE MODAL */}
         {selectedArticle && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-[100] flex items-start justify-center pt-20 p-4 sm:p-6">
             <div
               className="absolute inset-0 transition-opacity"
               onClick={() => setSelectedArticle(null)}
