@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Rocket, Receipt, ArrowRight, Play, MessageSquare, Ticket, Phone, X, CheckCircle2, Info, Brain } from 'lucide-react';
+import { Search, Rocket, Receipt, ArrowRight, Play, MessageSquare, Ticket, X, CheckCircle2, Info, Phone } from 'lucide-react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';
@@ -30,6 +30,7 @@ const VideoPlayer = ({ src }: { src: string }) => {
       playsInline
       crossOrigin="anonymous"
       preload="metadata"
+      loop
       className="w-full h-full object-cover rounded-2xl"
     >
       <source src={`${src}#t=0.001`} type="video/mp4" />
@@ -359,21 +360,8 @@ const HelpCenter = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-20">
-            <div className="bg-white p-8 rounded-3xl border border-slate-100 text-center hover:shadow-xl hover:border-blue-100 transition-all duration-500 group">
-              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 group-hover:scale-110">
-                <Brain size={32} />
-              </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Knowledge Assistant</h3>
-              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Get instant answers from your knowledge base.<br />Average response time: <span className="text-blue-600 font-bold">&lt; 1 sec</span>.</p>
-              <button
-                onClick={() => window.location.href = '/dashboard/chat'}
-                className="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-[13px] tracking-tight hover:bg-blue-700 transition-all shadow-sm hover:shadow-blue-200 active:scale-[0.98]"
-              >
-                Go to Chat
-              </button>
-            </div>
-
+          {/* Still Need Help Section */}
+          <div className="max-w-md mx-auto mb-20">
             <div className="bg-white p-8 rounded-3xl border border-slate-100 text-center hover:shadow-xl hover:border-indigo-100 transition-all duration-500 group">
               <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 group-hover:scale-110">
                 <Ticket size={32} />
@@ -382,17 +370,6 @@ const HelpCenter = () => {
               <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Describe your issue in detail.<br />We typically respond in <span className="text-indigo-600 font-bold">&lt; 24h</span>.</p>
               <button className="w-full bg-white border border-slate-200 text-slate-700 py-4 rounded-xl font-black text-[13px] tracking-tight hover:border-indigo-500 hover:text-indigo-600 transition-all active:scale-[0.98]">
                 Create Ticket
-              </button>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl border border-slate-100 text-center hover:shadow-xl hover:border-indigo-100 transition-all duration-500 group">
-              <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 group-hover:scale-110">
-                <Phone size={32} />
-              </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Call Support</h3>
-              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Speak directly with an expert.<br /><span className="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-md font-black text-[10px] uppercase">Enterprise Plan</span></p>
-              <button className="w-full bg-white border border-slate-200 text-gray-700 py-4 rounded-xl font-black text-[13px] tracking-tight hover:border-indigo-500 hover:text-indigo-600 transition-all active:scale-[0.98]">
-                View Number
               </button>
             </div>
           </div>
