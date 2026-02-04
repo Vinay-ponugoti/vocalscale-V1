@@ -144,7 +144,7 @@ export function HeroSection() {
                                         crossOrigin="anonymous"
                                         className="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
                                     >
-                                        <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/main%20-%201%20(1).mp4" type="video/mp4" />
+                                        <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/0126.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
@@ -185,77 +185,7 @@ export function HeroSection() {
                             </div>
                         </div>
 
-                        {/* Statistics Section */}
-                        <div className="mt-12 max-w-7xl mx-auto px-6 md:px-8">
-                            <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-violet-50 rounded-3xl p-8 border border-slate-200/60">
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                                    <div className="text-center">
-                                        <div className="text-3xl md:text-4xl font-black text-blue-600 mb-2">500+</div>
-                                        <div className="text-sm font-medium text-slate-600">Businesses Served</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-3xl md:text-4xl font-black text-emerald-600 mb-2">1M+</div>
-                                        <div className="text-sm font-medium text-slate-600">Calls Handled</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-3xl md:text-4xl font-black text-violet-600 mb-2">98%</div>
-                                        <div className="text-sm font-medium text-slate-600">Customer Satisfaction</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-3xl md:text-4xl font-black text-amber-600 mb-2">24/7</div>
-                                        <div className="text-sm font-medium text-slate-600">Availability</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Extended Description */}
-                        <div className="mt-12 max-w-7xl mx-auto space-y-6 text-left px-6 md:px-8">
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/60">
-                                <h2 className="text-2xl font-bold text-slate-900 mb-4">Revolutionary AI Voice Technology for Modern Businesses</h2>
-                                <p className="text-slate-600 leading-relaxed mb-4">
-                                    In today's fast-paced business environment, customer expectations are higher than ever. They demand instant responses, personalized service, and seamless experiences across all touchpoints. VocalScale's cutting-edge AI voice technology bridges the gap between human-like interaction and scalable automation, enabling businesses of all sizes to deliver exceptional customer service without the traditional overhead costs.
-                                </p>
-                                <p className="text-slate-600 leading-relaxed mb-4">
-                                    Our sophisticated AI receptionists are powered by advanced natural language processing and Deepgram's state-of-the-art Aura-2 voice models, ensuring conversations feel natural, engaging, and contextually aware. Unlike basic chatbots or rigid IVR systems, VocalScale's AI understands intent, adapts to conversation flow, and provides intelligent responses that truly solve customer needs.
-                                </p>
-                                <p className="text-slate-600 leading-relaxed">
-                                    Whether you're a small business looking to provide professional phone support, a growing company scaling customer operations, or an enterprise seeking to optimize contact center efficiency, VocalScale delivers the perfect balance of automation and personalization that drives customer satisfaction while significantly reducing operational costs.
-                                </p>
-                            </div>
-
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/60">
-                                <h3 className="text-xl font-bold text-slate-900 mb-4">Enterprise-Grade Features That Scale With Your Business</h3>
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
-                                            <Zap className="w-4 h-4 text-blue-600" />
-                                            Intelligent Call Routing
-                                        </h4>
-                                        <p className="text-sm text-slate-600 mb-4">Advanced AI understands caller intent and routes to appropriate departments, schedules appointments, or provides instant answers based on your business knowledge base.</p>
-
-                                        <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
-                                            <Clock className="w-4 h-4 text-emerald-600" />
-                                            24/7 Availability
-                                        </h4>
-                                        <p className="text-sm text-slate-600 mb-4">Never miss a customer call again. Our AI works tirelessly around the clock, handling after-hours inquiries, weekend calls, and holiday support without additional staffing costs.</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
-                                            <Users className="w-4 h-4 text-violet-600" />
-                                            Multi-Language Support
-                                        </h4>
-                                        <p className="text-sm text-slate-600 mb-4">Serve customers in over 50 languages with native-level fluency, expanding your market reach and providing inclusive service to diverse customer bases.</p>
-
-                                        <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
-                                            <Shield className="w-4 h-4 text-amber-600" />
-                                            Enterprise Security
-                                        </h4>
-                                        <p className="text-sm text-slate-600">PCI DSS compliant infrastructure with end-to-end encryption, ensuring customer data protection and regulatory compliance across all interactions.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         {/* Additional Content Sections */}
                         <div className="mt-12 max-w-7xl mx-auto px-6 md:px-8">
