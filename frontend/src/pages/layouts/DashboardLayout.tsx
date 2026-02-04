@@ -120,7 +120,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, loading } = useAuth();
   const { notifications, unreadCount, dismissNotification } = useNotifications();
   const { searchQuery, setSearchQuery, setIsSearchFocused, clearSearch } = useSearch();
 
@@ -130,6 +130,21 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Protect the route
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/login');
+    }
+  }, [loading, user, navigate]);
+
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   // Sync local state with context when context changes (e.g. clear search)
   useEffect(() => {
