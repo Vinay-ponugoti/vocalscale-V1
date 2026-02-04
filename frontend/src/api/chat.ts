@@ -1,6 +1,6 @@
 import { env } from '../config/env';
 import { getAuthHeader } from '../lib/api';
-import { getAuthToken } from '../utils/sessionUtils';
+import { getAuthToken, getStoredSession } from '../utils/sessionUtils';
 import type {
   ChatRequest,
   ChatSession,
@@ -19,24 +19,23 @@ class ChatAPI {
    * Get the current user ID for header isolation
    */
   private getUserId(): string | undefined {
-    // The session is stored under 'voice_ai_session' key
     try {
-      const session = JSON.parse(localStorage.getItem('voice_ai_session') || '{}');
+      const session = getStoredSession();
       const userId = session?.user?.id;
 
       if (!userId) {
-        console.warn('[ChatAPI] No user ID found in session. Session data:', {
+        console.warn('[ChatAPI] No user ID found in session.', {
           hasSession: !!session,
           hasUser: !!session?.user,
           userId: session?.user?.id
         });
       } else {
-        console.log('[ChatAPI] User ID found:', userId);
+        // console.log('[ChatAPI] User ID found directly from session utils');
       }
 
       return userId;
     } catch (e) {
-      console.error('[ChatAPI] Failed to parse session:', e);
+      console.error('[ChatAPI] Failed to get session from utils:', e);
       return undefined;
     }
   }
