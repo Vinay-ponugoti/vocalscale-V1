@@ -7,12 +7,14 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatApi } from '../api/chat';
 import type { ChatMessage, ChatSession, Source, FileAttachment } from '../types/chat';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Hook for managing chat messages and streaming
  */
 export function useChat(sessionId: string | null) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streamingContent, setStreamingContent] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
@@ -36,7 +38,7 @@ export function useChat(sessionId: string | null) {
       setMessages(msgs);
       return msgs;
     },
-    enabled: !!sessionId,
+    enabled: !!sessionId && !!user?.id,
     staleTime: 0, // Always refetch when session changes
   });
 
@@ -54,6 +56,10 @@ export function useChat(sessionId: string | null) {
    */
   const sendMessage = useCallback(async (content: string): Promise<string | null> => {
     if (!content.trim() || isStreaming) return null;
+    if (!user?.id) {
+      setError('User not authenticated');
+      return null;
+    }
 
     setError(null);
 
@@ -134,12 +140,13 @@ export function useChat(sessionId: string | null) {
       setStreamingContent('');
       return null;
     }
-  }, [sessionId, isStreaming, pendingFiles, queryClient]);
+  }, [sessionId, isStreaming, pendingFiles, queryClient, user?.id]);
 
   /**
    * Upload a file to attach to the next message
    */
   const uploadFile = useCallback(async (file: File): Promise<FileAttachment | null> => {
+    if (!user?.id) return null;
     try {
       const result = await chatApi.uploadFile(file);
       const attachment: FileAttachment = {
@@ -152,7 +159,7 @@ export function useChat(sessionId: string | null) {
       setError(err instanceof Error ? err.message : 'Failed to upload file');
       return null;
     }
-  }, []);
+  }, [user?.id]);
 
   /**
    * Remove a pending file attachment
@@ -188,6 +195,7 @@ export function useChat(sessionId: string | null) {
  */
 export function useChatSessions() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const {
     data: sessions = [],
@@ -197,6 +205,7 @@ export function useChatSessions() {
   } = useQuery({
     queryKey: ['chat-sessions'],
     queryFn: () => chatApi.getSessions(),
+    enabled: !!user?.id,
     staleTime: 30000, // 30 seconds
   });
 
