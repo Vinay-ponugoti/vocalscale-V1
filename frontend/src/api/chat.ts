@@ -23,10 +23,9 @@ class ChatAPI {
     const token = getAuthToken();
     if (!token) return undefined;
 
-    // In this app, we store user in session state, but for the API call,
-    // we need the UUID. We can decode it from the JWT or get it from storage.
+    // The session is stored under 'voice_ai_session' key (not 'vocalscale_session')
     try {
-      const session = JSON.parse(localStorage.getItem('vocalscale_session') || '{}');
+      const session = JSON.parse(localStorage.getItem('voice_ai_session') || '{}');
       return session?.user?.id;
     } catch {
       return undefined;
