@@ -137,7 +137,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         disabled={disabled}
                         placeholder="Ask anything about your business..."
                         className={cn(
-                            "flex-1 resize-none bg-transparent border-none outline-none",
+                            "flex-1 resize-none bg-transparent border-none outline-none focus:ring-0 focus:outline-none focus:shadow-none focus-visible:ring-0 focus-visible:outline-none focus-visible:shadow-none",
                             "text-[16px] text-black placeholder:text-gray-400",
                             "min-h-[24px] max-h-[120px] py-0",
                             disabled && "opacity-50"
