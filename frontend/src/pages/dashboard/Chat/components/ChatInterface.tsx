@@ -65,7 +65,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
     const showEmptyState = !sessionId && messages.length === 0;
 
     return (
-        <div className="flex flex-col h-full bg-white relative">
+        <div className="flex flex-col h-full relative" style={{ backgroundColor: '#ffffff' }}>
             {/* Messages area */}
             <div
                 ref={scrollRef}
@@ -108,7 +108,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
                 onClick={scrollToBottom}
                 className={cn(
                     "absolute left-1/2 -translate-x-1/2 bottom-[140px] md:bottom-[120px]",
-                    "w-9 h-9 bg-white border border-slate-200 rounded-full",
+                    "w-9 h-9 bg-white border border-gray-200 rounded-full",
                     "flex items-center justify-center shadow-md",
                     "transition-all duration-200",
                     showScrollButton
@@ -117,17 +117,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
                 )}
                 aria-label="Scroll to bottom"
             >
-                <ChevronDown size={20} className="text-slate-600" />
+                <ChevronDown size={20} className="text-gray-600" />
             </button>
 
             {/* Input area - fixed at bottom on mobile */}
-            <div className={cn(
-                "shrink-0 w-full bg-white pt-2",
-                "md:relative",
-                // Mobile: fixed positioning
-                "fixed bottom-0 left-0 right-0 md:static",
-                "pb-safe" // Safe area for iOS
-            )}>
+            <div
+                className={cn(
+                    "shrink-0 w-full pt-2",
+                    "md:relative",
+                    // Mobile: fixed positioning
+                    "fixed bottom-0 left-0 right-0 md:static",
+                    "pb-safe" // Safe area for iOS
+                )}
+                style={{ backgroundColor: '#ffffff' }}
+            >
                 <PromptInput
                     onSend={handleSendMessage}
                     onFileUpload={uploadFile}

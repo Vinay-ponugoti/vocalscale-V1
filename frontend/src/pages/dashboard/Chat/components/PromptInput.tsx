@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Send, Paperclip, Mic, X, Sparkles } from 'lucide-react';
+import { Mic, X } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import type { FileAttachment } from '../../../../types/chat';
 
@@ -70,10 +70,10 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 
     return (
         <div className="w-full max-w-3xl mx-auto px-4 pb-4">
-            {/* Main input container - ChatGPT style pill shape */}
+            {/* Main input container - pill shape with bright white background */}
             <div className={cn(
-                "relative bg-white border border-slate-200 rounded-full shadow-sm",
-                "focus-within:border-slate-300 focus-within:shadow-md transition-all",
+                "relative bg-white border border-gray-200 rounded-full shadow-sm",
+                "focus-within:border-gray-300 focus-within:shadow-md transition-all",
                 "overflow-hidden"
             )}>
                 {/* Pending Files - shown above input when present */}
@@ -82,12 +82,13 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         {pendingFiles.map(file => (
                             <div
                                 key={file.id}
-                                className="flex items-center gap-2 bg-slate-100 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 shrink-0"
+                                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-gray-700 shrink-0"
+                                style={{ backgroundColor: '#f4f4f4' }}
                             >
                                 <span className="truncate max-w-[100px]">{file.name}</span>
                                 <button
                                     onClick={() => onRemoveFile?.(file.id)}
-                                    className="p-0.5 hover:bg-slate-200 rounded-full text-slate-400 hover:text-red-500 transition-colors"
+                                    className="p-0.5 hover:bg-gray-200 rounded-full text-gray-400 hover:text-red-500 transition-colors"
                                 >
                                     <X size={12} />
                                 </button>
@@ -104,13 +105,13 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         onClick={() => fileInputRef.current?.click()}
                         disabled={disabled || isUploading}
                         className={cn(
-                            "p-1 text-slate-400 hover:text-slate-600 transition-colors flex-shrink-0",
+                            "p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0",
                             (disabled || isUploading) && "opacity-50 cursor-not-allowed"
                         )}
                         title="Attach file"
                     >
                         {isUploading ? (
-                            <div className="w-6 h-6 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin" />
+                            <div className="w-6 h-6 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
                         ) : (
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -137,7 +138,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         placeholder="Ask anything about your business..."
                         className={cn(
                             "flex-1 resize-none bg-transparent border-none outline-none",
-                            "text-[16px] text-slate-800 placeholder:text-slate-400",
+                            "text-[16px] text-black placeholder:text-gray-400",
                             "min-h-[24px] max-h-[120px] py-0",
                             disabled && "opacity-50"
                         )}
@@ -148,37 +149,37 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         {/* Voice input (visual only) */}
                         <button
                             type="button"
-                            className="p-1 text-slate-400 hover:text-slate-600 transition-colors hidden sm:block"
+                            className="p-1 text-gray-400 hover:text-gray-600 transition-colors hidden sm:block"
                             title="Voice input"
                         >
                             <Mic size={24} />
                         </button>
 
-                        {/* Send button - circular */}
+                        {/* Send button - circular with improved arrow icon */}
                         <button
                             onClick={handleSubmit}
                             disabled={disabled || !hasContent}
                             className={cn(
                                 "w-8 h-8 rounded-full flex items-center justify-center transition-all",
                                 hasContent
-                                    ? "bg-slate-900 text-white hover:bg-slate-800"
-                                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                                    ? "bg-black text-white hover:bg-gray-800"
+                                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
                             )}
                             title="Send message"
                         >
+                            {/* Improved up arrow icon */}
                             <svg
-                                width="16"
-                                height="16"
+                                width="18"
+                                height="18"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
-                                strokeWidth="2"
+                                strokeWidth="2.5"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                className="rotate-90"
                             >
-                                <line x1="22" y1="2" x2="11" y2="13" />
-                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                                <path d="M12 19V5" />
+                                <path d="M5 12l7-7 7 7" />
                             </svg>
                         </button>
                     </div>
@@ -186,7 +187,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             </div>
 
             {/* Footer text */}
-            <p className="text-center text-[11px] text-slate-400 mt-2.5">
+            <p className="text-center text-[11px] text-gray-400 mt-2.5">
                 VocalScale can make mistakes. Please verify important information.
             </p>
         </div>
