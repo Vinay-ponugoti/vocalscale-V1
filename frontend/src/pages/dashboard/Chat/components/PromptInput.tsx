@@ -73,7 +73,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             {/* Main input container - pill shape with bright white background */}
             <div className={cn(
                 "relative bg-white border border-gray-200 rounded-full shadow-sm",
-                "focus-within:border-gray-300 focus-within:shadow-md transition-all",
+                "transition-all",
                 "overflow-hidden"
             )}>
                 {/* Pending Files - shown above input when present */}

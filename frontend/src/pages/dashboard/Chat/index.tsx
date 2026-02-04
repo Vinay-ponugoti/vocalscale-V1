@@ -64,12 +64,11 @@ const Chat = () => {
               </button>
 
               {/* Title with dropdown indicator */}
-              <button className="flex items-center gap-1.5 hover:bg-slate-100 rounded-lg px-2 py-1.5 transition-colors">
+              <div className="flex items-center gap-1.5 px-2 py-1.5">
                 <span className="font-semibold text-slate-900">
-                  {currentSession?.title || 'VocalScale'}
+                  {currentSession?.title || ''}
                 </span>
-                <ChevronDown size={16} className="text-slate-400" />
-              </button>
+              </div>
             </div>
 
             {/* Right side - New Chat button */}
