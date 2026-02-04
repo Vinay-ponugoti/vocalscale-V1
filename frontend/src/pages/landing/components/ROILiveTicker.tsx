@@ -52,24 +52,27 @@ export const ROILiveTicker = () => {
                             While you were reading this page
                         </h2>
 
-                        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
-                            <motion.span
-                                className="text-6xl md:text-9xl font-black text-slate-900 tracking-tighter drop-shadow-sm"
-                            >
-                                {displayCount}
-                            </motion.span>
+                        <Link to="/signup" className="group block">
+                            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 transition-transform duration-300 group-hover:scale-105">
+                                <motion.span
+                                    className="text-6xl md:text-9xl font-black text-slate-900 tracking-tighter drop-shadow-sm"
+                                >
+                                    {displayCount}
+                                </motion.span>
 
-                            <div className="flex flex-col items-center md:items-start text-center md:text-left">
-                                <p className="text-xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">
-                                    Potential customers <br className="hidden md:block" />
-                                    <span className="text-rose-600 underline decoration-rose-200 underline-offset-8">just hung up</span>
-                                </p>
-                                <div className="flex items-center gap-2 text-rose-600/80 mt-2 font-bold text-xs uppercase tracking-widest">
-                                    <PhoneMissed size={14} />
-                                    Calls missed globally
+                                <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                                    <p className="text-xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight group-hover:underline decoration-slate-900 underline-offset-4">
+                                        Potential customers <br className="hidden md:block" />
+                                        <span className="text-rose-600 underline decoration-rose-200 underline-offset-8 group-hover:no-underline">just hung up</span>
+                                    </p>
+                                    <div className="flex items-center gap-2 text-rose-600/80 mt-2 font-bold text-xs uppercase tracking-widest group-hover:text-blue-600 transition-colors">
+                                        <PhoneMissed size={14} />
+                                        Calls missed globally
+                                        <span className="hidden group-hover:inline-block ml-1 text-blue-600 font-extrabold">- Start Saving Now &rarr;</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     </div>
 
                     {/* Subheading & Action */}
