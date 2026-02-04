@@ -19,15 +19,24 @@ class ChatAPI {
    * Get the current user ID for header isolation
    */
   private getUserId(): string | undefined {
-    // Try to get from the token/session utils
-    const token = getAuthToken();
-    if (!token) return undefined;
-
-    // The session is stored under 'voice_ai_session' key (not 'vocalscale_session')
+    // The session is stored under 'voice_ai_session' key
     try {
       const session = JSON.parse(localStorage.getItem('voice_ai_session') || '{}');
-      return session?.user?.id;
-    } catch {
+      const userId = session?.user?.id;
+
+      if (!userId) {
+        console.warn('[ChatAPI] No user ID found in session. Session data:', {
+          hasSession: !!session,
+          hasUser: !!session?.user,
+          userId: session?.user?.id
+        });
+      } else {
+        console.log('[ChatAPI] User ID found:', userId);
+      }
+
+      return userId;
+    } catch (e) {
+      console.error('[ChatAPI] Failed to parse session:', e);
       return undefined;
     }
   }

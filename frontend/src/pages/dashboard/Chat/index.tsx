@@ -8,7 +8,7 @@ import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { useChatSessions } from '../../../hooks/useChat';
 import ChatSidebar from './components/ChatSidebar';
 import ChatInterface from './components/ChatInterface';
-import { Menu, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { Menu, ChevronDown, SquarePen } from 'lucide-react';
 
 const Chat = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -72,12 +72,14 @@ const Chat = () => {
               </button>
             </div>
 
-            {/* Right side - Options */}
+            {/* Right side - New Chat button */}
             <button
+              onClick={handleNewChat}
               className="p-1.5 hover:bg-slate-100 rounded-lg"
-              aria-label="Options"
+              aria-label="New chat"
+              title="Start new chat"
             >
-              <MoreHorizontal size={22} className="text-slate-600" />
+              <SquarePen size={22} className="text-slate-600" />
             </button>
           </header>
 
