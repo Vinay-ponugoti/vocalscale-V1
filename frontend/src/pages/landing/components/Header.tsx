@@ -92,7 +92,7 @@ export const Header = () => {
                                         <a
                                             href={item.href}
                                             className={cn(
-                                                "text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 transition-colors",
+                                                "text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 transition-colors hover:no-underline",
                                                 isScrolled ? "hover:text-white" : "hover:text-slate-900"
                                             )}>
                                             {item.name}
@@ -107,7 +107,7 @@ export const Header = () => {
                             <Link
                                 to="/login"
                                 className={cn(
-                                    "text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 transition-colors px-4",
+                                    "text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 transition-colors px-4 hover:no-underline",
                                     isScrolled ? "hover:text-white" : "hover:text-slate-900"
                                 )}>
                                 Login
@@ -145,7 +145,7 @@ export const Header = () => {
                                                 key={index}
                                                 href={item.href}
                                                 onClick={() => setMenuState(false)}
-                                                className="text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-blue-400 transition-all flex items-center justify-between group/item">
+                                                className="text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-blue-400 transition-all flex items-center justify-between group/item hover:no-underline">
                                                 {item.name}
                                                 <ArrowRight className="w-5 h-5 opacity-0 -translate-x-4 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all text-blue-500" />
                                             </a>
