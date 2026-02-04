@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Rocket, Receipt, ArrowRight, Play, MessageSquare, Ticket, X, CheckCircle2, Info, Phone } from 'lucide-react';
+import { Search, Rocket, Receipt, ArrowRight, MessageSquare, Ticket, X, CheckCircle2, Info, Phone } from 'lucide-react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';
@@ -27,6 +27,7 @@ const VideoPlayer = ({ src }: { src: string }) => {
     <video
       ref={videoRef}
       controls
+      muted
       playsInline
       crossOrigin="anonymous"
       preload="metadata"
@@ -41,7 +42,7 @@ const VideoPlayer = ({ src }: { src: string }) => {
 
 const HelpCenter = () => {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+
 
   const articles: Record<string, Article> = {
     'AI Setup & Training': {
@@ -125,7 +126,7 @@ const HelpCenter = () => {
               </div>
               <div className="flex justify-between items-center text-[13px]">
                 <span className="text-slate-500">Overage Rate</span>
-                <span className="font-bold text-slate-900">$0.15 / minute</span>
+                <span className="font-bold text-slate-900">$0.094 / minute</span>
               </div>
               <div className="flex justify-between items-center text-[13px]">
                 <span className="text-slate-500">Billing Cycle</span>
@@ -154,7 +155,7 @@ const HelpCenter = () => {
         {selectedArticle && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
             <div
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+              className="absolute inset-0 transition-opacity"
               onClick={() => setSelectedArticle(null)}
             ></div>
             <div className="relative bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
@@ -299,55 +300,10 @@ const HelpCenter = () => {
               </div>
 
               <div className="space-y-6">
-                {/* Featured Video Card - Inline Player Switch */}
-                {selectedVideo === VIDEO_URL ? (
-                  <div className="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 animate-in fade-in zoom-in duration-300 relative aspect-video group border border-slate-800">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedVideo(null);
-                      }}
-                      className="absolute top-4 right-4 z-20 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
-                    >
-                      <X size={18} />
-                    </button>
-                    <VideoPlayer src={VIDEO_URL} />
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => setSelectedVideo(VIDEO_URL)}
-                    className="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-lg hover:border-indigo-100 transition-all duration-300 cursor-pointer group"
-                  >
-                    <div className="flex gap-5">
-                      {/* Thumbnail */}
-                      <div className="w-40 h-24 bg-slate-900 rounded-xl flex-shrink-0 relative overflow-hidden group-hover:ring-2 ring-indigo-500/20 transition-all">
-                        <img
-                          src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop"
-                          alt="AI Training"
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/30 group-hover:scale-110 transition-transform duration-300">
-                            <Play size={16} fill="white" className="text-white ml-0.5" />
-                          </div>
-                        </div>
-                        <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">
-                          4:12
-                        </span>
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex flex-col justify-center">
-                        <h3 className="font-bold text-slate-900 text-base mb-2 group-hover:text-indigo-600 transition-colors">
-                          Training your AI in 5 Minutes
-                        </h3>
-                        <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
-                          Learn how to upload your business documents and URLs to build a custom knowledge base.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {/* Featured Video Card - Always Visible */}
+                <div className="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 animate-in fade-in zoom-in duration-300 relative aspect-video group border border-slate-800">
+                  <VideoPlayer src={VIDEO_URL} />
+                </div>
               </div>
             </div>
           </div>
