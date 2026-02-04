@@ -129,7 +129,7 @@ const Login = () => {
             Sign in with email
           </h1>
           <p className="text-slate-500 font-medium leading-relaxed max-w-[320px] mx-auto">
-            Step into your AI control center to bring your words, data, and teams together. For free.
+            Step into your AI control center to bring your words, data, and teams together.
           </p>
         </div>
 
