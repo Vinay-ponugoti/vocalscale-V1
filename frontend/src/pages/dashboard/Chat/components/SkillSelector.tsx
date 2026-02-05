@@ -1,6 +1,6 @@
 /**
  * Skill Selector Component
- * Pills/chips UI for selecting business development skills
+ * Clean, modern pills UI for selecting business development skills
  */
 
 import React, { useState } from 'react';
@@ -21,7 +21,11 @@ import {
   ChevronDown,
   ChevronUp,
   Zap,
+  Wand2,
 } from 'lucide-react';
+import { cn } from '../../../../lib/utils';
+import { Badge } from '../../../../components/ui/Badge';
+import { Button } from '../../../../components/ui/Button';
 
 interface SkillSelectorProps {
   selectedSkill: Skill | null;
@@ -42,21 +46,38 @@ const iconMap: Record<string, React.ElementType> = {
   Zap,
 };
 
-// Category colors
-const categoryColors: Record<string, string> = {
-  marketing: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100',
-  sales: 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100',
-  communication: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100',
-  analysis: 'bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100',
-  content: 'bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100',
-};
-
-const selectedColors: Record<string, string> = {
-  marketing: 'bg-purple-600 text-white border-purple-600',
-  sales: 'bg-green-600 text-white border-green-600',
-  communication: 'bg-blue-600 text-white border-blue-600',
-  analysis: 'bg-orange-600 text-white border-orange-600',
-  content: 'bg-pink-600 text-white border-pink-600',
+// Category styling
+const categoryStyles: Record<string, { bg: string; text: string; border: string; activeBg: string }> = {
+  marketing: {
+    bg: 'bg-purple-50 hover:bg-purple-100',
+    text: 'text-purple-700',
+    border: 'border-purple-200',
+    activeBg: 'bg-purple-600 hover:bg-purple-700 text-white border-purple-600',
+  },
+  sales: {
+    bg: 'bg-emerald-50 hover:bg-emerald-100',
+    text: 'text-emerald-700',
+    border: 'border-emerald-200',
+    activeBg: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600',
+  },
+  communication: {
+    bg: 'bg-blue-50 hover:bg-blue-100',
+    text: 'text-blue-700',
+    border: 'border-blue-200',
+    activeBg: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600',
+  },
+  analysis: {
+    bg: 'bg-amber-50 hover:bg-amber-100',
+    text: 'text-amber-700',
+    border: 'border-amber-200',
+    activeBg: 'bg-amber-600 hover:bg-amber-700 text-white border-amber-600',
+  },
+  content: {
+    bg: 'bg-pink-50 hover:bg-pink-100',
+    text: 'text-pink-700',
+    border: 'border-pink-200',
+    activeBg: 'bg-pink-600 hover:bg-pink-700 text-white border-pink-600',
+  },
 };
 
 export const SkillSelector: React.FC<SkillSelectorProps> = ({
@@ -68,13 +89,19 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex gap-2 px-4 py-3 overflow-x-auto border-b border-gray-100 bg-gray-50/50">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="h-8 w-28 bg-gray-200 rounded-full animate-pulse"
-          />
-        ))}
+      <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/30">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="h-4 w-4 bg-slate-200 rounded animate-pulse" />
+          <div className="h-3 w-20 bg-slate-200 rounded animate-pulse" />
+        </div>
+        <div className="flex gap-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-8 w-28 bg-slate-200 rounded-full animate-pulse"
+            />
+          ))}
+        </div>
       </div>
     );
   }
@@ -83,88 +110,115 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
     return null;
   }
 
-  // Show first 4 skills, or all if expanded
-  const visibleSkills = isExpanded ? skills : skills.slice(0, 4);
-  const hasMore = skills.length > 4;
+  // Show first 5 skills, or all if expanded
+  const visibleSkills = isExpanded ? skills : skills.slice(0, 5);
+  const hasMore = skills.length > 5;
 
   return (
-    <div className="border-b border-gray-100 bg-gray-50/30">
-      {/* Selected skill indicator */}
+    <div className="border-b border-slate-100">
+      {/* Selected skill banner */}
       {selectedSkill && (
-        <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
-          <div className="flex items-center gap-2 text-sm">
-            <Sparkles size={14} className="text-blue-600" />
-            <span className="font-medium text-blue-900">
-              Using: <span className="font-semibold">{selectedSkill.name}</span>
-            </span>
-            {selectedSkill.input_template && (
-              <span className="text-blue-600/70 text-xs ml-2 hidden sm:inline">
-                {selectedSkill.input_template}
+        <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-blue-50 via-indigo-50 to-violet-50 border-b border-blue-100/50">
+          <div className="flex items-center gap-3">
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              <Wand2 size={14} className="text-blue-600" />
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+              <span className="text-sm font-semibold text-blue-900">
+                {selectedSkill.name}
               </span>
-            )}
+              {selectedSkill.input_template && (
+                <span className="text-xs text-blue-600/70 hidden sm:inline">
+                  • {selectedSkill.input_template}
+                </span>
+              )}
+            </div>
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => onSelect(null)}
-            className="p-1.5 hover:bg-blue-100 rounded-full text-blue-600 transition-colors"
-            title="Clear skill selection"
+            className="h-7 w-7 text-blue-600 hover:bg-blue-100"
+            title="Clear skill"
           >
             <X size={14} />
-          </button>
+          </Button>
         </div>
       )}
 
-      {/* Skill pills */}
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-1 mb-2">
-          <Zap size={12} className="text-gray-400" />
-          <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-            Quick Skills
-          </span>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {visibleSkills.map((skill) => {
-            const IconComponent = iconMap[skill.icon] || Zap;
-            const isSelected = selectedSkill?.id === skill.id;
-            const baseColor = categoryColors[skill.category] || categoryColors.content;
-            const activeColor = selectedColors[skill.category] || selectedColors.content;
-
-            return (
-              <button
-                key={skill.id}
-                onClick={() => onSelect(isSelected ? null : skill)}
-                className={`
-                  flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium
-                  transition-all duration-200 border whitespace-nowrap
-                  ${isSelected ? activeColor : baseColor}
-                `}
-                title={skill.description}
-              >
-                <IconComponent size={13} />
-                {skill.name}
-              </button>
-            );
-          })}
-
-          {/* Show more/less button */}
+      {/* Skills grid */}
+      <div className="px-4 py-3 bg-white">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles size={14} className="text-slate-400" />
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              AI Skills
+            </span>
+            <Badge variant="secondary" size="sm">
+              {skills.length}
+            </Badge>
+          </div>
           {hasMore && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
+              className="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-700 transition-colors"
             >
               {isExpanded ? (
                 <>
+                  Show less
                   <ChevronUp size={14} />
-                  Less
                 </>
               ) : (
                 <>
+                  Show all
                   <ChevronDown size={14} />
-                  +{skills.length - 4} more
                 </>
               )}
             </button>
           )}
         </div>
+
+        {/* Skill pills */}
+        <div className="flex flex-wrap gap-2">
+          {visibleSkills.map((skill) => {
+            const IconComponent = iconMap[skill.icon] || Zap;
+            const isSelected = selectedSkill?.id === skill.id;
+            const styles = categoryStyles[skill.category] || categoryStyles.content;
+
+            return (
+              <button
+                key={skill.id}
+                onClick={() => onSelect(isSelected ? null : skill)}
+                className={cn(
+                  "group flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium",
+                  "transition-all duration-200 border",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                  isSelected
+                    ? styles.activeBg
+                    : cn(styles.bg, styles.text, styles.border)
+                )}
+                title={skill.description}
+              >
+                <IconComponent
+                  size={15}
+                  className={cn(
+                    "transition-transform group-hover:scale-110",
+                    isSelected && "text-white"
+                  )}
+                />
+                <span className="whitespace-nowrap">{skill.name}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Collapsed indicator */}
+        {!isExpanded && hasMore && (
+          <p className="mt-2 text-xs text-slate-400">
+            +{skills.length - 5} more skills available
+          </p>
+        )}
       </div>
     </div>
   );
