@@ -71,21 +71,20 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     const hasContent = input.trim().length > 0;
 
     return (
-        <div className="w-full max-w-3xl mx-auto px-4 pb-4">
-            {/* Main input container - pill shape with bright white background */}
+        <div className="w-full">
+            {/* Main input container - pill shape */}
             <div className={cn(
-                "relative bg-white border border-gray-200 rounded-full shadow-sm",
-                "transition-all",
-                "overflow-hidden"
+                "relative bg-white border border-gray-200 rounded-full",
+                "shadow-sm focus-within:shadow-md focus-within:border-gray-300",
+                "transition-all"
             )}>
                 {/* Pending Files - shown above input when present */}
                 {pendingFiles.length > 0 && (
-                    <div className="flex gap-2 px-4 pt-3 pb-1 overflow-x-auto">
+                    <div className="flex gap-2 px-4 pt-3 pb-1 overflow-x-auto border-b border-gray-100">
                         {pendingFiles.map(file => (
                             <div
                                 key={file.id}
-                                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-gray-700 shrink-0"
-                                style={{ backgroundColor: '#f4f4f4' }}
+                                className="flex items-center gap-2 bg-gray-100 rounded-lg px-2.5 py-1.5 text-xs text-gray-700 shrink-0"
                             >
                                 <span className="truncate max-w-[100px]">{file.name}</span>
                                 <button
@@ -101,7 +100,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 
                 {/* Input row */}
                 <div className="flex items-center gap-2 px-4 py-3">
-                    {/* Attachment button */}
+                    {/* Attachment button - Plus icon */}
                     <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
@@ -113,7 +112,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         title="Attach file"
                     >
                         {isUploading ? (
-                            <div className="w-6 h-6 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
+                            <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
                         ) : (
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -137,61 +136,64 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         disabled={disabled}
-                        placeholder={placeholder || "Ask anything about your business..."}
+                        placeholder={placeholder || "Ask anything"}
                         className={cn(
-                            "flex-1 resize-none bg-transparent border-none outline-none focus:ring-0 focus:outline-none focus:shadow-none focus-visible:ring-0 focus-visible:outline-none focus-visible:shadow-none",
-                            "text-[16px] text-black placeholder:text-gray-400",
+                            "flex-1 resize-none bg-transparent outline-none",
+                            "text-[16px] text-gray-900 placeholder:text-gray-400",
                             "min-h-[24px] max-h-[120px] py-0",
+                            "focus:ring-0 focus:outline-none",
                             disabled && "opacity-50"
                         )}
+                        style={{ border: 'none', boxShadow: 'none' }}
                     />
 
                     {/* Right side buttons */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                        {/* Voice input (visual only) */}
+                        {/* Voice input */}
                         <button
                             type="button"
-                            className="p-1 text-gray-400 hover:text-gray-600 transition-colors hidden sm:block"
+                            className="p-1 text-gray-400 hover:text-gray-600 transition-colors hidden sm:flex"
                             title="Voice input"
                         >
-                            <Mic size={24} />
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                                <line x1="12" y1="19" x2="12" y2="23" />
+                                <line x1="8" y1="23" x2="16" y2="23" />
+                            </svg>
                         </button>
 
-                        {/* Send button - circular with improved arrow icon */}
+                        {/* Send button - circular green/gray */}
                         <button
                             onClick={handleSubmit}
                             disabled={disabled || !hasContent}
                             className={cn(
                                 "w-8 h-8 rounded-full flex items-center justify-center transition-all",
-                                hasContent
-                                    ? "bg-black text-white hover:bg-gray-800"
+                                hasContent && !disabled
+                                    ? "bg-[#10a37f] text-white hover:bg-[#0d8c6d]"
                                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
                             )}
                             title="Send message"
                         >
-                            {/* Improved up arrow icon */}
+                            {/* Arrow up icon rotated to look like send */}
                             <svg
-                                width="18"
-                                height="18"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
-                                strokeWidth="2.5"
+                                strokeWidth="2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
+                                className="rotate-90"
                             >
-                                <path d="M12 19V5" />
-                                <path d="M5 12l7-7 7 7" />
+                                <line x1="22" y1="2" x2="11" y2="13" />
+                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
                             </svg>
                         </button>
                     </div>
                 </div>
             </div>
-
-            {/* Footer text */}
-            <p className="text-center text-[11px] text-gray-400 mt-2.5">
-                VocalScale can make mistakes. Please verify important information.
-            </p>
         </div>
     );
 };

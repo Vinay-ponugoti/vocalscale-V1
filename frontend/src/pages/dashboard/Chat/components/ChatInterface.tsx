@@ -1,18 +1,16 @@
 /**
  * Chat Interface Component
- * Main chat area with messages, input, and skill selection
+ * ChatGPT-style main chat area with messages and input
  */
 
 import React, { useRef, useEffect, useState } from 'react';
 import { MessageList } from './MessageList';
 import { PromptInput } from './PromptInput';
 import EmptyState from './EmptyState';
-import { SkillSelector } from './SkillSelector';
 import { useChat } from '../../../../hooks/useChat';
 import { useAuth } from '../../../../context/AuthContext';
 import { ChevronDown, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
-import { Button } from '../../../../components/ui/Button';
 
 interface ChatInterfaceProps {
   sessionId?: string | null;
@@ -31,8 +29,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
     removeFile,
     error,
     clearError,
-    selectedSkill,
-    setSelectedSkill,
   } = useChat(sessionId || null);
 
   const isAppLoading = authLoading || !user;
@@ -80,40 +76,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
   return (
     <div className="flex flex-col h-full relative bg-white">
-      {/* Skills Selector - Clean header section */}
-      <SkillSelector
-        selectedSkill={selectedSkill}
-        onSelect={setSelectedSkill}
-      />
-
       {/* Messages area */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
         className={cn(
           "flex-1 overflow-y-auto w-full",
-          // Custom scrollbar styling
-          "scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent",
-          "hover:scrollbar-thumb-slate-300"
+          // Hide scrollbar like ChatGPT
+          "[&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar]:h-0",
+          "scrollbar-none",
+          // Mobile padding for fixed input
+          "pb-[140px] md:pb-0"
         )}
       >
         {/* Error Banner */}
         {error && (
-          <div className="sticky top-0 z-10 mx-4 mt-3">
-            <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700">
-              <AlertCircle size={18} className="shrink-0" />
-              <div className="flex-1 text-sm">
-                <span className="font-medium">Error:</span> {error}
-              </div>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={clearError}
-                className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-100"
-              >
-                <X size={14} />
-              </Button>
+          <div className="sticky top-0 z-10 p-3 bg-red-50 border-b border-red-200 text-red-700 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <AlertCircle size={16} />
+              <span className="font-medium">Error:</span> {error}
             </div>
+            <button
+              onClick={clearError}
+              className="p-1 hover:bg-red-100 rounded transition-colors"
+            >
+              <X size={16} />
+            </button>
           </div>
         )}
 
@@ -132,41 +120,45 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
       <button
         onClick={scrollToBottom}
         className={cn(
-          "absolute left-1/2 -translate-x-1/2 bottom-[140px] md:bottom-[120px]",
-          "w-9 h-9 bg-white border border-slate-200 rounded-full",
-          "flex items-center justify-center shadow-lg",
-          "transition-all duration-200 hover:bg-slate-50 hover:border-slate-300",
+          "fixed left-1/2 -translate-x-1/2 z-40",
+          "bottom-[120px] md:bottom-[100px]",
+          "w-9 h-9 bg-white border border-gray-200 rounded-full",
+          "flex items-center justify-center shadow-md",
+          "transition-all duration-200 hover:bg-gray-50",
           showScrollButton
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-2 pointer-events-none"
         )}
         aria-label="Scroll to bottom"
       >
-        <ChevronDown size={20} className="text-slate-600" />
+        <ChevronDown size={20} className="text-gray-600" />
       </button>
 
-      {/* Input area */}
+      {/* Input area - ChatGPT style fixed at bottom on mobile */}
       <div
         className={cn(
-          "shrink-0 w-full pt-2 bg-white",
-          "md:relative",
+          "bg-white border-t border-gray-200",
+          "px-4 py-4",
           // Mobile: fixed positioning
-          "fixed bottom-0 left-0 right-0 md:static",
-          "pb-safe border-t border-slate-100 md:border-t-0"
+          "fixed bottom-0 left-0 right-0 md:relative",
+          "z-50"
         )}
+        style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
       >
-        <PromptInput
-          onSend={handleSendMessage}
-          onFileUpload={uploadFile}
-          disabled={isStreaming || isAppLoading}
-          pendingFiles={pendingFiles}
-          onRemoveFile={removeFile}
-          placeholder={isAppLoading ? "Authenticating..." : "Ask anything about your business..."}
-        />
+        <div className="max-w-3xl mx-auto">
+          <PromptInput
+            onSend={handleSendMessage}
+            onFileUpload={uploadFile}
+            disabled={isStreaming || isAppLoading}
+            pendingFiles={pendingFiles}
+            onRemoveFile={removeFile}
+            placeholder={isAppLoading ? "Authenticating..." : "Ask anything"}
+          />
+          <p className="text-center text-xs text-gray-400 mt-2">
+            VocalScale can make mistakes. Check important info.
+          </p>
+        </div>
       </div>
-
-      {/* Spacer for fixed input on mobile */}
-      <div className="h-[120px] md:hidden shrink-0" />
     </div>
   );
 };

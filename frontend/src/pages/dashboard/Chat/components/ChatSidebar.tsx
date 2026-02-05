@@ -1,13 +1,12 @@
 /**
  * Chat Sidebar Component
- * Mobile-friendly drawer with conversation list
+ * ChatGPT-style mobile-friendly drawer with conversation list
  */
 
 import { useState } from 'react';
-import { Plus, MessageSquare, Trash2, Search, X, LogOut, Settings } from 'lucide-react';
-import { Button } from '../../../../components/ui/Button';
+import { Plus, MessageSquare, Trash2, X, LogOut, Settings } from 'lucide-react';
+import { useAuth } from '../../../../context/AuthContext';
 import type { ChatSession } from '../../../../types/chat';
-import { formatDistanceToNow } from 'date-fns';
 import { cn } from '../../../../lib/utils';
 
 interface ChatSidebarProps {
@@ -31,27 +30,17 @@ const ChatSidebar = ({
   onClose,
   loading,
 }: ChatSidebarProps) => {
-  const [search, setSearch] = useState('');
+  const { user, logout } = useAuth();
 
-  const filteredSessions = sessions.filter(s =>
-    s.title?.toLowerCase().includes(search.toLowerCase()) ||
-    s.last_message?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // Group sessions by time
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const lastWeek = new Date(today);
-  lastWeek.setDate(lastWeek.getDate() - 7);
-
-  const groupedSessions = {
-    today: filteredSessions.filter(s => new Date(s.updated_at) >= new Date(today.setHours(0, 0, 0, 0))),
-    yesterday: filteredSessions.filter(s => {
-      const date = new Date(s.updated_at);
-      return date >= new Date(yesterday.setHours(0, 0, 0, 0)) && date < new Date(today.setHours(0, 0, 0, 0));
-    }),
-    older: filteredSessions.filter(s => new Date(s.updated_at) < new Date(yesterday.setHours(0, 0, 0, 0))),
+  // Get user initials for avatar
+  const getInitials = () => {
+    if (user?.full_name) {
+      return user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    if (user?.email) {
+      return user.email[0].toUpperCase();
+    }
+    return 'U';
   };
 
   const handleSelectSession = (id: string) => {
@@ -64,8 +53,8 @@ const ChatSidebar = ({
       {/* Mobile overlay */}
       <div
         className={cn(
-          "fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          "sidebar-overlay fixed inset-0 bg-black/50 z-[100] transition-all duration-300",
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         )}
         onClick={onClose}
       />
@@ -73,141 +62,91 @@ const ChatSidebar = ({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto",
-          "w-[280px] bg-white border-r border-slate-200",
-          "flex flex-col transition-transform duration-300 ease-out",
-          "lg:translate-x-0",
+          "mobile-sidebar fixed lg:relative left-0 top-0 bottom-0 z-[101] lg:z-auto",
+          "w-[280px] bg-white",
+          "flex flex-col overflow-y-auto",
+          "transition-transform duration-300 ease-out",
+          "lg:translate-x-0 lg:border-r lg:border-gray-200",
           isOpen ? "translate-x-0" : "-translate-x-full lg:w-0 lg:border-0 lg:overflow-hidden"
         )}
       >
-        {/* Header */}
-        <div className="flex items-center justify-end p-4 border-b border-slate-100 lg:hidden">
+        {/* Header with user info */}
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* User avatar */}
+            <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
+              {getInitials()}
+            </div>
+            <span className="font-medium text-gray-900 truncate max-w-[150px]">
+              {user?.full_name || user?.email || 'Your Account'}
+            </span>
+          </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-lg"
+            className="p-2 hover:bg-gray-100 rounded-lg lg:hidden transition-colors"
           >
-            <X size={20} className="text-slate-500" />
+            <X size={20} className="text-gray-500" />
           </button>
         </div>
 
         {/* New Chat Button */}
-        <div className="p-3">
+        <div className="p-2">
           <button
             onClick={() => {
               onNewChat();
               onClose?.();
             }}
-            className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-3 hover:bg-gray-100 rounded-lg transition-colors text-left"
           >
-            <Plus size={18} />
-            New chat
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <line x1="12" y1="8" x2="12" y2="16" />
+              <line x1="8" y1="12" x2="16" y2="12" />
+            </svg>
+            <span className="text-gray-700">New chat</span>
           </button>
-        </div>
-
-        {/* Search */}
-        <div className="px-3 pb-3">
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search conversations..."
-              className={cn(
-                "w-full pl-9 pr-4 py-2 text-sm rounded-lg",
-                "bg-slate-50 border border-slate-200",
-                "text-slate-700 placeholder:text-slate-400",
-                "focus:outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-100",
-                "transition-all"
-              )}
-            />
-          </div>
         </div>
 
         {/* Session List */}
         <div className="flex-1 overflow-y-auto px-2">
           {loading ? (
-            <div className="p-3 space-y-2">
+            <div className="p-2 space-y-1">
               {[1, 2, 3].map(i => (
-                <div key={i} className="animate-pulse h-12 bg-slate-100 rounded-lg" />
+                <div key={i} className="animate-pulse h-10 bg-gray-100 rounded-lg" />
               ))}
             </div>
-          ) : filteredSessions.length === 0 ? (
+          ) : sessions.length === 0 ? (
             <div className="p-4 text-center">
-              <p className="text-sm text-slate-500">
-                {search ? 'No matching conversations' : 'No conversations yet'}
-              </p>
+              <p className="text-sm text-gray-500">No conversations yet</p>
             </div>
           ) : (
-            <div className="space-y-4 py-2">
-              {/* Today */}
-              {groupedSessions.today.length > 0 && (
-                <div>
-                  <p className="px-3 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
-                    Today
-                  </p>
-                  <div className="space-y-0.5">
-                    {groupedSessions.today.map(session => (
-                      <SessionItem
-                        key={session.id}
-                        session={session}
-                        isSelected={selectedId === session.id}
-                        onSelect={handleSelectSession}
-                        onDelete={onDelete}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Yesterday */}
-              {groupedSessions.yesterday.length > 0 && (
-                <div>
-                  <p className="px-3 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
-                    Yesterday
-                  </p>
-                  <div className="space-y-0.5">
-                    {groupedSessions.yesterday.map(session => (
-                      <SessionItem
-                        key={session.id}
-                        session={session}
-                        isSelected={selectedId === session.id}
-                        onSelect={handleSelectSession}
-                        onDelete={onDelete}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Older */}
-              {groupedSessions.older.length > 0 && (
-                <div>
-                  <p className="px-3 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
-                    Previous
-                  </p>
-                  <div className="space-y-0.5">
-                    {groupedSessions.older.map(session => (
-                      <SessionItem
-                        key={session.id}
-                        session={session}
-                        isSelected={selectedId === session.id}
-                        onSelect={handleSelectSession}
-                        onDelete={onDelete}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <>
+              <div className="mt-4 px-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Recent
+              </div>
+              <div className="mt-2 space-y-1">
+                {sessions.map(session => (
+                  <SessionItem
+                    key={session.id}
+                    session={session}
+                    isSelected={selectedId === session.id}
+                    onSelect={handleSelectSession}
+                    onDelete={onDelete}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-100 p-2">
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-500 hover:bg-slate-50 rounded-lg transition-colors">
-            <Settings size={16} />
-            Settings
+        <div className="border-t border-gray-200 p-2 bg-white">
+          <button
+            onClick={() => logout()}
+            className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors text-left text-sm text-red-600"
+          >
+            <LogOut size={18} />
+            <span>Log out</span>
           </button>
         </div>
       </aside>
@@ -228,17 +167,17 @@ const SessionItem = ({
   onDelete: (id: string) => void;
 }) => {
   return (
-    <div
+    <button
       onClick={() => onSelect(session.id)}
       className={cn(
-        "group flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors",
+        "w-full group flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left text-sm",
         isSelected
-          ? "bg-slate-100"
-          : "hover:bg-slate-50"
+          ? "bg-gray-100"
+          : "hover:bg-gray-100"
       )}
     >
-      <MessageSquare size={16} className="text-slate-400 flex-shrink-0" />
-      <span className="flex-1 text-sm text-slate-700 truncate">
+      <MessageSquare size={16} className="text-gray-400 flex-shrink-0" />
+      <span className="flex-1 text-gray-700 truncate">
         {session.title || 'New conversation'}
       </span>
       <button
@@ -249,12 +188,12 @@ const SessionItem = ({
         className={cn(
           "p-1 rounded-md transition-all",
           "opacity-0 group-hover:opacity-100",
-          "text-slate-400 hover:text-red-500 hover:bg-red-50"
+          "text-gray-400 hover:text-red-500 hover:bg-red-50"
         )}
       >
         <Trash2 size={14} />
       </button>
-    </div>
+    </button>
   );
 };
 
