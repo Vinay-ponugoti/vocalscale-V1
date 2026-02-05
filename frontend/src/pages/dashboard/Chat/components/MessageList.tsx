@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Bot, User, FileText, Check, Copy, ThumbsUp, ThumbsDown, Share, RotateCcw, MoreHorizontal, Pencil } from 'lucide-react';
+import { FileText, Check, Copy, ThumbsUp, ThumbsDown, Share, RotateCcw, MoreHorizontal, Pencil } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import type { ChatMessage, Source } from '../../../../types/chat';
 
@@ -10,26 +10,35 @@ interface MessageListProps {
     streamingContent: string;
 }
 
-const CopyButton = ({ content, size = 18 }: { content: string; size?: number }) => {
+// Copy button with feedback
+const CopyButton = ({ content }: { content: string }) => {
     const [copied, setCopied] = useState(false);
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(content);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(content);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (e) {
+            console.error('Failed to copy:', e);
+        }
     };
 
     return (
         <button
             onClick={handleCopy}
-            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
-            title="Copy message"
+            className={cn(
+                "action-btn p-1.5 rounded-md transition-all",
+                copied ? "text-[#10a37f]" : "text-gray-400 hover:text-gray-600"
+            )}
+            title={copied ? "Copied!" : "Copy"}
         >
-            {copied ? <Check size={size} /> : <Copy size={size} />}
+            {copied ? <Check size={18} /> : <Copy size={18} />}
         </button>
     );
 };
 
+// Source chip for knowledge base references
 const SourceChip = ({ source }: { source: Source }) => (
     <div
         className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs hover:bg-gray-100 transition-colors cursor-default"
@@ -42,45 +51,45 @@ const SourceChip = ({ source }: { source: Source }) => (
     </div>
 );
 
-// Message action buttons component
-const MessageActions = ({
-    role,
-    content,
-    onEdit
-}: {
-    role: 'user' | 'assistant';
-    content: string;
-    onEdit?: () => void;
-}) => {
+// User message action buttons
+const UserMessageActions = ({ content }: { content: string }) => (
+    <div className={cn(
+        "msg-actions flex items-center gap-1 mt-2",
+        // Mobile: always visible, Desktop: show on hover
+        "flex opacity-100",
+        "md:opacity-0 md:group-hover:opacity-100",
+        "justify-end pr-1"
+    )}>
+        <CopyButton content={content} />
+        <button
+            className="action-btn p-1.5 text-gray-400 hover:text-gray-600 rounded-md transition-all"
+            title="Edit"
+        >
+            <Pencil size={18} />
+        </button>
+    </div>
+);
+
+// Assistant message action buttons
+const AssistantMessageActions = ({ content }: { content: string }) => {
     const [feedbackGiven, setFeedbackGiven] = useState<'up' | 'down' | null>(null);
 
-    if (role === 'user') {
-        return (
-            <div className="flex items-center gap-1 justify-end mt-2 opacity-0 group-hover:opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
-                <CopyButton content={content} />
-                {onEdit && (
-                    <button
-                        onClick={onEdit}
-                        className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
-                        title="Edit message"
-                    >
-                        <Pencil size={18} />
-                    </button>
-                )}
-            </div>
-        );
-    }
-
     return (
-        <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity md:opacity-100 lg:opacity-0 lg:group-hover:opacity-100">
+        <div className={cn(
+            "msg-actions flex items-center gap-1 mt-2",
+            // Mobile: always visible, Desktop: show on hover
+            "flex opacity-100",
+            "md:opacity-0 md:group-hover:opacity-100",
+            "justify-start pl-1"
+        )}>
             <CopyButton content={content} />
             <button
                 onClick={() => setFeedbackGiven(feedbackGiven === 'up' ? null : 'up')}
                 className={cn(
-                    "p-1.5 rounded-lg transition-all",
+                    "action-btn p-1.5 rounded-md transition-all",
                     feedbackGiven === 'up'
-                        ? "text-green-600 bg-green-50"
-                        : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                        ? "text-[#10a37f]"
+                        : "text-gray-400 hover:text-gray-600"
                 )}
                 title="Good response"
             >
@@ -89,30 +98,30 @@ const MessageActions = ({
             <button
                 onClick={() => setFeedbackGiven(feedbackGiven === 'down' ? null : 'down')}
                 className={cn(
-                    "p-1.5 rounded-lg transition-all",
+                    "action-btn p-1.5 rounded-md transition-all",
                     feedbackGiven === 'down'
-                        ? "text-red-500 bg-red-50"
-                        : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                        ? "text-red-500"
+                        : "text-gray-400 hover:text-gray-600"
                 )}
                 title="Bad response"
             >
                 <ThumbsDown size={18} fill={feedbackGiven === 'down' ? 'currentColor' : 'none'} />
             </button>
             <button
-                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                className="action-btn p-1.5 text-gray-400 hover:text-gray-600 rounded-md transition-all"
                 title="Share"
             >
                 <Share size={18} />
             </button>
             <button
-                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                className="action-btn p-1.5 text-gray-400 hover:text-gray-600 rounded-md transition-all"
                 title="Regenerate"
             >
                 <RotateCcw size={18} />
             </button>
             <button
-                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
-                title="More options"
+                className="action-btn p-1.5 text-gray-400 hover:text-gray-600 rounded-md transition-all"
+                title="More"
             >
                 <MoreHorizontal size={18} />
             </button>
@@ -120,49 +129,58 @@ const MessageActions = ({
     );
 };
 
+// Typing indicator
+const TypingIndicator = () => (
+    <div className="flex gap-1 py-3 px-4">
+        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '1.4s' }} />
+        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s', animationDuration: '1.4s' }} />
+        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s', animationDuration: '1.4s' }} />
+    </div>
+);
+
 export const MessageList: React.FC<MessageListProps> = ({ messages, isStreaming, streamingContent }) => {
     return (
-        <div className="flex flex-col gap-6 p-4 md:p-8 max-w-3xl mx-auto w-full">
+        <div className="max-w-3xl mx-auto px-4 py-6">
             {messages.map((message) => (
                 <motion.div
                     key={message.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="group"
+                    transition={{ duration: 0.3 }}
+                    className="message-wrapper group mb-6"
                 >
                     {message.role === 'user' ? (
-                        // User message - right aligned bubble with #f4f4f4 background
-                        <div className="flex flex-col items-end">
-                            <div className="max-w-[85%] md:max-w-[80%]">
+                        // User message - right aligned, gray bubble
+                        <>
+                            <div className="flex justify-end">
                                 <div
-                                    className="rounded-3xl px-4 py-2.5 text-[15px] leading-relaxed"
-                                    style={{ backgroundColor: '#f4f4f4', color: '#000000' }}
+                                    className="msg-bubble-user max-w-[85%] md:max-w-[80%] bg-gray-100 rounded-3xl px-4 py-2 text-gray-800 text-[16px]"
                                 >
                                     <p className="whitespace-pre-wrap">{message.content}</p>
                                 </div>
-                                <MessageActions role="user" content={message.content} />
                             </div>
-                        </div>
+                            <UserMessageActions content={message.content} />
+                        </>
                     ) : (
-                        // Assistant message - left aligned, no bubble, black text
-                        <div className="flex flex-col items-start">
-                            <div className="max-w-full">
-                                <div className="text-black text-[15px] leading-relaxed whitespace-pre-wrap">
+                        // Assistant message - left aligned, no bubble
+                        <>
+                            <div className="flex justify-start">
+                                <div className="msg-bubble-assistant max-w-full text-gray-800 leading-relaxed whitespace-pre-line text-[16px]">
                                     {message.content}
                                 </div>
-
-                                {/* Sources */}
-                                {message.sources && message.sources.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mt-4">
-                                        {message.sources.map((source, idx) => (
-                                            <SourceChip key={idx} source={source} />
-                                        ))}
-                                    </div>
-                                )}
-
-                                <MessageActions role="assistant" content={message.content} />
                             </div>
-                        </div>
+
+                            {/* Sources */}
+                            {message.sources && message.sources.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-4">
+                                    {message.sources.map((source, idx) => (
+                                        <SourceChip key={idx} source={source} />
+                                    ))}
+                                </div>
+                            )}
+
+                            <AssistantMessageActions content={message.content} />
+                        </>
                     )}
                 </motion.div>
             ))}
@@ -172,19 +190,17 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, isStreaming,
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex flex-col items-start"
+                    className="message-wrapper mb-6"
                 >
-                    <div className="max-w-full">
-                        <div className="text-black text-[15px] leading-relaxed">
-                            {streamingContent || (
-                                <div className="flex gap-1 py-2">
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                                </div>
-                            )}
-                            {streamingContent && (
-                                <span className="inline-block w-0.5 h-4 ml-0.5 bg-black animate-pulse align-middle" />
+                    <div className="flex justify-start">
+                        <div className="msg-bubble-assistant text-gray-800 leading-relaxed text-[16px]">
+                            {streamingContent ? (
+                                <span className="whitespace-pre-line">
+                                    {streamingContent}
+                                    <span className="inline-block w-0.5 h-4 ml-0.5 bg-gray-800 animate-pulse align-text-bottom" />
+                                </span>
+                            ) : (
+                                <TypingIndicator />
                             )}
                         </div>
                     </div>
