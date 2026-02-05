@@ -139,57 +139,66 @@ const TypingIndicator = () => (
 );
 
 export const MessageList: React.FC<MessageListProps> = ({ messages, isStreaming, streamingContent }) => {
+    console.log('[MessageList] Rendering. Messages:', messages.length, 'isStreaming:', isStreaming);
+
     return (
         <div className="max-w-3xl mx-auto px-4 py-6">
-            {messages.map((message) => (
-                <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="message-wrapper group mb-6"
-                >
-                    {message.role === 'user' ? (
-                        // User message - right aligned, gray bubble
-                        <>
-                            <div className="flex justify-end">
-                                <div
-                                    className="msg-bubble-user max-w-[85%] md:max-w-[80%] bg-gray-100 rounded-3xl px-4 py-2 text-gray-800 text-[16px]"
-                                >
-                                    <p className="whitespace-pre-wrap">{message.content}</p>
+            {messages.map((message, idx) => {
+                if (!message || !message.id) {
+                    console.warn(`[MessageList] Invalid message at index ${idx}`, message);
+                    return null;
+                }
+                return (
+                    <motion.div
+                        key={message.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="message-wrapper group mb-6 text-gray-900"
+                    >
+                        {message.role === 'user' ? (
+                            // User message - right aligned, gray bubble
+                            <>
+                                <div className="flex justify-end">
+                                    <div
+                                        className="msg-bubble-user max-w-[85%] md:max-w-[80%] bg-gray-100 rounded-3xl px-4 py-2 text-gray-800 text-[16px]"
+                                    >
+                                        <p className="whitespace-pre-wrap">{message.content}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <UserMessageActions content={message.content} />
-                        </>
-                    ) : (
-                        // Assistant message - left aligned, no bubble
-                        <>
-                            <div className="flex justify-start">
-                                <div className="msg-bubble-assistant max-w-full text-gray-800 leading-relaxed whitespace-pre-line text-[16px]">
-                                    {message.content}
+                                <UserMessageActions content={message.content} />
+                            </>
+                        ) : (
+                            // Assistant message - left aligned, no bubble
+                            <>
+                                <div className="flex justify-start">
+                                    <div className="msg-bubble-assistant max-w-full text-gray-900 leading-relaxed whitespace-pre-line text-[16px] font-normal">
+                                        {message.content || '[Empty response]'}
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Sources */}
-                            {message.sources && message.sources.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mt-4">
-                                    {message.sources.map((source, idx) => (
-                                        <SourceChip key={idx} source={source} />
-                                    ))}
-                                </div>
-                            )}
+                                {/* Sources */}
+                                {message.sources && message.sources.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-4">
+                                        {message.sources.map((source, idx) => (
+                                            <SourceChip key={idx} source={source} />
+                                        ))}
+                                    </div>
+                                )}
 
-                            <AssistantMessageActions content={message.content} />
-                        </>
-                    )}
-                </motion.div>
-            ))}
+                                <AssistantMessageActions content={message.content} />
+                            </>
+                        )}
+                    </motion.div>
+                );
+            })}
 
             {/* Streaming Message */}
             {isStreaming && (
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
                     className="message-wrapper mb-6"
                 >
                     <div className="flex justify-start">
