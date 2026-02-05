@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { MessageList } from './MessageList';
 import { PromptInput } from './PromptInput';
 import EmptyState from './EmptyState';
+import { SkillSelector } from './SkillSelector';
 import { useChat } from '../../../../hooks/useChat';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
@@ -21,7 +22,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         pendingFiles,
         removeFile,
         error,
-        clearError
+        clearError,
+        selectedSkill,
+        setSelectedSkill,
     } = useChat(sessionId || null);
 
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -66,6 +69,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
     return (
         <div className="flex flex-col h-full relative" style={{ backgroundColor: '#ffffff' }}>
+            {/* Skills Selector - at the top */}
+            <SkillSelector
+                selectedSkill={selectedSkill}
+                onSelect={setSelectedSkill}
+            />
+
             {/* Messages area */}
             <div
                 ref={scrollRef}

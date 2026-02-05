@@ -7,6 +7,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatApi } from '../api/chat';
 import type { ChatMessage, ChatSession, Source, FileAttachment } from '../types/chat';
+import type { Skill } from '../types/skills';
 import { useAuth } from '../context/AuthContext';
 
 /**
@@ -20,6 +21,7 @@ export function useChat(sessionId: string | null) {
   const [isStreaming, setIsStreaming] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<FileAttachment[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
 
   // Track the actual session ID (may be updated when new session is created)
   const currentSessionIdRef = useRef<string | null>(sessionId);
@@ -92,6 +94,7 @@ export function useChat(sessionId: string | null) {
           message: content.trim(),
           session_id: sessionId || undefined,
           attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
+          skill_id: selectedSkill?.id || undefined,
         },
         // On chunk
         (text) => {
@@ -140,7 +143,7 @@ export function useChat(sessionId: string | null) {
       setStreamingContent('');
       return null;
     }
-  }, [sessionId, isStreaming, pendingFiles, queryClient, user?.id]);
+  }, [sessionId, isStreaming, pendingFiles, selectedSkill, queryClient, user?.id]);
 
   /**
    * Upload a file to attach to the next message
@@ -182,6 +185,8 @@ export function useChat(sessionId: string | null) {
     isLoading,
     pendingFiles,
     error,
+    selectedSkill,
+    setSelectedSkill,
     sendMessage,
     uploadFile,
     removeFile,
