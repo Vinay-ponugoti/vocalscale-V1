@@ -34,6 +34,7 @@ export interface ChatRequest {
   message: string;
   session_id?: string | null;
   attachments?: string[];
+  skill_id?: string | null;
 }
 
 export interface SessionsResponse {
@@ -59,6 +60,8 @@ export interface ChunkEvent {
 export interface DoneEvent {
   session_id: string;
   sources: Source[];
+  intent?: string;
+  skill_used?: string;
 }
 
 export interface ErrorEvent {
