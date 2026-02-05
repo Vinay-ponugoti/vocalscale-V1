@@ -14,6 +14,7 @@ import { cn } from '../../../lib/utils';
 const Chat = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showSkills, setShowSkills] = useState(false);
 
   const { sessions, isLoading: loadingSessions, deleteSession } = useChatSessions();
 
@@ -62,9 +63,15 @@ const Chat = () => {
               </button>
 
               {/* Model Name with dropdown indicator */}
-              <button className="flex items-center gap-1 hover:bg-gray-100 rounded-lg px-2 py-1 transition-colors">
-                <span className="font-semibold text-lg text-gray-900">VocalScale</span>
-                <ChevronDown size={16} className="text-gray-400" />
+              <button
+                onClick={() => setShowSkills(!showSkills)}
+                className={cn(
+                  "flex items-center gap-1 hover:bg-gray-100 rounded-lg px-2 py-1 transition-colors",
+                  showSkills && "bg-gray-100"
+                )}
+              >
+                <span className="font-semibold text-lg text-gray-900">Google Gemini 2.5</span>
+                <ChevronDown size={16} className={cn("text-gray-400 transition-transform", showSkills && "rotate-180")} />
               </button>
             </div>
 
@@ -92,6 +99,7 @@ const Chat = () => {
             <ChatInterface
               sessionId={sessionId}
               onSessionCreate={onSessionCreate}
+              showSkills={showSkills}
             />
           </div>
         </div>
