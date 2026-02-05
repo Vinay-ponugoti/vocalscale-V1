@@ -6,7 +6,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { KeyboardEvent } from 'react';
 import { Button } from '../../../../components/ui/Button';
-import { Send, Paperclip, X, FileText, Loader2 } from 'lucide-react';
+import { Send, Paperclip, X, FileText, Loader2, ArrowUp } from 'lucide-react';
 import type { FileAttachment } from '../../../../types/chat';
 import { cn } from '../../../../lib/utils';
 
@@ -157,9 +157,9 @@ const ChatInput = ({
             size="icon-sm"
             onClick={handleSend}
             disabled={!message.trim() || disabled}
-            className="bg-blue-electric hover:bg-blue-dark"
+            className="bg-blue-electric hover:bg-blue-dark shadow-sm"
           >
-            <Send size={16} />
+            <ArrowUp size={18} />
           </Button>
         </div>
       </div>

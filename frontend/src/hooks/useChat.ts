@@ -3,12 +3,13 @@
  * Handles streaming responses, session management, and file uploads
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatApi } from '../api/chat';
-import type { ChatMessage, FileAttachment } from '../types/chat';
+import type { ChatMessage, FileAttachment, BusinessContext } from '../types/chat';
 import type { Skill } from '../types/skills';
 import { useAuth } from '../context/AuthContext';
+import { useBusinessSetup } from '../context/BusinessSetupContext';
 
 /**
  * Hook for managing chat messages and streaming
@@ -16,6 +17,7 @@ import { useAuth } from '../context/AuthContext';
 export function useChat(sessionId: string | null) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { state: businessState } = useBusinessSetup();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streamingContent, setStreamingContent] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
@@ -25,6 +27,34 @@ export function useChat(sessionId: string | null) {
 
   // Track the actual session ID (may be updated when new session is created)
   const currentSessionIdRef = useRef<string | null>(sessionId);
+
+  // Memoize business context to avoid unnecessary re-renders
+  const businessContext = useMemo<BusinessContext | undefined>(() => {
+    const { data } = businessState;
+    if (!data?.business?.business_name) return undefined;
+
+    return {
+      business_name: data.business.business_name,
+      category: data.business.category,
+      phone: data.business.phone,
+      address: data.business.address,
+      description: data.business.description,
+      email: data.business.email,
+      website: data.business.website,
+      timezone: data.business.timezone,
+      services: data.services?.map(s => ({
+        name: s.name,
+        price: s.price,
+        description: s.description,
+      })),
+      business_hours: data.business_hours?.map(h => ({
+        day_of_week: h.day_of_week,
+        open_time: h.open_time,
+        close_time: h.close_time,
+        enabled: h.enabled,
+      })),
+    };
+  }, [businessState.data]);
 
   // Update ref when prop changes
   useEffect(() => {
@@ -92,6 +122,7 @@ export function useChat(sessionId: string | null) {
           session_id: sessionId || undefined,
           attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
           skill_id: selectedSkill?.id || undefined,
+          business_context: businessContext,
         },
         // On chunk
         (text) => {
@@ -140,7 +171,7 @@ export function useChat(sessionId: string | null) {
       setStreamingContent('');
       return null;
     }
-  }, [sessionId, isStreaming, pendingFiles, selectedSkill, queryClient]);
+  }, [sessionId, isStreaming, pendingFiles, selectedSkill, queryClient, businessContext]);
 
   /**
    * Upload a file to attach to the next message
