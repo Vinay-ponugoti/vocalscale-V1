@@ -20,6 +20,8 @@ export interface FileAttachment {
 export interface Source {
   name: string;
   excerpt?: string;
+  layer?: 'identity' | 'episodic' | 'semantic';
+  url?: string;
 }
 
 export interface ChatSession {

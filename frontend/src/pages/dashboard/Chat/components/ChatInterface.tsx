@@ -9,8 +9,10 @@ import { PromptInput } from './PromptInput';
 import EmptyState from './EmptyState';
 import { useChat } from '../../../../hooks/useChat';
 import { useAuth } from '../../../../context/AuthContext';
-import { ChevronDown, AlertCircle, X } from 'lucide-react';
+import { ChevronDown, AlertCircle, X, Sparkles } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { skillsApi } from '../../../../api/skills';
 
 interface ChatInterfaceProps {
   sessionId?: string | null;
@@ -29,7 +31,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
     removeFile,
     error,
     clearError,
+    selectedSkill,
+    setSelectedSkill,
   } = useChat(sessionId || null);
+
+  // Fetch available skills
+  const { data: skills = [] } = useQuery({
+    queryKey: ['chat-skills'],
+    queryFn: () => skillsApi.getSkills(),
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   const isAppLoading = authLoading || !user;
 
@@ -76,6 +88,43 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
   return (
     <div className="flex flex-col h-full relative bg-white">
+      {/* Skills Toggle Bar */}
+      {skills.length > 0 && (
+        <div className="flex-shrink-0 border-b border-gray-100 bg-gray-50/50 px-4 py-2">
+          <div className="max-w-3xl mx-auto flex items-center gap-2 overflow-x-auto scrollbar-none">
+            <span className="text-xs text-gray-500 flex items-center gap-1 flex-shrink-0">
+              <Sparkles size={12} />
+              Skills:
+            </span>
+            <button
+              onClick={() => setSelectedSkill(null)}
+              className={cn(
+                "px-3 py-1 text-xs rounded-full transition-all flex-shrink-0",
+                !selectedSkill
+                  ? "bg-gray-900 text-white"
+                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+              )}
+            >
+              General
+            </button>
+            {skills.map((skill) => (
+              <button
+                key={skill.id}
+                onClick={() => setSelectedSkill(selectedSkill?.id === skill.id ? null : skill)}
+                className={cn(
+                  "px-3 py-1 text-xs rounded-full transition-all flex-shrink-0",
+                  selectedSkill?.id === skill.id
+                    ? "bg-gray-900 text-white"
+                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                )}
+              >
+                {skill.icon} {skill.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Messages area */}
       <div
         ref={scrollRef}
