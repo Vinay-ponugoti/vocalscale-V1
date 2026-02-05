@@ -3,9 +3,7 @@
  * ChatGPT-style mobile-friendly drawer with conversation list
  */
 
-import { useState } from 'react';
-import { Plus, MessageSquare, Trash2, X, LogOut, Settings } from 'lucide-react';
-import { useAuth } from '../../../../context/AuthContext';
+import { MessageSquare, Trash2, X } from 'lucide-react';
 import type { ChatSession } from '../../../../types/chat';
 import { cn } from '../../../../lib/utils';
 
@@ -30,19 +28,6 @@ const ChatSidebar = ({
   onClose,
   loading,
 }: ChatSidebarProps) => {
-  const { user, logout } = useAuth();
-
-  // Get user initials for avatar
-  const getInitials = () => {
-    if (user?.full_name) {
-      return user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    }
-    if (user?.email) {
-      return user.email[0].toUpperCase();
-    }
-    return 'U';
-  };
-
   const handleSelectSession = (id: string) => {
     onSelect(id);
     onClose?.();
@@ -70,17 +55,9 @@ const ChatSidebar = ({
           isOpen ? "translate-x-0" : "-translate-x-full lg:w-0 lg:border-0 lg:overflow-hidden"
         )}
       >
-        {/* Header with user info */}
+        {/* Header */}
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {/* User avatar */}
-            <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
-              {getInitials()}
-            </div>
-            <span className="font-medium text-gray-900 truncate max-w-[150px]">
-              {user?.full_name || user?.email || 'Your Account'}
-            </span>
-          </div>
+          <span className="font-semibold text-gray-900">Chats</span>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg lg:hidden transition-colors"
@@ -139,16 +116,6 @@ const ChatSidebar = ({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-gray-200 p-2 bg-white">
-          <button
-            onClick={() => logout()}
-            className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors text-left text-sm text-red-600"
-          >
-            <LogOut size={18} />
-            <span>Log out</span>
-          </button>
-        </div>
       </aside>
     </>
   );
