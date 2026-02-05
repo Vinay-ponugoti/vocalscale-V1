@@ -50,6 +50,13 @@ export const fetchUserProfile = async (accessToken: string): Promise<any> => {
     }
 
     const data = await response.json();
+
+    // Ensure user_id exists - return null if missing to trigger fallback handling
+    if (!data.user_id) {
+      console.warn('[fetchUserProfile] No user_id in validation response:', Object.keys(data));
+      return null;
+    }
+
     return {
       id: data.user_id,
       email: data.email || '',
@@ -137,6 +144,15 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
         avatar_url: validationData.user_metadata?.avatar_url || validationData.user_metadata?.picture || '',
       };
       storeSession(session);
+    } else {
+      // Backend returned OK but without user_id - log this for debugging
+      console.warn('[validateSession] Backend returned OK but no user_id in response:', Object.keys(validationData));
+
+      // If the session already has a valid user.id, keep it
+      // Otherwise this is a problem state
+      if (!session.user?.id) {
+        console.error('[validateSession] Session has no user ID and backend did not provide one');
+      }
     }
 
     return {
