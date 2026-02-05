@@ -77,19 +77,32 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
           {/* Sources */}
           {message.sources && message.sources.length > 0 && (
             <div className="mt-3 pt-3 border-t border-white-light/50">
-              <p className="text-xs font-medium text-charcoal-light mb-2">
-                Sources:
-              </p>
               <div className="flex flex-wrap gap-2">
-                {message.sources.map((source, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-electric/10 text-blue-electric text-xs rounded-lg"
-                  >
-                    <ExternalLink size={10} />
-                    {source.name}
-                  </span>
-                ))}
+                {message.sources.map((source, idx) => {
+                  const isEpisodic = source.layer === 'episodic';
+                  const isSemantic = source.layer === 'semantic';
+                  const isIdentity = source.layer === 'identity';
+
+                  return (
+                    <span
+                      key={idx}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-medium transition-colors",
+                        isEpisodic && "bg-amber-50 text-amber-700 border border-amber-100",
+                        isSemantic && "bg-blue-50 text-blue-700 border border-blue-100",
+                        isIdentity && "bg-purple-50 text-purple-700 border border-purple-100",
+                        !source.layer && "bg-gray-50 text-gray-600 border border-gray-100"
+                      )}
+                      title={source.excerpt}
+                    >
+                      {isEpisodic ? <Brain size={10} /> : <FileText size={10} />}
+                      {source.name}
+                      <span className="opacity-50 text-[8px] uppercase font-bold ml-1">
+                        {source.layer || 'context'}
+                      </span>
+                    </span>
+                  );
+                })}
               </div>
             </div>
           )}
