@@ -100,7 +100,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
         </div>
       </CardHeader>
 
-      <CardContent className="px-2 pb-2 flex-1 flex flex-col min-h-[300px] sm:min-h-[400px] min-w-0 overflow-hidden">
+      <CardContent className="px-4 pb-4 flex-1 flex flex-col min-h-[300px] sm:min-h-[400px] min-w-0 overflow-hidden">
         {/* Quick Stats Integration - Tightened Gap */}
         <div className="flex items-center gap-8 mb-4 px-6 pt-6">
           <div className="flex flex-col">
@@ -120,7 +120,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
           config={chartConfig}
           className="aspect-auto flex-1 w-full min-h-0 min-w-0"
         >
-          <AreaChart data={safeData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+          <AreaChart data={safeData} margin={{ top: 10, right: 30, left: 10, bottom: 0 }}>
             <defs>
               <linearGradient id="fillCalls" x1="0" y1="0" x2="0" y2="1">
                 <stop
@@ -162,12 +162,13 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
             />
             <Area
               dataKey="calls"
-              type="natural"
+              type="monotone"
               fill="url(#fillCalls)"
               stroke="var(--color-calls)"
               strokeWidth={3}
               stackId="a"
               animationDuration={1000}
+              isAnimationActive={true}
             />
             <ChartLegend content={<ChartLegendContent />} />
           </AreaChart>
