@@ -22,13 +22,11 @@ class ChatAPI {
     try {
       const session = getStoredSession();
       // Check both id and user_id fields (Supabase vs our API format)
-      const userId = session?.user?.id || (session?.user as any)?.user_id;
+      const userId = session?.user?.id || (session?.user as any)?.user_id || (session?.user as any)?.sub;
 
-      if (!userId) {
-        console.warn('[ChatAPI] No user ID found in session.', {
-          hasSession: !!session,
-          hasUser: !!session?.user,
-          availableFields: session?.user ? Object.keys(session.user) : []
+      if (!userId && session?.user) {
+        console.warn('[ChatAPI] No user ID found in session user object.', {
+          availableFields: Object.keys(session.user)
         });
       }
 
