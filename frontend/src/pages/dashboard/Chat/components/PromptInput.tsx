@@ -9,6 +9,7 @@ interface PromptInputProps {
     disabled?: boolean;
     pendingFiles?: FileAttachment[];
     onRemoveFile?: (fileId: string) => void;
+    placeholder?: string;
 }
 
 export const PromptInput: React.FC<PromptInputProps> = ({
@@ -16,7 +17,8 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     onFileUpload,
     disabled,
     pendingFiles = [],
-    onRemoveFile
+    onRemoveFile,
+    placeholder
 }) => {
     const [input, setInput] = useState('');
     const [isUploading, setIsUploading] = useState(false);
@@ -135,7 +137,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         disabled={disabled}
-                        placeholder="Ask anything about your business..."
+                        placeholder={placeholder || "Ask anything about your business..."}
                         className={cn(
                             "flex-1 resize-none bg-transparent border-none outline-none focus:ring-0 focus:outline-none focus:shadow-none focus-visible:ring-0 focus-visible:outline-none focus-visible:shadow-none",
                             "text-[16px] text-black placeholder:text-gray-400",
