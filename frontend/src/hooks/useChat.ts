@@ -9,6 +9,7 @@ import { chatApi } from '../api/chat';
 import type { ChatMessage, ChatSession, Source, FileAttachment } from '../types/chat';
 import type { Skill } from '../types/skills';
 import { useAuth } from '../context/AuthContext';
+import { getStoredSession } from '../utils/sessionUtils';
 
 /**
  * Hook for managing chat messages and streaming
@@ -58,7 +59,19 @@ export function useChat(sessionId: string | null) {
    */
   const sendMessage = useCallback(async (content: string): Promise<string | null> => {
     if (!content.trim() || isStreaming) return null;
-    if (!user?.id) {
+
+    // Attempt to get user ID from context or fallback to storage
+    let userId = user?.id;
+    if (!userId) {
+      const storedSession = getStoredSession();
+      userId = storedSession?.user?.id;
+      if (userId) {
+        console.log('[useChat] User missing from context, recovered from storage:', userId);
+      }
+    }
+
+    if (!userId) {
+      console.error('[useChat] Authentication failed: No user ID found in context or storage.');
       setError('User not authenticated');
       return null;
     }
@@ -149,7 +162,16 @@ export function useChat(sessionId: string | null) {
    * Upload a file to attach to the next message
    */
   const uploadFile = useCallback(async (file: File): Promise<FileAttachment | null> => {
-    if (!user?.id) return null;
+    let userId = user?.id;
+    if (!userId) {
+      const storedSession = getStoredSession();
+      userId = storedSession?.user?.id;
+    }
+
+    if (!userId) {
+      setError('User not authenticated');
+      return null;
+    }
     try {
       const result = await chatApi.uploadFile(file);
       const attachment: FileAttachment = {

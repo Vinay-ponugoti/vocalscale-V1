@@ -4,7 +4,8 @@ import { PromptInput } from './PromptInput';
 import EmptyState from './EmptyState';
 import { SkillSelector } from './SkillSelector';
 import { useChat } from '../../../../hooks/useChat';
-import { ChevronDown } from 'lucide-react';
+import { useAuth } from '../../../../context/AuthContext';
+import { ChevronDown, Loader2 } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 
 interface ChatInterfaceProps {
@@ -13,6 +14,7 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreate }) => {
+    const { user, loading: authLoading } = useAuth();
     const {
         messages,
         sendMessage: activeSendMessage,
@@ -26,6 +28,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         selectedSkill,
         setSelectedSkill,
     } = useChat(sessionId || null);
+
+    const isAppLoading = authLoading || !user;
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const [showScrollButton, setShowScrollButton] = useState(false);
@@ -59,6 +63,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
     };
 
     const handleSendMessage = async (content: string) => {
+        if (isAppLoading) return;
         const newId = await activeSendMessage(content);
         if (newId && onSessionCreate) {
             onSessionCreate(newId);
@@ -143,9 +148,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
                 <PromptInput
                     onSend={handleSendMessage}
                     onFileUpload={uploadFile}
-                    disabled={isStreaming}
+                    disabled={isStreaming || isAppLoading}
                     pendingFiles={pendingFiles}
                     onRemoveFile={removeFile}
+                    placeholder={isAppLoading ? "Authenticating..." : "Ask anything..."}
                 />
             </div>
 
