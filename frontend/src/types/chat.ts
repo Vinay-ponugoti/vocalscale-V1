@@ -30,11 +30,34 @@ export interface ChatSession {
   message_count: number;
 }
 
+export interface BusinessContext {
+  business_name?: string;
+  category?: string;
+  phone?: string;
+  address?: string;
+  description?: string;
+  email?: string;
+  website?: string;
+  timezone?: string;
+  services?: Array<{
+    name: string;
+    price?: number;
+    description?: string;
+  }>;
+  business_hours?: Array<{
+    day_of_week: string;
+    open_time?: string;
+    close_time?: string;
+    enabled: boolean;
+  }>;
+}
+
 export interface ChatRequest {
   message: string;
   session_id?: string | null;
   attachments?: string[];
   skill_id?: string | null;
+  business_context?: BusinessContext;
 }
 
 export interface SessionsResponse {
