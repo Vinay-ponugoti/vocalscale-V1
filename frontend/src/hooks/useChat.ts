@@ -62,17 +62,33 @@ export function useChat(sessionId: string | null) {
   }, [sessionId]);
 
   // Load messages when session changes
-  const { isLoading, refetch: refetchMessages } = useQuery({
+  const { data: fetchedMessages, isLoading, refetch: refetchMessages } = useQuery({
     queryKey: ['chat-messages', sessionId],
     queryFn: async () => {
       if (!sessionId) return [];
+      console.log(`[useChat] Fetching messages for session: ${sessionId}`);
       const msgs = await chatApi.getMessages(sessionId);
-      setMessages(msgs);
+      console.log(`[useChat] Fetched ${msgs.length} messages`);
       return msgs;
     },
     enabled: !!sessionId && !!user?.id,
-    staleTime: 0, // Always refetch when session changes
+    staleTime: 0,
   });
+
+  // Sync fetched messages when they arrive
+  useEffect(() => {
+    // Only overwrite if we have fetched messages and we're not currently streaming
+    // Crucially: Don't overwrite with empty list if we're in the middle of a session
+    if (fetchedMessages && !isStreaming) {
+      if (fetchedMessages.length > 0) {
+        setMessages(fetchedMessages);
+      } else if (messages.length > 0 && sessionId) {
+        // If we have local messages but the server returned empty, 
+        // it might be an indexing lag. Don't clear!
+        console.warn('[useChat] Server returned 0 messages for active session. Possible indexing lag.');
+      }
+    }
+  }, [fetchedMessages, isStreaming, messages.length, sessionId]);
 
   // Reset messages when session changes
   useEffect(() => {
@@ -131,6 +147,7 @@ export function useChat(sessionId: string | null) {
         },
         // On done
         (returnedSessionId, sources) => {
+          console.log('[useChat] SSE Done. Returned Session ID:', returnedSessionId);
           newSessionId = returnedSessionId;
 
           // Create assistant message with full content
@@ -143,7 +160,14 @@ export function useChat(sessionId: string | null) {
             sources: sources.length > 0 ? sources : undefined,
           };
 
-          setMessages(prev => [...prev, assistantMessage]);
+          setMessages(prev => {
+            // Check if last message is already assistant and identical (prevent dupes)
+            const lastMsg = prev[prev.length - 1];
+            if (lastMsg && lastMsg.role === 'assistant' && lastMsg.content === accumulatedContent) {
+              return prev;
+            }
+            return [...prev, assistantMessage];
+          });
           setStreamingContent('');
           setIsStreaming(false);
 
