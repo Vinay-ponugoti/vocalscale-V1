@@ -52,13 +52,19 @@ const GoogleCallback = () => {
         // Fetch user profile immediately
         const user = await fetchUserProfile(accessToken);
 
+        // If profile fetch failed, we cannot proceed without a valid user ID
+        if (!user || !user.id) {
+          console.error('[GoogleCallback] Failed to get valid user profile from backend');
+          throw new Error('Unable to retrieve user profile. Please try again.');
+        }
+
         const session = {
           access_token: accessToken,
           refresh_token: refreshToken || '',
           expires_in: parseInt(expiresIn || '3600'),
           expires_at: Math.floor(Date.now() / 1000) + parseInt(expiresIn || '3600'),
           token_type: 'bearer',
-          user: user || { id: 'unknown', email: '' } // Fallback to avoid null if fetch fails
+          user: user
         };
 
         // Update auth context immediately so we don't see loading screens on the next page
