@@ -43,13 +43,13 @@ export const ChartContainer = React.forwardRef<
                 ref={ref}
                 data-chart={chartId}
                 className={cn(
-                    "flex aspect-video justify-center text-xs [&_.recharts-cartesian-grid-horizontal_line[stroke-opacity='0.5']]:stroke-slate-200 [&_.recharts-cartesian-grid-vertical_line[stroke-opacity='0.5']]:stroke-slate-200 [&_.recharts-curve.recharts-area]:opacity-50 [&_.recharts-dot]:item-hidden [&_.recharts-layer]:outline-none [&_.recharts-polar-grid-concentric-polygon]:fill-slate-200/50 [&_.recharts-polar-grid-concentric-circle]:fill-slate-200/50 [&_.recharts-cartesian-axis-tick_text]:fill-slate-500 [&_.recharts-cartesian-axis-tick_text]:font-medium [&_.recharts-tooltip-cursor]:fill-slate-200 [&_.recharts-sector]:outline-none [&_.recharts-sector]:ring-0 [&_.recharts-surface]:outline-none [&_.recharts-surface]:ring-0",
+                    "flex aspect-video justify-center text-xs overflow-hidden [&_.recharts-cartesian-grid-horizontal_line[stroke-opacity='0.5']]:stroke-slate-200 [&_.recharts-cartesian-grid-vertical_line[stroke-opacity='0.5']]:stroke-slate-200 [&_.recharts-curve.recharts-area]:opacity-50 [&_.recharts-dot]:item-hidden [&_.recharts-layer]:outline-none [&_.recharts-polar-grid-concentric-polygon]:fill-slate-200/50 [&_.recharts-polar-grid-concentric-circle]:fill-slate-200/50 [&_.recharts-cartesian-axis-tick_text]:fill-slate-500 [&_.recharts-cartesian-axis-tick_text]:font-medium [&_.recharts-tooltip-cursor]:fill-slate-200 [&_.recharts-sector]:outline-none [&_.recharts-sector]:ring-0 [&_.recharts-surface]:outline-none [&_.recharts-surface]:ring-0",
                     className
                 )}
                 {...props}
             >
                 <ChartStyle id={chartId} config={config} />
-                <ResponsiveContainer>
+                <ResponsiveContainer width="100%" height="100%">
                     {children}
                 </ResponsiveContainer>
             </div>
