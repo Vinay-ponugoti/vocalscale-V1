@@ -87,7 +87,7 @@ const NavItem = ({
   return (
     <Link
       to={item.path}
-      className={`group relative flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-5'} py-3 mx-2 rounded-xl text-sm font-bold transition-all duration-300
+      className={`group relative flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-5'} py-3 mx-2 rounded-xl text-sm font-bold transition-all duration-300 no-underline
         ${isActive
           ? 'text-blue-600 bg-blue-50 ring-1 ring-blue-100 shadow-sm' // Using DS Electric & Tint
           : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
@@ -377,7 +377,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     <p className="text-[9px] leading-tight mb-2 font-medium text-slate-500">Unlock unlimited AI minutes & models.</p>
                     <Link
                       to="/dashboard/billing/plans"
-                      className="w-full py-1.5 flex items-center justify-center bg-blue-600 text-white text-[9px] font-black uppercase tracking-wider rounded-lg hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
+                      className="w-full py-1.5 flex items-center justify-center bg-blue-600 text-white text-[9px] font-black uppercase tracking-wider rounded-lg hover:bg-blue-700 transition-all shadow-md shadow-blue-200 no-underline"
                     >
                       View Plans
                     </Link>
@@ -474,7 +474,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <div className="flex items-center gap-1 border-r pr-2 md:pr-4" style={{ borderColor: DS.border }}>
                 <Link
                   to="/dashboard/billing"
-                  className={`hidden sm:flex items-center justify-center p-2.5 rounded-xl transition-all relative group border border-transparent hover:bg-slate-50 ${isActive('/dashboard/billing') ? 'text-blue-600 bg-blue-50 border-blue-100' : 'text-slate-500 hover:border-slate-200'}`}
+                  className={`hidden sm:flex items-center justify-center p-2.5 rounded-xl transition-all relative group border border-transparent hover:bg-slate-50 no-underline ${isActive('/dashboard/billing') ? 'text-blue-600 bg-blue-50 border-blue-100' : 'text-slate-500 hover:border-slate-200'}`}
                   aria-label="Billing"
                 >
                   <CreditCard size={20} strokeWidth={isActive('/dashboard/billing') ? 2.5 : 2} />

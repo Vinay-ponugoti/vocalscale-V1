@@ -115,6 +115,10 @@ const Billing: React.FC = () => {
   const planName = subscription?.plan_name || subscription?.plan?.name || (subscription?.plan_id ? 'Starter' : 'NO ACTIVE PLAN');
   const plan = subscription?.plan || { name: planName, price_amount: 0, limits: { ai_minutes: 0 } };
   const status = subscription?.status || 'inactive';
+  const normalizedPlan = planName?.toLowerCase();
+  const isProfessional = normalizedPlan === 'professional';
+  const isStarter = normalizedPlan === 'starter';
+  const isNoPlan = normalizedPlan === 'no active plan';
 
   // Helper to parse dates from various formats (Stripe unix seconds or RFC3339)
   const parseBillingDate = (dateVal: any) => {
@@ -188,10 +192,10 @@ const Billing: React.FC = () => {
 
               <div className="flex items-center gap-4">
                 <span className="text-sm font-black text-slate-900">{planName}</span>
-                {planName !== 'Professional' && (
+                {!isProfessional && (
                   <Link
                     to="/dashboard/billing/plans"
-                    className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95 flex items-center gap-2"
+                    className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95 flex items-center gap-2 no-underline"
                   >
                     Upgrade <ChevronRight size={10} strokeWidth={3} />
                   </Link>
@@ -311,7 +315,7 @@ const Billing: React.FC = () => {
             {/* Mobile: Payment Tab | Desktop: Col Span 1 */}
             <div className={`flex flex-col gap-6 ${activeTab === 'payment' ? 'block' : 'hidden md:flex'}`}>
               <PaymentMethod />
-              {(subscription?.plan_name === 'Starter' || !hasSubscription) && <UpsellCard />}
+              {(isStarter || isNoPlan) && <UpsellCard />}
             </div>
           </div>
 
