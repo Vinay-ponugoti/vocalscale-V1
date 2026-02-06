@@ -235,7 +235,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* SIDEBAR - Using DS White for surface */}
         <aside
           className={cn(
-            "hidden md:flex flex-col h-full transition-all duration-300 ease-in-out border-r border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-white))]",
+            "hidden md:flex flex-col h-full transition-all duration-300 ease-in-out bg-[hsl(var(--ds-white))]",
             sidebarOpen ? 'w-[288px]' : 'w-[80px]'
           )}
         >
@@ -398,7 +398,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
 
           {/* TOP NAVIGATION BAR */}
-          <header className="h-20 backdrop-blur-xl border-b shrink-0 z-30 px-2 md:px-10 flex items-center justify-between transition-all duration-300" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', borderColor: DS.border }}>
+          <header className="h-20 backdrop-blur-xl shrink-0 z-30 px-2 md:px-10 flex items-center justify-between transition-all duration-300" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)' }}>
 
             {/* Mobile Menu Toggle - Always visible on mobile, positioned at start */}
             <button
