@@ -266,19 +266,40 @@ export const Services: React.FC = () => {
     }
 
     try {
-      // 1. Initiate Upload (Async)
+      // 1. Initiate Upload (processing is now synchronous)
       console.log('Starting upload request...');
       const uploadRes = await businessSetupAPI.uploadKnowledgeDocument(file);
-      const taskId = uploadRes.task_id;
 
-      console.log('Upload successful, task ID:', taskId);
+      console.log('Upload successful:', uploadRes);
 
-      // 2. Persist State
-      localStorage.setItem(STORAGE_KEY_TASK_ID, taskId);
-      localStorage.setItem(STORAGE_KEY_FILE_NAME, file.name);
+      // 2. Handle response based on processing status
+      if (uploadRes.processing_status === 'COMPLETED' || uploadRes.status === 'success') {
+        setProcessingStatus('success');
+        setProgressMessage(`Successfully processed ${file.name}!`);
+        showToast(`Successfully processed ${file.name}!`, 'success');
+        fetchKnowledgeFiles(); // Refresh list
 
-      // 3. Start Polling
-      pollTaskStatus(taskId, file.name);
+        // Reset after delay
+        setTimeout(() => {
+          setProcessingStatus('idle');
+          setProgressMessage('');
+        }, 3000);
+      } else if (uploadRes.processing_status === 'FAILED') {
+        setProcessingStatus('error');
+        setErrorMessage('Processing failed on server.');
+        showToast('Processing failed.', 'error');
+      } else {
+        // Still processing or pending - this shouldn't happen with sync API
+        setProcessingStatus('success');
+        setProgressMessage(uploadRes.message || 'Document uploaded successfully!');
+        showToast(uploadRes.message || 'Document uploaded!', 'success');
+        fetchKnowledgeFiles();
+
+        setTimeout(() => {
+          setProcessingStatus('idle');
+          setProgressMessage('');
+        }, 3000);
+      }
 
     } catch (error: any) {
       console.error('Upload Process Failed:', error);
