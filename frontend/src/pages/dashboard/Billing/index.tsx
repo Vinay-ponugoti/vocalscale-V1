@@ -186,11 +186,14 @@ const Billing: React.FC = () => {
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4">
                 <span className="text-sm font-black text-slate-900">{planName}</span>
-                {!hasSubscription && (
-                  <Link to="/dashboard/billing/plans" className="text-[10px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-0.5 transition-colors">
-                    Upgrade <ChevronRight size={10} />
+                {planName !== 'Professional' && (
+                  <Link
+                    to="/dashboard/billing/plans"
+                    className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95 flex items-center gap-2"
+                  >
+                    Upgrade <ChevronRight size={10} strokeWidth={3} />
                   </Link>
                 )}
               </div>
@@ -308,7 +311,7 @@ const Billing: React.FC = () => {
             {/* Mobile: Payment Tab | Desktop: Col Span 1 */}
             <div className={`flex flex-col gap-6 ${activeTab === 'payment' ? 'block' : 'hidden md:flex'}`}>
               <PaymentMethod />
-              {!hasSubscription && <UpsellCard />}
+              {(subscription?.plan_name === 'Starter' || !hasSubscription) && <UpsellCard />}
             </div>
           </div>
 

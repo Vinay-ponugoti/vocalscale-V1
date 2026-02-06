@@ -12,11 +12,11 @@ const UpsellCard: React.FC = () => {
       <div className="relative z-10">
         <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-1.5 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-4 border border-blue-500/20 backdrop-blur-md">
           <Sparkles size={12} strokeWidth={2.5} className="animate-pulse" />
-          <span>Limited Offer</span>
+          <span>Scale Faster</span>
         </div>
-        <h4 className="font-black text-white text-3xl leading-tight tracking-tight">Need more<br />minutes?</h4>
+        <h4 className="font-black text-white text-3xl leading-tight tracking-tight">Expand Your<br />Capabilities</h4>
         <p className="text-sm text-slate-400 font-bold mt-4 leading-relaxed max-w-[200px]">
-          Avoid overage fees and keep your AI conversations flowing without interruption.
+          Upgrade to unlock premium features and higher minute limits for your business.
         </p>
       </div>
 
