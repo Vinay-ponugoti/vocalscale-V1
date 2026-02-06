@@ -38,14 +38,22 @@ const Home = () => {
     }
   }, [timeRange]);
 
-  const { loading, isPlaceholderData, stats, recentCalls, appointments, chartData } = useDashboardData(selectedDate, daysCount, timezone);
+  const { state: businessState } = useBusinessSetup();
+  const businessLoading = businessState.loading;
+  const { loading, isPlaceholderData, stats, recentCalls, appointments, chartData } = useDashboardData(
+    selectedDate,
+    daysCount,
+    timezone,
+    !businessLoading // Only fetch dashboard data when business setup is ready
+  );
 
   const handlePrev = () => setSelectedDate(prev => subDays(prev, 1));
   const handleNext = () => {
     if (!isBusinessToday) setSelectedDate(prev => addDays(prev, 1));
   };
 
-  const isInitialLoading = loading && !isPlaceholderData;
+  // Only show the big skeleton on the very first load or if we have no data and are loading
+  const isInitialLoading = (businessLoading || loading) && !isPlaceholderData && stats.total === 0;
 
   return (
     <DashboardLayout fullWidth>

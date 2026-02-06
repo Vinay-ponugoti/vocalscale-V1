@@ -72,10 +72,11 @@ const Login = () => {
           'ngrok-skip-browser-warning': 'true'
         };
 
+        const defaultTimezone = 'America/New_York';
         queryClient.prefetchQuery({
-          queryKey: ['dashboard', dateStr, 7],
+          queryKey: ['dashboard', dateStr, 7, defaultTimezone],
           queryFn: async () => {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/stats?date=${now.toISOString()}&days=7`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/stats?date=${now.toISOString()}&days=7&timezone=${defaultTimezone}`, {
               headers: authHeaders
             });
             return response.json();
