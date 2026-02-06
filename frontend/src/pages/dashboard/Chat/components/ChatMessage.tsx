@@ -47,31 +47,32 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
           )}
         >
           {/* Message content */}
-          <div className="markdown-content">
+          <div className={cn("markdown-content text-sm leading-relaxed", isUser ? "text-white" : "text-gray-800")}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                p: ({ children }) => <p className="mb-2 last:mb-0 break-words">{children}</p>,
-                ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
-                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>,
+                p: ({ children }) => <p className="mb-3 last:mb-0 break-words leading-relaxed">{children}</p>,
+                ul: ({ children }) => <ul className="list-none pl-4 mb-3 space-y-2">{children}</ul>,
+                ol: ({ children }) => <ol className="list-decimal pl-5 mb-3 space-y-1.5 marker:text-gray-400">{children}</ol>,
                 li: ({ children }) => <li className="pl-1">{children}</li>,
-                h1: ({ children }) => <h1 className="text-lg font-bold mb-2 mt-4">{children}</h1>,
-                h2: ({ children }) => <h2 className="text-base font-bold mb-2 mt-3">{children}</h2>,
-                h3: ({ children }) => <h3 className="text-sm font-bold mb-1 mt-2">{children}</h3>,
+                h1: ({ children }) => <h1 className="text-xl font-bold mb-3 mt-5 pb-2 border-b border-gray-200">{children}</h1>,
+                h2: ({ children }) => <h2 className="text-lg font-bold mb-3 mt-4 text-gray-900">{children}</h2>,
+                h3: ({ children }) => <h3 className="text-base font-semibold mb-2 mt-3 text-gray-800">{children}</h3>,
+                h4: ({ children }) => <h4 className="text-sm font-semibold mb-2 mt-3 uppercase tracking-wide text-gray-600">{children}</h4>,
                 a: ({ href, children }) => (
                   <a
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={cn(
-                      "underline hover:opacity-80 transition-opacity",
-                      isUser ? "text-white" : "text-blue-600"
+                      "font-medium underline decoration-1 underline-offset-2 transition-colors",
+                      isUser ? "text-white decoration-white/50 hover:decoration-white" : "text-blue-600 decoration-blue-200 hover:text-blue-700 hover:decoration-blue-400"
                     )}
                   >
                     {children}
                   </a>
                 ),
-                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
                 code: ({ children, className }) => {
                   const match = /language-(\w+)/.exec(className || '');
                   const isInline = !match && !children?.toString().includes('\n');
@@ -79,36 +80,39 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
                     <code
                       className={cn(
                         isInline
-                          ? "px-1 py-0.5 rounded text-xs font-mono"
-                          : "block p-2 rounded text-xs font-mono overflow-x-auto",
+                          ? "px-1.5 py-0.5 rounded-md text-xs font-mono border"
+                          : "block p-4 rounded-lg text-xs font-mono overflow-x-auto border my-3",
                         isUser
-                          ? "bg-white/20"
-                          : "bg-gray-100 text-gray-800"
+                          ? "bg-white/10 border-white/20 text-white"
+                          : "bg-gray-50 border-gray-200 text-gray-800"
                       )}
                     >
                       {children}
                     </code>
                   );
                 },
-                pre: ({ children }) => <pre className="my-2 rounded overflow-hidden">{children}</pre>,
+                pre: ({ children }) => <pre className="my-0 bg-transparent">{children}</pre>,
                 blockquote: ({ children }) => (
                   <blockquote className={cn(
-                    "border-l-2 pl-3 my-2 italic",
-                    isUser ? "border-white/50" : "border-gray-300 text-gray-600"
+                    "border-l-4 pl-4 my-3 text-sm py-1 font-serif italic",
+                    isUser ? "border-white/40 text-white/90" : "border-blue-500 bg-blue-50/50 text-gray-700"
                   )}>
                     {children}
                   </blockquote>
                 ),
+                hr: () => <hr className={cn("my-6 border-0 h-px", isUser ? "bg-white/20" : "bg-gray-200")} />,
                 table: ({ children }) => (
-                  <div className="overflow-x-auto my-3 rounded border border-gray-200">
-                    <table className="min-w-full text-sm">{children}</table>
+                  <div className="overflow-hidden my-4 rounded-lg border border-gray-200 shadow-sm bg-white">
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full text-sm divide-y divide-gray-200">{children}</table>
+                    </div>
                   </div>
                 ),
-                thead: ({ children }) => <thead className="bg-gray-50 text-gray-700 font-medium border-b border-gray-200">{children}</thead>,
-                tbody: ({ children }) => <tbody className="divide-y divide-gray-100">{children}</tbody>,
-                tr: ({ children }) => <tr className="hover:bg-gray-50/50">{children}</tr>,
-                th: ({ children }) => <th className={cn("px-3 py-2 text-left", isUser && "text-charcoal-dark")}>{children}</th>,
-                td: ({ children }) => <td className={cn("px-3 py-2", isUser && "text-charcoal-dark")}>{children}</td>,
+                thead: ({ children }) => <thead className="bg-gray-50 font-semibold text-gray-700 text-xs uppercase tracking-wider">{children}</thead>,
+                tbody: ({ children }) => <tbody className="divide-y divide-gray-100 bg-white">{children}</tbody>,
+                tr: ({ children }) => <tr className="hover:bg-gray-50/80 transition-colors">{children}</tr>,
+                th: ({ children }) => <th className={cn("px-4 py-3 text-left font-semibold", isUser && "text-charcoal-dark")}>{children}</th>,
+                td: ({ children }) => <td className={cn("px-4 py-3 whitespace-normal", isUser && "text-charcoal-dark")}>{children}</td>,
               }}
             >
               {message.content}
