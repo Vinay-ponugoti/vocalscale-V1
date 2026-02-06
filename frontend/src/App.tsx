@@ -5,7 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { PageLoader } from './components/ui/PageLoader';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { AuthSkeleton } from './components/ui/AuthSkeleton';
-import { DashboardLoading } from './components/ui/DashboardLoading';
+import { DashboardSkeleton } from './components/ui/DashboardSkeleton';
 import { BusinessSetupProvider } from './context/BusinessSetupContext';
 import { SetupProvider } from './context/SetupContext';
 import { SearchProvider } from './context/SearchProvider';
@@ -99,7 +99,7 @@ function App() {
               </ErrorBoundary>
             }>
               <Route element={
-                <Suspense fallback={<DashboardLoading />}>
+                <Suspense fallback={<DashboardSkeleton />}>
                   <Outlet />
                 </Suspense>
               }>
