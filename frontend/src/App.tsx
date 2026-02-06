@@ -5,7 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { PageLoader } from './components/ui/PageLoader';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { AuthSkeleton } from './components/ui/AuthSkeleton';
-import { DashboardSkeleton } from './components/ui/DashboardSkeleton';
+import { DashboardLoading } from './components/ui/DashboardLoading';
 import { BusinessSetupProvider } from './context/BusinessSetupContext';
 import { SetupProvider } from './context/SetupContext';
 import { SearchProvider } from './context/SearchProvider';
@@ -69,7 +69,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
-            
+
             {/* Blog Routes */}
             <Route path="/blog" element={<BlogIndex />} />
             <Route path="/blog/ai-receptionists-healthcare-2024" element={<BlogPost1 />} />
@@ -99,7 +99,7 @@ function App() {
               </ErrorBoundary>
             }>
               <Route element={
-                <Suspense fallback={<DashboardSkeleton />}>
+                <Suspense fallback={<DashboardLoading />}>
                   <Outlet />
                 </Suspense>
               }>

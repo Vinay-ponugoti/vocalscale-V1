@@ -47,11 +47,12 @@ interface DashboardData {
   chartData: ChartDataPoint[];
 }
 
-export const useDashboardData = (selectedDate: Date, days: number = 7, timezone: string = 'America/New_York') => {
+export const useDashboardData = (selectedDate: Date, days: number = 7, timezone: string = 'America/New_York', enabled: boolean = true) => {
   const dateStr = selectedDate.toISOString().split('T')[0];
 
   const { data, isLoading, isPlaceholderData, error } = useQuery<DashboardData>({
     queryKey: ['dashboard', dateStr, days, timezone],
+    enabled,
     queryFn: async ({ signal }) => {
       const headers = await getAuthHeader();
       const response = await fetch(`${env.API_URL}/dashboard/stats?date=${selectedDate.toISOString()}&days=${days}&timezone=${timezone}`, {
