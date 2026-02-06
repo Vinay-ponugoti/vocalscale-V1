@@ -321,7 +321,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
             <div className="mt-auto">
               {/* Sidebar Header for Desktop Only */}
-              <div className="hidden lg:block pt-6 border-t mt-6" style={{ borderColor: DS.border }}>
+              <div className="hidden lg:block pt-6 mt-6">
                 <SectionLabel label="System" sidebarOpen={sidebarOpen} />
                 <NavItem
                   item={{ path: '/dashboard/settings', label: 'Settings', icon: Settings }}
