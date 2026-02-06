@@ -41,6 +41,7 @@ interface UserProfile {
   email: string;
   full_name: string;
   avatar_url: string;
+  [key: string]: unknown;
 }
 
 interface ValidationResponse {
