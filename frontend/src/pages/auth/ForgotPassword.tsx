@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Loader2, ArrowLeft, KeyRound } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, KeyRound } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthLayout from '../layouts/AuthLayout';
 import { useToast } from '../../hooks/useToast';
@@ -54,7 +54,7 @@ const ForgotPassword = () => {
             showToast('Code sent!', 'success');
             setStep('otp');
             startResendCooldown();
-        } catch (error) {
+        } catch {
             showToast('Failed to send code.', 'error');
         } finally {
             setLoading(false);
@@ -76,7 +76,7 @@ const ForgotPassword = () => {
             const data = await response.json();
             setResetToken(data.reset_token);
             setStep('password');
-        } catch (error) {
+        } catch {
             showToast('Invalid code.', 'error');
         } finally {
             setLoading(false);
@@ -99,7 +99,7 @@ const ForgotPassword = () => {
             if (!response.ok) throw new Error('Failed');
             showToast('Password reset successful!', 'success');
             setTimeout(() => navigate('/login'), 1500);
-        } catch (error) {
+        } catch {
             showToast('Failed to reset.', 'error');
         } finally {
             setLoading(false);
@@ -116,7 +116,7 @@ const ForgotPassword = () => {
                 body: JSON.stringify({ email }),
             });
             startResendCooldown();
-        } catch (error) { } finally { setLoading(false); }
+        } catch { /* ignore */ } finally { setLoading(false); }
     };
 
     const startResendCooldown = () => {

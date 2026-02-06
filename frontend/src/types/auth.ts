@@ -4,7 +4,7 @@ export interface User {
   full_name?: string;
   avatar_url?: string;
   user_metadata?: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
   [key: string]: unknown;
 }

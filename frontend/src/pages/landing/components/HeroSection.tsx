@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ChevronRight, Phone, Clock, Users, TrendingUp, Shield, Globe, Zap, Check } from 'lucide-react'
+import { ArrowRight, ChevronRight, Phone, TrendingUp, Globe, Check } from 'lucide-react'
 import { type Variants } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { AnimatedGroup } from '@/components/ui/animated-group'

@@ -1,21 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3, Timer, CheckCircle2, Download, Calendar, Phone, PhoneIncoming, PhoneOutgoing, PhoneMissed, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BarChart3, Timer, CheckCircle2, Calendar, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/Card';
 import { callsApi } from '../../../../api/calls';
 
-interface UsageBreakdownProps {
-  usage: any;
-  hasSubscription: boolean;
+interface UsageData {
+  avg_duration_seconds?: number;
+  used_minutes?: number;
+  total_minutes?: number;
+  success_rate?: number;
+  overage_minutes?: number;
+  estimated_cost?: number;
+  total_calls?: number;
 }
 
-const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription }) => {
+interface CallItem {
+  id?: string;
+  created_at: string;
+  status?: string;
+  caller_name?: string;
+  caller_phone?: string;
+  duration_seconds: number;
+}
+
+interface UsageBreakdownProps {
+  usage: UsageData;
+  hasSubscription?: boolean;
+}
+
+const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
   const avgDurationFormatted = usage?.avg_duration_seconds
     ? `${Math.floor(usage.avg_duration_seconds / 60)}m ${Math.round(usage.avg_duration_seconds % 60)}s`
     : '0s';
 
   // Calls Pagination State
-  const [calls, setCalls] = useState<any[]>([]);
+  const [calls, setCalls] = useState<CallItem[]>([]);
   const [loadingCalls, setLoadingCalls] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -46,23 +65,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
     }
   };
 
-  const getCallIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed': return <PhoneIncoming size={14} className="text-emerald-500" />;
-      case 'no-answer': return <PhoneMissed size={14} className="text-rose-500" />;
-      case 'failed': return <AlertCircle size={14} className="text-rose-500" />;
-      case 'busy': return <PhoneOutgoing size={14} className="text-amber-500" />;
-      default: return <Phone size={14} className="text-slate-400" />;
-    }
-  };
 
-  const getStatusBadge = (status: string) => {
-    const s = status.toLowerCase();
-    if (s === 'completed') return 'bg-emerald-50 text-emerald-700 ring-emerald-500/20';
-    if (s === 'in-progress') return 'bg-blue-50 text-blue-700 ring-blue-500/20 animate-pulse';
-    if (s === 'failed' || s === 'no-answer') return 'bg-rose-50 text-rose-700 ring-rose-500/20';
-    return 'bg-slate-100 text-slate-600 ring-slate-500/20';
-  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -133,7 +136,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
                     </div>
                   </div>
                   <p className="text-lg font-black text-charcoal tracking-tight">
-                    {usage?.overage_minutes > 0 ? `${parseFloat(usage.overage_minutes).toFixed(1)}m` : '0m'}
+                    {usage?.overage_minutes && usage.overage_minutes > 0 ? `${usage.overage_minutes.toFixed(1)}m` : '0m'}
                   </p>
                 </div>
               </CardContent>
@@ -147,7 +150,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
                 <div>
                   <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest mb-1">Est. Cost</p>
                   <p className="text-lg font-black text-charcoal tracking-tight">
-                    ${usage?.estimated_cost ? parseFloat(usage.estimated_cost).toFixed(2) : '0.00'}
+                    ${usage?.estimated_cost ? usage.estimated_cost.toFixed(2) : '0.00'}
                   </p>
                 </div>
               </CardContent>
@@ -250,7 +253,6 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage, hasSubscription 
                   ) : (
                     calls.map((call, i) => {
                       const dateObj = parseISO(call.created_at);
-                      const status = call.status || 'unknown';
                       const cost = (call.duration_seconds / 60) * 0.10; // Approx cost, ideally from API
 
                       return (

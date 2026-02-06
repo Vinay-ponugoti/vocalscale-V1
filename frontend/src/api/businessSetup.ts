@@ -173,9 +173,9 @@ class BusinessSetupAPI {
     });
   }
 
-  // Upload Knowledge Document for processing
-  async uploadKnowledgeDocument(file: File): Promise<{ task_id: string; status: string; message: string }> {
-    const url = `${API_BASE_URL}/knowledge/upload`;
+  // Upload Knowledge Document for processing (calls Python knowledge processor directly)
+  async uploadKnowledgeDocument(file: File): Promise<{ status: string; filename: string; user_id: string; processing_status: string; message: string }> {
+    const url = `${env.KNOWLEDGE_API_URL}/upload`;
     const headers = await getAuthHeader();
 
     const formData = new FormData();
@@ -213,16 +213,16 @@ class BusinessSetupAPI {
     return response.json();
   }
 
-  // Get List of Knowledge Files
+  // Get List of Knowledge Files (calls Python knowledge processor directly)
   async getKnowledgeFiles(): Promise<Array<{
     id: string;
     filename: string;
     status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
     upload_timestamp: string;
-    chunks_count?: number;
+    size_bytes?: number;
     error?: string;
   }>> {
-    const url = `${API_BASE_URL}/knowledge/files`;
+    const url = `${env.KNOWLEDGE_API_URL}/files`;
     const headers = await getAuthHeader();
 
     const response = await fetch(url, {
@@ -233,7 +233,8 @@ class BusinessSetupAPI {
       console.warn('Failed to fetch knowledge files');
       return [];
     }
-    return response.json();
+    const data = await response.json();
+    return data.files || [];
   }
 }
 

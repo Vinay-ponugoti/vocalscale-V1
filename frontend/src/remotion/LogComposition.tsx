@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, spring, random } from 'remotion';
-import { Phone, PhoneMissed, CheckCircle2, User, Mic, ShieldAlert, Clock, Mail } from 'lucide-react';
+import React from 'react';
+import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, spring } from 'remotion';
+import { CheckCircle2, User, Mic, ShieldAlert, Clock, Mail } from 'lucide-react';
 
 const GlassRow = ({
     index,

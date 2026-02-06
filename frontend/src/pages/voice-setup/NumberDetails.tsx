@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
     ChevronRight,
@@ -9,8 +9,6 @@ import {
     MessageSquare,
     Image as ImageIcon,
     Printer,
-    CheckCircle2,
-    XCircle,
     Phone,
     ArrowUpRight,
     Clock,
@@ -22,22 +20,25 @@ import { usePhoneNumbers } from '../../hooks/usePhoneNumbers';
 import { env } from '../../config/env';
 import { getAuthHeader } from '../../lib/api';
 
+interface CallLog {
+    created_at: string;
+    from: string;
+    to: string;
+    direction?: string;
+    duration?: string;
+    cost?: number;
+}
+
 const NumberDetails = () => {
     const { numberId } = useParams<{ numberId: string }>();
     const navigate = useNavigate();
     const { numbers, loading: numbersLoading } = usePhoneNumbers();
-    const [logs, setLogs] = useState<any[]>([]);
+    const [logs, setLogs] = useState<CallLog[]>([]);
     const [logsLoading, setLogsLoading] = useState(true);
 
     const number = numbers.find(n => n.id === numberId);
 
-    useEffect(() => {
-        if (number) {
-            fetchLogs();
-        }
-    }, [number]);
-
-    const fetchLogs = async () => {
+    const fetchLogs = useCallback(async () => {
         try {
             const headers = await getAuthHeader();
             const response = await fetch(`${env.API_URL}/dashboard/calls?limit=10`, {
@@ -46,9 +47,9 @@ const NumberDetails = () => {
             if (response.ok) {
                 const data = await response.json();
                 // Handle paginated response structure { items: [], ... }
-                const items = Array.isArray(data) ? data : (data.items || []);
+                const items: CallLog[] = Array.isArray(data) ? data : (data.items || []);
 
-                const filtered = items.filter((log: any) =>
+                const filtered = items.filter((log: CallLog) =>
                     log.from === number?.phone_number || log.to === number?.phone_number
                 );
                 setLogs(filtered);
@@ -58,7 +59,13 @@ const NumberDetails = () => {
         } finally {
             setLogsLoading(false);
         }
-    };
+    }, [number?.phone_number]);
+
+    useEffect(() => {
+        if (number) {
+            fetchLogs();
+        }
+    }, [number, fetchLogs]);
 
     if (numbersLoading) {
         return (
@@ -90,10 +97,6 @@ const NumberDetails = () => {
     const formattedDate = number.created_at
         ? new Date(number.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
         : 'Oct 12, 2023';
-
-    const renewalDate = new Date();
-    renewalDate.setMonth(renewalDate.getMonth() + 1);
-    const formattedRenewal = renewalDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
     return (
         <DashboardLayout fullWidth>
@@ -335,7 +338,13 @@ const NumberDetails = () => {
     );
 };
 
-const CapabilityCard = ({ icon: Icon, label, active }: { icon: any, label: string, active: boolean }) => (
+interface CapabilityCardProps {
+    icon: React.ComponentType<{ className?: string }>;
+    label: string;
+    active: boolean;
+}
+
+const CapabilityCard = ({ icon: Icon, label, active }: CapabilityCardProps) => (
     <div className={`flex flex-col items-center gap-4 p-6 rounded-2xl border transition-all duration-300 ${active
         ? 'bg-card border-slate-900/10 dark:border-white/10 shadow-premium-sm hover:border-slate-900/20 dark:hover:border-white/20'
         : 'bg-muted/20 border-border opacity-40 grayscale'

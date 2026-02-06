@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Rocket, Receipt, ArrowRight, MessageSquare, Ticket, X, CheckCircle2, Info, Phone } from 'lucide-react';
+import { Search, Rocket, Receipt, ArrowRight, Ticket, X, CheckCircle2, Info, Phone } from 'lucide-react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';

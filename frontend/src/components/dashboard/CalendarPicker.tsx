@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 

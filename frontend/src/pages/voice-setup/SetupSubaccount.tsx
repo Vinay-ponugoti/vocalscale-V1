@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -28,12 +28,7 @@ const SetupSubaccount = () => {
   const [existingSubaccount, setExistingSubaccount] = useState<Subaccount | null>(null);
   const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    checkExistingSubaccount();
-    checkSubscriptionStatus();
-  }, [profile]);
-
-  const checkSubscriptionStatus = async () => {
+  const checkSubscriptionStatus = useCallback(async () => {
     try {
       const sub = await billingApi.getSubscription();
       if (sub && sub.status === 'active') {
@@ -47,9 +42,9 @@ const SetupSubaccount = () => {
       if (!profile) return;
       setHasSubscription(false);
     }
-  };
+  }, [profile]);
 
-  const checkExistingSubaccount = async () => {
+  const checkExistingSubaccount = useCallback(async () => {
     try {
       const apiUrl = env.API_URL;
       const headers = await getAuthHeader();
@@ -81,7 +76,12 @@ const SetupSubaccount = () => {
     } catch (err) {
       console.error('Error checking subaccount:', err);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    checkExistingSubaccount();
+    checkSubscriptionStatus();
+  }, [checkExistingSubaccount, checkSubscriptionStatus]);
 
   const handleCreateSubaccount = async () => {
     if (!businessName.trim()) {
@@ -128,17 +128,16 @@ const SetupSubaccount = () => {
         navigate('/dashboard/voice-setup/buy');
       }, 1500);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Fatal error during infrastructure provisioning.';
       console.error(err);
-      setError(err.message || 'Fatal error during infrastructure provisioning.');
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleProceedToNumbers = () => {
-    navigate('/dashboard/voice-setup/buy');
-  };
+
 
   return (
     <DashboardLayout fullWidth>

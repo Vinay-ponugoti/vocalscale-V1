@@ -1,5 +1,4 @@
 import { Sparkles, TrendingUp, AlertTriangle } from 'lucide-react';
-import { Badge } from '../../../../components/ui/Badge';
 import { Card, CardContent } from '../../../../components/ui/Card';
 import type { AISummaryData } from '../../../../types/review';
 

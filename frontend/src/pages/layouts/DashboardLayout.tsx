@@ -16,7 +16,6 @@ import {
   Zap,
   Layers,
   CreditCard,
-  Command,
   Star,
   Brain
 } from 'lucide-react';
@@ -28,31 +27,31 @@ import { billingApi } from '../../api/billing';
 import NotificationPanel from '../../components/dashboard/NotificationPanel';
 import ProfileDropdown from '../../components/dashboard/ProfileDropdown';
 import { NavigationGuard } from '../../utils/navigationGuard';
-
-import { env } from '../../config/env';
-import { getAuthHeader } from '../../lib/api';
+import { cn } from '../../lib/utils';
+import { PAGE_PADDING } from '../../constants/layout';
 // FloatingChat removed
 
 
-// --- DESIGN SYSTEM COLORS ---
+// --- DESIGN SYSTEM COLORS (Legacy constants for reference) ---
+// Note: These are now mapped to CSS variables in index.css
 const DS = {
   // 60% White / Grayscale
-  white: '#FFFFFF',
-  surface: '#FAFBFC',
-  offWhite: '#F5F7FA',
-  border: '#E5E7EB', // Derived from #F5F7FA for contrast
+  white: 'var(--ds-white)',
+  surface: 'var(--ds-surface)',
+  offWhite: 'var(--ds-off-white)',
+  border: 'var(--ds-border)',
 
   // 30% Charcoal / Slate
-  ink: '#1F2937',
-  charcoal: '#374151',
-  stone: '#4B5563',
-  subtleText: '#9CA3AF',
+  ink: 'var(--ds-ink)',
+  charcoal: 'var(--ds-charcoal)',
+  stone: 'var(--ds-stone)',
+  subtleText: 'var(--ds-subtle-text)',
 
   // 10% Electric Blue
-  electric: '#3B82F6',
-  electricDark: '#2563EB', // Hover state
-  electricLight: '#EFF6FF', // Background tint
-  electricTint: 'rgba(59, 130, 246, 0.1)'
+  electric: 'var(--ds-electric)',
+  electricDark: 'var(--ds-electric-dark)',
+  electricLight: 'var(--ds-electric-light)',
+  electricTint: 'var(--ds-electric-tint)'
 };
 
 interface DashboardLayoutProps {
@@ -66,7 +65,10 @@ interface DashboardLayoutProps {
 // --- UI COMPONENTS ---
 
 const SectionLabel = ({ label, sidebarOpen }: { label: string; sidebarOpen: boolean }) => (
-  <h3 className={`px-6 mt-8 mb-3 text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`} style={{ color: DS.stone }}>
+  <h3 className={cn(
+    "px-6 mt-8 mb-3 text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-300 text-[hsl(var(--ds-stone))]",
+    sidebarOpen ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
+  )}>
     {label}
   </h3>
 );
@@ -122,7 +124,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const navigate = useNavigate();
   const { user, profile, signOut, loading } = useAuth();
   const { notifications, unreadCount, dismissNotification } = useNotifications();
-  const { searchQuery, setSearchQuery, setIsSearchFocused, clearSearch } = useSearch();
+  const { searchQuery, setSearchQuery, clearSearch } = useSearch();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -137,14 +139,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       navigate('/login');
     }
   }, [loading, user, navigate]);
-
-  if (loading) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
 
   // Sync local state with context when context changes (e.g. clear search)
   useEffect(() => {
@@ -191,7 +185,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     };
   }, [mobileMenuOpen]);
 
-
   const { data: subscription, isLoading: isLoadingSubscription } = useQuery({
     queryKey: ['subscription', user?.id],
     queryFn: () => billingApi.getSubscription(),
@@ -199,6 +192,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     staleTime: 1000 * 30, // 30 seconds (was 5 minutes - too long for fresh subscription data)
     refetchInterval: 1000 * 60, // Refetch every minute to catch subscription changes
   });
+
+  // Early return for loading state - AFTER all hooks are called
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   const handleSignOut = async () => {
     await signOut();
@@ -228,23 +230,27 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     <>
       <NavigationGuard isAuthenticated={!!user} />
       {/* Main Container - Using DS OffWhite for background */}
-      <div className="h-screen h-[100dvh] flex font-sans overflow-hidden" style={{ backgroundColor: DS.offWhite }}>
+      <div className="h-screen h-[100dvh] flex font-sans overflow-hidden bg-[hsl(var(--ds-off-white))]">
 
         {/* SIDEBAR - Using DS White for surface */}
         <aside
-          className={`hidden md:flex flex-col h-full transition-all duration-300 ease-in-out border-r`}
-          style={{
-            width: sidebarOpen ? '288px' : '80px',
-            backgroundColor: DS.white,
-            borderColor: DS.border
-          }}
+          className={cn(
+            "hidden md:flex flex-col h-full transition-all duration-300 ease-in-out border-r border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-white))]",
+            sidebarOpen ? 'w-[288px]' : 'w-[80px]'
+          )}
         >
 
           {/* Logo Header */}
-          <div className={`h-20 flex items-center border-b transition-all duration-300 ${sidebarOpen ? 'justify-between px-8' : 'justify-center px-4'}`} style={{ borderColor: DS.border }}>
+          <div className={cn(
+            "h-20 flex items-center border-b transition-all duration-300 border-[hsl(var(--ds-border))]",
+            sidebarOpen ? 'justify-between px-8' : 'justify-center px-4'
+          )}>
             <Link
               to="/dashboard"
-              className={`flex items-center transition-all duration-300 ${sidebarOpen ? 'px-6' : 'justify-center w-full px-4'} group cursor-pointer no-underline`}
+              className={cn(
+                "flex items-center transition-all duration-300 group cursor-pointer no-underline",
+                sidebarOpen ? 'px-6' : 'justify-center w-full px-4'
+              )}
             >
               <div className="flex items-center gap-3">
                 <img src="/logo.png" alt="VocalScale AI Phone Agent" width="428" height="428" className="w-10 h-10 flex-shrink-0 object-contain group-hover:scale-105 transition-transform" />
@@ -261,9 +267,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {sidebarOpen && (
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-[hsl(var(--ds-stone))]"
                 aria-label="Collapse sidebar"
-                style={{ color: DS.stone }}
               >
                 <ChevronRight size={16} className="transform rotate-180" strokeWidth={3} />
               </button>
@@ -278,6 +283,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               item={{ path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard')}
+            />
+            <NavItem
+              item={{ path: '/dashboard/chat', label: 'AI Chat', icon: Brain }}
+              isCollapsed={!sidebarOpen}
+              isActive={isActive('/dashboard/chat')}
             />
 
             <SectionLabel label="Operations" sidebarOpen={sidebarOpen} />
@@ -295,11 +305,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/reviews')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/chat', label: 'Knowledge Chat', icon: Brain }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/chat')}
             />
 
             <SectionLabel label="Configuration" sidebarOpen={sidebarOpen} />
@@ -423,36 +428,18 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   aria-label="Search dashboard"
                   placeholder="Search logs, appointments..."
                   value={localSearch}
-                  onChange={(e) => setLocalSearch(e.target.value)}
-                  onFocus={(e) => {
-                    setIsSearchFocused(true);
-                    e.target.style.borderColor = DS.electric;
-                    e.target.style.boxShadow = `0 0 0 3px ${DS.electricTint}`;
-                  }}
-                  onBlur={(e) => {
-                    setIsSearchFocused(false);
-                    e.target.style.borderColor = DS.border;
-                    e.target.style.boxShadow = 'none';
-                  }}
-                  className="w-full pl-11 pr-12 py-2.5 border rounded-xl text-sm font-medium transition-all shadow-sm focus:outline-none focus:ring-2"
-                  style={{
-                    backgroundColor: DS.white,
-                    borderColor: DS.border,
-                    color: DS.ink
-                  }}
+                  className="w-full pl-11 pr-12 py-2.5 border rounded-xl text-sm font-medium transition-all shadow-sm focus:outline-none focus:ring-4 focus:ring-[hsl(var(--ds-electric-tint))] border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-white))] text-[hsl(var(--ds-ink))] focus:border-[hsl(var(--ds-electric))]"
                 />
                 {/* Keyboard shortcut hint */}
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 px-1.5 py-0.5 rounded transition-opacity pointer-events-none border" style={{ backgroundColor: DS.surface, color: DS.stone, borderColor: DS.border }}>
-                  <Command size={10} />
-                  <span>K</span>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 px-1.5 py-0.5 rounded transition-opacity pointer-events-none border bg-[hsl(var(--ds-surface))] text-[hsl(var(--ds-stone))] border-[hsl(var(--ds-border))]">
+                  <span className="text-[10px] font-bold">⌘ K</span>
                 </div>
                 {/* Clear button */}
                 {searchQuery && (
                   <button
                     onClick={clearSearch}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-colors text-[hsl(var(--ds-subtle-text))]"
                     aria-label="Clear search"
-                    style={{ color: DS.subtleText }}
                   >
                     <X size={14} strokeWidth={3} />
                   </button>
@@ -471,10 +458,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <div className="flex items-center gap-2 md:gap-4 ml-4">
 
               {/* Icon Actions */}
-              <div className="flex items-center gap-1 border-r pr-2 md:pr-4" style={{ borderColor: DS.border }}>
+              <div className="flex items-center gap-1 border-r pr-2 md:pr-4 border-[hsl(var(--ds-border))]">
                 <Link
                   to="/dashboard/billing"
-                  className={`hidden sm:flex items-center justify-center p-2.5 rounded-xl transition-all relative group border border-transparent hover:bg-slate-50 no-underline ${isActive('/dashboard/billing') ? 'text-blue-600 bg-blue-50 border-blue-100' : 'text-slate-500 hover:border-slate-200'}`}
+                  className={cn(
+                    "hidden sm:flex items-center justify-center p-2.5 rounded-xl transition-all relative group border border-transparent hover:bg-slate-50 no-underline",
+                    isActive('/dashboard/billing') ? 'text-blue-600 bg-blue-50 border-blue-100' : 'text-slate-500 hover:border-slate-200'
+                  )}
                   aria-label="Billing"
                 >
                   <CreditCard size={20} strokeWidth={isActive('/dashboard/billing') ? 2.5 : 2} />
@@ -483,10 +473,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   <button
                     onClick={() => setNotificationPanelOpen(!notificationPanelOpen)}
                     aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
-                    className={`p-2.5 rounded-xl transition-all relative outline-none group ${notificationPanelOpen
-                      ? 'bg-blue-50 text-blue-600' // Electric Light/Dark
-                      : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
-                      }`}
+                    className={cn(
+                      "p-2.5 rounded-xl transition-all relative outline-none group",
+                      notificationPanelOpen ? 'bg-blue-50 text-blue-600' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
+                    )}
                   >
                     <Bell size={20} strokeWidth={2.5} />
                     {unreadCount > 0 && (
@@ -511,10 +501,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   aria-haspopup="true"
                   aria-expanded={profileDropdownOpen}
-                  className={`flex items-center gap-3 p-1 pl-3 rounded-full transition-all duration-200 ${profileDropdownOpen
-                    ? 'bg-slate-100 ring-2 ring-slate-100'
-                    : 'bg-transparent hover:bg-slate-50'
-                    }`}
+                  className={cn(
+                    "flex items-center gap-3 p-1 pl-3 rounded-full transition-all duration-200",
+                    profileDropdownOpen ? 'bg-slate-100 ring-2 ring-slate-100' : 'bg-transparent hover:bg-slate-50'
+                  )}
                 >
                   <div className="hidden lg:flex flex-col items-end text-right">
                     <span className="text-xs font-bold text-slate-900 leading-tight">{businessName}</span>
@@ -539,8 +529,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* PAGE CONTENT */}
           <main
-            className={`flex-1 ${fullWidth ? 'p-0 overflow-hidden' : 'p-4 md:p-8 overflow-y-auto'}`}
-            style={{ backgroundColor: DS.offWhite }}
+            className={cn(
+              "flex-1 bg-[hsl(var(--ds-off-white))]",
+              fullWidth ? 'p-0 overflow-hidden' : cn(PAGE_PADDING, "overflow-y-auto")
+            )}
             onDoubleClick={() => {
               if (sidebarOpen) setSidebarOpen(false);
             }}
@@ -573,6 +565,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     isActive={isActive('/dashboard')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
+                  <NavItem
+                    item={{ path: '/dashboard/chat', label: 'AI Chat', icon: Brain }}
+                    isActive={isActive('/dashboard/chat')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
                 </div>
 
                 <div>
@@ -590,11 +587,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   <NavItem
                     item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
                     isActive={isActive('/dashboard/reviews')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/chat', label: 'Knowledge Chat', icon: Brain }}
-                    isActive={isActive('/dashboard/chat')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
                 </div>

@@ -6,7 +6,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { KeyboardEvent } from 'react';
 import { Button } from '../../../../components/ui/Button';
-import { Send, Paperclip, X, FileText, Loader2, ArrowUp } from 'lucide-react';
+import { Paperclip, X, FileText, Loader2, ArrowUp } from 'lucide-react';
 import type { FileAttachment } from '../../../../types/chat';
 import { cn } from '../../../../lib/utils';
 

@@ -4,25 +4,55 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { billingApi } from '../../../api/billing';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '../../../components/ui/Card';
-import { Badge } from '../../../components/ui/Badge';
+import { Card } from '../../../components/ui/Card';
 
 import { useAuth } from '../../../context/AuthContext';
+
+interface Plan {
+  id?: string;
+  name: string;
+  description?: string;
+  price_amount: number;
+  interval: string;
+  stripe_price_id?: string;
+  features?: string[];
+  limits?: { ai_minutes?: number };
+}
+
+interface Subscription {
+  status: string;
+  plan?: string;
+  plan_name?: string;
+  stripe_price_id?: string;
+  next_billing?: string;
+}
+
+interface PlanDesignInfo {
+  icon: React.FC<{ className?: string }>;
+  popular: boolean;
+  color: string;
+}
+
+interface GroupedPlan extends Plan {
+  icon?: React.FC<{ className?: string }>;
+  popular?: boolean;
+  color?: string;
+  monthlyPrice: number;
+  annualPrice: number;
+  monthlyPriceId: string;
+  annualPriceId: string;
+  current: boolean;
+  originalMonthlyPrice?: number;
+  currentInterval?: string;
+}
 
 const Plans: React.FC = () => {
   const { user, profile } = useAuth();
   const [isAnnual, setIsAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [plansData, setPlansData] = useState<any[]>([]);
-  const [subscription, setSubscription] = useState<any>(null);
+  const [plansData, setPlansData] = useState<Plan[]>([]);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [isFetching, setIsFetching] = useState(true);
   const navigate = useNavigate();
 
@@ -76,7 +106,7 @@ const Plans: React.FC = () => {
       if (url) {
         window.location.href = url;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating checkout session:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout. Please try again.';
       setError(errorMessage);
@@ -85,7 +115,7 @@ const Plans: React.FC = () => {
     }
   };
 
-  const planDesignInfo: Record<string, any> = {
+  const planDesignInfo: Record<string, PlanDesignInfo> = {
     'Starter': { icon: Zap, popular: false, color: 'blue' },
     'Professional': { icon: Star, popular: true, color: 'indigo' },
     'Elite': { icon: Crown, popular: false, color: 'violet' },
@@ -93,7 +123,7 @@ const Plans: React.FC = () => {
 
   const getDisplayPlans = () => {
     if (plansData.length > 0) {
-      const groupedPlans: Record<string, any> = {};
+      const groupedPlans: Record<string, GroupedPlan> = {};
 
       plansData.forEach(plan => {
         if (!groupedPlans[plan.name]) {

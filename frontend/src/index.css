@@ -77,6 +77,20 @@
     --radius: 0.625rem;
     /* 10px - Premium rounded corners */
 
+    /* Design System Tokens (DS constants) */
+    --ds-white: 0 0% 100%;
+    --ds-surface: 210 20% 98%;
+    --ds-off-white: 210 20% 97%;
+    --ds-border: 214 32% 91%;
+    --ds-ink: 222 47% 11%;
+    --ds-charcoal: 217 19% 27%;
+    --ds-stone: 215 14% 34%;
+    --ds-subtle-text: 215 16% 47%;
+    --ds-electric: 217 91% 60%;
+    --ds-electric-dark: 221 83% 53%;
+    --ds-electric-light: 214 100% 97%;
+    --ds-electric-tint: 217 91% 60% / 0.1;
+
     /* Charts */
     --chart-1: 217 91% 60%;
     /* Blue */
@@ -105,6 +119,21 @@
     --card: 222 47% 8%;
     /* Slightly lighter than bg */
     --card-foreground: 210 40% 98%;
+
+    /* DS Tokens in Dark Mode - adjusted for dark surfaces */
+    --ds-white: 222 47% 8%;
+    --ds-surface: 222 47% 5%;
+    --ds-off-white: 222 47% 4%;
+    --ds-border: 217 33% 17%;
+    --ds-ink: 210 40% 98%;
+    --ds-charcoal: 215 20% 65%;
+    --ds-stone: 215 20% 75%;
+    --ds-subtle-text: 215 20% 55%;
+    /* Blue colors stay mostly same */
+    --ds-electric: 217 91% 60%;
+    --ds-electric-dark: 221 83% 53%;
+    --ds-electric-light: 217 33% 17%;
+    --ds-electric-tint: 217 91% 60% / 0.2;
 
     --popover: 222 47% 8%;
     --popover-foreground: 210 40% 98%;

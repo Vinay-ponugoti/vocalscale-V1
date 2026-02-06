@@ -3,7 +3,7 @@
  * Displays individual chat messages with avatar, content, and sources
  */
 
-import { Brain, User, ExternalLink, FileText } from 'lucide-react';
+import { Brain, User, FileText } from 'lucide-react';
 import type { ChatMessage as ChatMessageType } from '../../../../types/chat';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '../../../../lib/utils';

@@ -51,7 +51,6 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 
   // State for voices (initialized from props, but updated via API for server-side filtering)
   const [displayVoices, setDisplayVoices] = useState<typeof availableVoices>(availableVoices);
-  const [isFiltering, setIsFiltering] = useState(false);
 
   // Sync prop changes to state (e.g. initial load)
   // Ensure we map any legacy "male"/"female" values if they come from props, though props come from DB which relies on schema.
@@ -65,7 +64,6 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
   // Server-side filtering when gender changes
   React.useEffect(() => {
     const fetchFilteredVoices = async () => {
-      setIsFiltering(true);
       try {
         const response = await api.getVoices({ gender: genderFilter });
         if (response.data) {
@@ -73,8 +71,6 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
         }
       } catch (error) {
         console.error('Failed to filter voices:', error);
-      } finally {
-        setIsFiltering(false);
       }
     };
 

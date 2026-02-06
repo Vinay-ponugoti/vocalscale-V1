@@ -100,7 +100,7 @@ export const ChatAnalytics: React.FC<ChatAnalyticsProps> = ({ days = 7 }) => {
 
   // Prepare intent distribution for pie chart
   const intentData = Object.entries(intent_distribution)
-    .filter(([_, value]) => value > 0)
+    .filter(([, value]) => value > 0)
     .map(([key, value]) => ({
       name: INTENT_CONFIG[key as keyof typeof INTENT_CONFIG]?.label || key,
       value,
@@ -126,9 +126,8 @@ export const ChatAnalytics: React.FC<ChatAnalyticsProps> = ({ days = 7 }) => {
               {summary.total_messages}
             </span>
             <div
-              className={`flex items-center gap-0.5 text-xs font-bold ${
-                summary.trend_positive ? 'text-emerald-600' : 'text-rose-600'
-              }`}
+              className={`flex items-center gap-0.5 text-xs font-bold ${summary.trend_positive ? 'text-emerald-600' : 'text-rose-600'
+                }`}
             >
               {summary.trend_positive ? (
                 <TrendingUp className="h-3 w-3" />

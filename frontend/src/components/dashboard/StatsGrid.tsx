@@ -7,6 +7,8 @@ import {
   CardTitle,
 } from '../ui/Card';
 import { Badge } from '../ui/Badge';
+import { cn } from '../../lib/utils';
+import { GRID_GAP } from '../../constants/layout';
 
 interface StatsGridProps {
   stats: {
@@ -39,24 +41,22 @@ interface StatCardProps {
   description?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ 
-  label, 
-  value, 
-  icon: Icon, 
-  trend, 
+const StatCard: React.FC<StatCardProps> = ({
+  label,
+  value,
+  icon: Icon,
+  trend,
   badge,
   highlight,
-  description 
+  description
 }) => {
   return (
-    <Card className={`relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-white-light shadow-sm ${
-      highlight ? 'ring-2 ring-orange-500/20' : ''
-    }`}>
+    <Card className={`relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-white-light shadow-sm ${highlight ? 'ring-2 ring-orange-500/20' : ''
+      }`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-bold text-charcoal-light tracking-tight uppercase">{label}</CardTitle>
-        <div className={`p-2 rounded-xl ${
-          highlight ? 'bg-orange-50 text-orange-600' : 'bg-blue-electric/10 text-blue-electric'
-        }`}>
+        <div className={`p-2 rounded-xl ${highlight ? 'bg-orange-50 text-orange-600' : 'bg-blue-electric/10 text-blue-electric'
+          }`}>
           <Icon className="w-4 h-4" />
         </div>
       </CardHeader>
@@ -65,9 +65,8 @@ const StatCard: React.FC<StatCardProps> = ({
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-charcoal tracking-tighter">{value}</span>
             {trend && (
-              <div className={`flex items-center gap-0.5 text-xs font-black ${
-                trend.isPositive ? 'text-emerald-600' : 'text-rose-600'
-              }`}>
+              <div className={`flex items-center gap-0.5 text-xs font-black ${trend.isPositive ? 'text-emerald-600' : 'text-rose-600'
+                }`}>
                 {trend.isPositive ? (
                   <TrendingUp className="w-3 h-3" />
                 ) : (
@@ -77,7 +76,7 @@ const StatCard: React.FC<StatCardProps> = ({
               </div>
             )}
           </div>
-          
+
           <div className="flex items-center justify-between mt-2">
             <p className="text-[11px] font-bold text-charcoal-light uppercase tracking-wider">{description || 'Total recorded'}</p>
             {badge ? (
@@ -98,33 +97,33 @@ const StatCard: React.FC<StatCardProps> = ({
 
 const StatsGrid: React.FC<StatsGridProps> = ({ stats, appointmentsCount }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 2xl:gap-10">
-      <StatCard 
-        label="Total Calls" 
-        value={stats.total} 
+    <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4", GRID_GAP)}>
+      <StatCard
+        label="Total Calls"
+        value={stats.total}
         icon={Phone}
         trend={stats.totalTrend}
         description="Recorded in period"
       />
-      <StatCard 
-        label="Appointments" 
-        value={appointmentsCount} 
+      <StatCard
+        label="Appointments"
+        value={appointmentsCount}
         icon={Calendar}
         trend={stats.appointmentsTrend}
         badge={{ text: 'Upcoming', variant: 'secondary' }}
         description="Scheduled via AI"
       />
-      <StatCard 
-        label="Urgent Alerts" 
-        value={stats.urgent} 
+      <StatCard
+        label="Urgent Alerts"
+        value={stats.urgent}
         icon={AlertTriangle}
         trend={stats.urgentTrend}
         highlight
         description="Requires attention"
       />
-      <StatCard 
-        label="Time Saved" 
-        value={`${Math.round(stats.minutesSaved || 0)}m`} 
+      <StatCard
+        label="Time Saved"
+        value={`${Math.round(stats.minutesSaved || 0)}m`}
         icon={Clock}
         trend={stats.minutesSavedTrend}
         badge={{ text: 'Efficiency', variant: 'outline' }}

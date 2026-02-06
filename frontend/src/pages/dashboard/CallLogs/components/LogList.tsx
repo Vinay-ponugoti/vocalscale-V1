@@ -3,7 +3,7 @@ import {
   Clock, ChevronLeft, ChevronRight, Zap, Headset, Search
 } from 'lucide-react';
 import type { CallLog } from '../types';
-import { format, parseISO, isToday, isYesterday } from 'date-fns';
+import { parseISO, isToday, isYesterday } from 'date-fns';
 import { toZonedTime, format as formatTZ } from 'date-fns-tz';
 import { Badge } from '../../../../components/ui/Badge';
 import { Button } from '../../../../components/ui/Button';

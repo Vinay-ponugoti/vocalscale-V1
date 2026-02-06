@@ -4,7 +4,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { skillsApi } from '../api/skills';
-import type { Skill } from '../types/skills';
 
 export function useSkills() {
   const {

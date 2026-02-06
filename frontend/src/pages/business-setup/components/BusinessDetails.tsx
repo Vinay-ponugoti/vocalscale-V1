@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import {
   Building2, Mail, Phone, MapPin, Zap, Globe,
-  Search, Loader2, Star, CheckCircle2, Navigation,
-  ExternalLink, Sparkles, X, ChevronDown
+  Search, Loader2, Star, CheckCircle2,
+  Sparkles, X, ChevronDown
 } from 'lucide-react';
 import { businessSetupAPI } from '../../../api/businessSetup';
 

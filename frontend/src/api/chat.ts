@@ -1,6 +1,6 @@
 import { env } from '../config/env';
 import { getAuthHeader } from '../lib/api';
-import { getAuthToken, getStoredSession } from '../utils/sessionUtils';
+import { getStoredSession } from '../utils/sessionUtils';
 import type {
   ChatRequest,
   ChatSession,
@@ -107,7 +107,7 @@ class ChatAPI {
               if (data.error) {
                 onError(new Error(data.error));
               }
-            } catch (parseError) {
+            } catch {
               console.warn('Failed to parse SSE data:', line);
             }
           }
