@@ -10,6 +10,7 @@
    ======================================== */
 
 @layer base {
+
   /* 
    * CSS Custom Properties (Design Tokens)
    * Using HSL format for shadcn/ui compatibility
@@ -17,60 +18,77 @@
    */
   :root {
     /* Core Colors */
-    --background: 210 20% 98%;           /* #F8FAFC - Soft white */
-    --foreground: 222 47% 11%;           /* #1E293B - Slate 800 */
-    
+    --background: 210 20% 98%;
+    /* #F8FAFC - Soft white */
+    --foreground: 222 47% 11%;
+    /* #1E293B - Slate 800 */
+
     /* Card & Surfaces */
-    --card: 0 0% 100%;                   /* Pure white */
+    --card: 0 0% 100%;
+    /* Pure white */
     --card-foreground: 222 47% 11%;
-    
+
     /* Popover */
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    
+
     /* Primary - Electric Blue */
-    --primary: 217 91% 60%;              /* #3B82F6 */
+    --primary: 217 91% 60%;
+    /* #3B82F6 */
     --primary-foreground: 210 40% 98%;
-    
+
     /* Secondary */
-    --secondary: 210 40% 96%;            /* Light gray-blue */
+    --secondary: 210 40% 96%;
+    /* Light gray-blue */
     --secondary-foreground: 222 47% 11%;
-    
+
     /* Muted */
     --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;     /* #64748B - Slate 500 */
-    
+    --muted-foreground: 215 16% 47%;
+    /* #64748B - Slate 500 */
+
     /* Accent */
     --accent: 210 40% 96%;
     --accent-foreground: 222 47% 11%;
-    
+
     /* Destructive */
-    --destructive: 0 84% 60%;            /* Red */
+    --destructive: 0 84% 60%;
+    /* Red */
     --destructive-foreground: 210 40% 98%;
-    
+
     /* Success */
-    --success: 142 76% 36%;              /* Green */
+    --success: 142 76% 36%;
+    /* Green */
     --success-foreground: 210 40% 98%;
-    
+
     /* Warning */
-    --warning: 38 92% 50%;               /* Amber */
+    --warning: 38 92% 50%;
+    /* Amber */
     --warning-foreground: 222 47% 11%;
-    
+
     /* Borders & Inputs */
-    --border: 214 32% 91%;               /* #E2E8F0 */
+    --border: 214 32% 91%;
+    /* #E2E8F0 */
     --input: 214 32% 91%;
-    --ring: 217 91% 60%;                 /* Same as primary */
-    
+    --ring: 217 91% 60%;
+    /* Same as primary */
+
     /* Radius */
-    --radius: 0.625rem;                  /* 10px - Premium rounded corners */
-    
+    --radius: 0.625rem;
+    /* 10px - Premium rounded corners */
+
     /* Charts */
-    --chart-1: 217 91% 60%;              /* Blue */
-    --chart-2: 142 76% 36%;              /* Green */
-    --chart-3: 38 92% 50%;               /* Amber */
-    --chart-4: 262 83% 58%;              /* Purple */
-    --chart-5: 0 84% 60%;                /* Red */
-    
+    --chart-1: 217 91% 60%;
+    /* Blue */
+    --chart-2: 142 76% 36%;
+    /* Green */
+    --chart-3: 38 92% 50%;
+    /* Amber */
+    --chart-4: 262 83% 58%;
+    /* Purple */
+    --chart-5: 0 84% 60%;
+    /* Red */
+
     /* Shadows (for JS access if needed) */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -79,34 +97,37 @@
 
   /* Dark Mode */
   .dark {
-    --background: 222 47% 5%;            /* #0F172A - Slate 900 */
-    --foreground: 210 40% 98%;           /* #F8FAFC */
-    
-    --card: 222 47% 8%;                  /* Slightly lighter than bg */
+    --background: 222 47% 5%;
+    /* #0F172A - Slate 900 */
+    --foreground: 210 40% 98%;
+    /* #F8FAFC */
+
+    --card: 222 47% 8%;
+    /* Slightly lighter than bg */
     --card-foreground: 210 40% 98%;
-    
+
     --popover: 222 47% 8%;
     --popover-foreground: 210 40% 98%;
-    
+
     --primary: 217 91% 60%;
     --primary-foreground: 222 47% 11%;
-    
+
     --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
-    
+
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    
+
     --accent: 217 33% 17%;
     --accent-foreground: 210 40% 98%;
-    
+
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    
+
     --border: 217 33% 17%;
     --input: 217 33% 17%;
     --ring: 212 27% 84%;
-    
+
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -176,9 +197,17 @@
     transition: color 0.2s ease;
   }
 
-  a:hover {
+  a:hover,
+  a:active,
+  a:focus {
     color: hsl(var(--primary) / 0.8);
-    text-decoration: underline;
+    text-decoration: none !important;
+  }
+
+  button,
+  [role="button"],
+  a {
+    text-decoration: none !important;
   }
 
   /* Code */
@@ -192,6 +221,7 @@
    Premium visible focus for keyboard navigation
    ======================================== */
 @layer base {
+
   /* 
    * Custom focus ring - visible, accessible, and on-brand
    * Uses focus-visible to only show on keyboard navigation
@@ -231,10 +261,12 @@
    UTILITIES
    ======================================== */
 @layer utilities {
+
   /* Scrollbar Utilities - Use these classes selectively */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -245,14 +277,17 @@
     width: 6px;
     height: 6px;
   }
+
   .scrollbar-thin::-webkit-scrollbar-track {
     background: hsl(var(--muted));
     border-radius: 3px;
   }
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background: hsl(var(--muted-foreground) / 0.3);
     border-radius: 3px;
   }
+
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.5);
   }
@@ -261,15 +296,18 @@
   .scrollbar-premium::-webkit-scrollbar {
     width: 8px;
   }
+
   .scrollbar-premium::-webkit-scrollbar-track {
     background: transparent;
   }
+
   .scrollbar-premium::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
     border-radius: 4px;
     border: 2px solid transparent;
     background-clip: content-box;
   }
+
   .scrollbar-premium::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.4);
     background-clip: content-box;
