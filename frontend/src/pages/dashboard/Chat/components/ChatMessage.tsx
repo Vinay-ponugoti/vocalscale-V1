@@ -4,6 +4,8 @@
  */
 
 import { Brain, User, FileText } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import type { ChatMessage as ChatMessageType } from '../../../../types/chat';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '../../../../lib/utils';
@@ -45,7 +47,73 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
           )}
         >
           {/* Message content */}
-          <p className="whitespace-pre-wrap">{message.content}</p>
+          <div className="markdown-content">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                p: ({ children }) => <p className="mb-2 last:mb-0 break-words">{children}</p>,
+                ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
+                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>,
+                li: ({ children }) => <li className="pl-1">{children}</li>,
+                h1: ({ children }) => <h1 className="text-lg font-bold mb-2 mt-4">{children}</h1>,
+                h2: ({ children }) => <h2 className="text-base font-bold mb-2 mt-3">{children}</h2>,
+                h3: ({ children }) => <h3 className="text-sm font-bold mb-1 mt-2">{children}</h3>,
+                a: ({ href, children }) => (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      "underline hover:opacity-80 transition-opacity",
+                      isUser ? "text-white" : "text-blue-600"
+                    )}
+                  >
+                    {children}
+                  </a>
+                ),
+                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                code: ({ children, className }) => {
+                  const match = /language-(\w+)/.exec(className || '');
+                  const isInline = !match && !children?.toString().includes('\n');
+                  return (
+                    <code
+                      className={cn(
+                        isInline
+                          ? "px-1 py-0.5 rounded text-xs font-mono"
+                          : "block p-2 rounded text-xs font-mono overflow-x-auto",
+                        isUser
+                          ? "bg-white/20"
+                          : "bg-gray-100 text-gray-800"
+                      )}
+                    >
+                      {children}
+                    </code>
+                  );
+                },
+                pre: ({ children }) => <pre className="my-2 rounded overflow-hidden">{children}</pre>,
+                blockquote: ({ children }) => (
+                  <blockquote className={cn(
+                    "border-l-2 pl-3 my-2 italic",
+                    isUser ? "border-white/50" : "border-gray-300 text-gray-600"
+                  )}>
+                    {children}
+                  </blockquote>
+                ),
+                table: ({ children }) => (
+                  <div className="overflow-x-auto my-3 rounded border border-gray-200">
+                    <table className="min-w-full text-sm">{children}</table>
+                  </div>
+                ),
+                thead: ({ children }) => <thead className="bg-gray-50 text-gray-700 font-medium border-b border-gray-200">{children}</thead>,
+                tbody: ({ children }) => <tbody className="divide-y divide-gray-100">{children}</tbody>,
+                tr: ({ children }) => <tr className="hover:bg-gray-50/50">{children}</tr>,
+                th: ({ children }) => <th className={cn("px-3 py-2 text-left", isUser && "text-charcoal-dark")}>{children}</th>,
+                td: ({ children }) => <td className={cn("px-3 py-2", isUser && "text-charcoal-dark")}>{children}</td>,
+              }}
+            >
+              {message.content}
+            </ReactMarkdown>
+          </div>
 
           {/* Streaming cursor */}
           {isStreaming && (
