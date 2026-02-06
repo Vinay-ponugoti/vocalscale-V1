@@ -242,7 +242,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* Logo Header */}
           <div className={cn(
-            "h-20 flex items-center border-b transition-all duration-300 border-[hsl(var(--ds-border))]",
+            "h-20 flex items-center transition-all duration-300",
             sidebarOpen ? 'justify-between px-8' : 'justify-center px-4'
           )}>
             <Link
