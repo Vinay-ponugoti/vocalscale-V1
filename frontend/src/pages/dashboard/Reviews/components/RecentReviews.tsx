@@ -8,7 +8,6 @@ import {
 } from '../../../../components/ui/Card';
 import { Badge } from '../../../../components/ui/Badge';
 import { Button } from '../../../../components/ui/Button';
-import { Progress } from '../../../../components/ui/Progress';
 import type { Review } from '../../../../types/review';
 
 interface RecentReviewsProps {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, ArrowLeft, CheckCircle, TrendingUp, DollarSign, BarChart3, Award, Users, PhoneCall, Target, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, User, ArrowLeft, TrendingUp, BarChart3, ArrowRight } from 'lucide-react';
 
 export default function AIvsHumanPerformanceStudy() {
   return (
@@ -13,8 +13,8 @@ export default function AIvsHumanPerformanceStudy() {
             <Link to="/" className="text-xl font-bold text-blue-600 hover:text-blue-700">
               VocalScale
             </Link>
-            <Link 
-              to="/blog" 
+            <Link
+              to="/blog"
               className="inline-flex items-center text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -27,7 +27,7 @@ export default function AIvsHumanPerformanceStudy() {
       {/* Article */}
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Article Header */}
-        <motion.header 
+        <motion.header
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-12"
@@ -49,8 +49,8 @@ export default function AIvsHumanPerformanceStudy() {
           </h1>
 
           <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-            Comprehensive analysis of 1,200+ businesses comparing AI receptionist performance 
-            against human receptionists across 15 key metrics including cost, efficiency, 
+            Comprehensive analysis of 1,200+ businesses comparing AI receptionist performance
+            against human receptionists across 15 key metrics including cost, efficiency,
             accuracy, and customer satisfaction.
           </p>
 
@@ -72,36 +72,36 @@ export default function AIvsHumanPerformanceStudy() {
 
         {/* Article Content */}
         <div className="prose prose-lg max-w-none">
-          
+
           {/* Introduction */}
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="mb-12"
           >
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              The customer service landscape is experiencing its most significant transformation 
-              in decades. As businesses grapple with rising customer expectations, staffing 
-              challenges, and cost pressures, AI receptionist technology has emerged as a 
-              revolutionary solution that's fundamentally changing how companies handle 
+              The customer service landscape is experiencing its most significant transformation
+              in decades. As businesses grapple with rising customer expectations, staffing
+              challenges, and cost pressures, AI receptionist technology has emerged as a
+              revolutionary solution that's fundamentally changing how companies handle
               customer communications.
             </p>
 
             <p className="text-gray-700 leading-relaxed mb-6">
-              This comprehensive study analyzes performance data from 1,247 businesses across 
-              23 industries, comparing AI receptionist performance against human receptionists 
-              across 15 critical metrics. The results reveal not just incremental improvements, 
-              but transformational advantages that are reshaping customer service standards 
+              This comprehensive study analyzes performance data from 1,247 businesses across
+              23 industries, comparing AI receptionist performance against human receptionists
+              across 15 critical metrics. The results reveal not just incremental improvements,
+              but transformational advantages that are reshaping customer service standards
               across industries.
             </p>
 
             <div className="bg-blue-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Study Methodology</h3>
               <p className="text-gray-700 leading-relaxed mb-4">
-                Our analysis examined 18 months of performance data from businesses that 
-                transitioned from human-only reception to AI-enhanced reception services. 
-                The study controlled for business size, industry, geographic location, and 
+                Our analysis examined 18 months of performance data from businesses that
+                transitioned from human-only reception to AI-enhanced reception services.
+                The study controlled for business size, industry, geographic location, and
                 seasonal variations to ensure statistical validity.
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
@@ -126,7 +126,7 @@ export default function AIvsHumanPerformanceStudy() {
           </motion.section>
 
           {/* Key Findings Summary */}
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -213,7 +213,7 @@ export default function AIvsHumanPerformanceStudy() {
           </motion.section>
 
           {/* Detailed Performance Analysis */}
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -224,14 +224,14 @@ export default function AIvsHumanPerformanceStudy() {
             </h2>
 
             <p className="text-gray-700 leading-relaxed mb-6">
-              The performance revolution becomes even more apparent when examining 
-              specific metrics across different business sizes and industries. The data 
+              The performance revolution becomes even more apparent when examining
+              specific metrics across different business sizes and industries. The data
               reveals consistent advantages that transcend traditional business boundaries.
             </p>
 
             <div className="bg-blue-50 rounded-lg p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Metrics by Business Size</h3>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -279,7 +279,7 @@ export default function AIvsHumanPerformanceStudy() {
 
             <div className="bg-purple-50 rounded-lg p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Industry-Specific Performance Gains</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-3">Healthcare Industry</h4>
@@ -320,7 +320,7 @@ export default function AIvsHumanPerformanceStudy() {
           </motion.section>
 
           {/* Conclusion */}
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -332,9 +332,9 @@ export default function AIvsHumanPerformanceStudy() {
             </h2>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              The evidence is overwhelming and unequivocal: AI receptionist technology 
-              has fundamentally transformed customer service performance across every 
-              measurable metric. This isn't incremental improvement—it's revolutionary 
+              The evidence is overwhelming and unequivocal: AI receptionist technology
+              has fundamentally transformed customer service performance across every
+              measurable metric. This isn't incremental improvement—it's revolutionary
               advancement that's reshaping industry standards and customer expectations.
             </p>
 
@@ -362,33 +362,33 @@ export default function AIvsHumanPerformanceStudy() {
             </div>
 
             <p className="text-gray-700 leading-relaxed mb-6">
-              The transformation is accelerating. Businesses that implement AI receptionist 
-              technology today are not just optimizing current operations—they are positioning 
-              themselves for sustained competitive advantage in an increasingly demanding 
-              marketplace. The performance gap between AI-enhanced and traditional customer 
+              The transformation is accelerating. Businesses that implement AI receptionist
+              technology today are not just optimizing current operations—they are positioning
+              themselves for sustained competitive advantage in an increasingly demanding
+              marketplace. The performance gap between AI-enhanced and traditional customer
               service continues to widen, creating clear winners and laggards across industries.
             </p>
 
             <div className="bg-white rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">The Path Forward</h3>
               <p className="text-gray-700 leading-relaxed mb-4">
-                The customer service revolution is not a future possibility—it's a current 
-                reality. The performance data is clear, the advantages are proven, and the 
-                competitive implications are profound. The question is no longer whether 
-                AI receptionist technology can match human performance, but how quickly 
+                The customer service revolution is not a future possibility—it's a current
+                reality. The performance data is clear, the advantages are proven, and the
+                competitive implications are profound. The question is no longer whether
+                AI receptionist technology can match human performance, but how quickly
                 businesses can implement this revolutionary capability.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Early adopters are already reaping the benefits of superior performance, 
-                lower costs, and enhanced customer satisfaction. The window for competitive 
-                advantage is open, but it's closing rapidly as more businesses recognize 
+                Early adopters are already reaping the benefits of superior performance,
+                lower costs, and enhanced customer satisfaction. The window for competitive
+                advantage is open, but it's closing rapidly as more businesses recognize
                 and act on these transformative opportunities.
               </p>
             </div>
           </motion.section>
 
           {/* Author Bio */}
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -401,11 +401,11 @@ export default function AIvsHumanPerformanceStudy() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Dr. Sarah Chen</h3>
                 <p className="text-gray-600 leading-relaxed mb-3">
-                  Dr. Sarah Chen is a customer service technology researcher and data scientist 
-                  with over 12 years of experience analyzing customer experience metrics across 
-                  industries. She holds a Ph.D. in Business Analytics from Stanford University 
-                  and has published 47 research papers on customer service technology performance. 
-                  Dr. Chen specializes in AI-human performance comparisons and has consulted for 
+                  Dr. Sarah Chen is a customer service technology researcher and data scientist
+                  with over 12 years of experience analyzing customer experience metrics across
+                  industries. She holds a Ph.D. in Business Analytics from Stanford University
+                  and has published 47 research papers on customer service technology performance.
+                  Dr. Chen specializes in AI-human performance comparisons and has consulted for
                   Fortune 500 companies on customer service optimization strategies.
                 </p>
                 <p className="text-sm text-gray-500">

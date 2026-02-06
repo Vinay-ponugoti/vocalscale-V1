@@ -2,16 +2,18 @@ import * as React from "react"
 import { ChevronDown } from "lucide-react"
 import { cn } from "../../lib/utils"
 
-export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export interface SelectProps {
     children: React.ReactNode
+    value?: string
+    onValueChange?: (value: string) => void
 }
 
-export const Select = ({ children, value, onValueChange, ...props }: any) => {
+export const Select = ({ children, value, onValueChange }: SelectProps) => {
     return (
         <div className="relative inline-block w-full">
             {React.Children.map(children, (child) => {
                 if (React.isValidElement(child)) {
-                    return React.cloneElement(child as React.ReactElement<any>, {
+                    return React.cloneElement(child as React.ReactElement<SelectContentProps>, {
                         value,
                         onValueChange
                     })
@@ -40,11 +42,23 @@ export const SelectTrigger = React.forwardRef<
 ))
 SelectTrigger.displayName = "SelectTrigger"
 
-export const SelectValue = ({ placeholder, value }: any) => {
+interface SelectValueProps {
+    placeholder?: string
+    value?: string
+}
+
+export const SelectValue = ({ placeholder, value }: SelectValueProps) => {
     return <span>{value || placeholder}</span>
 }
 
-export const SelectContent = ({ children, className, value, onValueChange }: any) => {
+interface SelectContentProps {
+    children: React.ReactNode
+    className?: string
+    value?: string
+    onValueChange?: (value: string) => void
+}
+
+export const SelectContent = ({ children, className, value, onValueChange }: SelectContentProps) => {
     // Simplification: We use a hidden select for functionality and style the trigger
     // In a real shadcn/ui project, this would be a Radix Popover
     return (
@@ -61,7 +75,13 @@ export const SelectContent = ({ children, className, value, onValueChange }: any
     )
 }
 
-export const SelectItem = ({ value, children, className }: any) => (
+interface SelectItemProps {
+    value: string
+    children: React.ReactNode
+    className?: string
+}
+
+export const SelectItem = ({ value, children, className }: SelectItemProps) => (
     <option value={value} className={cn("", className)}>
         {children}
     </option>

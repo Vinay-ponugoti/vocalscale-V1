@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import {
   Plus,
   Smartphone,
-  PlusCircle,
   Search,
-  Link as LinkIcon,
   Phone,
   Settings2,
   X,
@@ -93,7 +91,7 @@ const VoiceSetup = () => {
       const totalInTwilio = summary.total_in_twilio || 0;
       const totalInDatabase = summary.total_in_database || 0;
       const failedCount = summary.failed_count || 0;
-      
+
       if (recoveredCount > 0) {
         setSyncMessage(`Successfully recovered ${recoveredCount} phone number${recoveredCount > 1 ? 's' : ''} from Twilio`);
         // Refresh the numbers list
@@ -107,9 +105,10 @@ const VoiceSetup = () => {
       } else {
         setSyncMessage(`Found ${totalInTwilio} in Twilio, ${totalInDatabase} in database. Sync may have issues.`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to sync phone numbers';
       console.error('Error syncing phone numbers:', err);
-      setSyncMessage(err.message || 'Failed to sync phone numbers');
+      setSyncMessage(errorMessage);
     } finally {
       setIsSyncing(false);
       // Clear message after 5 seconds
@@ -196,21 +195,19 @@ const VoiceSetup = () => {
 
           {/* Sync Success Message */}
           {syncMessage && (
-            <div className={`mb-10 border p-6 rounded-[2rem] flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 ${
-              syncMessage.includes('Successfully') 
-                ? 'bg-success/5 border-success/20 text-success' 
+            <div className={`mb-10 border p-6 rounded-[2rem] flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 ${syncMessage.includes('Successfully')
+                ? 'bg-success/5 border-success/20 text-success'
                 : syncMessage.includes('already synced')
-                ? 'bg-muted/50 border-border text-muted-foreground'
-                : 'bg-destructive/5 border-destructive/20 text-destructive'
-            }`}>
+                  ? 'bg-muted/50 border-border text-muted-foreground'
+                  : 'bg-destructive/5 border-destructive/20 text-destructive'
+              }`}>
               <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                  syncMessage.includes('Successfully') 
-                    ? 'bg-success/10' 
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${syncMessage.includes('Successfully')
+                    ? 'bg-success/10'
                     : syncMessage.includes('already synced')
-                    ? 'bg-muted'
-                    : 'bg-destructive/10'
-                }`}>
+                      ? 'bg-muted'
+                      : 'bg-destructive/10'
+                  }`}>
                   {syncMessage.includes('Successfully') ? (
                     <ShieldCheck className="w-6 h-6" />
                   ) : syncMessage.includes('already synced') ? (

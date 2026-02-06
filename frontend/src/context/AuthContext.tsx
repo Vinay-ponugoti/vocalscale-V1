@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const refreshSession = useCallback(async () => {
     setSecurityMessage("Refreshing security session...");
     try {
-      const { isValid, session: validatedSession, backendReachable } = await validateSessionUtil();
+      const { isValid, session: validatedSession } = await validateSessionUtil();
 
       if (mounted.current) {
         // Keep session if valid, regardless of backend reachability
@@ -137,7 +137,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (!response.ok) {
           // Silent failure for sync is acceptable
         }
-      } catch (err) {
+      } catch {
         // Silent
       }
     };
@@ -145,7 +145,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const initializeAuth = async () => {
       setSecurityMessage("Verifying security credentials...");
       try {
-        const { isValid, session: validatedSession, backendReachable } = await validateSessionUtil();
+        const { isValid, session: validatedSession } = await validateSessionUtil();
 
         if (mounted.current) {
           // CRITICAL FIX: Keep session if valid, even if backend temporarily unreachable
@@ -205,10 +205,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (mounted.current && session) {
         try {
           // Verify with backend directly
-          const { isValid, backendReachable } = await validateSessionUtil();
+          const { isValid } = await validateSessionUtil();
 
           // Only logout if session is explicitly invalid (not just unreachable)
-          if (mounted.current && !isValid && backendReachable) {
+          if (mounted.current && !isValid) {
             console.warn('Security check detected invalid session. Redirecting to login.');
             setSession(null);
             setUser(null);

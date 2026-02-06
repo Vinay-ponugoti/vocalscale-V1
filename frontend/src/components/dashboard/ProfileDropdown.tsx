@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { User, CreditCard, LogOut, Settings, ChevronRight } from 'lucide-react';
+import { User, CreditCard, LogOut, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProfileDropdownProps {

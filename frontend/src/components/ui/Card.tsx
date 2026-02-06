@@ -17,12 +17,12 @@ export const CardHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDiv
 );
 
 export const CardTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3 
+  <h3
     className={cn(
       "text-xl font-semibold leading-none tracking-tight text-foreground",
       className
-    )} 
-    {...props} 
+    )}
+    {...props}
   />
 );
 
@@ -30,10 +30,13 @@ export const CardDescription = ({ className, ...props }: React.HTMLAttributes<HT
   <p className={cn("text-sm text-muted-foreground", className)} {...props} />
 );
 
+// Note: pt-0 is intentional when used after CardHeader to maintain consistent vertical rhythm 
+// without doubling up on vertical space between header and content.
 export const CardContent = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("p-6 pt-0", className)} {...props} />
 );
 
+// Note: pt-0 is used here to keep the footer visually connected to the content block.
 export const CardFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("flex items-center p-6 pt-0", className)} {...props} />
 );

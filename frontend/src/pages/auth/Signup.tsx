@@ -1,18 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Lock, Phone, Building, Loader2, UserPlus, ArrowRight } from 'lucide-react';
+import { User, Mail, Lock, Phone, Building, Loader2, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AuthLayout from '../layouts/AuthLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
-import { useQueryClient } from '@tanstack/react-query';
-import { env } from '../../config/env';
 import Button from '../../components/ui/Button';
 
 const Signup = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { isConfigured, securityMessage, setAuthSession } = useAuth();
+  const { securityMessage, setAuthSession } = useAuth();
   const { showToast } = useToast();
 
   const [loading, setLoading] = useState(false);
@@ -64,7 +61,7 @@ const Signup = () => {
         try {
           const errorData = await response.json();
           errorMsg = errorData.detail || errorMsg;
-        } catch { }
+        } catch { /* ignore parse errors */ }
         throw new Error(errorMsg);
       }
 
@@ -79,9 +76,9 @@ const Signup = () => {
         showToast('Account created! Please sign in.', 'info');
         navigate('/login');
       }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'An error occurred during signup.');
-      showToast(e instanceof Error ? e.message : 'Signup failed', 'error');
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'An error occurred during signup.');
+      showToast(error instanceof Error ? error.message : 'Signup failed', 'error');
     } finally {
       setLoading(false);
     }
@@ -94,7 +91,7 @@ const Signup = () => {
       if (!response.ok) throw new Error('Failed to get auth URL');
       const { url } = await response.json();
       window.location.href = url;
-    } catch (e) {
+    } catch {
       showToast('An error occurred during Google signup.', 'error');
     }
   };

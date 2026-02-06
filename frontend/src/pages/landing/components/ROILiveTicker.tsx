@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { motion, useSpring, useTransform, animate } from 'framer-motion';
-import { PhoneMissed, Zap, ArrowUpRight } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { motion, useSpring, useTransform } from 'framer-motion';
+import { PhoneMissed, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const ROILiveTicker = () => {
-    const navigate = useNavigate();
     const [count, setCount] = useState(4821);
 
     useEffect(() => {

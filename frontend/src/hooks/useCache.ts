@@ -33,11 +33,9 @@ export const useLocalStorageCache = <T>({
     }
     return defaultValue;
   });
-  const [prevKey, setPrevKey] = useState(key);
 
-  // Adjust state if key changes (Sync during render)
-  if (key !== prevKey) {
-    setPrevKey(key);
+  // Sync state when key changes
+  useEffect(() => {
     try {
       const cached = safeLocalStorage.getItem(key);
       if (cached) {
@@ -55,7 +53,7 @@ export const useLocalStorageCache = <T>({
     } catch {
       setData(defaultValue);
     }
-  }
+  }, [key, ttl, defaultValue]);
 
   const updateCache = useCallback(
     (newData: T) => {

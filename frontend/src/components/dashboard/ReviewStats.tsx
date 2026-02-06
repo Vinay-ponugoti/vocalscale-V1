@@ -119,7 +119,7 @@ const ReviewStats = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={stats.sentiment as any[]}
+                      data={stats.sentiment || []}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}

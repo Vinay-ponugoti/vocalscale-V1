@@ -36,7 +36,24 @@ export const getAuthToken = (): string | null => {
   return session?.access_token || null;
 };
 
-export const fetchUserProfile = async (accessToken: string): Promise<any> => {
+interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string;
+  avatar_url: string;
+}
+
+interface ValidationResponse {
+  user_id?: string;
+  email?: string;
+  user_metadata?: {
+    full_name?: string;
+    avatar_url?: string;
+    picture?: string;
+  };
+}
+
+export const fetchUserProfile = async (accessToken: string): Promise<UserProfile | null> => {
   try {
     const response = await fetch(`${env.API_URL}/auth/validate`, {
       headers: {
@@ -49,7 +66,7 @@ export const fetchUserProfile = async (accessToken: string): Promise<any> => {
       throw new Error(`Failed to fetch user profile: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data: ValidationResponse = await response.json();
 
     // Ensure user_id exists - return null if missing to trigger fallback handling
     if (!data.user_id) {

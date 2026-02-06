@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calendar, Link, Unlink, CheckCircle, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react';
+import { Calendar, Unlink, CheckCircle, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react';
 import { env } from '../../../../config/env';
 import { api, getAuthHeader } from '../../../../lib/api';
 

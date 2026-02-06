@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Loader2, LogIn, ArrowRight } from 'lucide-react';
+import { Mail, Lock, LogIn } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AuthLayout from '../layouts/AuthLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { isSessionExpired } from '../../utils/sessionUtils';
-import { env } from '../../config/env';
 import Button from '../../components/ui/Button';
 
 const Login = () => {
@@ -54,7 +53,7 @@ const Login = () => {
         try {
           const errorData = await response.json();
           errorMsg = errorData.detail || errorMsg;
-        } catch (parseErr) { }
+        } catch { /* ignore parse errors */ }
         throw new Error(errorMsg);
       }
 
@@ -87,8 +86,8 @@ const Login = () => {
       } else {
         throw new Error('Session could not be established.');
       }
-    } catch (e) {
-      const message = e instanceof Error ? e.message : 'Failed to connect to authentication server.';
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to connect to authentication server.';
       setError(message);
       showToast(message, 'error');
     } finally {
@@ -109,7 +108,7 @@ const Login = () => {
 
       const { url } = await response.json();
       window.location.href = url;
-    } catch (e) {
+    } catch {
       showToast('An error occurred during Google login.', 'error');
     }
   };

@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, User, Play, Pause, Volume2, Network, BarChart, Lock, Globe2, PhoneCall, Bot, Zap, MessageSquare, Headphones } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, Play, Pause, PhoneCall, Bot, MessageSquare, Headphones } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+
+// Pre-compute random animation durations outside of render
+const BAR_DURATIONS = Array.from({ length: 32 }).map((_, i) => ({
+  delay: `${i * 0.05}s`,
+  duration: `${0.6 + (i % 5) * 0.2}s`  // Use deterministic pattern instead of Math.random
+}));
 
 interface Voice {
   id: string;
@@ -68,7 +74,7 @@ function AiReceptionistVisual() {
 
       {/* Premium Visualizer */}
       <div className="h-20 flex items-center justify-center gap-[3px] mb-12 px-6 w-full max-w-[380px]">
-        {Array.from({ length: 32 }).map((_, i) => (
+        {BAR_DURATIONS.map((timing, i) => (
           <div
             key={i}
             className={cn(
@@ -78,8 +84,8 @@ function AiReceptionistVisual() {
                 : "h-1.5 bg-slate-200 opacity-50"
             )}
             style={{
-              animationDelay: `${i * 0.05}s`,
-              animationDuration: `${0.6 + Math.random() * 0.8}s`
+              animationDelay: timing.delay,
+              animationDuration: timing.duration
             }}
           />
         ))}
@@ -235,7 +241,7 @@ export function Features() {
           <p
             className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed"
           >
-            We've combined state-of-the-art Voice AI with business-grade tools to help you provide world-class service, 24/7. 
+            We've combined state-of-the-art Voice AI with business-grade tools to help you provide world-class service, 24/7.
             Our comprehensive platform includes everything from intelligent call routing to detailed analytics, designed to help your business grow.
           </p>
         </div>
@@ -282,7 +288,7 @@ export function Features() {
         {/* Additional Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {additionalFeatures.map((feature, index) => (
-            <div 
+            <div
               key={index}
               className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300"
             >

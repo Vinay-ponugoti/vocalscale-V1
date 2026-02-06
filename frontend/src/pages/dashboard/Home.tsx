@@ -3,9 +3,8 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useDashboardData } from '../../hooks/useDashboardData';
 import { subDays, addDays } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
-import { ArrowLeft, ArrowRight, Clock, MessageSquare } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Clock } from 'lucide-react';
 import { useBusinessSetup } from '../../context/BusinessSetupContext';
-import { formatDate } from '../../lib/dateUtils';
 // FloatingChat removed
 
 // Import sub-components
@@ -15,6 +14,8 @@ import RecentTranscripts from '../../components/dashboard/RecentTranscripts';
 import ReviewStats from '../../components/dashboard/ReviewStats';
 import DashboardSkeleton from '../../components/dashboard/DashboardSkeleton';
 import CalendarPicker from '../../components/dashboard/CalendarPicker';
+import { PAGE_PADDING } from '../../constants/layout';
+import { cn } from '../../lib/utils';
 
 const Home = () => {
   const { state } = useBusinessSetup();
@@ -49,7 +50,7 @@ const Home = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
+      <div className={cn("w-full animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full space-y-8", PAGE_PADDING)}>
 
         {/* --- Header Section --- */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">

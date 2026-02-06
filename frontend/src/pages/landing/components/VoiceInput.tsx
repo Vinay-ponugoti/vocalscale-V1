@@ -1,10 +1,17 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { Mic } from "lucide-react"
 import { AnimatePresence, m } from "framer-motion"
 
 import { cn } from "@/lib/utils"
+
+// Generate random heights outside of render
+const generateBarHeights = () =>
+    [...Array(12)].map(() => ({
+        peak: 3 + Math.random() * 10,
+        mid: 3 + Math.random() * 5
+    }))
 
 interface VoiceInputProps {
     onStart?: () => void
@@ -18,6 +25,8 @@ export function VoiceInput({
 }: React.ComponentProps<"div"> & VoiceInputProps) {
     const [_listening, _setListening] = React.useState<boolean>(false)
     const [_time, _setTime] = React.useState<number>(0)
+    // Initialize bar heights once on mount
+    const [barHeights] = useState(generateBarHeights)
 
     React.useEffect(() => {
         let intervalId: NodeJS.Timeout
@@ -33,7 +42,7 @@ export function VoiceInput({
         }
 
         return () => clearInterval(intervalId)
-    }, [_listening])
+    }, [_listening, onStart, onStop])
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60)
@@ -87,14 +96,14 @@ export function VoiceInput({
                         >
                             {/* Frequency Animation */}
                             <div className="flex gap-0.5 items-center justify-center">
-                                {[...Array(12)].map((_, i) => (
+                                {barHeights.map((heights, i) => (
                                     <m.div
                                         key={i}
                                         className="w-0.5 bg-blue-500 rounded-full"
                                         initial={{ height: 2 }}
                                         animate={{
                                             height: _listening
-                                                ? [2, 3 + Math.random() * 10, 3 + Math.random() * 5, 2]
+                                                ? [2, heights.peak, heights.mid, 2]
                                                 : 2,
                                         }}
                                         transition={{

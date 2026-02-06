@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Mic, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import type { FileAttachment } from '../../../../types/chat';
 

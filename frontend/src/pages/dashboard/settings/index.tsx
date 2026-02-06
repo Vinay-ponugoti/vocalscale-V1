@@ -38,7 +38,6 @@ const Settings = () => {
   });
 
   const [availableVoices, setAvailableVoices] = useState<Voice[]>([]);
-  const [loading, setLoading] = useState(true);
   const [savingAll, setSavingAll] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -73,7 +72,6 @@ const Settings = () => {
   }, []);
 
   const loadSettings = async () => {
-    setLoading(true);
     try {
       const voicesResp = await api.getVoices().catch(e => console.warn("Voices load failed", e));
       if (voicesResp?.data) setAvailableVoices(voicesResp.data);
@@ -114,8 +112,6 @@ const Settings = () => {
     } catch (error) {
       console.error('Error loading settings:', error);
       setMessage({ type: 'error', text: 'Failed to load settings. Please try again.' });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -145,7 +141,7 @@ const Settings = () => {
           language: voiceSettings.language,
           is_active: voiceSettings.is_active
         };
-        const result = await api.updateVoiceSettings(voiceUpdates);
+        await api.updateVoiceSettings(voiceUpdates);
       }
 
       if (unsavedChangesRef.current.notifications) {

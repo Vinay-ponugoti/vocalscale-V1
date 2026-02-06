@@ -26,6 +26,13 @@ interface PhoneNumber {
   badge?: string;
 }
 
+interface TwilioNumber {
+  phone_number: string;
+  friendly_name: string;
+  monthly_cost: number;
+  item_badge?: string;
+}
+
 const GetNewNumber = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,7 +60,7 @@ const GetNewNumber = () => {
       if (!subscription || (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing')) {
         setLimitReached(true);
         setLimitMessage(
-          subscriptionStatus 
+          subscriptionStatus
             ? `Active subscription required to add phone numbers (current status: ${subscriptionStatus})`
             : 'Active subscription required to add phone numbers. Please subscribe to a plan first.'
         );
@@ -225,7 +232,7 @@ const GetNewNumber = () => {
 
       const data = await response.json();
 
-      const mappedNumbers: PhoneNumber[] = (data.available || []).map((item: any) => ({
+      const mappedNumbers: PhoneNumber[] = (data.available || []).map((item: TwilioNumber) => ({
         phone_number: item.phone_number,
         number: item.friendly_name,
         location: data.location || searchQuery,
@@ -240,9 +247,10 @@ const GetNewNumber = () => {
       } else {
         setSelectedNumber(null);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to find numbers. Please try a different location.";
       console.error(err);
-      setError(err.message || "Failed to find numbers. Please try a different location.");
+      setError(errorMessage);
       setNumbers([]);
     } finally {
       setSearching(false);
@@ -258,7 +266,7 @@ const GetNewNumber = () => {
       const subscriptionStatus = subscription?.status?.toLowerCase();
       if (!subscription || (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing')) {
         setError(
-          subscriptionStatus 
+          subscriptionStatus
             ? `Active subscription required (current status: ${subscriptionStatus})`
             : 'Active subscription required to add phone numbers. Please subscribe to a plan first.'
         );
@@ -291,7 +299,7 @@ const GetNewNumber = () => {
       }
 
       const result = await response.json();
-      
+
       // If response.ok is true, we assume success unless explicit error
       // Some endpoints might return { success: true } or just the created object
       if (result.success || result.id || result.phone_number || !result.error) {
@@ -299,9 +307,10 @@ const GetNewNumber = () => {
       } else {
         throw new Error(result.error || 'Failed to purchase number');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to activate number. Please try again.";
       console.error(err);
-      setError(err.message || "Failed to activate number. Please try again.");
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

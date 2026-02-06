@@ -9,6 +9,26 @@ import { CheckCircle2, XCircle, Loader2, Star, Clock, PhoneCall, ChevronRight } 
 import { billingApi } from '../../../api/billing';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 
+interface Subscription {
+  status: string;
+  plan_name?: string;
+  plan?: { name?: string; price_amount?: number; limits?: { ai_minutes?: number } };
+  plan_id?: string;
+  current_period_start?: number | string;
+  current_period_end?: number | string;
+  period_start?: number | string;
+  period_end?: number | string;
+  next_billing?: number | string;
+  trial_ends_at?: number | string;
+}
+
+interface UsageData {
+  total_minutes?: number;
+  minutes_limit?: number;
+  used_minutes?: number;
+  minutes_used?: number;
+}
+
 const Billing: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPolling, setIsPolling] = useState(false);
@@ -22,16 +42,16 @@ const Billing: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'history' | 'payment'>('overview');
 
   // Stats State
-  const [subscription, setSubscription] = useState<any>(null);
-  const [usage, setUsage] = useState<any>(null);
-  const [loadingStats, setLoadingStats] = useState(true);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [usage, setUsage] = useState<UsageData | null>(null);
+  const [, setLoadingStats] = useState(true);
 
-  const checkSubscription = useCallback(async (signal: AbortSignal): Promise<boolean> => {
+  const checkSubscription = useCallback(async (): Promise<boolean> => {
     try {
       const sub = await billingApi.getSubscription();
       return sub && sub.status === 'active';
-    } catch (error) {
-      if (error.name === 'AbortError') throw error;
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') throw error;
       console.error('Error checking subscription:', error);
       return false;
     }
@@ -80,7 +100,7 @@ const Billing: React.FC = () => {
         const delay = Math.min(initialDelay * Math.pow(1.5, attempt), maxDelay);
 
         try {
-          const isActive = await checkSubscription(abortControllerRef.current!.signal);
+          const isActive = await checkSubscription();
           if (isActive) {
             setSubscribed(true);
             setIsPolling(false);
@@ -114,19 +134,18 @@ const Billing: React.FC = () => {
   const hasSubscription = subscription && subscription.status === 'active';
   const planName = subscription?.plan_name || subscription?.plan?.name || (subscription?.plan_id ? 'Starter' : 'NO ACTIVE PLAN');
   const plan = subscription?.plan || { name: planName, price_amount: 0, limits: { ai_minutes: 0 } };
-  const status = subscription?.status || 'inactive';
   const normalizedPlan = planName?.toLowerCase();
   const isProfessional = normalizedPlan === 'professional';
   const isStarter = normalizedPlan === 'starter';
   const isNoPlan = normalizedPlan === 'no active plan';
 
   // Helper to parse dates from various formats (Stripe unix seconds or RFC3339)
-  const parseBillingDate = (dateVal: any) => {
+  const parseBillingDate = (dateVal: string | number | null | undefined) => {
     if (!dateVal) return null;
     if (typeof dateVal === 'number') return new Date(dateVal * 1000);
     try {
       return new Date(dateVal);
-    } catch (e) {
+    } catch {
       return null;
     }
   };
