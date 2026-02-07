@@ -219,6 +219,9 @@ export const BusinessDetails: React.FC = () => {
         if (primary.includes('car') || primary.includes('automotive')) return 'automotive';
         if (primary.includes('software') || primary.includes('tech')) return 'saas';
         if (primary.includes('agency') || primary.includes('consulting') || primary.includes('insurance_agency') || primary.includes('travel_agency')) return 'agency';
+        if (primary.includes('liquor_store') || primary.includes('wine') || primary.includes('beer')) return 'liquor';
+        if (primary.includes('vape') || primary.includes('tobacco')) return 'vape';
+        if (primary.includes('car_repair') || primary.includes('car_wash') || primary.includes('auto_repair')) return 'autocare';
 
         return 'other';
       };
@@ -514,6 +517,9 @@ export const BusinessDetails: React.FC = () => {
                 <option value="retail">E-Commerce & Retail</option>
                 <option value="hospitality">Hospitality & Travel</option>
                 <option value="automotive">Automotive</option>
+                <option value="liquor">Wine & Spirits</option>
+                <option value="vape">Vape & Smoke Specialty</option>
+                <option value="autocare">Auto Repair & Care</option>
                 <option value="other">Other</option>
               </Select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-500">
