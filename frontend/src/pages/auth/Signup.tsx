@@ -6,6 +6,7 @@ import AuthLayout from '../layouts/AuthLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
 import Button from '../../components/ui/Button';
+import TurnstileWidget from '../../components/ui/TurnstileWidget';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ const Signup = () => {
     businessType: 'Restaurant',
   });
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
   const passwordStrength = useMemo(() => {
     const p = formData.password;
@@ -53,6 +56,7 @@ const Signup = () => {
           email: formData.email.trim().toLowerCase(),
           password: formData.password,
           full_name: formData.full_name.trim(),
+          cf_turnstile_response: turnstileToken,
         }),
       });
 
@@ -224,6 +228,13 @@ const Signup = () => {
           >
             Get Started
           </Button>
+
+          {turnstileSiteKey && (
+            <TurnstileWidget
+              siteKey={turnstileSiteKey}
+              onVerify={(token) => setTurnstileToken(token)}
+            />
+          )}
         </form>
 
         {/* Divider */}

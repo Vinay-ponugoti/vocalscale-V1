@@ -8,6 +8,7 @@ import { useToast } from '../../hooks/useToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { isSessionExpired } from '../../utils/sessionUtils';
 import Button from '../../components/ui/Button';
+import TurnstileWidget from '../../components/ui/TurnstileWidget';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +48,7 @@ const Login = () => {
         body: JSON.stringify({
           email: email.trim().toLowerCase(),
           password: password,
+          cf_turnstile_response: turnstileToken,
         }),
       });
 
@@ -196,6 +200,13 @@ const Login = () => {
           >
             Get Started
           </Button>
+
+          {turnstileSiteKey && (
+            <TurnstileWidget
+              siteKey={turnstileSiteKey}
+              onVerify={(token) => setTurnstileToken(token)}
+            />
+          )}
         </form>
 
         {/* Design Match: Custom Divider */}
