@@ -23,7 +23,9 @@ const Settings = () => {
     urgent_call_alerts: true,
     booking_confirmations: true,
     missed_call_alerts: true,
+    urgent_transfer_enabled: false,
     transfer_number: '',
+    standard_transfer_enabled: false,
     standard_transfer_number: ''
   });
 
@@ -97,7 +99,9 @@ const Settings = () => {
           urgent_call_alerts: businessSetup.notification_settings.urgent_call_alerts ?? true,
           booking_confirmations: businessSetup.notification_settings.booking_confirmations ?? true,
           missed_call_alerts: businessSetup.notification_settings.missed_call_alerts ?? true,
+          urgent_transfer_enabled: businessSetup.notification_settings.urgent_transfer_enabled ?? false,
           transfer_number: businessSetup.notification_settings.transfer_number || '',
+          standard_transfer_enabled: businessSetup.notification_settings.standard_transfer_enabled ?? false,
           standard_transfer_number: businessSetup.notification_settings.standard_transfer_number || ''
         });
       } else {
