@@ -95,15 +95,36 @@ const Settings = () => {
 
       // Load notification settings from business setup API
       const businessSetup = await api.getBusinessSetup().catch(e => console.warn("Business setup load failed", e));
-      if (businessSetup?.notification_settings) {
+      if (businessSetup?.notification_settings || businessSetup?.urgent_call_rules) {
+
+        // Extract transfer settings from urgent_call_rules
+        let urgentTransferEnabled = false;
+        let urgentTransferNumber = '';
+        let standardTransferEnabled = false;
+        let standardTransferNumber = '';
+
+        if (businessSetup.urgent_call_rules) {
+          const urgentRule = businessSetup.urgent_call_rules.find((r: any) => r.rule_type === 'urgent');
+          if (urgentRule) {
+            urgentTransferEnabled = urgentRule.is_enabled ?? false;
+            urgentTransferNumber = urgentRule.transfer_number || '';
+          }
+
+          const standardRule = businessSetup.urgent_call_rules.find((r: any) => r.rule_type === 'standard');
+          if (standardRule) {
+            standardTransferEnabled = standardRule.is_enabled ?? false;
+            standardTransferNumber = standardRule.transfer_number || '';
+          }
+        }
+
         setNotifications({
-          urgent_call_alerts: businessSetup.notification_settings.urgent_call_alerts ?? true,
-          booking_confirmations: businessSetup.notification_settings.booking_confirmations ?? true,
-          missed_call_alerts: businessSetup.notification_settings.missed_call_alerts ?? true,
-          urgent_transfer_enabled: businessSetup.notification_settings.urgent_transfer_enabled ?? false,
-          transfer_number: businessSetup.notification_settings.transfer_number || '',
-          standard_transfer_enabled: businessSetup.notification_settings.standard_transfer_enabled ?? false,
-          standard_transfer_number: businessSetup.notification_settings.standard_transfer_number || ''
+          urgent_call_alerts: businessSetup.notification_settings?.urgent_call_alerts ?? true,
+          booking_confirmations: businessSetup.notification_settings?.booking_confirmations ?? true,
+          missed_call_alerts: businessSetup.notification_settings?.missed_call_alerts ?? true,
+          urgent_transfer_enabled: urgentTransferEnabled,
+          transfer_number: urgentTransferNumber,
+          standard_transfer_enabled: standardTransferEnabled,
+          standard_transfer_number: standardTransferNumber
         });
       } else {
         // Fallback to localStorage for legacy data, then remove it
