@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { api } from '../../../lib/api';
+import { businessSetupAPI } from '../../../api/businessSetup';
 import { BookingRequirementsContent } from './components/BookingRequirementsContent';
 import { VoiceSettingsContent } from './components/VoiceSettingsContent';
 import { NotificationSettingsContent } from './components/NotificationSettingsContent';
@@ -149,7 +150,37 @@ const Settings = () => {
       }
 
       if (unsavedChangesRef.current.notifications) {
-        await api.updateNotificationSettings(notifications as unknown as Record<string, unknown>);
+        // Save non-transfer notification settings
+        const notificationData = {
+          urgent_call_alerts: notifications.urgent_call_alerts,
+          booking_confirmations: notifications.booking_confirmations,
+          missed_call_alerts: notifications.missed_call_alerts
+        };
+        await api.updateNotificationSettings(notificationData as unknown as Record<string, unknown>);
+
+        // Save transfer rules to urgent_call_rules table
+        const transferRules = [];
+        if (notifications.transfer_number) {
+          transferRules.push({
+            condition_text: 'Emergency or urgent request',
+            action: 'transfer',
+            transfer_number: notifications.transfer_number,
+            is_enabled: notifications.urgent_transfer_enabled ?? false,
+            rule_type: 'urgent' as const
+          });
+        }
+        if (notifications.standard_transfer_number) {
+          transferRules.push({
+            condition_text: 'Customer requests transfer',
+            action: 'transfer',
+            transfer_number: notifications.standard_transfer_number,
+            is_enabled: notifications.standard_transfer_enabled ?? false,
+            rule_type: 'standard' as const
+          });
+        }
+        if (transferRules.length > 0) {
+          await businessSetupAPI.updateUrgentCallRules(transferRules);
+        }
         // Clean up legacy localStorage
         localStorage.removeItem('notification_settings');
       }

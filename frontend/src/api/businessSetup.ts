@@ -41,7 +41,10 @@ interface UrgentCallRule {
   condition_text: string;
   action: string;
   contact?: string;
-  id_val?: string;
+  transfer_number?: string;
+  is_enabled?: boolean;
+  user_id?: string;
+  rule_type?: 'urgent' | 'standard';
 }
 
 interface BookingRequirement {
