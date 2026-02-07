@@ -27,7 +27,9 @@ export interface NotificationSettings {
   urgent_call_alerts: boolean;
   booking_confirmations: boolean;
   missed_call_alerts: boolean;
+  urgent_transfer_enabled?: boolean;
   transfer_number?: string;
+  standard_transfer_enabled?: boolean;
   standard_transfer_number?: string;
 }
 
