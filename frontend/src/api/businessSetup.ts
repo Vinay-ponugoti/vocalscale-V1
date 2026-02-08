@@ -200,6 +200,38 @@ class BusinessSetupAPI {
     return response.json();
   }
 
+  // Upload Inventory (CSV/Excel)
+  async uploadInventory(formData: FormData): Promise<{ success: boolean; imported: number; message: string }> {
+    const url = `${API_BASE_URL}/knowledge/inventory`;
+    const headers = await getAuthHeader(); // Remove Content-Type to let browser set boundary
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...headers,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Upload failed' }));
+      throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  // Get Inventory
+  async getInventory(): Promise<{ items: any[] }> {
+    const url = `${API_BASE_URL}/knowledge/inventory`;
+    const headers = await getAuthHeader();
+    const response = await fetch(url, { headers });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
   // Poll Task Status
   async getTaskStatus(taskId: string): Promise<{ task_id: string; status: string; result?: any }> {
     const url = `${API_BASE_URL}/knowledge/tasks/${taskId}`;

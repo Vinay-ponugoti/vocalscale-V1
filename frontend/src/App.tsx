@@ -50,6 +50,7 @@ const Reviews = lazyImport(() => import('./pages/dashboard/Reviews/index'));
 const Chat = lazyImport(() => import('./pages/dashboard/Chat'));
 const HelpCenter = lazyImport(() => import('./pages/dashboard/HelpCenter'));
 const Settings = lazyImport(() => import('./pages/dashboard/settings'));
+
 const Billing = lazyImport(() => import('./pages/dashboard/Billing'));
 const Plans = lazyImport(() => import('./pages/dashboard/Billing/Plans'));
 const VoiceSetup = lazyImport(() => import('./pages/voice-setup'));
@@ -57,6 +58,7 @@ const NumberDetails = lazyImport(() => import('./pages/voice-setup/NumberDetails
 const SetupSubaccount = lazyImport(() => import('./pages/voice-setup/SetupSubaccount'));
 const GetNewNumber = lazyImport(() => import('./pages/voice-setup/GetNewNumber'));
 const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
+const Inventory = lazyImport(() => import('./pages/dashboard/Inventory'));
 
 function App() {
   return (
@@ -126,6 +128,7 @@ function App() {
                   <Route path="/dashboard/voice-setup/setup-subaccount" element={<SetupSubaccount />} />
                   <Route path="/dashboard/voice-setup/buy" element={<GetNewNumber />} />
                   <Route path="/dashboard/business-details" element={<BusinessSetup />} />
+                  <Route path="/dashboard/inventory" element={<Inventory />} />
 
                   {/* Voice Model Setup Routes (Moved inside Dashboard) */}
                   <Route path="/dashboard/voice-model/*" element={
