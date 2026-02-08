@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 
 const menuItems = [
-    { name: 'Features', href: '/#features' },
-    { name: 'Process', href: '/#how-it-works' },
-    { name: 'Pricing', href: '/#pricing' },
+    { name: 'Features', href: '/features' },
+    { name: 'Process', href: '/process' },
+
+    { name: 'Pricing', href: '/pricing' },
+
 ]
 
 export const Header = () => {

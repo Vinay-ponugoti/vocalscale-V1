@@ -6,6 +6,7 @@ import {
 import { m, AnimatePresence } from 'framer-motion';
 import { useToast } from '../../../hooks/useToast';
 import { businessSetupAPI } from '../../../api/businessSetup';
+import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 
 interface InventoryUploadProps {
     onUploadSuccess?: () => void;
@@ -15,10 +16,12 @@ export const InventoryUpload: React.FC<InventoryUploadProps> = ({ onUploadSucces
     const { showToast } = useToast();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+    const { state } = useBusinessSetup();
+    const businessCategory = state.data.business.category || 'other';
+
     const [processingStatus, setProcessingStatus] = useState<'idle' | 'uploading' | 'processing' | 'success' | 'error'>('idle');
     const [progressMessage, setProgressMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [industry, setIndustry] = useState<'liquor' | 'vape'>('liquor');
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -45,7 +48,8 @@ export const InventoryUpload: React.FC<InventoryUploadProps> = ({ onUploadSucces
         try {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('industry', industry);
+            // Default to 'liquor' if it's liquor, 'vape' if it's vape, otherwise pass generic category
+            formData.append('industry', businessCategory);
 
             // We need to add this method to businessSetupAPI
             const uploadRes = await businessSetupAPI.uploadInventory(formData);
@@ -74,19 +78,6 @@ export const InventoryUpload: React.FC<InventoryUploadProps> = ({ onUploadSucces
     return (
         <div className="space-y-6">
 
-            {/* Industry Selector */}
-            <div className="flex items-center gap-4 mb-4">
-                <label className="text-sm font-medium text-slate-700">Industry Type:</label>
-                <select
-                    value={industry}
-                    onChange={(e) => setIndustry(e.target.value as 'liquor' | 'vape')}
-                    className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 font-medium"
-                >
-                    <option value="liquor">Liquor Store</option>
-                    <option value="vape">Vape Shop</option>
-                </select>
-            </div>
-
             {/* Hidden File Input */}
             <input
                 type="file"
@@ -99,13 +90,13 @@ export const InventoryUpload: React.FC<InventoryUploadProps> = ({ onUploadSucces
             {/* Upload UI */}
             {processingStatus !== 'idle' ? (
                 <div className={`p-4 border rounded-xl transition-all ${processingStatus === 'error' ? 'bg-red-50 border-red-200' :
-                        processingStatus === 'success' ? 'bg-green-50 border-green-200' :
-                            'bg-indigo-50 border-indigo-200'
+                    processingStatus === 'success' ? 'bg-green-50 border-green-200' :
+                        'bg-indigo-50 border-indigo-200'
                     }`}>
                     <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg ${processingStatus === 'error' ? 'bg-white text-red-500' :
-                                processingStatus === 'success' ? 'bg-white text-green-500' :
-                                    'bg-white text-indigo-500'
+                            processingStatus === 'success' ? 'bg-white text-green-500' :
+                                'bg-white text-indigo-500'
                             }`}>
                             {processingStatus === 'uploading' || processingStatus === 'processing' ? (
                                 <Loader2 size={18} className="animate-spin" />

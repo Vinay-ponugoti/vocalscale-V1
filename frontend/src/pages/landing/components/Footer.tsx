@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom';
 export function Footer() {
   const footerLinks = {
     Product: [
-      { label: 'Features', href: '#features' },
-      { label: 'Pricing', href: '#pricing' },
+      { label: 'Features', href: '/features' },
+
+      { label: 'Pricing', href: '/pricing' },
+
       { label: 'Use Cases', href: '#' }
     ],
     Company: [

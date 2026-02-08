@@ -1,8 +1,24 @@
 import { useState, useEffect } from 'react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { InventoryUpload } from '../../../pages/business-setup/components/InventoryUpload';
-import { Package, Search, Filter, Wine, ShoppingBag, Plus } from 'lucide-react';
+import {
+    Search,
+    Filter,
+    Plus,
+    Package,
+    Wine,
+    ShoppingBag,
+    Zap,
+    Stethoscope,
+    Car,
+    Home,
+    Gavel,
+    Smartphone,
+    Utensils,
+    Building
+} from 'lucide-react';
 import { businessSetupAPI } from '../../../api/businessSetup';
+import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import { m, AnimatePresence } from 'framer-motion';
 
 interface InventoryItem {
@@ -38,6 +54,28 @@ const Inventory = () => {
     useEffect(() => {
         fetchInventory();
     }, []);
+
+    const { state } = useBusinessSetup();
+    const businessCategory = state.data.business.category || 'other';
+
+    const getCategoryIcon = (itemCategory: string) => {
+        // First check item category, then fallback to business category if item category is generic
+        const cat = itemCategory?.toLowerCase() || businessCategory;
+
+        switch (cat) {
+            case 'liquor': return <Wine size={14} className="text-purple-500" />;
+            case 'vape': return <Zap size={14} className="text-amber-500" />;
+            case 'dining': return <Utensils size={14} className="text-orange-500" />;
+            case 'healthcare': return <Stethoscope size={14} className="text-blue-500" />;
+            case 'automotive':
+            case 'autocare': return <Car size={14} className="text-slate-600" />;
+            case 'retail': return <ShoppingBag size={14} className="text-indigo-500" />;
+            case 'realestate': return <Home size={14} className="text-emerald-500" />;
+            case 'legal': return <Gavel size={14} className="text-brown-500" />;
+            case 'saas': return <Smartphone size={14} className="text-cyan-500" />;
+            default: return <Package size={14} className="text-slate-400" />;
+        }
+    };
 
     const filteredItems = items.filter(item =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -130,7 +168,7 @@ const Inventory = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    {item.category === 'liquor' ? <Wine size={14} className="text-purple-500" /> : <ShoppingBag size={14} className="text-indigo-500" />}
+                                                    {getCategoryIcon(item.category)}
                                                     <span className="capitalize text-slate-700">{item.sub_category}</span>
                                                 </div>
                                             </td>
