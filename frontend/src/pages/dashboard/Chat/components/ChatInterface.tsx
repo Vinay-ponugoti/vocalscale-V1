@@ -89,39 +89,39 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
   return (
     <div className="flex flex-col h-full relative bg-white">
-      {/* Skills Toggle Bar */}
+      {/* Skills Navigation Bar */}
       {showSkills && skills.length > 0 && (
-        <div className="flex-shrink-0 border-b border-gray-100 bg-gray-50/50 px-4 py-2">
-          <div className="max-w-3xl mx-auto flex items-center gap-2 overflow-x-auto scrollbar-none">
-            <span className="text-xs text-gray-500 flex items-center gap-1 flex-shrink-0">
-              <Sparkles size={12} />
-              Skills:
-            </span>
-            <button
-              onClick={() => setSelectedSkill(null)}
-              className={cn(
-                "px-3 py-1 text-xs rounded-full transition-all flex-shrink-0",
-                !selectedSkill
-                  ? "bg-gray-900 text-white"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-              )}
-            >
-              General
-            </button>
-            {skills.map((skill) => (
+        <div className="flex-shrink-0 bg-white border-b border-gray-100 py-3 shadow-sm z-20">
+          <div className="max-w-3xl mx-auto px-4">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
               <button
-                key={skill.id}
-                onClick={() => setSelectedSkill(selectedSkill?.id === skill.id ? null : skill)}
+                onClick={() => setSelectedSkill(null)}
                 className={cn(
-                  "px-3 py-1 text-xs rounded-full transition-all flex-shrink-0",
-                  selectedSkill?.id === skill.id
-                    ? "bg-gray-900 text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  "px-4 py-1.5 text-sm font-medium rounded-full transition-all whitespace-nowrap border",
+                  !selectedSkill
+                    ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                 )}
               >
-                {skill.icon} {skill.name}
+                All Skills
               </button>
-            ))}
+
+              {skills.map((skill) => (
+                <button
+                  key={skill.id}
+                  onClick={() => setSelectedSkill(selectedSkill?.id === skill.id ? null : skill)}
+                  className={cn(
+                    "px-4 py-1.5 text-sm font-medium rounded-full transition-all whitespace-nowrap border flex items-center gap-1.5",
+                    selectedSkill?.id === skill.id
+                      ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                  )}
+                >
+                  <span>{skill.icon}</span>
+                  <span>{skill.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
