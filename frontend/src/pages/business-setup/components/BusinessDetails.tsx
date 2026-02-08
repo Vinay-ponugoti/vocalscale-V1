@@ -215,7 +215,8 @@ export const BusinessDetails: React.FC = () => {
         if (primary.includes('real_estate') || primary.includes('moving_company')) return 'realestate';
         if (primary.includes('lawyer') || primary.includes('courthouse')) return 'legal';
         if (primary.includes('store') || primary.includes('shopping') || primary.includes('clothing') || primary.includes('electronics') || primary.includes('furniture')) return 'retail';
-        if (primary.includes('lodging') || primary.includes('hotel') || primary.includes('restaurant') || primary.includes('cafe') || primary.includes('bar')) return 'hospitality';
+        if (primary.includes('restaurant') || primary.includes('cafe') || primary.includes('bakery') || primary.includes('meal') || primary.includes('food')) return 'dining';
+        if (primary.includes('lodging') || primary.includes('hotel') || primary.includes('bar')) return 'hospitality';
         if (primary.includes('car') || primary.includes('automotive')) return 'automotive';
         if (primary.includes('software') || primary.includes('tech')) return 'saas';
         if (primary.includes('agency') || primary.includes('consulting') || primary.includes('insurance_agency') || primary.includes('travel_agency')) return 'agency';
@@ -516,6 +517,7 @@ export const BusinessDetails: React.FC = () => {
                 <option value="legal">Legal Services</option>
                 <option value="retail">E-Commerce & Retail</option>
                 <option value="hospitality">Hospitality & Travel</option>
+                <option value="dining">Restaurants & Dining</option>
                 <option value="automotive">Automotive</option>
                 <option value="liquor">Wine & Spirits</option>
                 <option value="vape">Vape & Smoke Specialty</option>
