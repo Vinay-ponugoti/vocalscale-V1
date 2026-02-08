@@ -18,7 +18,7 @@ export default {
           soft: '#F8FAFC',     /* Slate 50 */
           light: '#F1F5F9',    /* Slate 100 */
         },
-        
+
         /* Charcoal/Slate Palette (30%) */
         charcoal: {
           DEFAULT: '#1E293B',  /* Slate 800 */
@@ -27,7 +27,7 @@ export default {
           muted: '#475569',    /* Slate 600 */
           light: '#64748B',    /* Slate 500 */
         },
-        
+
         /* Electric Blue Accent (10%) */
         blue: {
           electric: '#3B82F6', /* Blue 500 */
@@ -36,7 +36,7 @@ export default {
           light: '#60A5FA',    /* Blue 400 */
           muted: '#DBEAFE',    /* Blue 100 */
         },
-        
+
         /* Brand Shorthand */
         brand: {
           primary: '#3B82F6',
@@ -80,7 +80,7 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        
+
         /* Chart Colors */
         chart: {
           1: 'hsl(var(--chart-1))',
@@ -96,6 +96,7 @@ export default {
          ======================================== */
       fontFamily: {
         sans: [
+          'Inter',
           'Plus Jakarta Sans',
           'system-ui',
           '-apple-system',
