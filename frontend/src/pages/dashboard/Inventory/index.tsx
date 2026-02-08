@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { InventoryUpload } from '../../../pages/business-setup/components/InventoryUpload';
-import { Package, Search, Filter, Wine, ShoppingBag, Plus, Calendar, ArrowUpRight } from 'lucide-react';
+import { Package, Search, Filter, Wine, ShoppingBag, Plus } from 'lucide-react';
 import { businessSetupAPI } from '../../../api/businessSetup';
 import { m, AnimatePresence } from 'framer-motion';
 
@@ -14,7 +14,6 @@ interface InventoryItem {
     price: number;
     stock_status: string;
     details: any;
-    created_at?: string;
 }
 
 const Inventory = () => {
@@ -26,6 +25,7 @@ const Inventory = () => {
     const fetchInventory = async () => {
         setLoading(true);
         try {
+            // We need to implement getInventory in API client
             const res = await businessSetupAPI.getInventory();
             setItems(res.items || []);
         } catch (error) {
@@ -45,187 +45,114 @@ const Inventory = () => {
         item.sub_category.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Group items by category for stats
-    const stats = {
-        total: items.length,
-        value: items.reduce((acc, item) => acc + (item.price || 0), 0),
-        lowStock: items.filter(i => i.stock_status?.toLowerCase().includes('low') || i.stock_status?.toLowerCase().includes('out')).length
-    };
-
     return (
         <DashboardLayout>
-            <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Inventory</h1>
-                        <p className="text-slate-500 mt-2 text-lg">Manage products and train your AI agent on stock knowledge.</p>
+                        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Inventory Management</h1>
+                        <p className="text-slate-500 mt-1">Manage your products and train the AI on your stock.</p>
                     </div>
                     <button
                         onClick={() => setShowUpload(!showUpload)}
-                        className={`px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-sm ${showUpload
-                            ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
-                            : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200 hover:shadow-lg hover:-translate-y-0.5'
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${showUpload ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-indigo-600 text-white hover:bg-indigo-700'
                             }`}
                     >
-                        {showUpload ? 'Cancel Upload' : <><Plus size={20} strokeWidth={2.5} /> Import Inventory</>}
+                        {showUpload ? 'Cancel Upload' : <><Plus size={18} /> Import Inventory</>}
                     </button>
                 </div>
 
-                {/* Upload Section */}
                 <AnimatePresence>
                     {showUpload && (
                         <m.div
-                            initial={{ opacity: 0, height: 0, y: -20 }}
-                            animate={{ opacity: 1, height: 'auto', y: 0 }}
-                            exit={{ opacity: 0, height: 0, y: -20 }}
-                            className="overflow-hidden"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm overflow-hidden"
                         >
-                            <div className="bg-white border border-indigo-100 rounded-2xl p-8 shadow-xl shadow-indigo-50/50 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full -mr-16 -mt-16 opacity-50" />
-                                <div className="relative z-10">
-                                    <h3 className="text-xl font-bold mb-6 text-slate-900 flex items-center gap-2">
-                                        <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600">
-                                            <ArrowUpRight size={20} />
-                                        </div>
-                                        Import Products
-                                    </h3>
-                                    <InventoryUpload onUploadSuccess={() => {
-                                        setShowUpload(false);
-                                        fetchInventory();
-                                    }} />
-                                </div>
-                            </div>
+                            <h3 className="text-lg font-semibold mb-4 text-slate-900">Import Products</h3>
+                            <InventoryUpload onUploadSuccess={() => {
+                                setShowUpload(false);
+                                fetchInventory();
+                            }} />
                         </m.div>
                     )}
                 </AnimatePresence>
 
-                {/* Search & Stats Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    <div className="lg:col-span-3 relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-                            <Search size={22} />
-                        </div>
+                {/* Search & Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2 relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                         <input
                             type="text"
                             placeholder="Search by name, brand, or category..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all shadow-sm text-lg"
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
                         />
                     </div>
-
-                    {/* Mini Stats */}
-                    <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
-                        <div>
-                            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Items</p>
-                            <p className="text-2xl font-black text-slate-900">{stats.total}</p>
-                        </div>
-                        <div className="p-3 bg-slate-50 rounded-xl text-slate-400">
-                            <Package size={24} />
-                        </div>
+                    <div className="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between px-6">
+                        <span className="text-slate-500 font-medium">Total Items</span>
+                        <span className="text-2xl font-bold text-slate-900">{items.length}</span>
                     </div>
                 </div>
 
                 {/* Inventory List */}
-                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
                     {loading ? (
-                        <div className="p-20 text-center">
-                            <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4" />
-                            <p className="text-slate-500 font-medium">Loading your inventory...</p>
-                        </div>
+                        <div className="p-12 text-center text-slate-400">Loading inventory...</div>
                     ) : filteredItems.length === 0 ? (
-                        <div className="p-20 text-center max-w-md mx-auto">
-                            <div className="w-24 h-24 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-slate-300 transform rotate-3">
-                                <Package size={48} strokeWidth={1.5} />
+                        <div className="p-12 text-center">
+                            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                                <Package size={32} />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">No items found</h3>
-                            <p className="text-slate-500 mb-8">
-                                {searchQuery ? 'Try adjusting your search terms.' : 'Upload your inventory list to get started. The AI will learn these products instantly.'}
-                            </p>
-                            {!searchQuery && (
-                                <button
-                                    onClick={() => setShowUpload(true)}
-                                    className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
-                                >
-                                    Import First Product
-                                </button>
-                            )}
+                            <h3 className="text-slate-900 font-medium mb-1">No items found</h3>
+                            <p className="text-slate-500 text-sm">Upload your inventory to get started.</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-slate-50/80 border-b border-slate-200">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-medium uppercase tracking-wider text-xs">
                                     <tr>
-                                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Product</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Category</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Price</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Details</th>
+                                        <th className="px-6 py-3">Product Name</th>
+                                        <th className="px-6 py-3">Category</th>
+                                        <th className="px-6 py-3">Price</th>
+                                        <th className="px-6 py-3">Stock</th>
+                                        <th className="px-6 py-3">Details</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
-                                    {filteredItems.map((item, i) => (
-                                        <m.tr
-                                            key={item.id}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: i * 0.05 }}
-                                            className="hover:bg-slate-50/80 transition-colors group"
-                                        >
+                                    {filteredItems.map((item) => (
+                                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                                             <td className="px-6 py-4">
-                                                <div className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{item.name}</div>
-                                                {item.brand && (
-                                                    <div className="text-xs font-medium text-slate-500 mt-0.5 bg-slate-100 inline-block px-2 py-0.5 rounded-md">
-                                                        {item.brand}
-                                                    </div>
-                                                )}
+                                                <div className="font-medium text-slate-900">{item.name}</div>
+                                                <div className="text-xs text-slate-500">{item.brand}</div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    {item.category === 'liquor' ? (
-                                                        <div className="p-1.5 bg-purple-100 text-purple-600 rounded-lg">
-                                                            <Wine size={16} />
-                                                        </div>
-                                                    ) : (
-                                                        <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg">
-                                                            <ShoppingBag size={16} />
-                                                        </div>
-                                                    )}
-                                                    <span className="capitalize font-medium text-slate-700">
-                                                        {item.sub_category || item.category}
-                                                    </span>
+                                                    {item.category === 'liquor' ? <Wine size={14} className="text-purple-500" /> : <ShoppingBag size={14} className="text-indigo-500" />}
+                                                    <span className="capitalize text-slate-700">{item.sub_category}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <span className="font-mono font-medium text-slate-900">
-                                                    ${item.price?.toFixed(2)}
-                                                </span>
+                                            <td className="px-6 py-4 font-medium text-slate-900">
+                                                ${item.price.toFixed(2)}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${item.stock_status?.toLowerCase().includes('out')
-                                                        ? 'bg-red-50 text-red-700 border-red-100'
-                                                        : item.stock_status?.toLowerCase().includes('low')
-                                                            ? 'bg-amber-50 text-amber-700 border-amber-100'
-                                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${item.stock_status?.toLowerCase().includes('out')
+                                                    ? 'bg-red-50 text-red-700'
+                                                    : 'bg-green-50 text-green-700'
                                                     }`}>
-                                                    {item.stock_status || 'Unknown'}
+                                                    {item.stock_status}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex flex-wrap gap-2">
-                                                    {Object.entries(item.details || {}).slice(0, 3).map(([k, v]) => (
-                                                        <div key={k} className="text-xs px-2 py-1 bg-slate-100 border border-slate-200 rounded text-slate-600 flex items-center gap-1 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                            <span className="font-semibold text-slate-400 uppercase text-[9px]">{k}:</span>
-                                                            <span className="font-medium truncate max-w-[100px]">{v as string}</span>
-                                                        </div>
-                                                    ))}
-                                                    {Object.keys(item.details || {}).length > 3 && (
-                                                        <span className="text-xs text-slate-400 px-1 py-1">+{Object.keys(item.details || {}).length - 3}</span>
-                                                    )}
-                                                </div>
+                                            <td className="px-6 py-4 text-slate-500 text-xs max-w-xs truncate">
+                                                {Object.entries(item.details || {}).map(([k, v]) => (
+                                                    <span key={k} className="mr-2 capitalize">
+                                                        <span className="font-semibold text-slate-700">{k}:</span> {v as string}
+                                                    </span>
+                                                ))}
                                             </td>
-                                        </m.tr>
+                                        </tr>
                                     ))}
                                 </tbody>
                             </table>
