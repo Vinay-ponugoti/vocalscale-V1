@@ -150,7 +150,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+          <div className="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 snap-x custom-scrollbar">
             {languageVoices.map(voice => {
               const isSelected = settings.voice_id === voice.id;
               const isVoicePlaying = playingVoiceId === voice.id && isPlaying;
@@ -160,10 +160,11 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                 <div
                   key={voice.id}
                   className={`
-                    relative flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer group
+                    relative flex flex-col justify-between p-5 rounded-3xl border transition-all cursor-pointer group snap-center
+                    min-w-[260px] max-w-[260px] h-[180px]
                     ${isSelected
-                      ? 'bg-indigo-50 border-indigo-200 shadow-sm'
-                      : 'bg-slate-50 border-slate-100 hover:border-indigo-200 hover:bg-white'
+                      ? 'bg-white border-indigo-600 shadow-xl shadow-indigo-100 ring-1 ring-indigo-600'
+                      : 'bg-white border-slate-100 hover:border-indigo-200 hover:shadow-lg hover:shadow-slate-100 hover:-translate-y-1'
                     }
                   `}
                   onClick={() => {
@@ -173,42 +174,71 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                     });
                   }}
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className={`text-[12px] font-bold truncate ${isSelected ? 'text-indigo-900' : 'text-slate-900'}`}>
-                        {voice.name}
-                      </span>
-                      {isSelected && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse shrink-0" />
-                      )}
+                  {/* Header info */}
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-lg font-black tracking-tight ${isSelected ? 'text-indigo-900' : 'text-slate-900'}`}>
+                          {voice.name}
+                        </span>
+                        {isSelected && (
+                          <div className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[9px] font-black uppercase tracking-wider">
+                            Active
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <span className="text-[10px] font-medium text-slate-500 truncate block">
-                      {voice.gender === 'male' ? 'Masculine' : voice.gender === 'female' ? 'Feminine' : voice.gender} • {voice.accent}
-                    </span>
+
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2 py-1 rounded-md bg-slate-50 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-100">
+                        {voice.gender === 'male' ? 'Masculine' : voice.gender === 'female' ? 'Feminine' : voice.gender}
+                      </span>
+                      <span className="px-2 py-1 rounded-md bg-slate-50 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-100">
+                        {voice.accent}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Preview Button */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleVoicePreview(voice.id, voice.provider_voice_id || null, voice.sample_audio_url || null);
-                    }}
-                    className={`
-                      flex items-center justify-center w-7 h-7 rounded-lg transition-all shrink-0 ml-2
-                      ${isVoicePlaying
-                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50'
-                      }
-                    `}
-                    disabled={isVoiceLoading}
-                  >
-                    {isVoiceLoading ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  {/* Visual / Audio Control */}
+                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-50">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleVoicePreview(voice.id, voice.provider_voice_id || null, voice.sample_audio_url || null);
+                      }}
+                      className={`
+                          flex items-center gap-2 px-3 py-2 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest
+                          ${isVoicePlaying
+                          ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                          : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        }
+                        `}
+                      disabled={isVoiceLoading}
+                    >
+                      {isVoiceLoading ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : isVoicePlaying ? (
+                        <>
+                          <Volume2 className="w-3.5 h-3.5 animate-pulse" /> Stop
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3.5 h-3.5" /> Preview
+                        </>
+                      )}
+                    </button>
+
+                    {isSelected ? (
+                      <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </div>
                     ) : (
-                      <Volume2 className={`w-3.5 h-3.5 ${isVoicePlaying ? 'animate-pulse' : ''}`} />
+                      <div className="w-8 h-8 rounded-full border-2 border-slate-100 group-hover:border-indigo-200 transition-colors" />
                     )}
-                  </button>
+                  </div>
                 </div>
               );
             })}
