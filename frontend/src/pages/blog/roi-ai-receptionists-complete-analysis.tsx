@@ -1,13 +1,20 @@
+```
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, ArrowLeft, ArrowRight, CheckCircle, TrendingUp, DollarSign, Calculator, BarChart3, PieChart, Phone } from 'lucide-react';
+import { Calendar, Clock, User, ArrowLeft, CheckCircle, TrendingUp, DollarSign, Heart, ArrowRight } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
+import { SEO } from '../../components/SEO';
 
-export default function ROICompleteAnalysis() {
+export default function ROIAnalysis() {
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+      <SEO 
+        title="ROI of AI Receptionists: Cost-Benefit Analysis | VocalScale"
+        description="Detailed analysis of AI receptionist ROI. See how businesses save 70% on reception costs while capturing more leads and improving customer satisfaction."
+        canonical="https://www.vocalscale.com/blog/roi-ai-receptionists-complete-analysis"
+      />
       {/* Background Effects - "Luminous Enterprise" */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {/* Soft Modern Gradients */}

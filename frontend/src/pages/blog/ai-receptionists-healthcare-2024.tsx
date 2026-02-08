@@ -4,10 +4,16 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, User, ArrowLeft, CheckCircle, TrendingUp, DollarSign, Heart, ArrowRight } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
+import { SEO } from '../../components/SEO';
 
 export default function AIReceptionistsHealthcare() {
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+      <SEO
+        title="AI in Healthcare: Transforming Medical Practices | VocalScale"
+        description="Discover how AI receptionists are reducing missed calls by 85% and saving medical practices $50k+ annually. Transform your patient experience today."
+        canonical="https://www.vocalscale.com/blog/ai-receptionists-healthcare-2024"
+      />
       {/* Background Effects - "Luminous Enterprise" */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {/* Soft Modern Gradients */}
