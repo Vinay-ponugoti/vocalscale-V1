@@ -7,9 +7,10 @@ interface MessageListProps {
     messages: ChatMessageType[];
     isStreaming: boolean;
     streamingContent: string;
+    assistantIcon?: string;
 }
 
-export const MessageList: React.FC<MessageListProps> = ({ messages, isStreaming, streamingContent }) => {
+export const MessageList: React.FC<MessageListProps> = ({ messages, isStreaming, streamingContent, assistantIcon }) => {
     const bottomRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll on new messages or streaming
@@ -54,6 +55,7 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, isStreaming,
                             attachments: []
                         }}
                         isStreaming={true}
+                        assistantIcon={assistantIcon}
                     />
                 </motion.div>
             )}

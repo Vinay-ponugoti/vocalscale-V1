@@ -16,6 +16,7 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 interface ChatMessageProps {
   message: ChatMessageType;
   isStreaming?: boolean;
+  assistantIcon?: string;
 }
 
 const CopyButton = ({ content }: { content: string }) => {
@@ -57,7 +58,7 @@ const SourceChip = ({ source }: { source: Source }) => (
   </div>
 );
 
-const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
+const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) => {
   const isUser = message.role === 'user';
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null);
 
@@ -77,6 +78,8 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
       >
         {isUser ? (
           <User size={16} strokeWidth={2} />
+        ) : assistantIcon ? (
+          <span className="text-lg leading-none">{assistantIcon}</span>
         ) : (
           <Sparkles size={16} strokeWidth={2} className={isStreaming ? "animate-pulse" : ""} />
         )}
