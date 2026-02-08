@@ -118,7 +118,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
 
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto flex-1 w-full min-h-0 min-w-0"
+          className="h-full w-full min-h-[300px]"
         >
           <AreaChart data={safeData} margin={{ top: 10, right: 30, left: 10, bottom: 0 }}>
             <defs>
