@@ -26,19 +26,23 @@ const queryClient = new QueryClient({
 (window as any).__reactQueryClient = queryClient;
 
 
+import { HelmetProvider } from 'react-helmet-async';
+
 // Initialize PostHog
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </ToastProvider>
-        {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </ToastProvider>
+          {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </HelmetProvider>
   </StrictMode>,
 )
 

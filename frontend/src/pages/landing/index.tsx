@@ -10,6 +10,7 @@ import SchemaMarkup, { webPageSchema, organizationSchema, productSchema } from '
 
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { SEO } from '../../components/SEO';
 
 const Landing = () => {
   const location = useLocation();
@@ -33,13 +34,45 @@ const Landing = () => {
     }
   }, [location.pathname]);
 
+  // SEO Configuration Map
+  const seoConfig = {
+    '/': {
+      title: "AI Voice Agent for Business | VocalScale",
+      description: "VocalScale's AI voice agents handle customer calls, book appointments, and answer inquiries 24/7. Automate your business phone line today.",
+      canonical: "https://www.vocalscale.com/"
+    },
+    '/features': {
+      title: "AI Receptionist Features | VocalScale",
+      description: "Explore VocalScale's powerful features: 24/7 availability, multi-language support, CRM integration, and smart appointment scheduling.",
+      canonical: "https://www.vocalscale.com/features"
+    },
+    '/pricing': {
+      title: "Pricing & Plans | VocalScale AI Receptionist",
+      description: "Simple, transparent pricing for every business size. Start for free and scale as you grow. No hidden fees.",
+      canonical: "https://www.vocalscale.com/pricing"
+    },
+    '/process': {
+      title: "How It Works | VocalScale AI Voice Agent",
+      description: "Get your AI receptionist up and running in minutes. Pick a number, customize your agent, and start handling calls automatically.",
+      canonical: "https://www.vocalscale.com/process"
+    }
+  };
+
+  const currentSeo = seoConfig[location.pathname as keyof typeof seoConfig] || seoConfig['/'];
+
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+      <SEO
+        title={currentSeo.title}
+        description={currentSeo.description}
+        canonical={currentSeo.canonical}
+      />
+
       {/* Schema Markup for SEO */}
       <SchemaMarkup schema={webPageSchema(
-        "AI Voice Agent for Business | VocalScale",
-        "VocalScale's AI voice agents handle customer calls, book appointments, and answer inquiries 24/7. Automate your business phone line with advanced AI receptionist technology.",
-        "/"
+        currentSeo.title,
+        currentSeo.description,
+        location.pathname
       )} type="WebPage" />
 
       <SchemaMarkup schema={organizationSchema} type="Organization" />

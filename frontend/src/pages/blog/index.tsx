@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight, Tag, Sparkles } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
+import { SEO } from '../../components/SEO';
 
 interface BlogPost {
   id: string;
@@ -84,6 +85,11 @@ const blogPosts: BlogPost[] = [
 export default function BlogIndex() {
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+      <SEO
+        title="VocalScale Blog | AI Receptionist Insights"
+        description="Latest news, tips, and insights on AI receptionists, business automation, and customer service trends."
+        canonical="https://www.vocalscale.com/blog"
+      />
       {/* Background Effects - "Luminous Enterprise" */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {/* Soft Modern Gradients */}

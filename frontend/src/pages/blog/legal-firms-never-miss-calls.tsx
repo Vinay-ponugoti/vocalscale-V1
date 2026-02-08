@@ -4,10 +4,16 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, User, ArrowLeft, CheckCircle, DollarSign, Scale, Users, PhoneCall, Target, ArrowRight, TrendingUp } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
+import { SEO } from '../../components/SEO';
 
-export default function LegalFirmsNeverMissCalls() {
+export default function LegalFirmsGuide() {
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+      <SEO
+        title="Legal Firms: Never Miss a Client Call | VocalScale AI"
+        description="Learn how law firms use AI receptionists to ensure 24/7 client intake, capture 40% more leads, and never miss a potential case."
+        canonical="https://www.vocalscale.com/blog/legal-firms-never-miss-calls"
+      />
       {/* Background Effects - "Luminous Enterprise" */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {/* Soft Modern Gradients */}

@@ -4,10 +4,16 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, User, ArrowLeft, TrendingUp, BarChart3, ArrowRight } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
+import { SEO } from '../../components/SEO';
 
 export default function AIvsHumanPerformanceStudy() {
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+      <SEO
+        title="AI vs Human Receptionist: Performance Study 2024 | VocalScale"
+        description="Data-driven comparison of AI receptionists vs human staff. See the results on cost, availability, accuracy, and customer satisfaction."
+        canonical="https://www.vocalscale.com/blog/ai-vs-human-receptionists-performance"
+      />
       {/* Background Effects - "Luminous Enterprise" */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {/* Soft Modern Gradients */}

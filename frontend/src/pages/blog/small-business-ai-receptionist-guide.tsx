@@ -4,10 +4,16 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, User, ArrowLeft, ArrowRight, DollarSign, Rocket, Settings, CalendarDays, CheckSquare, Target, Users, CheckCircle } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
+import { SEO } from '../../components/SEO';
 
 export default function SmallBusinessImplementationGuide() {
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+      <SEO
+        title="Small Business Guide: AI Receptionist Implementation | VocalScale"
+        description="A 30-day guide for small businesses to implement AI receptionists. Deploy quickly, train effectively, and start saving money."
+        canonical="https://www.vocalscale.com/blog/small-business-ai-receptionist-guide"
+      />
       {/* Background Effects - "Luminous Enterprise" */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {/* Soft Modern Gradients */}
