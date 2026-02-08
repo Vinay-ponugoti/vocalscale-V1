@@ -71,6 +71,11 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/pricing" element={<Landing />} />
+            <Route path="/features" element={<Landing />} />
+            <Route path="/process" element={<Landing />} />
+
+
 
             {/* Blog Routes */}
             <Route path="/blog" element={<BlogIndex />} />

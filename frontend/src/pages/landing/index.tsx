@@ -8,7 +8,31 @@ import { Footer } from './components/Footer';
 import { ROILiveTicker } from './components/ROILiveTicker';
 import SchemaMarkup, { webPageSchema, organizationSchema, productSchema } from '@/components/SchemaMarkup';
 
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
 const Landing = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/pricing') {
+      const pricingSection = document.getElementById('pricing');
+      if (pricingSection) {
+        pricingSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (location.pathname === '/features') {
+      const featuresSection = document.getElementById('features');
+      if (featuresSection) {
+        featuresSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (location.pathname === '/process') {
+      const processSection = document.getElementById('how-it-works');
+      if (processSection) {
+        processSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location.pathname]);
+
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
       {/* Schema Markup for SEO */}
@@ -17,9 +41,9 @@ const Landing = () => {
         "VocalScale's AI voice agents handle customer calls, book appointments, and answer inquiries 24/7. Automate your business phone line with advanced AI receptionist technology.",
         "/"
       )} type="WebPage" />
-      
+
       <SchemaMarkup schema={organizationSchema} type="Organization" />
-      
+
       <SchemaMarkup schema={productSchema} type="Product" />
       {/* Background Effects - "Luminous Enterprise" */}
       <div className="fixed inset-0 z-0 pointer-events-none">
