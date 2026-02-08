@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Plus, Mic, ArrowUp } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import type { FileAttachment } from '../../../../types/chat';
 
@@ -106,18 +106,15 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         onClick={() => fileInputRef.current?.click()}
                         disabled={disabled || isUploading}
                         className={cn(
-                            "p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0",
+                            "p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0",
                             (disabled || isUploading) && "opacity-50 cursor-not-allowed"
                         )}
                         title="Attach file"
                     >
                         {isUploading ? (
-                            <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                            <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
                         ) : (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19" />
-                                <line x1="5" y1="12" x2="19" y2="12" />
-                            </svg>
+                            <Plus size={20} strokeWidth={2.5} />
                         )}
                     </button>
                     <input
@@ -139,8 +136,8 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         placeholder={placeholder || "Ask anything"}
                         className={cn(
                             "flex-1 resize-none bg-transparent outline-none",
-                            "text-[16px] text-gray-900 placeholder:text-gray-400",
-                            "min-h-[24px] max-h-[120px] py-0",
+                            "text-[16px] text-gray-900 placeholder:text-gray-400 font-sans",
+                            "min-h-[24px] max-h-[120px] py-1",
                             "focus:ring-0 focus:outline-none",
                             disabled && "opacity-50"
                         )}
@@ -152,15 +149,10 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         {/* Voice input */}
                         <button
                             type="button"
-                            className="p-1 text-gray-400 hover:text-gray-600 transition-colors hidden sm:flex"
+                            className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors hidden sm:flex"
                             title="Voice input"
                         >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-                                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                                <line x1="12" y1="19" x2="12" y2="23" />
-                                <line x1="8" y1="23" x2="16" y2="23" />
-                            </svg>
+                            <Mic size={20} />
                         </button>
 
                         {/* Send button - circular green/gray */}
@@ -168,28 +160,14 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                             onClick={handleSubmit}
                             disabled={disabled || !hasContent}
                             className={cn(
-                                "w-8 h-8 rounded-full flex items-center justify-center transition-all",
+                                "w-9 h-9 rounded-full flex items-center justify-center transition-all",
                                 hasContent && !disabled
-                                    ? "bg-[#10a37f] text-white hover:bg-[#0d8c6d]"
-                                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                    ? "bg-black text-white hover:bg-gray-800"
+                                    : "bg-gray-100 text-gray-300 cursor-not-allowed"
                             )}
                             title="Send message"
                         >
-                            {/* Arrow up icon rotated to look like send */}
-                            <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="rotate-90"
-                            >
-                                <line x1="22" y1="2" x2="11" y2="13" />
-                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                            </svg>
+                            <ArrowUp size={20} strokeWidth={2.5} />
                         </button>
                     </div>
                 </div>
