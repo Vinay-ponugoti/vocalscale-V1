@@ -90,7 +90,7 @@ const NavItem = ({
   return (
     <Link
       to={item.path}
-      className={`group relative flex items - center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-5'} py - 3 mx - 2 rounded - xl text - sm font - bold transition - all duration - 300 no - underline
+      className={`group relative flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-5'} py-3 mx-2 rounded-xl text-sm font-bold transition-all duration-300 no-underline
         ${isActive
           ? 'text-blue-600 bg-blue-50 ring-1 ring-blue-100 shadow-sm' // Using DS Electric & Tint
           : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
@@ -103,12 +103,12 @@ const NavItem = ({
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-blue-600 rounded-r-full" />
       )}
 
-      <div className={`flex items - center gap - 4 ${isCollapsed ? 'justify-center' : ''} `}>
+      <div className={`flex items-center gap-4 ${isCollapsed ? 'justify-center' : ''} `}>
         <Icon size={18} strokeWidth={2.5} className={isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-700 transition-colors'} />
         {!isCollapsed && <span className="transition-colors leading-relaxed py-0.5">{item.label}</span>}
       </div>
       {!isCollapsed && item.badge && (
-        <span className={`text - [10px] font - bold px - 1.5 py - 0.5 rounded transition - colors ${isActive ? 'bg-blue-200 text-blue-800' : item.badgeColor || 'bg-blue-100 text-blue-700'} `}>
+        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors ${isActive ? 'bg-blue-200 text-blue-800' : item.badgeColor || 'bg-blue-100 text-blue-700'} `}>
           {item.badge}
         </span>
       )}
@@ -349,7 +349,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               {/* Sign Out Button */}
               <button
                 onClick={handleSignOut}
-                className={`w - full flex items - center ${sidebarOpen ? 'justify-start px-5' : 'justify-center'} py - 3 text - sm font - bold rounded - xl transition - all duration - 300 group`}
+                className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-5' : 'justify-center'} py-3 text-sm font-bold rounded-xl transition-all duration-300 group`}
                 style={{ color: DS.stone }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#FEF2F2'; // Very subtle red
@@ -371,15 +371,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <div className="p-3 border-t space-y-2" style={{ borderColor: DS.border, backgroundColor: DS.surface }}>
               {/* Promo Card / Plan Badge */}
               {sidebarOpen && (
-                <div className={`relative overflow - hidden rounded - xl p - 3 shadow - sm border transition - all duration - 500 group hover: shadow - lg bg - white border - slate - 100 hover: border - blue - 200`}>
+                <div className={`relative overflow-hidden rounded-xl p-3 shadow-sm border transition-all duration-500 group hover:shadow-lg bg-white border-slate-100 hover:border-blue-200`}>
                   {/* Decorative background element */}
                   <div className="absolute -right-3 -top-3 w-12 h-12 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all duration-700" />
 
                   <div className="flex items-center gap-2 mb-1.5 relative z-10">
-                    <div className={`w - 6 h - 6 rounded - lg flex items - center justify - center transition - transform duration - 500 group - hover: scale - 110 bg - blue - 50 text - blue - 600`}>
+                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform duration-500 group-hover:scale-110 bg-blue-50 text-blue-600`}>
                       <Zap size={12} strokeWidth={2.5} />
                     </div>
-                    <h4 className={`text - [10px] font - black uppercase tracking - widest text - slate - 900`}>
+                    <h4 className={`text-[10px] font-black uppercase tracking-widest text-slate-900`}>
                       Upgrade
                     </h4>
                   </div>
