@@ -349,15 +349,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               {/* Sign Out Button */}
               <button
                 onClick={handleSignOut}
-                className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-5' : 'justify-center'} py-3 text-sm font-bold rounded-xl transition-all duration-300 group`}
-                style={{ color: DS.stone }}
+                className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-5' : 'justify-center'} py-3 text-sm font-bold rounded-xl transition-all duration-300 group text-[hsl(var(--ds-stone))]`}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#FEF2F2'; // Very subtle red
                   e.currentTarget.style.color = '#DC2626'; // Red
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = DS.stone;
+                  // Reset to DS stone color (HSL wrapper needed if inline, but class handles it now)
+                  // Actually, strictly speaking if we use class, inline style override persists.
+                  // Better to use classes for hover too if possible, but existing logic uses inline style for hover reset.
+                  // We can't easily rely on class for reset if we set inline style.
+                  // Let's stick to inline style for reset but use var CORRECTLY: `hsl(var(--ds-stone))`
+                  e.currentTarget.style.color = 'hsl(var(--ds-stone))';
                 }}
               >
                 <LogOut size={18} strokeWidth={2.5} className={sidebarOpen ? 'mr-3 group-hover:-translate-x-1 transition-transform' : ''} />
@@ -368,7 +372,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* Bottom Card & Upgrade */}
           {!isLoadingSubscription && !hasActiveSubscription && (
-            <div className="p-3 border-t space-y-2" style={{ borderColor: DS.border, backgroundColor: DS.surface }}>
+            <div className="p-3 border-t space-y-2 border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-surface))]">
               {/* Promo Card / Plan Badge */}
               {sidebarOpen && (
                 <div className={`relative overflow-hidden rounded-xl p-3 shadow-sm border transition-all duration-500 group hover:shadow-lg bg-white border-slate-100 hover:border-blue-200`}>
@@ -408,10 +412,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
             {/* Mobile Menu Toggle - Always visible on mobile, positioned at start */}
             <button
-              className="md:hidden p-2.5 rounded-xl flex-shrink-0"
+              className="md:hidden p-2.5 rounded-xl flex-shrink-0 text-[hsl(var(--ds-charcoal))] bg-[hsl(var(--ds-white))]"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              style={{ color: DS.charcoal, backgroundColor: DS.white }}
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -425,7 +428,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <div className="flex-1 max-w-2xl flex items-center">
               <div className="relative w-full group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
-                  <Search size={18} strokeWidth={2.5} style={{ color: DS.subtleText }} className="group-focus-within:text-blue-500 transition-colors" />
+                  <Search size={18} strokeWidth={2.5} className="text-[hsl(var(--ds-subtle-text))] group-focus-within:text-blue-500 transition-colors" />
                 </div>
                 <input
                   ref={searchInputRef}
@@ -550,7 +553,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* MOBILE MENU OVERLAY */}
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-50 md:hidden backdrop-blur-sm animate-in fade-in duration-200" style={{ backgroundColor: 'rgba(31, 41, 55, 0.4)' }} onClick={() => setMobileMenuOpen(false)}>
-            <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col animate-in slide-in-from-left duration-300" style={{ backgroundColor: DS.white }} onClick={e => e.stopPropagation()}>
+            <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col animate-in slide-in-from-left duration-300 bg-[hsl(var(--ds-white))]" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
                   <div className="flex items-center gap-3">
@@ -558,7 +561,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     <span className="text-2xl font-black tracking-tight text-slate-900">VocalScale</span>
                   </div>
                 </div>
-                <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-xl" aria-label="Close menu" style={{ color: DS.stone, backgroundColor: DS.surface }}>
+                <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-xl text-[hsl(var(--ds-stone))] bg-[hsl(var(--ds-surface))]" aria-label="Close menu">
                   <X size={20} />
                 </button>
               </div>
@@ -616,7 +619,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   />
                 </div>
 
-                <div className="pt-6 border-t mt-6" style={{ borderColor: DS.border }}>
+                <div className="pt-6 border-t mt-6 border-[hsl(var(--ds-border))]">
                   <SectionLabel label="System" sidebarOpen={true} />
                   <NavItem
                     item={{ path: '/dashboard/settings', label: 'Settings', icon: Settings }}
@@ -640,15 +643,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       handleSignOut();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-start px-5 py-3 mx-2 text-sm font-bold rounded-xl transition-colors group mt-4"
-                    style={{ color: DS.stone }}
+                    className="w-full flex items-center justify-start px-5 py-3 mx-2 text-sm font-bold rounded-xl transition-colors group mt-4 text-[hsl(var(--ds-stone))]"
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#FEF2F2';
                       e.currentTarget.style.color = '#DC2626';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = DS.stone;
+                      e.currentTarget.style.color = 'hsl(var(--ds-stone))';
                     }}
                   >
                     <LogOut size={18} strokeWidth={2.5} className="mr-3 group-hover:translate-x-1 transition-transform" />
