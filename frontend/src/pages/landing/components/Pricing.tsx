@@ -281,7 +281,7 @@ export function Pricing() {
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Star className="w-6 h-6 text-purple-600" />
               </div>
-              <h4 className="font-bold text-slate-900 mb-2">30-Day Guarantee</h4>
+              <h4 className="font-bold text-slate-900 mb-2">15-Day Guarantee</h4>
               <p className="text-sm text-slate-600">Full satisfaction guarantee with prorated refunds available anytime</p>
             </div>
           </div>
