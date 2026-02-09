@@ -189,10 +189,19 @@ const Signup = () => {
                 disabled={loading}
                 className="w-full pl-11 pr-4 h-14 bg-slate-50 border border-slate-100 focus:border-slate-300 focus:bg-white rounded-[1rem] text-[14px] text-slate-900 transition-all outline-none appearance-none font-medium"
               >
-                <option value="Restaurant">Restaurant</option>
-                <option value="Medical">Medical</option>
-                <option value="Legal">Legal</option>
-                <option value="Salon">Salon</option>
+                <option value="saas">Software & SaaS</option>
+                <option value="agency">Agency & Consulting</option>
+                <option value="healthcare">Healthcare & Telehealth</option>
+                <option value="realestate">Real Estate</option>
+                <option value="legal">Legal Services</option>
+                <option value="retail">E-Commerce & Retail</option>
+                <option value="hospitality">Hospitality & Travel</option>
+                <option value="dining">Restaurants & Dining</option>
+                <option value="automotive">Automotive</option>
+                <option value="liquor">Wine & Spirits</option>
+                <option value="vape">Vape & Smoke Specialty</option>
+                <option value="autocare">Auto Repair & Care</option>
+                <option value="other">Other</option>
               </select>
             </div>
           </div>
