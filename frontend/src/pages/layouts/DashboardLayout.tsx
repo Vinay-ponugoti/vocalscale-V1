@@ -500,6 +500,22 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     onClose={() => setNotificationPanelOpen(false)}
                     notifications={notifications}
                     onDismiss={dismissNotification}
+                    onSelect={(id) => {
+                      const notification = notifications.find(n => n.id === id);
+                      if (!notification) return;
+
+                      setNotificationPanelOpen(false);
+
+                      // Navigate based on category
+                      if (notification.category === 'Booking') {
+                        navigate('/dashboard/appointments');
+                      } else if (notification.category === 'Missed Call' || notification.category === 'Action Req') {
+                        navigate('/dashboard/calls');
+                      } else {
+                        // Default fallback
+                        navigate('/dashboard');
+                      }
+                    }}
                   />
                 </div>
               </div>
