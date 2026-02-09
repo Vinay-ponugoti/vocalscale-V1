@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import {
-  Upload, Plus, Trash2, Edit2,
-  FileText, Check, ChevronDown, Loader2,
-  FileUp, Brain, File as FileIcon, AlertCircle
+  Plus, Trash2, Edit2,
+  FileText, Check, ChevronDown
 } from 'lucide-react';
 import { m, AnimatePresence } from 'framer-motion';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import { useToast } from '../../../hooks/useToast';
-import { businessSetupAPI } from '../../../api/businessSetup';
 import type { Service as GlobalService } from '../../../types/business';
 
 // --- Styled Components to match previous pages ---
@@ -40,24 +38,6 @@ export const Services: React.FC = () => {
   const { state, actions } = useBusinessSetup();
   const { showToast } = useToast();
   const [localServices, setLocalServices] = useState<Service[]>([]);
-  // File Registry State
-  interface KnowledgeFile {
-    id: string;
-    filename: string;
-    status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-    upload_timestamp: string;
-    chunks_count?: number;
-    error?: string;
-  }
-  const [knowledgeFiles, setKnowledgeFiles] = useState<KnowledgeFile[]>([]);
-
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  // Interaction States
-  type ProcessingStatus = 'idle' | 'uploading' | 'processing' | 'success' | 'error';
-  const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>('idle');
-  const [progressMessage, setProgressMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const lastSyncedRef = React.useRef<string>('');
 
   // Sync with Global State (Incoming)
@@ -83,25 +63,6 @@ export const Services: React.FC = () => {
       lastSyncedRef.current = incomingString;
     }
   }, [state.data.services, state.loading, localServices]);
-
-  // Fetch Knowledge Files
-  const fetchKnowledgeFiles = React.useCallback(async () => {
-    try {
-      const files = await businessSetupAPI.getKnowledgeFiles();
-      setKnowledgeFiles(files);
-    } catch (err) {
-      console.error('Failed to fetch knowledge files', err);
-    }
-  }, []);
-
-  React.useEffect(() => {
-    fetchKnowledgeFiles();
-    // Poll every 10 seconds to keep updated
-    const interval = setInterval(fetchKnowledgeFiles, 10000);
-    return () => clearInterval(interval);
-  }, [fetchKnowledgeFiles]);
-
-  // Sync Back to Global State (Outgoing)
 
   // Sync Back to Global State (Outgoing)
   const syncToGlobal = React.useCallback((services: Service[]) => {
@@ -154,346 +115,42 @@ export const Services: React.FC = () => {
     syncToGlobal(updated);
   };
 
-  // Persistent State Keys
-  const STORAGE_KEY_TASK_ID = 'vocalscale_knowledge_task_id';
-  const STORAGE_KEY_FILE_NAME = 'vocalscale_knowledge_file_name';
-
-  // Poll for Status (Reusable)
-  const pollTaskStatus = React.useCallback(async (taskId: string, fileName: string) => {
-
-    // Set active state
-    setProcessingStatus('processing');
-    setProgressMessage('Processing document content...');
-
-    const pollInterval = 2000;
-    const maxAttempts = 60;
-    let attempts = 0;
-
-    const checkStatus = async () => {
-      if (attempts >= maxAttempts) {
-        setProcessingStatus('error');
-        setErrorMessage('Processing timeout. System is busy.');
-        showToast('Processing timeout.', 'warning');
-        cleanupStorage();
-        return;
-      }
-
-      try {
-        const statusRes = await businessSetupAPI.getTaskStatus(taskId);
-        console.log('Poll status:', statusRes.status);
-
-        if (statusRes.status === 'SUCCESS') {
-          setProcessingStatus('success');
-          const chunks = statusRes.result?.chunks_count || 0;
-          setProgressMessage(`Done! Added ${chunks} chunks.`);
-          showToast(`Successfully processed ${fileName}!`, 'success');
-          showToast(`Successfully processed ${fileName}!`, 'success');
-          cleanupStorage();
-          fetchKnowledgeFiles(); // Refresh list
-
-          // Reset after delay
-
-          // Reset after delay
-          setTimeout(() => {
-            setProcessingStatus('idle');
-            setProgressMessage('');
-          }, 3000);
-
-        } else if (statusRes.status === 'FAILURE') {
-          setProcessingStatus('error');
-          setErrorMessage('Processing failed on server.');
-          showToast('Processing failed.', 'error');
-          cleanupStorage();
-        } else {
-          // Still pending/started, retrying...
-          attempts++;
-          setTimeout(checkStatus, pollInterval);
-        }
-      } catch (err) {
-        console.error('Polling error', err);
-        attempts++;
-        setTimeout(checkStatus, pollInterval);
-      }
-    };
-
-    // Start the loop
-    checkStatus();
-  }, []);
-
-  const cleanupStorage = () => {
-    localStorage.removeItem(STORAGE_KEY_TASK_ID);
-    localStorage.removeItem(STORAGE_KEY_FILE_NAME);
-  };
-
-  // Check for active upload on mount
-  React.useEffect(() => {
-    const saveTaskId = localStorage.getItem(STORAGE_KEY_TASK_ID);
-    const saveFileName = localStorage.getItem(STORAGE_KEY_FILE_NAME);
-
-    if (saveTaskId && saveFileName) {
-      console.log('Found active upload session, resuming...', saveTaskId);
-      // Resume polling
-      pollTaskStatus(saveTaskId, saveFileName);
-    }
-  }, [pollTaskStatus]);
-
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Reset State
-    setProcessingStatus('uploading');
-    setProgressMessage('Uploading document...');
-    setErrorMessage('');
-
-    // Validate file type
-    const validTypes = [
-      'application/pdf',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'text/csv'
-    ];
-
-    const extension = file.name.split('.').pop()?.toLowerCase();
-    const validExtensions = ['pdf', 'docx', 'pptx', 'xlsx', 'csv'];
-
-    if (!validTypes.includes(file.type) && !validExtensions.includes(extension || '')) {
-      showToast('Invalid file type. Please upload PDF, Word, PowerPoint, Excel, or CSV.', 'error');
-      setProcessingStatus('idle');
-      return;
-    }
-
-    try {
-      // 1. Initiate Upload (processing is now synchronous)
-      console.log('Starting upload request...');
-      const uploadRes = await businessSetupAPI.uploadKnowledgeDocument(file);
-
-      console.log('Upload successful:', uploadRes);
-
-      // 2. Handle response based on processing status
-      if (uploadRes.processing_status === 'COMPLETED' || uploadRes.status === 'success') {
-        setProcessingStatus('success');
-        setProgressMessage(`Successfully processed ${file.name}!`);
-        showToast(`Successfully processed ${file.name}!`, 'success');
-        fetchKnowledgeFiles(); // Refresh list
-
-        // Reset after delay
-        setTimeout(() => {
-          setProcessingStatus('idle');
-          setProgressMessage('');
-        }, 3000);
-      } else if (uploadRes.processing_status === 'FAILED') {
-        setProcessingStatus('error');
-        setErrorMessage('Processing failed on server.');
-        showToast('Processing failed.', 'error');
-      } else {
-        // Still processing or pending - this shouldn't happen with sync API
-        setProcessingStatus('success');
-        setProgressMessage(uploadRes.message || 'Document uploaded successfully!');
-        showToast(uploadRes.message || 'Document uploaded!', 'success');
-        fetchKnowledgeFiles();
-
-        setTimeout(() => {
-          setProcessingStatus('idle');
-          setProgressMessage('');
-        }, 3000);
-      }
-
-    } catch (error: any) {
-      console.error('Upload Process Failed:', error);
-      setProcessingStatus('error');
-      cleanupStorage();
-
-      // Detailed Error Handling
-      let msg = 'Failed to process document';
-      if (error.message?.includes("409")) {
-        msg = `File '${file.name}' has already been processed.`;
-        setProcessingStatus('success');
-        showToast(msg, 'warning');
-      } else if (error.message?.includes("Failed to fetch")) {
-        msg = "Cannot reach server. Check your connection.";
-      } else {
-        msg = error instanceof Error ? error.message : msg;
-      }
-      setErrorMessage(msg);
-      if (!error.message?.includes("409")) showToast(msg, 'error');
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
   return (
     <div className="space-y-6">
 
-      {/* Hidden File Input */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileUpload}
-        className="hidden"
-        accept=".pdf,.docx,.pptx,.xlsx,.csv"
-      />
-
-      {/* Upload & Add Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* File Upload Action */}
-        {/* File Upload Action - CONDITIONAL RENDER */}
-        {processingStatus !== 'idle' ? (
-          <div className={`p-4 border rounded-xl transition-all ${processingStatus === 'error' ? 'bg-red-50 border-red-200' :
-            processingStatus === 'success' ? 'bg-green-50 border-green-200' :
-              'bg-indigo-50 border-indigo-200'
-            }`}>
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${processingStatus === 'error' ? 'bg-white text-red-500' :
-                processingStatus === 'success' ? 'bg-white text-green-500' :
-                  'bg-white text-indigo-500'
-                }`}>
-                {processingStatus === 'uploading' || processingStatus === 'processing' ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : processingStatus === 'success' ? (
-                  <Check size={18} />
-                ) : (
-                  <FileText size={18} />
-                )}
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-center mb-1">
-                  <h4 className={`text-sm font-semibold ${processingStatus === 'error' ? 'text-red-700' : 'text-slate-900'
-                    }`}>
-                    {processingStatus === 'error' ? 'Upload Failed' : 'Processing Knowledge'}
-                  </h4>
-                  <span className="text-xs font-medium text-slate-500">
-                    {processingStatus === 'uploading' ? '10%' :
-                      processingStatus === 'processing' ? 'Thinking...' :
-                        processingStatus === 'success' ? '100%' : 'Failed'}
-                  </span>
-                </div>
-
-                {/* Progress Bar Track */}
-                <div className="w-full bg-white/50 rounded-full h-1.5 overflow-hidden">
-                  <div className={`h-full rounded-full transition-all duration-500 ${processingStatus === 'error' ? 'bg-red-400 w-full' :
-                    processingStatus === 'success' ? 'bg-green-400 w-full' :
-                      'bg-indigo-500 w-2/3 animate-pulse'
-                    }`} />
-                </div>
-
-                <p className="text-xs text-slate-500 mt-1.5">
-                  {errorMessage || progressMessage}
-                </p>
-              </div>
-            </div>
+      {/* Add Service Action */}
+      <div
+        onClick={() => {
+          const newServiceId = `service-${Date.now()}`;
+          const newService: Service = {
+            id: newServiceId,
+            name: "",
+            amount: 0,
+            priceType: 'flat',
+            isExpanded: true
+          };
+          const updated = [...localServices, newService];
+          setLocalServices(updated);
+          syncToGlobal(updated);
+        }}
+        className="p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50/50 transition-all cursor-pointer group"
+      >
+        <div className="flex items-start gap-3">
+          <div className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 group-hover:text-slate-900 transition-all">
+            <Plus size={18} />
           </div>
-        ) : (
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-indigo-300 hover:bg-indigo-50/30 transition-all cursor-pointer group"
-          >
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-white border border-slate-200 rounded-lg text-indigo-600 group-hover:border-indigo-500 transition-all shadow-sm">
-                <Upload size={18} />
-              </div>
-              <div>
-                <h4 className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900">Upload Knowledge Base</h4>
-                <p className="text-sm text-slate-500 mt-0.5">Upload PDFs, Docs, or Spreadsheets to train your AI.</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Manual Entry Action */}
-        <div
-          onClick={() => {
-            const newServiceId = `service-${Date.now()}`;
-            const newService: Service = {
-              id: newServiceId,
-              name: "",
-              amount: 0,
-              priceType: 'flat',
-              isExpanded: true
-            };
-            const updated = [...localServices, newService];
-            setLocalServices(updated);
-            syncToGlobal(updated);
-          }}
-          className="p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50/50 transition-all cursor-pointer group"
-        >
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 group-hover:text-slate-900 transition-all">
-              <Plus size={18} />
-            </div>
-            <div>
-              <h4 className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900">Add Manually</h4>
-              <p className="text-sm text-slate-500 mt-0.5">Quickly add a service item by hand.</p>
-            </div>
+          <div>
+            <h4 className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900">Add Service</h4>
+            <p className="text-sm text-slate-500 mt-0.5">Add a new service item with pricing and details.</p>
           </div>
         </div>
       </div>
 
-      {/* Knowledge Base File List (New UI) */}
-      <AnimatePresence>
-        {
-          knowledgeFiles.length > 0 && (
-            <div className="space-y-2 mt-4 mb-6">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2 mb-2 px-1">
-                <Brain size={12} />
-                Knowledge Base ({knowledgeFiles.length})
-              </h4>
-              <div className="grid grid-cols-1 gap-2">
-                {knowledgeFiles.map((file) => (
-                  <m.div
-                    key={file.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-indigo-200 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-md ${file.status === 'COMPLETED' ? 'bg-indigo-50 text-indigo-600' :
-                        file.status === 'FAILED' ? 'bg-red-50 text-red-600' :
-                          'bg-amber-50 text-amber-600'
-                        }`}>
-                        {file.filename.endsWith('.pdf') ? <FileIcon size={16} /> : <FileText size={16} />}
-                      </div>
-                      <div>
-                        <h5 className="text-sm font-medium text-slate-800 line-clamp-1 max-w-[200px]">{file.filename}</h5>
-                        <p className="text-[10px] text-slate-400 flex items-center gap-1.5">
-                          {new Date(file.upload_timestamp).toLocaleDateString()}
-                          {file.chunks_count ? `• ${file.chunks_count} chunks` : ''}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div>
-                      {file.status === 'COMPLETED' && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-[10px] font-bold rounded-full border border-green-100 uppercase tracking-wide">
-                          <Check size={10} /> Trained
-                        </span>
-                      )}
-                      {file.status === 'FAILED' && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 text-red-700 text-[10px] font-bold rounded-full border border-red-100 uppercase tracking-wide">
-                          <AlertCircle size={10} /> Failed
-                        </span>
-                      )}
-                      {(file.status === 'PROCESSING' || file.status === 'PENDING') && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full border border-amber-100 uppercase tracking-wide">
-                          <Loader2 size={10} className="animate-spin" /> Training
-                        </span>
-                      )}
-                    </div>
-                  </m.div>
-                ))}
-              </div>
-            </div>
-          )
-        }
-      </AnimatePresence >
-
       {/* Services List */}
-      < div className="space-y-4 pt-2" >
+      <div className="space-y-4 pt-2">
         <div className="flex items-center justify-between px-1">
           <h3 className="scroll-m-20 text-sm font-semibold tracking-tight text-slate-900 flex items-center gap-2">
-            <FileUp className="text-indigo-600 w-4 h-4" />
+            <FileText className="text-indigo-600 w-4 h-4" />
             Service Items
             <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
               {localServices.length}
@@ -512,7 +169,7 @@ export const Services: React.FC = () => {
                 <FileText className="text-slate-300 w-5 h-5" />
               </div>
               <p className="text-slate-500 font-medium text-sm">No services listed yet</p>
-              <p className="text-slate-400 text-xs mt-1">Upload a file or add your first service manually.</p>
+              <p className="text-slate-400 text-xs mt-1">Click "Add Service" above to get started.</p>
             </m.div>
           ) : (
             <div className="grid grid-cols-1 gap-3">
