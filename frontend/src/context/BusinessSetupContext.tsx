@@ -175,7 +175,7 @@ const BusinessSetupContext = createContext<BusinessSetupContextType | undefined>
 export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(businessSetupReducer, initialState);
   const stateRef = useRef(state);
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, updateProfile } = useAuth();
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -209,6 +209,7 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
       dispatch({ type: 'SET_ERROR', payload: null });
 
       // Refresh auth profile to update business name in header/sidebar
+      updateProfile({ business_name: currentState.data.business.business_name });
       await refreshProfile();
 
       showToast?.('Changes saved successfully!', 'success');
