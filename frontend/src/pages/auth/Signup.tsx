@@ -19,6 +19,7 @@ const Signup = () => {
     email: '',
     password: '',
     full_name: '',
+    business_name: '',
     phone: '',
     businessType: 'Restaurant',
   });
@@ -55,7 +56,11 @@ const Signup = () => {
         body: JSON.stringify({
           email: formData.email.trim().toLowerCase(),
           password: formData.password,
+          confirm_password: formData.password,
           full_name: formData.full_name.trim(),
+          business_name: formData.business_name.trim(),
+          phone: formData.phone,
+          business_type: formData.businessType,
           cf_turnstile_response: turnstileToken,
         }),
       });
@@ -148,6 +153,15 @@ const Signup = () => {
               <input
                 type="text" name="full_name" value={formData.full_name} onChange={handleChange}
                 placeholder="Full Name" required disabled={loading}
+                className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-100 focus:border-slate-300 focus:bg-white rounded-[1rem] text-[15px] text-slate-900 placeholder:text-slate-400 transition-all outline-none"
+              />
+            </div>
+
+            <div className="relative group col-span-full">
+              <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-slate-950 transition-colors" strokeWidth={1.5} />
+              <input
+                type="text" name="business_name" value={formData.business_name} onChange={handleChange}
+                placeholder="Business Name" required disabled={loading}
                 className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-100 focus:border-slate-300 focus:bg-white rounded-[1rem] text-[15px] text-slate-900 placeholder:text-slate-400 transition-all outline-none"
               />
             </div>
