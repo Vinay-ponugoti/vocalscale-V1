@@ -200,10 +200,10 @@ class BusinessSetupAPI {
     return response.json();
   }
 
-  // Upload Inventory (CSV/Excel)
+  // Upload Inventory (CSV/Excel) — calls Knowledge Processor directly
   async uploadInventory(formData: FormData): Promise<{ success: boolean; imported: number; message: string }> {
-    const url = `${API_BASE_URL}/knowledge/inventory`;
-    const headers = await getAuthHeader(); // Remove Content-Type to let browser set boundary
+    const url = `${env.KNOWLEDGE_API_URL}/inventory/upload`;
+    const headers = await getAuthHeader();
 
     const response = await fetch(url, {
       method: 'POST',
@@ -221,13 +221,53 @@ class BusinessSetupAPI {
     return response.json();
   }
 
-  // Get Inventory
+  // Get Inventory — calls Knowledge Processor directly
   async getInventory(): Promise<{ items: any[] }> {
-    const url = `${API_BASE_URL}/knowledge/inventory`;
+    const url = `${env.KNOWLEDGE_API_URL}/inventory`;
     const headers = await getAuthHeader();
     const response = await fetch(url, { headers });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  // Update Inventory Item
+  async updateInventoryItem(itemId: string, data: Record<string, any>): Promise<{ success: boolean; item: any }> {
+    const url = `${env.KNOWLEDGE_API_URL}/inventory/${itemId}`;
+    const headers = await getAuthHeader();
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Update failed' }));
+      throw new Error(error.detail || `HTTP ${response.status}`);
+    }
+    return response.json();
+  }
+
+  // Delete Inventory Item
+  async deleteInventoryItem(itemId: string): Promise<{ success: boolean }> {
+    const url = `${env.KNOWLEDGE_API_URL}/inventory/${itemId}`;
+    const headers = await getAuthHeader();
+    const response = await fetch(url, { method: 'DELETE', headers });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Delete failed' }));
+      throw new Error(error.detail || `HTTP ${response.status}`);
+    }
+    return response.json();
+  }
+
+  // Delete All Inventory Items
+  async deleteAllInventory(): Promise<{ success: boolean; deleted_count: number }> {
+    const url = `${env.KNOWLEDGE_API_URL}/inventory`;
+    const headers = await getAuthHeader();
+    const response = await fetch(url, { method: 'DELETE', headers });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Delete failed' }));
+      throw new Error(error.detail || `HTTP ${response.status}`);
     }
     return response.json();
   }
