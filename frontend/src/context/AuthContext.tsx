@@ -17,9 +17,10 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   isConfigured: boolean;
   refreshSession: () => Promise<void>;
-  refreshProfile: () => Promise<void>;
-  validateSession: () => Promise<void>;
-  setAuthSession: (session: Session) => void;
+  refreshProfile,
+  updateProfile: (data: any) => void;
+  validateSession,
+  setAuthSession
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -33,6 +34,7 @@ const AuthContext = createContext<AuthContextType>({
   isConfigured: true,
   refreshSession: async () => { },
   refreshProfile: async () => { },
+  updateProfile: () => { },
   validateSession: async () => { },
   setAuthSession: () => { }
 });
@@ -51,6 +53,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     sessionRef.current = session;
   }, [session]);
+
+  const updateProfile = useCallback((data: any) => {
+    if (mounted.current) {
+      setProfile((prev: any) => ({ ...prev, ...data }));
+    }
+  }, []);
 
   const refreshProfile = useCallback(async (manualSession?: Session) => {
     const currentSession = manualSession || sessionRef.current;
@@ -381,6 +389,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       isConfigured: true,
       refreshSession,
       refreshProfile,
+      updateProfile,
       validateSession,
       setAuthSession
     }}>
