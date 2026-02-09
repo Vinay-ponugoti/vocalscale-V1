@@ -283,28 +283,27 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
         rounded-xl 
         p-4 
         hover:border-blue-200 
-        hover:shadow-lg 
-        hover:shadow-blue-500/5
+        hover:shadow-md
         transition-all 
         duration-200 
         cursor-pointer
-        active:scale-[0.99]
+        active:scale-[0.98]
       "
     >
       <div className="flex gap-4">
         {/* Icon */}
         <div className={`
           shrink-0 
-          w-11 h-11 
+          w-10 h-10 
           rounded-xl 
           flex items-center justify-center
           transition-transform group-hover:scale-105
           ${isBooking
-            ? 'bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600'
-            : 'bg-gradient-to-br from-orange-50 to-orange-100 text-orange-600'
+            ? 'bg-blue-50 text-blue-600'
+            : 'bg-orange-50 text-orange-600'
           }
         `}>
-          {isBooking ? <Calendar size={20} /> : <AlertTriangle size={20} />}
+          {isBooking ? <Calendar size={18} /> : <AlertTriangle size={18} />}
         </div>
 
         {/* Content */}
@@ -312,12 +311,12 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
           {/* Title Row */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mb-0.5">
                 <h4 className="font-semibold text-gray-900 text-sm">
                   {isBooking ? 'New Booking' : 'Action Req'}
                 </h4>
                 <span className={`
-                  text-[10px] font-bold uppercase px-2 py-0.5 rounded-full
+                  text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md
                   ${isBooking
                     ? 'bg-blue-100 text-blue-700'
                     : 'bg-orange-100 text-orange-700'
@@ -326,30 +325,32 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
                   {notification.category}
                 </span>
               </div>
-              <p className="text-sm text-gray-700 font-medium mt-0.5">
+              <p className="text-sm text-gray-700 font-medium truncate">
                 {notification.caller_name}
               </p>
             </div>
 
             {/* Time */}
             <div className="flex items-center gap-1 text-gray-400 shrink-0">
-              <Clock size={12} />
-              <span className="text-[11px] font-medium">
+              <Clock size={11} />
+              <span className="text-[10px] font-medium">
                 {format(parseISO(notification.created_at), 'h:mm a')}
               </span>
             </div>
           </div>
 
           {/* Phone */}
-          <p className="text-xs text-gray-500 mt-1">
-            📞 {notification.caller_phone}
-          </p>
+          {notification.caller_phone && (
+            <p className="text-xs text-gray-500 mt-0.5">
+              {notification.caller_phone}
+            </p>
+          )}
 
           {/* Notes */}
           {(notification.notes || notification.summary) && (
             <div className="
-              mt-3 
-              p-3 
+              mt-2.5 
+              p-2.5 
               bg-gray-50 
               rounded-lg 
               border border-gray-100
@@ -360,21 +361,22 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
             </div>
           )}
 
-          {/* View Details Link */}
+          {/* View Details Link - Always visible on mobile, hover effect on desktop */}
           <div className="
             flex items-center gap-1 
             mt-3 
-            text-xs font-medium 
+            text-xs font-semibold 
             text-blue-600 
-            opacity-0 group-hover:opacity-100
-            transition-opacity
+            md:opacity-0 md:group-hover:opacity-100
+            transition-all
+            translate-y-1 md:translate-y-2 md:group-hover:translate-y-0
           ">
             <span>View details</span>
             <ChevronRight size={14} />
           </div>
         </div>
 
-        {/* Dismiss Button */}
+        {/* Dismiss Button - Always visible on mobile */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -383,18 +385,16 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
           className="
             absolute 
             top-3 right-3 
-            p-2 
+            p-1.5
             rounded-lg 
-            bg-white 
-            border border-gray-200 
+            bg-gray-50
+            border border-transparent md:border-gray-100 
             text-gray-400 
             hover:text-green-600 
             hover:border-green-300 
             hover:bg-green-50 
-            shadow-sm 
-            opacity-0 group-hover:opacity-100
+            md:opacity-0 md:group-hover:opacity-100
             transition-all
-            hover:scale-110
           "
           aria-label="Mark as handled"
           title="Mark as handled"
