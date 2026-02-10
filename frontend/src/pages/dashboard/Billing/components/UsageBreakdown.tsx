@@ -144,13 +144,13 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
 
             <Card className="border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 bg-slate-50/50">
               <CardContent className="p-5 flex flex-col justify-between h-28">
-                <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shadow-sm ring-1 ring-rose-100">
-                  <Timer size={16} />
+                <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm ring-1 ring-indigo-100">
+                  <BarChart3 size={16} />
                 </div>
                 <div>
-                  <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest mb-1">Est. Cost</p>
+                  <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest mb-1">Total Calls</p>
                   <p className="text-lg font-black text-charcoal tracking-tight">
-                    ${usage?.estimated_cost ? usage.estimated_cost.toFixed(2) : '0.00'}
+                    {usage?.total_calls || 0}
                   </p>
                 </div>
               </CardContent>
@@ -181,8 +181,12 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                 </div>
 
                 <div className="pt-4 border-t border-slate-100 flex justify-between items-center text-[10px]">
-                  <span className="font-bold text-charcoal-light">Total Calls</span>
-                  <span className="font-black text-charcoal">{usage?.total_calls || 0}</span>
+                  <span className="font-bold text-charcoal-light">Est. Cost</span>
+                  <span className="font-black text-charcoal">
+                    {usage?.overage_minutes && usage.overage_minutes > 0
+                      ? `$${((usage.overage_minutes) * 0.10).toFixed(2)}`
+                      : '$0.00'}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -229,21 +233,20 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                     <th className="pb-3">Date & Time</th>
                     <th className="pb-3">Caller</th>
                     <th className="pb-3">Duration</th>
-                    <th className="pb-3 pr-2 text-right">Cost</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {loadingCalls ? (
                     Array.from({ length: pageSize }).map((_, i) => (
                       <tr key={i}>
-                        <td colSpan={5} className="py-4">
+                        <td colSpan={4} className="py-4">
                           <div className="h-4 bg-slate-100 rounded animate-pulse w-full"></div>
                         </td>
                       </tr>
                     ))
                   ) : calls.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-12 text-center text-charcoal-light">
+                      <td colSpan={4} className="py-12 text-center text-charcoal-light">
                         <div className="flex flex-col items-center gap-2">
                           <Calendar size={24} className="text-slate-200" />
                           <span className="text-[10px] font-bold uppercase tracking-wider">No calls recorded</span>
@@ -253,8 +256,6 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                   ) : (
                     calls.map((call, i) => {
                       const dateObj = parseISO(call.created_at);
-                      const cost = (call.duration_seconds / 60) * 0.10; // Approx cost, ideally from API
-
                       return (
                         <tr key={call.id || i} className="group hover:bg-slate-50/50 transition-colors">
                           <td className="py-4 font-medium text-charcoal">
@@ -270,11 +271,6 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                             </div>
                           </td>
                           <td className="py-4 font-bold text-charcoal-medium">{call.duration_seconds}s</td>
-                          <td className="py-4 pr-2 text-right">
-                            <span className="inline-flex items-center rounded bg-slate-100 px-2 py-1 text-[10px] font-black text-charcoal">
-                              Est. ${cost.toFixed(3)}
-                            </span>
-                          </td>
                         </tr>
                       );
                     })
