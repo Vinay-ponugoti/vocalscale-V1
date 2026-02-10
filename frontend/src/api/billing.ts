@@ -92,6 +92,19 @@ class BillingAPI {
     });
   }
 
+  async createPortalSession(): Promise<{ url: string }> {
+    return this.request('/billing/portal', {
+      method: 'POST',
+    });
+  }
+
+  async deletePaymentMethod(paymentMethodId: string) {
+    return this.request('/billing/payment-method', {
+      method: 'DELETE',
+      body: JSON.stringify({ payment_method_id: paymentMethodId }),
+    });
+  }
+
   // Cancel all pending requests (useful on component unmount)
   cancelAll() {
     this.controllers.forEach((controller) => controller.abort());
