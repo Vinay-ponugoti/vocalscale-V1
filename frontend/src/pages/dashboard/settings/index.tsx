@@ -103,6 +103,8 @@ const Settings = () => {
         let standardTransferEnabled = false;
         let standardTransferNumber = '';
 
+        let bookingEmailEnabled = true; // default ON
+
         if (businessSetup.urgent_call_rules) {
           const urgentRule = businessSetup.urgent_call_rules.find((r: any) => r.rule_type === 'urgent');
           if (urgentRule) {
@@ -115,11 +117,16 @@ const Settings = () => {
             standardTransferEnabled = standardRule.is_enabled ?? false;
             standardTransferNumber = standardRule.transfer_number || '';
           }
+
+          const bookingEmailRule = businessSetup.urgent_call_rules.find((r: any) => r.rule_type === 'booking_email');
+          if (bookingEmailRule) {
+            bookingEmailEnabled = bookingEmailRule.is_enabled ?? true;
+          }
         }
 
         setNotifications({
           urgent_call_alerts: businessSetup.notification_settings?.urgent_call_alerts ?? true,
-          booking_confirmations: businessSetup.notification_settings?.booking_confirmations ?? true,
+          booking_confirmations: bookingEmailEnabled,
           missed_call_alerts: businessSetup.notification_settings?.missed_call_alerts ?? true,
           urgent_transfer_enabled: urgentTransferEnabled,
           transfer_number: urgentTransferNumber,
@@ -179,8 +186,18 @@ const Settings = () => {
         };
         await api.updateNotificationSettings(notificationData as unknown as Record<string, unknown>);
 
-        // Save transfer rules to urgent_call_rules table
+        // Save transfer rules + booking email toggle to urgent_call_rules table
         const transferRules = [];
+
+        // Booking email toggle (always include so it persists)
+        transferRules.push({
+          condition_text: 'Send email on new booking',
+          action: 'notify',
+          transfer_number: '',
+          is_enabled: notifications.booking_confirmations ?? true,
+          rule_type: 'booking_email' as const
+        });
+
         if (notifications.transfer_number) {
           transferRules.push({
             condition_text: 'Emergency or urgent request',
@@ -199,9 +216,7 @@ const Settings = () => {
             rule_type: 'standard' as const
           });
         }
-        if (transferRules.length > 0) {
-          await businessSetupAPI.updateUrgentCallRules(transferRules);
-        }
+        await businessSetupAPI.updateUrgentCallRules(transferRules);
         // Clean up legacy localStorage
         localStorage.removeItem('notification_settings');
       }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Globe, Volume2, Loader2 } from 'lucide-react';
+import { Globe, Volume2, Loader2, Mic, User, Sparkles } from 'lucide-react';
 import { Label, Textarea } from '../../components/SettingsComponents';
 import type { VoiceSettingsProps } from '../../../../types/settings';
 import { useVoicePreview } from '../../../../hooks/useVoicePreview';
@@ -122,49 +122,73 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
       {/* SECTION: Voice & Language */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 2xl:gap-10">
 
-        {/* Voice Persona - Grid Layout */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="block text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 mb-4">
-              Voice Persona
-            </Label>
-            <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 shadow-sm shrink-0">
+        {/* Voice Persona - Modern Grid Layout */}
+        <div className="space-y-4 md:col-span-2">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-200/50">
+                <Mic className="w-4 h-4" />
+              </div>
+              <div>
+                <Label className="block text-[12px] font-black uppercase tracking-[0.12em] text-slate-800">
+                  Voice Persona
+                </Label>
+                <p className="text-[11px] text-slate-400 font-medium mt-0.5">Choose how your AI receptionist sounds</p>
+              </div>
+            </div>
+            <div className="flex bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 shadow-sm">
               {[
-                { label: 'All', value: 'all' },
-                { label: 'Masculine', value: 'Masculine' },
-                { label: 'Feminine', value: 'Feminine' }
+                { label: 'All', value: 'all', icon: <Sparkles className="w-3 h-3" /> },
+                { label: 'Masculine', value: 'Masculine', icon: null },
+                { label: 'Feminine', value: 'Feminine', icon: null }
               ].map((option) => (
                 <button
                   key={option.value}
                   onClick={() => setGenderFilter(option.value as 'all' | 'Masculine' | 'Feminine')}
                   className={`
-                    px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider transition-all
+                    px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5
                     ${genderFilter === option.value
-                      ? 'bg-white text-indigo-600 shadow-sm'
+                      ? 'bg-white text-indigo-600 shadow-md shadow-slate-200/50 border border-slate-200/60'
                       : 'text-slate-400 hover:text-slate-600'
                     }
                   `}
                 >
+                  {option.icon}
                   {option.label}
                 </button>
               ))}
             </div>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 snap-x custom-scrollbar">
+
+          {/* Voice Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {languageVoices.map(voice => {
               const isSelected = settings.voice_id === voice.id;
               const isVoicePlaying = playingVoiceId === voice.id && isPlaying;
               const isVoiceLoading = playingVoiceId === voice.id && isLoading;
 
+              // Generate a consistent gradient based on voice name
+              const gradients = [
+                'from-violet-500 to-purple-600',
+                'from-blue-500 to-indigo-600',
+                'from-emerald-500 to-teal-600',
+                'from-rose-500 to-pink-600',
+                'from-amber-500 to-orange-600',
+                'from-cyan-500 to-blue-600',
+                'from-fuchsia-500 to-purple-600',
+                'from-lime-500 to-emerald-600',
+              ];
+              const gradientIndex = voice.name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % gradients.length;
+              const gradient = gradients[gradientIndex];
+
               return (
                 <div
                   key={voice.id}
                   className={`
-                    relative flex flex-col justify-between p-5 rounded-3xl border transition-all cursor-pointer group snap-center
-                    min-w-[260px] max-w-[260px] h-[180px]
+                    relative flex items-center gap-3.5 p-3.5 rounded-2xl border-2 transition-all duration-300 cursor-pointer group
                     ${isSelected
-                      ? 'bg-white border-indigo-600 shadow-xl shadow-indigo-100 ring-1 ring-indigo-600'
-                      : 'bg-white border-slate-100 hover:border-indigo-200 hover:shadow-lg hover:shadow-slate-100 hover:-translate-y-1'
+                      ? 'bg-indigo-50/50 border-indigo-500 shadow-lg shadow-indigo-100/60 ring-2 ring-indigo-500/20'
+                      : 'bg-white border-slate-100 hover:border-slate-200 hover:shadow-md hover:shadow-slate-100/60'
                     }
                   `}
                   onClick={() => {
@@ -174,75 +198,100 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                     });
                   }}
                 >
-                  {/* Header info */}
-                  <div className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-lg font-black tracking-tight ${isSelected ? 'text-indigo-900' : 'text-slate-900'}`}>
-                          {voice.name}
-                        </span>
-                        {isSelected && (
-                          <div className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[9px] font-black uppercase tracking-wider">
-                            Active
-                          </div>
-                        )}
-                      </div>
+                  {/* Avatar */}
+                  <div className="relative shrink-0">
+                    <div className={`
+                      w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg
+                      ${isSelected ? 'shadow-indigo-200/60' : 'shadow-slate-200/40'}
+                      transition-all duration-300 group-hover:scale-105
+                    `}>
+                      <User className="w-5 h-5 text-white/90" />
                     </div>
+                    {isSelected && (
+                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center shadow-md shadow-indigo-200 border-2 border-white">
+                        <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                          <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </div>
+                    )}
+                    {isVoicePlaying && (
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-md border-2 border-white">
+                        <div className="flex gap-[2px] items-end h-2.5">
+                          <div className="w-[2px] bg-white rounded-full animate-[bounce_0.6s_ease-in-out_infinite]" style={{ height: '6px', animationDelay: '0ms' }} />
+                          <div className="w-[2px] bg-white rounded-full animate-[bounce_0.6s_ease-in-out_infinite]" style={{ height: '10px', animationDelay: '150ms' }} />
+                          <div className="w-[2px] bg-white rounded-full animate-[bounce_0.6s_ease-in-out_infinite]" style={{ height: '4px', animationDelay: '300ms' }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
-                    <div className="flex flex-wrap gap-1.5">
-                      <span className="px-2 py-1 rounded-md bg-slate-50 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-100">
-                        {voice.gender === 'male' ? 'Masculine' : voice.gender === 'female' ? 'Feminine' : voice.gender}
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-[13px] font-extrabold tracking-tight truncate ${isSelected ? 'text-indigo-900' : 'text-slate-800'}`}>
+                        {voice.name}
                       </span>
-                      <span className="px-2 py-1 rounded-md bg-slate-50 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-100">
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`
+                        inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider
+                        ${voice.gender === 'male' || voice.gender === 'Masculine'
+                          ? 'bg-blue-50 text-blue-500 border border-blue-100'
+                          : 'bg-pink-50 text-pink-500 border border-pink-100'
+                        }
+                      `}>
+                        {voice.gender === 'male' ? 'M' : voice.gender === 'female' ? 'F' : voice.gender?.charAt(0)}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-semibold truncate">
                         {voice.accent}
                       </span>
                     </div>
                   </div>
 
-                  {/* Visual / Audio Control */}
-                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-50">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleVoicePreview(voice.id, voice.provider_voice_id || null, voice.sample_audio_url || null);
-                      }}
-                      className={`
-                          flex items-center gap-2 px-3 py-2 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest
-                          ${isVoicePlaying
-                          ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                          : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                        }
-                        `}
-                      disabled={isVoiceLoading}
-                    >
-                      {isVoiceLoading ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : isVoicePlaying ? (
-                        <>
-                          <Volume2 className="w-3.5 h-3.5 animate-pulse" /> Stop
-                        </>
-                      ) : (
-                        <>
-                          <Volume2 className="w-3.5 h-3.5" /> Preview
-                        </>
-                      )}
-                    </button>
-
-                    {isSelected ? (
-                      <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                  {/* Play Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleVoicePreview(voice.id, voice.provider_voice_id || null, voice.sample_audio_url || null);
+                    }}
+                    className={`
+                      shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200
+                      ${isVoicePlaying
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200/60 scale-105'
+                        : isSelected
+                          ? 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'
+                          : 'bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 group-hover:bg-slate-100'
+                      }
+                    `}
+                    disabled={isVoiceLoading}
+                  >
+                    {isVoiceLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : isVoicePlaying ? (
+                      <div className="flex gap-[2px] items-end h-3.5">
+                        <div className="w-[2.5px] bg-white rounded-full animate-[bounce_0.5s_ease-in-out_infinite]" style={{ height: '8px', animationDelay: '0ms' }} />
+                        <div className="w-[2.5px] bg-white rounded-full animate-[bounce_0.5s_ease-in-out_infinite]" style={{ height: '14px', animationDelay: '120ms' }} />
+                        <div className="w-[2.5px] bg-white rounded-full animate-[bounce_0.5s_ease-in-out_infinite]" style={{ height: '6px', animationDelay: '240ms' }} />
                       </div>
                     ) : (
-                      <div className="w-8 h-8 rounded-full border-2 border-slate-100 group-hover:border-indigo-200 transition-colors" />
+                      <Volume2 className="w-4 h-4" />
                     )}
-                  </div>
+                  </button>
                 </div>
               );
             })}
           </div>
+
+          {languageVoices.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center mb-3 border border-slate-100">
+                <Mic className="w-6 h-6 text-slate-300" />
+              </div>
+              <p className="text-sm font-bold text-slate-400">No voices available</p>
+              <p className="text-xs text-slate-300 mt-1">Try selecting a different language or filter</p>
+            </div>
+          )}
         </div>
 
         {/* Language */}
