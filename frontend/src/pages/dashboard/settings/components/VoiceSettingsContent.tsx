@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Globe, Volume2, Loader2, Mic, User, Sparkles } from 'lucide-react';
+import { Globe, Volume2, Loader2, Mic, Sparkles } from 'lucide-react';
 import { Label, Textarea } from '../../components/SettingsComponents';
 import type { VoiceSettingsProps } from '../../../../types/settings';
 import { useVoicePreview } from '../../../../hooks/useVoicePreview';
@@ -161,33 +161,19 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
           </div>
 
           {/* Voice Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
             {languageVoices.map(voice => {
               const isSelected = settings.voice_id === voice.id;
               const isVoicePlaying = playingVoiceId === voice.id && isPlaying;
               const isVoiceLoading = playingVoiceId === voice.id && isLoading;
 
-              // Generate a consistent gradient based on voice name
-              const gradients = [
-                'from-violet-500 to-purple-600',
-                'from-blue-500 to-indigo-600',
-                'from-emerald-500 to-teal-600',
-                'from-rose-500 to-pink-600',
-                'from-amber-500 to-orange-600',
-                'from-cyan-500 to-blue-600',
-                'from-fuchsia-500 to-purple-600',
-                'from-lime-500 to-emerald-600',
-              ];
-              const gradientIndex = voice.name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % gradients.length;
-              const gradient = gradients[gradientIndex];
-
               return (
                 <div
                   key={voice.id}
                   className={`
-                    relative flex items-center gap-3.5 p-3.5 rounded-2xl border-2 transition-all duration-300 cursor-pointer group
+                    relative flex flex-col items-center justify-center p-3.5 rounded-xl border-2 transition-all duration-300 cursor-pointer group
                     ${isSelected
-                      ? 'bg-indigo-50/50 border-indigo-500 shadow-lg shadow-indigo-100/60 ring-2 ring-indigo-500/20'
+                      ? 'bg-indigo-50/60 border-indigo-500 shadow-lg shadow-indigo-100/60 ring-2 ring-indigo-500/20'
                       : 'bg-white border-slate-100 hover:border-slate-200 hover:shadow-md hover:shadow-slate-100/60'
                     }
                   `}
@@ -198,54 +184,34 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                     });
                   }}
                 >
-                  {/* Avatar */}
-                  <div className="relative shrink-0">
-                    <div className={`
-                      w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg
-                      ${isSelected ? 'shadow-indigo-200/60' : 'shadow-slate-200/40'}
-                      transition-all duration-300 group-hover:scale-105
-                    `}>
-                      <User className="w-5 h-5 text-white/90" />
+                  {/* Selected checkmark */}
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 w-4.5 h-4.5 rounded-full bg-indigo-500 flex items-center justify-center shadow-sm">
+                      <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                        <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </div>
-                    {isSelected && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center shadow-md shadow-indigo-200 border-2 border-white">
-                        <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                          <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </div>
-                    )}
-                    {isVoicePlaying && (
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-md border-2 border-white">
-                        <div className="flex gap-[2px] items-end h-2.5">
-                          <div className="w-[2px] bg-white rounded-full animate-[bounce_0.6s_ease-in-out_infinite]" style={{ height: '6px', animationDelay: '0ms' }} />
-                          <div className="w-[2px] bg-white rounded-full animate-[bounce_0.6s_ease-in-out_infinite]" style={{ height: '10px', animationDelay: '150ms' }} />
-                          <div className="w-[2px] bg-white rounded-full animate-[bounce_0.6s_ease-in-out_infinite]" style={{ height: '4px', animationDelay: '300ms' }} />
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  )}
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={`text-[13px] font-extrabold tracking-tight truncate ${isSelected ? 'text-indigo-900' : 'text-slate-800'}`}>
-                        {voice.name}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className={`
-                        inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider
-                        ${voice.gender === 'male' || voice.gender === 'Masculine'
-                          ? 'bg-blue-50 text-blue-500 border border-blue-100'
-                          : 'bg-pink-50 text-pink-500 border border-pink-100'
-                        }
-                      `}>
-                        {voice.gender === 'male' ? 'M' : voice.gender === 'female' ? 'F' : voice.gender?.charAt(0)}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-semibold truncate">
-                        {voice.accent}
-                      </span>
-                    </div>
+                  {/* Name */}
+                  <span className={`text-[13px] font-extrabold tracking-tight text-center truncate w-full ${isSelected ? 'text-indigo-900' : 'text-slate-800'}`}>
+                    {voice.name}
+                  </span>
+
+                  {/* Gender & Accent */}
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <span className={`
+                      inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider
+                      ${voice.gender === 'male' || voice.gender === 'Masculine'
+                        ? 'bg-blue-50 text-blue-500 border border-blue-100'
+                        : 'bg-pink-50 text-pink-500 border border-pink-100'
+                      }
+                    `}>
+                      {voice.gender === 'male' ? 'M' : voice.gender === 'female' ? 'F' : voice.gender?.charAt(0)}
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-semibold truncate">
+                      {voice.accent}
+                    </span>
                   </div>
 
                   {/* Play Button */}
@@ -256,7 +222,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                       handleVoicePreview(voice.id, voice.provider_voice_id || null, voice.sample_audio_url || null);
                     }}
                     className={`
-                      shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200
+                      mt-2.5 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200
                       ${isVoicePlaying
                         ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200/60 scale-105'
                         : isSelected
@@ -267,15 +233,15 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                     disabled={isVoiceLoading}
                   >
                     {isVoiceLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : isVoicePlaying ? (
-                      <div className="flex gap-[2px] items-end h-3.5">
-                        <div className="w-[2.5px] bg-white rounded-full animate-[bounce_0.5s_ease-in-out_infinite]" style={{ height: '8px', animationDelay: '0ms' }} />
-                        <div className="w-[2.5px] bg-white rounded-full animate-[bounce_0.5s_ease-in-out_infinite]" style={{ height: '14px', animationDelay: '120ms' }} />
-                        <div className="w-[2.5px] bg-white rounded-full animate-[bounce_0.5s_ease-in-out_infinite]" style={{ height: '6px', animationDelay: '240ms' }} />
+                      <div className="flex gap-[2px] items-end h-3">
+                        <div className="w-[2px] bg-white rounded-full animate-[bounce_0.5s_ease-in-out_infinite]" style={{ height: '7px', animationDelay: '0ms' }} />
+                        <div className="w-[2px] bg-white rounded-full animate-[bounce_0.5s_ease-in-out_infinite]" style={{ height: '12px', animationDelay: '120ms' }} />
+                        <div className="w-[2px] bg-white rounded-full animate-[bounce_0.5s_ease-in-out_infinite]" style={{ height: '5px', animationDelay: '240ms' }} />
                       </div>
                     ) : (
-                      <Volume2 className="w-4 h-4" />
+                      <Volume2 className="w-3.5 h-3.5" />
                     )}
                   </button>
                 </div>
