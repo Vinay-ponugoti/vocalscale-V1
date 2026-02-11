@@ -6,8 +6,13 @@ interface AISummaryProps {
 }
 
 
-// Persist summary state in sessionStorage to survive tab switches
-const SUMMARY_KEY = 'ai_summary_persisted';
+// Persist summary per conversation using a unique key
+const getSummaryKey = (summary: string | undefined) => {
+  if (!summary) return 'ai_summary_default';
+  // Use a hash of the summary as key (or a substring if unique)
+  return 'ai_summary_' + btoa(unescape(encodeURIComponent(summary.slice(0, 32))));
+};
+
 const AISummary: React.FC<AISummaryProps> = ({ summary }) => {
   const [status, setStatus] = useState<'idle' | 'generating' | 'completed'>('idle');
   const [displayedText, setDisplayedText] = useState('');
@@ -17,9 +22,10 @@ const AISummary: React.FC<AISummaryProps> = ({ summary }) => {
     ? summary
     : "Unable to generate summary from this conversation transcript. The call may have been too short or no audio was recorded.";
 
-  // On mount, check sessionStorage for persisted summary
+  // On mount, check sessionStorage for persisted summary for this conversation
   useEffect(() => {
-    const persisted = sessionStorage.getItem(SUMMARY_KEY);
+    const key = getSummaryKey(summary);
+    const persisted = sessionStorage.getItem(key);
     if (persisted) {
       setDisplayedText(persisted);
       setStatus('completed');
@@ -38,7 +44,8 @@ const AISummary: React.FC<AISummaryProps> = ({ summary }) => {
       setStatus('completed');
       setHasGenerated(true);
       setDisplayedText(content);
-      sessionStorage.setItem(SUMMARY_KEY, content);
+      const key = getSummaryKey(summary);
+      sessionStorage.setItem(key, content);
     }, 1200);
   };
 
@@ -78,13 +85,13 @@ const AISummary: React.FC<AISummaryProps> = ({ summary }) => {
 
         {(hasGenerated || status === 'completed') && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white border border-border rounded-xl p-6 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full flex flex-col items-end"
           >
-            <div className="w-full flex flex-col gap-4">
-              <div className="w-full flex flex-col gap-2">
-                <div className="rounded-lg bg-muted/40 px-4 py-3 text-[15px] leading-relaxed font-medium text-foreground whitespace-pre-line shadow-sm border border-muted/30">
+            <div className="max-w-2xl w-full">
+              <div className="flex flex-row justify-end">
+                <div className="bg-gradient-to-br from-primary/90 to-primary text-white px-5 py-4 rounded-2xl rounded-br-none shadow-md text-[15px] leading-relaxed font-medium whitespace-pre-line animate-in fade-in duration-700">
                   {displayedText}
                 </div>
               </div>
