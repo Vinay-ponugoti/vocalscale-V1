@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ChevronRight, Phone, TrendingUp, Globe, Check } from 'lucide-react'
-import { type Variants } from 'framer-motion'
+import { ArrowRight, Phone, TrendingUp, Globe, Check, Play } from 'lucide-react'
+import { type Variants, motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { Header } from './Header'
@@ -27,6 +27,19 @@ const transitionVariants: { item: Variants } = {
     },
 }
 
+const glowVariants: Variants = {
+    initial: { opacity: 0.5, scale: 0.95 },
+    animate: {
+        opacity: [0.5, 0.8, 0.5],
+        scale: [0.95, 1.05, 0.95],
+        transition: {
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+        }
+    }
+}
+
 export function HeroSection() {
     const videoRef = React.useRef<HTMLVideoElement>(null)
 
@@ -41,38 +54,39 @@ export function HeroSection() {
             <Header />
             <main className="overflow-hidden">
                 <section>
-                    <div className="relative pt-20 md:pt-40 z-10">
+                    <div className="relative pt-20 md:pt-32 pb-20 z-10">
                         <div className="mx-auto max-w-7xl px-6 md:px-8">
                             <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                                 <AnimatedGroup variants={transitionVariants}>
                                     <Link
                                         to="/signup"
-                                        className="hover:bg-slate-100/80 bg-white/60 group mx-auto flex w-fit items-center gap-3 md:gap-4 rounded-full border border-slate-200 p-1 pl-4 shadow-sm shadow-slate-200/50 transition-all duration-300 backdrop-blur-md">
-                                        <span className="text-slate-600 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] line-clamp-1">Revolutionizing Business Communication</span>
-                                        <span className="block h-4 w-0.5 border-l border-slate-200"></span>
+                                        className="hover:bg-blue-50/80 bg-white/80 group mx-auto flex w-fit items-center gap-3 md:gap-4 rounded-full border border-blue-200/60 p-1.5 pl-4 shadow-sm shadow-blue-200/20 transition-all duration-300 backdrop-blur-md hover:border-blue-300">
+                                        <span className="text-blue-600 text-[11px] md:text-xs font-bold uppercase tracking-[0.15em] flex items-center gap-2">
+                                            <span className="relative flex h-2 w-2">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                            </span>
+                                            New Release
+                                        </span>
+                                        <span className="block h-4 w-px bg-slate-200"></span>
+                                        <span className="text-slate-600 text-[11px] md:text-xs font-medium tracking-wide">
+                                            VocalScale 2.0 is live
+                                        </span>
 
-                                        <div className="bg-blue-600 group-hover:bg-blue-500 size-6 overflow-hidden rounded-full duration-500 flex-shrink-0">
-                                            <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
-                                                <span className="flex size-6">
-                                                    <ArrowRight className="m-auto size-3 text-white" />
-                                                </span>
-                                                <span className="flex size-6">
-                                                    <ArrowRight className="m-auto size-3 text-white" />
-                                                </span>
-                                            </div>
+                                        <div className="bg-blue-600 group-hover:bg-blue-700 size-6 text-white rounded-full flex items-center justify-center transition-colors shadow-lg shadow-blue-500/30">
+                                            <ArrowRight className="size-3" />
                                         </div>
                                     </Link>
 
-                                    <h1
-                                        className="mt-6 md:mt-10 max-w-4xl mx-auto text-balance text-4xl sm:text-5xl md:text-6xl font-black tracking-[-0.03em] text-slate-900 leading-[1.1]">
-                                        AI Voice Agents That <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 italic pb-2 tracking-tight">Transform Customer Experience</span>
-                                    </h1>
-                                    <p
-                                        className="mx-auto mt-6 max-w-3xl text-balance text-base md:text-lg text-slate-600 leading-relaxed font-medium">
-                                        <span className="font-bold text-slate-900">VocalScale</span> delivers enterprise-grade AI voice technology that handles customer interactions with human-like intelligence. Our advanced AI receptionists provide 24/7 support, automate scheduling, and deliver personalized experiences that scale your business operations while reducing costs by up to 70%.
+                                    <div className="mt-8 md:mt-10 max-w-5xl mx-auto">
+                                        <h1 className="text-balance text-5xl sm:text-6xl md:text-7xl font-black tracking-[-0.02em] text-slate-900 leading-[1.05]">
+                                            The First AI Voice Agent That Transforms <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Customer Experience</span>
+                                        </h1>
+                                    </div>
+
+                                    <p className="mx-auto mt-8 max-w-2xl text-balance text-lg md:text-xl text-slate-600 leading-relaxed font-medium">
+                                        Why settle for basic automation? Equip your business with an AI receptionist that sounds human, thinks intelligently, and works 24/7 to capture every opportunity.
                                     </p>
-
-
                                 </AnimatedGroup>
 
                                 <AnimatedGroup
@@ -81,45 +95,38 @@ export function HeroSection() {
                                             visible: {
                                                 transition: {
                                                     staggerChildren: 0.05,
-                                                    delayChildren: 0.75,
+                                                    delayChildren: 0.5,
                                                 },
                                             },
                                         },
                                         ...transitionVariants,
                                     }}
-                                    className="mt-10 md:mt-12 flex flex-col md:flex-row items-center justify-center gap-4">
-                                    <div
-                                        key={1}
-                                        className="rounded-2xl p-0.5 bg-gradient-to-b from-blue-100 to-transparent w-full md:w-auto">
-                                        <Button
-                                            asChild
-                                            size="lg"
-                                            onClick={trackStartDemo}
-                                            className="rounded-xl px-8 h-12 text-base font-black bg-blue-600 hover:bg-white hover:text-slate-900 text-white shadow-xl shadow-blue-500/20 w-full md:w-auto transition-all active:scale-95 border border-transparent hover:border-blue-200">
-                                            <Link to="/signup" className="hover:no-underline">
-                                                <span className="text-nowrap">Get Started</span>
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    className="mt-10 md:mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+
                                     <Button
-                                        key={2}
                                         asChild
                                         size="lg"
-                                        variant="ghost"
-                                        className="h-12 rounded-xl px-8 text-base font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-all w-full md:w-auto shadow-sm bg-white">
-                                        <a href="#book-demo" className="hover:no-underline">
-                                            <span className="text-nowrap flex items-center justify-center gap-2">
-                                                Schedule Demo
-                                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
-                                                    <ChevronRight size={14} className="text-blue-600 ml-0.5" />
-                                                </div>
-                                            </span>
+                                        className="h-14 rounded-full px-8 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xl shadow-blue-600/20 transition-all hover:scale-105 active:scale-95 w-full sm:w-auto">
+                                        <Link to="/signup">
+                                            Get Started Free
+                                        </Link>
+                                    </Button>
+
+                                    <Button
+                                        asChild
+                                        size="lg"
+                                        variant="outline"
+                                        className="h-14 rounded-full px-8 text-lg font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 border-slate-200 hover:border-slate-300 transition-all w-full sm:w-auto bg-white/50 backdrop-blur-sm">
+                                        <a href="#demo" className="flex items-center gap-2">
+                                            <Play className="size-4 fill-current" />
+                                            Watch Demo
                                         </a>
                                     </Button>
                                 </AnimatedGroup>
                             </div>
                         </div>
 
+                        {/* Enhanced Video Container */}
                         <AnimatedGroup
                             variants={{
                                 container: {
@@ -131,9 +138,20 @@ export function HeroSection() {
                                     },
                                 },
                                 ...transitionVariants,
-                            }}>
-                            <div className="relative mt-10 md:mt-12 px-6 md:px-8">
-                                <div className="inset-shadow-2xs ring-slate-900/10 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-300/50 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 opacity-100">
+                            }}
+                            className="mt-16 md:mt-24 px-6 md:px-8 relative mx-auto max-w-7xl">
+
+                            {/* Glow Effect behind video */}
+                            <motion.div
+                                variants={glowVariants}
+                                initial="initial"
+                                animate="animate"
+                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-blue-500/20 blur-[100px] rounded-full -z-10"
+                            />
+
+                            <div className="relative rounded-2xl md:rounded-3xl p-2 bg-gradient-to-b from-slate-200/50 to-slate-100/50 backdrop-blur-sm border border-white/60 shadow-2xl shadow-slate-200/50 ring-1 ring-slate-900/5">
+                                <div className="rounded-xl md:rounded-2xl overflow-hidden bg-slate-900 shadow-inner ring-1 ring-black/5 aspect-video relative">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent pointer-events-none z-10" />
                                     <video
                                         ref={videoRef}
                                         autoPlay
@@ -141,56 +159,65 @@ export function HeroSection() {
                                         loop
                                         playsInline
                                         preload="auto"
+                                        width="100%"
+                                        height="100%"
                                         crossOrigin="anonymous"
-                                        className="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
+                                        className="w-full h-full object-cover"
+                                        poster="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/poster.jpg"
                                     >
                                         <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/0126.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
+                            </div>
 
-                                {/* Video caption with expanded content */}
-                                <div className="mt-16 text-center max-w-4xl mx-auto">
-                                    <p className="text-sm text-slate-600 leading-relaxed">
-                                        Explore VocalScale's powerful dashboard found at the heart of your operation. Seamlessly manage your AI workforce,
-                                        analyze real-time performance metrics, and configure advanced settings—all from a single, intuitive interface.
-                                    </p>
+                            {/* Trust Badges / Social Proof below video */}
+                            <div className="mt-16 md:mt-20 pt-10 border-t border-slate-200/60">
+                                <p className="text-center text-sm font-semibold text-slate-500 uppercase tracking-widest mb-8">
+                                    Trusted by forward-thinking companies
+                                </p>
+                                <div className="flex flex-wrap justify-center gap-x-12 gap-y-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                                    {/* Placeholders for logos - representing the "top company" feel */}
+                                    {['TechCorp', 'GlobalScale', 'InnovateAI', 'FutureWorks', 'NextLevel'].map((company) => (
+                                        <span key={company} className="text-xl font-bold text-slate-400 flex items-center gap-2">
+                                            <div className="size-6 rounded bg-slate-200/50"></div>
+                                            {company}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
                         </AnimatedGroup>
 
-                        {/* Key Benefits Grid */}
-                        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto px-6 md:px-8">
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 shadow-sm">
-                                <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center mb-4">
-                                    <Phone className="w-6 h-6 text-blue-600" />
+                        {/* Existing Key Benefits Grid - Preserved but styled for consistency */}
+                        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto px-6 md:px-8">
+                            <div className="group bg-white rounded-3xl p-8 border border-slate-200/60 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-100/50 transition-all duration-300">
+                                <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <Phone className="w-7 h-7 text-blue-600" />
                                 </div>
-                                <h3 className="font-bold text-slate-900 mb-2">24/7 Availability</h3>
-                                <p className="text-sm text-slate-600">Never miss a customer call with AI that works around the clock</p>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">24/7 Availability</h3>
+                                <p className="text-slate-600 leading-relaxed">Never miss a customer call with AI that works around the clock, handling inquiries instantly.</p>
                             </div>
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 shadow-sm">
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center mb-4">
-                                    <TrendingUp className="w-6 h-6 text-emerald-600" />
+                            <div className="group bg-white rounded-3xl p-8 border border-slate-200/60 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-100/50 transition-all duration-300">
+                                <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <TrendingUp className="w-7 h-7 text-emerald-600" />
                                 </div>
-                                <h3 className="font-bold text-slate-900 mb-2">70% Cost Reduction</h3>
-                                <p className="text-sm text-slate-600">Slash operational costs while improving service quality</p>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">70% Cost Reduction</h3>
+                                <p className="text-slate-600 leading-relaxed">Slash operational costs while improving service quality and response times dramatically.</p>
                             </div>
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 shadow-sm">
-                                <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center mb-4">
-                                    <Globe className="w-6 h-6 text-violet-600" />
+                            <div className="group bg-white rounded-3xl p-8 border border-slate-200/60 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-100/50 transition-all duration-300">
+                                <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <Globe className="w-7 h-7 text-indigo-600" />
                                 </div>
-                                <h3 className="font-bold text-slate-900 mb-2">50+ Languages</h3>
-                                <p className="text-sm text-slate-600">Serve global customers in their native language</p>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">50+ Languages</h3>
+                                <p className="text-slate-600 leading-relaxed">Serve global customers in their native language with near-perfect accent and cultural nuance.</p>
                             </div>
                         </div>
 
-
-
-                        {/* Additional Content Sections */}
-                        <div className="mt-12 max-w-7xl mx-auto px-6 md:px-8">
-                            <div className="grid md:grid-cols-2 gap-12 items-center">
+                        {/* Existing Content - Transform Your Customer Service */}
+                        <div className="mt-32 max-w-7xl mx-auto px-6 md:px-8">
+                            <div className="grid md:grid-cols-2 gap-16 items-center">
                                 <div>
-                                    <h2 className="text-3xl font-black text-slate-900 mb-6 leading-tight">
+                                    <h2 className="text-4xl font-black text-slate-900 mb-6 leading-tight tracking-tight">
                                         Transform Your Customer Service Operations
                                     </h2>
                                     <p className="text-lg text-slate-600 leading-relaxed mb-6">
@@ -198,68 +225,72 @@ export function HeroSection() {
                                         VocalScale revolutionizes this paradigm by providing AI-powered voice agents that deliver
                                         consistent, professional, and intelligent customer interactions at a fraction of the cost.
                                     </p>
-                                    <p className="text-lg text-slate-600 leading-relaxed mb-6">
+                                    <p className="text-lg text-slate-600 leading-relaxed mb-8">
                                         Our advanced AI technology understands context, remembers previous interactions, and adapts
-                                        responses based on customer history and preferences. This creates a personalized experience
-                                        that builds customer loyalty while reducing operational overhead by up to 70%.
+                                        responses based on customer history and preferences.
                                     </p>
-                                    <div className="space-y-4">
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center mt-1">
-                                                <Check className="w-3 h-3 text-emerald-600" />
+                                    <div className="space-y-5">
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center mt-0.5 shrink-0">
+                                                <Check className="w-4 h-4 text-emerald-600" />
                                             </div>
                                             <div>
-                                                <h4 className="font-semibold text-slate-900">Scalable Customer Support</h4>
-                                                <p className="text-sm text-slate-600">Handle unlimited concurrent calls without additional staffing costs</p>
+                                                <h4 className="font-bold text-slate-900 text-lg">Scalable Customer Support</h4>
+                                                <p className="text-slate-600">Handle unlimited concurrent calls without additional staffing costs</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mt-1">
-                                                <Check className="w-3 h-3 text-blue-600" />
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mt-0.5 shrink-0">
+                                                <Check className="w-4 h-4 text-blue-600" />
                                             </div>
                                             <div>
-                                                <h4 className="font-semibold text-slate-900">Consistent Quality</h4>
-                                                <p className="text-sm text-slate-600">Every interaction maintains professional standards and brand voice</p>
+                                                <h4 className="font-bold text-slate-900 text-lg">Consistent Quality</h4>
+                                                <p className="text-slate-600">Every interaction maintains professional standards and brand voice</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center mt-1">
-                                                <Check className="w-3 h-3 text-violet-600" />
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mt-0.5 shrink-0">
+                                                <Check className="w-4 h-4 text-indigo-600" />
                                             </div>
                                             <div>
-                                                <h4 className="font-semibold text-slate-900">Instant Response</h4>
-                                                <p className="text-sm text-slate-600">No hold times or wait periods - customers get immediate assistance</p>
+                                                <h4 className="font-bold text-slate-900 text-lg">Instant Response</h4>
+                                                <p className="text-slate-600">No hold times or wait periods - customers get immediate assistance</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 rounded-3xl p-8 border border-slate-200/60">
-                                    <h3 className="text-xl font-bold text-slate-900 mb-6">Industry Applications</h3>
-                                    <div className="space-y-6">
-                                        <div>
-                                            <h4 className="font-semibold text-slate-900 mb-2">Healthcare Practices</h4>
-                                            <p className="text-sm text-slate-600 mb-3">Automate appointment scheduling, prescription refills, and patient inquiries while maintaining HIPAA compliance.</p>
-                                            <div className="text-xs text-blue-600 font-medium">Reduced administrative overhead by 65%</div>
+                                <div className="bg-slate-50 rounded-[2rem] p-8 md:p-12 border border-slate-200">
+                                    <h3 className="text-2xl font-bold text-slate-900 mb-8">Industry Applications</h3>
+                                    <div className="space-y-8">
+                                        <div className="group">
+                                            <h4 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                                Healthcare Practices
+                                            </h4>
+                                            <p className="text-slate-600 mb-3 pl-4 border-l-2 border-slate-200 group-hover:border-blue-500 transition-colors">Automate appointment scheduling, prescription refills, and patient inquiries while maintaining HIPAA compliance.</p>
+                                            <div className="text-xs text-blue-600 font-bold uppercase tracking-wider pl-4">Reduced administrative overhead by 65%</div>
                                         </div>
-                                        <div>
-                                            <h4 className="font-semibold text-slate-900 mb-2">Legal Services</h4>
-                                            <p className="text-sm text-slate-600 mb-3">Handle client intake, schedule consultations, and provide case status updates with professional accuracy.</p>
-                                            <div className="text-xs text-emerald-600 font-medium">Improved client response time by 85%</div>
+                                        <div className="group">
+                                            <h4 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                                Legal Services
+                                            </h4>
+                                            <p className="text-slate-600 mb-3 pl-4 border-l-2 border-slate-200 group-hover:border-emerald-500 transition-colors">Handle client intake, schedule consultations, and provide case status updates with professional accuracy.</p>
+                                            <div className="text-xs text-emerald-600 font-bold uppercase tracking-wider pl-4">Improved client response time by 85%</div>
                                         </div>
-                                        <div>
-                                            <h4 className="font-semibold text-slate-900 mb-2">Real Estate</h4>
-                                            <p className="text-sm text-slate-600 mb-3">Qualify leads, schedule property viewings, and provide listing information around the clock.</p>
-                                            <div className="text-xs text-violet-600 font-medium">Increased lead conversion by 40%</div>
-                                        </div>
-                                        <div>
-                                            <h4 className="font-semibold text-slate-900 mb-2">E-commerce</h4>
-                                            <p className="text-sm text-slate-600 mb-3">Process orders, handle returns, and provide product support in multiple languages.</p>
-                                            <div className="text-xs text-amber-600 font-medium">Enhanced customer satisfaction scores by 92%</div>
+                                        <div className="group">
+                                            <h4 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                                                Real Estate
+                                            </h4>
+                                            <p className="text-slate-600 mb-3 pl-4 border-l-2 border-slate-200 group-hover:border-indigo-500 transition-colors">Qualify leads, schedule property viewings, and provide listing information around the clock.</p>
+                                            <div className="text-xs text-indigo-600 font-bold uppercase tracking-wider pl-4">Increased lead conversion by 40%</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </section>
             </main>
