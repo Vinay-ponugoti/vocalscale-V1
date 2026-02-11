@@ -193,11 +193,19 @@ const NumberDetails = () => {
                             <div className="my-12 h-px bg-border/50" />
 
                             <h4 className="text-xs font-black text-foreground uppercase tracking-[0.2em] mb-8 opacity-80">Line Capabilities</h4>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                <CapabilityCard icon={Mic} label="Voice" active={!!number.capabilities?.voice} />
-                                <CapabilityCard icon={MessageSquare} label="SMS" active={!!number.capabilities?.sms} />
-                                <CapabilityCard icon={ImageIcon} label="MMS" active={!!number.capabilities?.mms} />
-                                <CapabilityCard icon={Printer} label="Fax" active={false} />
+                            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
+                                <CapabilityCard
+                                    icon={Mic}
+                                    label="Voice"
+                                    active={true}
+                                    className="bg-indigo-50 border-indigo-200 text-indigo-700 shadow-md"
+                                />
+                                <CapabilityCard
+                                    icon={MessageSquare}
+                                    label="SMS"
+                                    active={!!number.capabilities?.sms}
+                                    className="bg-emerald-50 border-emerald-200 text-emerald-700 shadow-md"
+                                />
                             </div>
                         </div>
 
