@@ -198,13 +198,11 @@ const NumberDetails = () => {
                                     icon={Mic}
                                     label="Voice"
                                     active={true}
-                                    className="bg-indigo-50 border-indigo-200 text-indigo-700 shadow-md"
                                 />
                                 <CapabilityCard
                                     icon={MessageSquare}
                                     label="SMS"
                                     active={!!number.capabilities?.sms}
-                                    className="bg-emerald-50 border-emerald-200 text-emerald-700 shadow-md"
                                 />
                             </div>
                         </div>
