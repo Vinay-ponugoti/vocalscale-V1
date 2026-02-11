@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { HeroSection } from './components/HeroSection';
 import { Features } from './components/Features';
 import { HowItWorks } from './components/HowItWorks';
-import { CallFlowsSection } from './components/CallFlowsSection';
 import { Pricing } from './components/Pricing';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
@@ -138,7 +137,6 @@ const Landing = () => {
         <ROILiveTicker />
         <main className="flex flex-col space-y-24 pb-24">
           <Features />
-          <CallFlowsSection />
           <HowItWorks />
           <Pricing />
           <FinalCTA />
