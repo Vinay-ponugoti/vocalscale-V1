@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { HeroSection } from './components/HeroSection';
-import { Features } from './components/Features';
+// import { Features } from './components/Features';
 import { HowItWorks } from './components/HowItWorks';
 import { Pricing } from './components/Pricing';
+import { SkillsSection } from './components/SkillsSection';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
 import { ROILiveTicker } from './components/ROILiveTicker';
@@ -31,6 +32,11 @@ const Landing = () => {
       if (processSection) {
         processSection.scrollIntoView({ behavior: 'smooth' });
       }
+    } else if (location.pathname === '/skills') {
+      const skillsSection = document.getElementById('skills-section');
+      if (skillsSection) {
+        skillsSection.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   }, [location.pathname]);
 
@@ -55,6 +61,11 @@ const Landing = () => {
       title: "How It Works | VocalScale AI Voice Agent",
       description: "Get your AI receptionist up and running in minutes. Pick a number, customize your agent, and start handling calls automatically.",
       canonical: "https://www.vocalscale.com/process"
+    },
+    '/skills': {
+      title: "Skills Ecosystem | VocalScale",
+      description: "Discover the open ecosystem of skills for your AI agent. Install capabilities from the community or build your own.",
+      canonical: "https://www.vocalscale.com/skills"
     }
   };
 
@@ -136,9 +147,10 @@ const Landing = () => {
         <HeroSection />
         <ROILiveTicker />
         <main className="flex flex-col space-y-24 pb-24">
-          <Features />
+          {/* <Features /> */}
           <HowItWorks />
           <Pricing />
+          <SkillsSection />
           <FinalCTA />
         </main>
         <Footer />
