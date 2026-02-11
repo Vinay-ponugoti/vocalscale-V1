@@ -527,17 +527,7 @@ const FullScreenAppointments: React.FC = () => {
             </div>
           </div>
 
-          {!isMobile && (
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => setIsNewModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-indigo-700 transition-all duration-300 shadow-lg shadow-indigo-100 active:scale-95"
-              >
-                <Plus size={14} />
-                New Appointment
-              </button>
-            </div>
-          )}
+          {/* Removed top New Appointment button as requested */}
         </div>
 
           {/* Controls Wrapper */}
