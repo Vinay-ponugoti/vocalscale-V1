@@ -126,12 +126,6 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
       {/* --- AI Summary Section --- */}
       <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-            <Bot size={16} className="text-[#4285F4]" />
-          </div>
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-700">AI Analysis</h3>
-        </div>
         <AISummary summary={log.summary || log.notes} />
       </div>
 
