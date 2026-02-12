@@ -85,10 +85,14 @@ class BillingAPI {
     return this.request('/billing/payment-method');
   }
 
-  async createCheckoutSession(priceId: string, userEmail?: string) {
+  async createCheckoutSession(priceId: string, userEmail?: string, promoCode?: string) {
     return this.request('/billing/checkout', {
       method: 'POST',
-      body: JSON.stringify({ price_id: priceId, user_email: userEmail || '' }),
+      body: JSON.stringify({
+        price_id: priceId,
+        user_email: userEmail || '',
+        promo_code: promoCode
+      }),
     });
   }
 
