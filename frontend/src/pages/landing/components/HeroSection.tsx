@@ -64,12 +64,12 @@ export function HeroSection() {
                                     </Link>
 
                                     <h1
-                                        className="mt-6 md:mt-10 max-w-4xl mx-auto text-balance text-4xl sm:text-5xl md:text-6xl font-black tracking-[-0.03em] text-slate-900 leading-[1.1]">
-                                        AI Voice Agents That <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 italic pb-2 tracking-tight">Transform Customer Experience</span>
+                                        className="mt-6 md:mt-10 max-w-4xl mx-auto text-balance text-5xl sm:text-6xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 leading-[1.1]">
+                                        The First AI Voice Agent That Transforms <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 italic pb-2 tracking-tight">Customer Experience</span>
                                     </h1>
                                     <p
-                                        className="mx-auto mt-6 max-w-3xl text-balance text-base md:text-lg text-slate-600 leading-relaxed font-medium">
-                                        <span className="font-bold text-slate-900">VocalScale</span> delivers enterprise-grade AI voice technology that handles customer interactions with human-like intelligence. Our advanced AI receptionists provide 24/7 support, automate scheduling, and deliver personalized experiences that scale your business operations while reducing costs by up to 70%.
+                                        className="mx-auto mt-6 max-w-3xl text-balance text-lg md:text-xl text-slate-600 leading-relaxed font-medium">
+                                        Why settle for basic automation? Equip your business with an AI receptionist that sounds human, thinks intelligently, and works 24/7 to capture every opportunity.
                                     </p>
 
 
@@ -95,9 +95,9 @@ export function HeroSection() {
                                             asChild
                                             size="lg"
                                             onClick={trackStartDemo}
-                                            className="rounded-xl px-8 h-12 text-base font-black bg-blue-600 hover:bg-white hover:text-slate-900 text-white shadow-xl shadow-blue-500/20 w-full md:w-auto transition-all active:scale-95 border border-transparent hover:border-blue-200">
+                                            className="rounded-xl px-8 h-12 text-lg font-black bg-blue-600 hover:bg-white hover:text-slate-900 text-white shadow-xl shadow-blue-500/20 w-full md:w-auto transition-all active:scale-95 border border-transparent hover:border-blue-200">
                                             <Link to="/signup" className="hover:no-underline">
-                                                <span className="text-nowrap">Get Started</span>
+                                                <span className="text-nowrap">Get Started Free</span>
                                             </Link>
                                         </Button>
                                     </div>
@@ -106,7 +106,7 @@ export function HeroSection() {
                                         asChild
                                         size="lg"
                                         variant="ghost"
-                                        className="h-12 rounded-xl px-8 text-base font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-all w-full md:w-auto shadow-sm bg-white">
+                                        className="h-12 rounded-xl px-8 text-lg font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-all w-full md:w-auto shadow-sm bg-white">
                                         <a href="#book-demo" className="hover:no-underline">
                                             <span className="text-nowrap flex items-center justify-center gap-2">
                                                 Schedule Demo
