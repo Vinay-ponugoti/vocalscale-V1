@@ -40,11 +40,16 @@ const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
     useEffect(() => {
         if (!containerRef.current || !siteKey) return;
 
-        // Wait for turnstile to load
+        // Wait for turnstile to load with a 10 second timeout
+        const startTime = Date.now();
         const interval = setInterval(() => {
             if (window.turnstile) {
                 clearInterval(interval);
                 renderWidget();
+            } else if (Date.now() - startTime > 10000) {
+                clearInterval(interval);
+                console.error('Turnstile failed to load within 10 seconds');
+                if (onError) onError(new Error('Security verification failed to load. Please refresh the page.'));
             }
         }, 100);
 

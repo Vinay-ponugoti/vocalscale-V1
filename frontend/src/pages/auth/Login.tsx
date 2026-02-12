@@ -41,6 +41,13 @@ const Login = () => {
       return;
     }
 
+    if (turnstileSiteKey && !turnstileToken) {
+      const msg = 'Please complete the security verification.';
+      setError(msg);
+      showToast(msg, 'error');
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {

@@ -31,6 +31,9 @@ class BillingAPI {
       controller = new AbortController();
     }
 
+    // Auto-abort after 20 seconds to prevent hanging requests
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
     const config: RequestInit = {
       ...options,
       headers: {
@@ -44,6 +47,7 @@ class BillingAPI {
 
     try {
       const response = await fetch(url, config);
+      clearTimeout(timeoutId);
 
       // Clean up controller after response (only for tracked requests)
       if (shouldCancelDuplicates) {
@@ -57,6 +61,7 @@ class BillingAPI {
 
       return response.json();
     } catch (error) {
+      clearTimeout(timeoutId);
       // Don't log or rethrow abort errors
       if (error instanceof Error && error.name === 'AbortError') {
         throw error;
