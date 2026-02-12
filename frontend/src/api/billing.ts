@@ -52,7 +52,7 @@ class BillingAPI {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-        throw new Error(error.detail || error.error || `HTTP ${response.status}: ${response.statusText}`);
+        throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       return response.json();
@@ -85,14 +85,10 @@ class BillingAPI {
     return this.request('/billing/payment-method');
   }
 
-  async createCheckoutSession(priceId: string, userEmail?: string, promoCode?: string) {
+  async createCheckoutSession(priceId: string, userEmail?: string) {
     return this.request('/billing/checkout', {
       method: 'POST',
-      body: JSON.stringify({
-        price_id: priceId,
-        user_email: userEmail || '',
-        promo_code: promoCode
-      }),
+      body: JSON.stringify({ price_id: priceId, user_email: userEmail || '' }),
     });
   }
 

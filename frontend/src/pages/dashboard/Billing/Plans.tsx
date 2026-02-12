@@ -102,12 +102,7 @@ const Plans: React.FC = () => {
         email = promptedEmail;
       }
 
-      // Auto-apply promo for new/non-active subscriptions
-      // If user has no active subscription, we apply the code
-      const isActiveSubscription = subscription?.status === 'active';
-      const promoCode = !isActiveSubscription ? 'promo_1SwE96FxgBFpAdlH3IHoLkKP' : undefined;
-
-      const { url } = await billingApi.createCheckoutSession(priceId, email, promoCode);
+      const { url } = await billingApi.createCheckoutSession(priceId, email);
       if (url) {
         window.location.href = url;
       }
