@@ -124,15 +124,15 @@ const Login = () => {
       const { url } = await response.json();
 
       // Pre-flight check: verify Supabase auth is reachable before redirecting
-      // This prevents the user from seeing raw Cloudflare 522 HTML pages
+      // We check the health endpoint instead of the OAuth URL (which redirects to Google)
       try {
+        const supabaseOrigin = new URL(url).origin;
         const healthCheck = await Promise.race([
-          fetch(url, { method: 'HEAD', mode: 'no-cors' }),
+          fetch(`${supabaseOrigin}/auth/v1/health`, { method: 'GET', mode: 'cors' }),
           new Promise<never>((_, reject) =>
             setTimeout(() => reject(new Error('timeout')), 8000)
           )
         ]);
-        // no-cors returns opaque response, so any response means it's reachable
       } catch {
         throw new Error('Authentication service is temporarily unavailable. Please try again in a moment.');
       }
