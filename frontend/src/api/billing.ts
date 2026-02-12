@@ -52,7 +52,7 @@ class BillingAPI {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-        throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
+        throw new Error(error.detail || error.error || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       return response.json();
