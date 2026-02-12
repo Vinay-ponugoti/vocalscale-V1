@@ -113,15 +113,37 @@ const Login = () => {
       return;
     }
 
+    setLoading(true);
+    setError(null);
+
     try {
       const redirectUrl = `${window.location.origin}/auth/callback`;
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
       if (!response.ok) throw new Error('Failed to get auth URL');
 
       const { url } = await response.json();
+
+      // Pre-flight check: verify Supabase auth is reachable before redirecting
+      // This prevents the user from seeing raw Cloudflare 522 HTML pages
+      try {
+        const healthCheck = await Promise.race([
+          fetch(url, { method: 'HEAD', mode: 'no-cors' }),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('timeout')), 8000)
+          )
+        ]);
+        // no-cors returns opaque response, so any response means it's reachable
+      } catch {
+        throw new Error('Authentication service is temporarily unavailable. Please try again in a moment.');
+      }
+
       window.location.href = url;
-    } catch {
-      showToast('An error occurred during Google login.', 'error');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'An error occurred during Google login.';
+      setError(message);
+      showToast(message, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -243,13 +265,18 @@ const Login = () => {
         <div className="w-full flex justify-center">
           <button
             onClick={handleGoogleLogin}
-            className="w-32 h-16 bg-white hover:bg-slate-50 border border-slate-200 rounded-[1rem] flex items-center justify-center transition-all active:scale-[0.95] shadow-sm group"
+            disabled={loading}
+            className="w-32 h-16 bg-white hover:bg-slate-50 border border-slate-200 rounded-[1rem] flex items-center justify-center transition-all active:scale-[0.95] shadow-sm group disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <img
-              alt="Google"
-              className="w-6 h-6 grayscale group-hover:grayscale-0 transition-all"
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-            />
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-900 rounded-full animate-spin" />
+            ) : (
+              <img
+                alt="Google"
+                className="w-6 h-6 grayscale group-hover:grayscale-0 transition-all"
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              />
+            )}
           </button>
         </div>
 
