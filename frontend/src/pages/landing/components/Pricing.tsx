@@ -174,13 +174,9 @@ export function Pricing() {
                   {isAnnual && (
                     <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1">Billed annually</p>
                   )}
-                  <motion.p
-                    animate={{ opacity: [0.8, 1, 0.8] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="text-[11px] font-bold text-emerald-600 mt-2 tracking-wide uppercase"
-                  >
+                  <p className="text-[11px] font-bold text-emerald-600 mt-2 tracking-wide uppercase animate-pulse">
                     Grab Early! First 3 months same price if you subscribe now.
-                  </motion.p>
+                  </p>
                 </div>
 
                 <div className="space-y-4 mb-10 flex-grow">

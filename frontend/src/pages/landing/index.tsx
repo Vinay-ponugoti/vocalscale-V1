@@ -1,16 +1,16 @@
-import { motion } from 'framer-motion';
 import { HeroSection } from './components/HeroSection';
-import { Features } from './components/Features';
-import { HowItWorks } from './components/HowItWorks';
-import { Pricing } from './components/Pricing';
-import { FinalCTA } from './components/FinalCTA';
-import { Footer } from './components/Footer';
-import { ROILiveTicker } from './components/ROILiveTicker';
-import SchemaMarkup, { webPageSchema, organizationSchema, productSchema } from '@/components/SchemaMarkup';
-
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SEO } from '../../components/SEO';
+import SchemaMarkup, { webPageSchema, organizationSchema, productSchema } from '@/components/SchemaMarkup';
+
+// Lazy-load below-fold sections
+const ROILiveTicker = lazy(() => import('./components/ROILiveTicker').then(m => ({ default: m.ROILiveTicker })));
+const Features = lazy(() => import('./components/Features').then(m => ({ default: m.Features })));
+const HowItWorks = lazy(() => import('./components/HowItWorks').then(m => ({ default: m.HowItWorks })));
+const Pricing = lazy(() => import('./components/Pricing').then(m => ({ default: m.Pricing })));
+const FinalCTA = lazy(() => import('./components/FinalCTA').then(m => ({ default: m.FinalCTA })));
+const Footer = lazy(() => import('./components/Footer').then(m => ({ default: m.Footer })));
 
 const Landing = () => {
   const location = useLocation();
@@ -78,52 +78,11 @@ const Landing = () => {
       <SchemaMarkup schema={organizationSchema} type="Organization" />
 
       <SchemaMarkup schema={productSchema} type="Product" />
-      {/* Background Effects - "Luminous Enterprise" */}
+      {/* Background Effects - CSS-only for performance */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        {/* Soft Modern Gradients */}
-        <motion.div
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.4, 0.3],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] bg-blue-200/40 blur-[120px] rounded-full mix-blend-multiply"
-        />
-        <motion.div
-          animate={{
-            x: [0, -50, 0],
-            y: [0, -30, 0],
-            scale: [1.1, 1, 1.1],
-            opacity: [0.3, 0.4, 0.3],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-200/40 blur-[120px] rounded-full mix-blend-multiply"
-        />
-        <motion.div
-          animate={{
-            x: [20, -20, 20],
-            y: [20, -20, 20],
-            opacity: [0.2, 0.3, 0.2],
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-          className="absolute top-[40%] left-[30%] w-[50%] h-[50%] bg-emerald-100/40 blur-[120px] rounded-full mix-blend-multiply"
-        />
+        <div className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] bg-blue-200/40 blur-[120px] rounded-full mix-blend-multiply animate-[blob1_20s_ease-in-out_infinite]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-200/40 blur-[120px] rounded-full mix-blend-multiply animate-[blob2_25s_ease-in-out_2s_infinite]" />
+        <div className="absolute top-[40%] left-[30%] w-[50%] h-[50%] bg-emerald-100/40 blur-[120px] rounded-full mix-blend-multiply animate-[blob3_18s_ease-in-out_1s_infinite]" />
 
         {/* Subtle Grid Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
@@ -134,14 +93,16 @@ const Landing = () => {
 
       <div className="relative z-10 flex flex-col">
         <HeroSection />
-        <ROILiveTicker />
-        <main className="flex flex-col space-y-24 pb-24">
-          <Features />
-          <HowItWorks />
-          <Pricing />
-          <FinalCTA />
-        </main>
-        <Footer />
+        <Suspense fallback={null}>
+          <ROILiveTicker />
+          <main className="flex flex-col space-y-24 pb-8">
+            <Features />
+            <HowItWorks />
+            <Pricing />
+            <FinalCTA />
+          </main>
+          <Footer />
+        </Suspense>
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ export default defineConfig({
           vendor: ['react', 'react-dom', 'react-router-dom', 'date-fns'],
           ui: ['lucide-react', 'clsx', 'tailwind-merge'],
           supabase: ['@supabase/supabase-js'],
+          motion: ['framer-motion'],
         },
       },
     },

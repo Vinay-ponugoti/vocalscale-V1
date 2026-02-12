@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronRight, Phone, TrendingUp, Globe, Check } from 'lucide-react'
 import { type Variants } from 'framer-motion'
@@ -28,13 +28,33 @@ const transitionVariants: { item: Variants } = {
 }
 
 export function HeroSection() {
-    const videoRef = React.useRef<HTMLVideoElement>(null)
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const videoContainerRef = useRef<HTMLDivElement>(null)
+    const [videoLoaded, setVideoLoaded] = useState(false)
 
-    React.useEffect(() => {
-        if (videoRef.current) {
+    // Lazy-load video when it enters viewport
+    useEffect(() => {
+        const container = videoContainerRef.current
+        if (!container) return
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting && !videoLoaded) {
+                    setVideoLoaded(true)
+                    observer.disconnect()
+                }
+            },
+            { rootMargin: '200px' }
+        )
+        observer.observe(container)
+        return () => observer.disconnect()
+    }, [videoLoaded])
+
+    useEffect(() => {
+        if (videoRef.current && videoLoaded) {
             videoRef.current.playbackRate = 0.75
         }
-    }, [])
+    }, [videoLoaded])
 
     return (
         <>
@@ -133,20 +153,23 @@ export function HeroSection() {
                                 ...transitionVariants,
                             }}>
                             <div className="relative mt-10 md:mt-12 px-6 md:px-8">
-                                <div className="inset-shadow-2xs ring-slate-900/10 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-300/50 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 opacity-100">
-                                    <video
-                                        ref={videoRef}
-                                        autoPlay
-                                        muted
-                                        loop
-                                        playsInline
-                                        preload="auto"
-                                        crossOrigin="anonymous"
-                                        className="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
-                                    >
-                                        <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/0126.mov" type="video/mp4" />
-                                        Your browser does not support the video tag.
-                                    </video>
+                                <div ref={videoContainerRef} className="inset-shadow-2xs ring-slate-900/10 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-300/50 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 opacity-100">
+                                    {videoLoaded ? (
+                                        <video
+                                            ref={videoRef}
+                                            autoPlay
+                                            muted
+                                            loop
+                                            playsInline
+                                            preload="metadata"
+                                            crossOrigin="anonymous"
+                                            className="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
+                                        >
+                                            <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/landing.mp4" type="video/mp4" />
+                                        </video>
+                                    ) : (
+                                        <div className="w-full aspect-video rounded-xl border border-slate-200 shadow-sm bg-slate-100 animate-pulse" />
+                                    )}
                                 </div>
 
                                 {/* Video caption with expanded content */}

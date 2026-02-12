@@ -200,6 +200,22 @@ export default {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' },
         },
+        blob1: {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.3' },
+          '50%': { transform: 'translate(50px, 30px) scale(1.1)', opacity: '0.4' },
+        },
+        blob2: {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1.1)', opacity: '0.3' },
+          '50%': { transform: 'translate(-50px, -30px) scale(1)', opacity: '0.4' },
+        },
+        blob3: {
+          '0%, 100%': { transform: 'translate(20px, 20px)', opacity: '0.2' },
+          '50%': { transform: 'translate(-20px, -20px)', opacity: '0.3' },
+        },
+        'sound-bar-alt': {
+          '0%, 100%': { height: '6px' },
+          '50%': { height: '100%' },
+        },
       },
 
       /* ========================================

@@ -13,6 +13,8 @@ const menuItems = [
 
 ]
 
+import { PromoBanner } from './PromoBanner'
+
 export const Header = () => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
@@ -38,7 +40,10 @@ export const Header = () => {
 
     return (
         <header>
-            <nav className="fixed z-[100] w-full px-2 group">
+            <div className="absolute top-0 left-0 right-0 z-[105]">
+                <PromoBanner />
+            </div>
+            <nav className="fixed z-[100] w-full px-2 group mt-10 md:mt-12">
                 <div className={cn(
                     'mx-auto mt-4 transition-all duration-500 relative z-[101]',
                     isScrolled || menuState
@@ -187,7 +192,7 @@ export const Header = () => {
 const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn("flex items-center", className)}>
-            <img src="/logo.png" alt="VocalScale" width="428" height="428" className="h-10 md:h-11 w-auto object-contain" />
+            <img src="/logo.png" alt="VocalScale" width="44" height="44" fetchPriority="high" className="h-10 md:h-11 w-auto object-contain" />
         </div>
     )
 }
