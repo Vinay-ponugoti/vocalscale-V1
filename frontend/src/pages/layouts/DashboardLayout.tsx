@@ -18,7 +18,8 @@ import {
   CreditCard,
   Star,
   Brain,
-  Package // Added Package icon
+  Package,
+  ShoppingBag
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -301,6 +302,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               item={{ path: '/dashboard/calls', label: 'Call Logs', icon: PhoneCall }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/calls')}
+            />
+            <NavItem
+              item={{ path: '/dashboard/orders', label: 'Orders', icon: ShoppingBag }}
+              isCollapsed={!sidebarOpen}
+              isActive={isActive('/dashboard/orders')}
             />
             <NavItem
               item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
