@@ -61,11 +61,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => (
             className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105 duration-500"
           />
         </Link>
-        <div className="hidden md:block">
-          <Link to="/help" className="text-xs font-bold text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-widest">
-            Need Help?
-          </Link>
-        </div>
+
       </header>
 
       {/* Main Form Area */}

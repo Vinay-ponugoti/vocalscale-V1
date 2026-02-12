@@ -1,6 +1,6 @@
 import type { Session } from '../types/auth';
 import { env } from '../config/env';
-import { safeLocalStorage } from './storageUtils';
+import { safeLocalStorage, safeSessionStorage } from './storageUtils';
 
 const SESSION_KEY = 'voice_ai_session';
 
@@ -11,21 +11,42 @@ export interface SessionValidationResult {
   backendReachable?: boolean;
 }
 
-export const storeSession = (session: Session | null) => {
+export const storeSession = (session: Session | null, remember: boolean = true) => {
   if (session) {
-    safeLocalStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    if (remember) {
+      safeLocalStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      safeSessionStorage.removeItem(SESSION_KEY); // maintain only one copy
+    } else {
+      safeSessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      safeLocalStorage.removeItem(SESSION_KEY); // maintain only one copy
+    }
   } else {
     safeLocalStorage.removeItem(SESSION_KEY);
+    safeSessionStorage.removeItem(SESSION_KEY);
   }
 };
 
 export const getStoredSession = (): Session | null => {
-  const stored = safeLocalStorage.getItem(SESSION_KEY);
+  // Check sessionStorage first (current tab session)
+  let stored = safeSessionStorage.getItem(SESSION_KEY);
+
+  // If not in session, check local (persistent)
+  if (!stored) {
+    stored = safeLocalStorage.getItem(SESSION_KEY);
+  }
+
   if (!stored) return null;
+
   try {
     return JSON.parse(stored);
   } catch (e) {
     console.error('Failed to parse stored session:', e);
+    // Determine where it came from to remove it
+    if (safeSessionStorage.getItem(SESSION_KEY)) {
+      safeSessionStorage.removeItem(SESSION_KEY);
+    } else {
+      safeLocalStorage.removeItem(SESSION_KEY);
+    }
     return null;
   }
 };

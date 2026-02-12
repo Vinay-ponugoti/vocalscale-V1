@@ -20,7 +20,7 @@ interface AuthContextType {
   refreshProfile,
   updateProfile: (data: any) => void;
   validateSession,
-  setAuthSession
+  setAuthSession: (session: Session, remember?: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -335,11 +335,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const setAuthSession = useCallback((newSession: Session) => {
+  const setAuthSession = useCallback((newSession: Session, remember: boolean = true) => {
     if (mounted.current) {
       setSession(newSession);
       setUser(newSession.user ?? null);
-      storeSession(newSession);
+      storeSession(newSession, remember);
       setLoading(false);
       setSecurityMessage(null);
 

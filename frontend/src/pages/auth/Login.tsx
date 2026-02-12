@@ -26,6 +26,7 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
@@ -65,7 +66,7 @@ const Login = () => {
       const { session } = responseData;
 
       if (session && (session.access_token || session.refresh_token)) {
-        setAuthSession(session);
+        setAuthSession(session, rememberMe);
 
         // Prefetch critical dashboard data
         const now = new Date();
@@ -187,7 +188,19 @@ const Login = () => {
             />
           </div>
 
-          <div className="flex justify-end pt-1">
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center gap-2">
+              <input
+                id="remember-me"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer accent-slate-900"
+              />
+              <label htmlFor="remember-me" className="text-sm font-medium text-slate-600 cursor-pointer select-none">
+                Remember me
+              </label>
+            </div>
             <Link to="/forgot-password" className="text-sm font-bold text-slate-900 hover:text-slate-600 transition-colors">
               Forgot password?
             </Link>
