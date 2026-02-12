@@ -165,7 +165,7 @@ export function HeroSection() {
                                             crossOrigin="anonymous"
                                             className="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
                                         >
-                                            <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/landing.mp4" type="video/mp4" />
+                                            <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/landing%20main.mp4" type="video/mp4" />
                                         </video>
                                     ) : (
                                         <div className="w-full aspect-video rounded-xl border border-slate-200 shadow-sm bg-slate-100 animate-pulse" />

@@ -5,7 +5,7 @@ import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';
 // FloatingChat removed
 
-const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/main%20-%201%20(1).mp4";
+const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/landing.mp4";
 
 interface Article {
   title: string;
