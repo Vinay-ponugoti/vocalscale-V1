@@ -73,20 +73,21 @@ export function useChat(sessionId: string | null) {
     staleTime: 0,
   });
 
-  // Sync fetched messages when they arrive
+  // Clear messages when starting a new chat (sessionId becomes null)
   useEffect(() => {
-    // Only overwrite if we have fetched messages and we're not currently streaming
-    // Crucially: Don't overwrite with empty list if we're in the middle of a session
-    if (fetchedMessages && !isStreaming) {
-      if (fetchedMessages.length > 0) {
-        setMessages(fetchedMessages);
-      } else if (messages.length > 0 && sessionId) {
-        // If we have local messages but the server returned empty, 
-        // it might be an indexing lag. Don't clear!
-        console.warn('[useChat] Server returned 0 messages for active session. Possible indexing lag.');
-      }
+    if (!sessionId) {
+      setMessages([]);
+      setStreamingContent('');
+      setError(null);
     }
-  }, [fetchedMessages, isStreaming, messages.length, sessionId]);
+  }, [sessionId]);
+
+  // Sync fetched messages when they arrive from Supabase
+  useEffect(() => {
+    if (fetchedMessages && !isStreaming) {
+      setMessages(fetchedMessages);
+    }
+  }, [fetchedMessages, isStreaming]);
 
   // Reset messages when session changes
   useEffect(() => {
