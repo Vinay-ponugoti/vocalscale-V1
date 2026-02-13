@@ -311,6 +311,18 @@ class BusinessSetupAPI {
     const data = await response.json();
     return data.files || [];
   }
+
+  // Delete a Knowledge File
+  async deleteKnowledgeFile(fileId: string): Promise<{ success: boolean }> {
+    const url = `${env.KNOWLEDGE_API_URL}/files/${fileId}`;
+    const headers = await getAuthHeader();
+    const response = await fetch(url, { method: 'DELETE', headers });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Delete failed' }));
+      throw new Error(error.detail || `HTTP ${response.status}`);
+    }
+    return response.json();
+  }
 }
 
 export const businessSetupAPI = new BusinessSetupAPI();

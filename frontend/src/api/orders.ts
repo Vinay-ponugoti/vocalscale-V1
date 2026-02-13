@@ -20,6 +20,22 @@ export interface Order {
     updated_at: string;
 }
 
+export interface OrdersResponse {
+    orders: Order[];
+    total: number;
+    page: number;
+    size: number;
+}
+
+export interface OrderStats {
+    total: number;
+    pending: number;
+    confirmed: number;
+    ready: number;
+    picked_up: number;
+    cancelled: number;
+}
+
 class OrdersAPI {
     private async request(endpoint: string, options: RequestInit = {}) {
         const url = `${API_BASE_URL}${endpoint}`;
@@ -41,10 +57,20 @@ class OrdersAPI {
         return response.json();
     }
 
-    async getOrders(page: number = 1, size: number = 20, status?: string) {
+    async getOrders(page: number = 1, size: number = 20, status?: string): Promise<OrdersResponse> {
         let query = `/orders?page=${page}&size=${size}`;
         if (status) query += `&status=${status}`;
-        return this.request(query);
+        const data = await this.request(query);
+        // Normalize response — backend may return { orders: [...] }, { items: [...] }, or raw array
+        if (Array.isArray(data)) {
+            return { orders: data, total: data.length, page, size };
+        }
+        return {
+            orders: data.orders || data.items || [],
+            total: data.total ?? (data.orders || data.items || []).length,
+            page: data.page ?? page,
+            size: data.size ?? size,
+        };
     }
 
     async updateOrderStatus(orderId: string, status: string) {
@@ -54,7 +80,7 @@ class OrdersAPI {
         });
     }
 
-    async getOrderStats() {
+    async getOrderStats(): Promise<OrderStats> {
         return this.request('/orders/stats');
     }
 }

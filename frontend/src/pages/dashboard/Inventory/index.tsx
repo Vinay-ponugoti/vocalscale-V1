@@ -29,10 +29,17 @@ import {
     PackageCheck,
     ChevronsLeft,
     ChevronsRight,
+    FileText,
+    FileSpreadsheet,
+    Image,
+    Loader2,
+    RefreshCw,
+    Brain,
 } from 'lucide-react';
 import { businessSetupAPI } from '../../../api/businessSetup';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import { m, AnimatePresence } from 'framer-motion';
+import { format } from 'date-fns';
 
 interface InventoryItem {
     id: string;
@@ -73,6 +80,18 @@ const Inventory = () => {
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
 
+    // Knowledge files state
+    const [knowledgeFiles, setKnowledgeFiles] = useState<Array<{
+        id: string;
+        filename: string;
+        status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+        upload_timestamp: string;
+        size_bytes?: number;
+        error?: string;
+    }>>([]);
+    const [knowledgeLoading, setKnowledgeLoading] = useState(false);
+    const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
+
     const fetchInventory = async () => {
         setLoading(true);
         try {
@@ -85,8 +104,31 @@ const Inventory = () => {
         }
     };
 
+    const fetchKnowledgeFiles = async () => {
+        setKnowledgeLoading(true);
+        try {
+            const files = await businessSetupAPI.getKnowledgeFiles();
+            setKnowledgeFiles(files);
+        } catch (error) {
+            console.error("Failed to load knowledge files", error);
+        } finally {
+            setKnowledgeLoading(false);
+        }
+    };
+
+    const deleteKnowledgeFile = async (fileId: string) => {
+        try {
+            await businessSetupAPI.deleteKnowledgeFile(fileId);
+            setKnowledgeFiles(prev => prev.filter(f => f.id !== fileId));
+            setDeletingFileId(null);
+        } catch (error) {
+            console.error("Failed to delete knowledge file", error);
+        }
+    };
+
     useEffect(() => {
         fetchInventory();
+        fetchKnowledgeFiles();
     }, []);
 
     const { state } = useBusinessSetup();
@@ -247,10 +289,12 @@ const Inventory = () => {
                             transition={{ duration: 0.2 }}
                             className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm"
                         >
-                            <h3 className="text-base font-semibold mb-4 text-slate-900">Import Products</h3>
+                            <h3 className="text-base font-semibold mb-1 text-slate-900">Import Products & Knowledge</h3>
+                            <p className="text-xs text-slate-500 mb-4">Upload spreadsheets for inventory, or PDFs/docs/images to train your AI agent.</p>
                             <InventoryUpload onUploadSuccess={() => {
                                 setShowUpload(false);
                                 fetchInventory();
+                                fetchKnowledgeFiles();
                             }} />
                         </m.div>
                     )}
@@ -619,6 +663,135 @@ const Inventory = () => {
                                 )}
                             </div>
                         </>
+                    )}
+                </div>
+
+                {/* Knowledge Files Section */}
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                                <Brain size={16} className="text-blue-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-semibold text-slate-900">AI Knowledge Files</h3>
+                                <p className="text-xs text-slate-500">Documents uploaded to train your AI agent on products & services</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={fetchKnowledgeFiles}
+                            disabled={knowledgeLoading}
+                            className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                            title="Refresh"
+                        >
+                            <RefreshCw size={14} className={knowledgeLoading ? 'animate-spin' : ''} />
+                        </button>
+                    </div>
+
+                    {knowledgeLoading && knowledgeFiles.length === 0 ? (
+                        <div className="p-8 text-center">
+                            <Loader2 size={20} className="text-slate-300 animate-spin mx-auto mb-2" />
+                            <p className="text-xs text-slate-400">Loading knowledge files...</p>
+                        </div>
+                    ) : knowledgeFiles.length === 0 ? (
+                        <div className="p-8 text-center">
+                            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <FileText size={20} className="text-slate-300" />
+                            </div>
+                            <p className="text-sm text-slate-500 font-medium">No knowledge files uploaded</p>
+                            <p className="text-xs text-slate-400 mt-1">Upload PDFs, documents, or images to give your AI agent more context.</p>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-slate-100">
+                            {knowledgeFiles.map((file) => {
+                                const ext = file.filename.split('.').pop()?.toLowerCase() || '';
+                                const isSpreadsheet = ['csv', 'xlsx', 'xls'].includes(ext);
+                                const isImage = ['jpg', 'jpeg', 'png', 'webp'].includes(ext);
+                                const isPdf = ext === 'pdf';
+
+                                return (
+                                    <div key={file.id} className="px-6 py-3 flex items-center gap-3 hover:bg-slate-50/50 transition-colors group">
+                                        {/* File Icon */}
+                                        <div className={`p-2 rounded-lg shrink-0 ${
+                                            isSpreadsheet ? 'bg-green-50' :
+                                            isPdf ? 'bg-red-50' :
+                                            isImage ? 'bg-purple-50' :
+                                            'bg-blue-50'
+                                        }`}>
+                                            {isSpreadsheet ? <FileSpreadsheet size={16} className="text-green-600" /> :
+                                             isPdf ? <FileText size={16} className="text-red-600" /> :
+                                             isImage ? <Image size={16} className="text-purple-600" /> :
+                                             <FileText size={16} className="text-blue-600" />}
+                                        </div>
+
+                                        {/* File Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-slate-900 truncate">{file.filename}</p>
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                {file.size_bytes && (
+                                                    <span className="text-[10px] text-slate-400">
+                                                        {file.size_bytes < 1024 * 1024
+                                                            ? `${(file.size_bytes / 1024).toFixed(1)} KB`
+                                                            : `${(file.size_bytes / (1024 * 1024)).toFixed(1)} MB`
+                                                        }
+                                                    </span>
+                                                )}
+                                                {file.upload_timestamp && (
+                                                    <span className="text-[10px] text-slate-400">
+                                                        {format(new Date(file.upload_timestamp), 'MMM d, h:mm a')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Status Badge */}
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${
+                                            file.status === 'COMPLETED' ? 'bg-green-50 text-green-700 ring-1 ring-green-100' :
+                                            file.status === 'PROCESSING' ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-100' :
+                                            file.status === 'PENDING' ? 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-100' :
+                                            'bg-red-50 text-red-700 ring-1 ring-red-100'
+                                        }`}>
+                                            {file.status === 'PROCESSING' && <Loader2 size={10} className="animate-spin" />}
+                                            <span className={`w-1.5 h-1.5 rounded-full ${
+                                                file.status === 'COMPLETED' ? 'bg-green-500' :
+                                                file.status === 'PROCESSING' ? 'bg-blue-500' :
+                                                file.status === 'PENDING' ? 'bg-yellow-500' :
+                                                'bg-red-500'
+                                            }`} />
+                                            {file.status === 'COMPLETED' ? 'Trained' :
+                                             file.status === 'PROCESSING' ? 'Processing' :
+                                             file.status === 'PENDING' ? 'Pending' : 'Failed'}
+                                        </span>
+
+                                        {/* Delete */}
+                                        {deletingFileId === file.id ? (
+                                            <div className="flex items-center gap-1">
+                                                <button
+                                                    onClick={() => deleteKnowledgeFile(file.id)}
+                                                    className="px-2 py-1 text-[10px] rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium"
+                                                >
+                                                    Delete
+                                                </button>
+                                                <button
+                                                    onClick={() => setDeletingFileId(null)}
+                                                    className="px-2 py-1 text-[10px] rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => setDeletingFileId(file.id)}
+                                                className="p-1.5 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                                                title="Delete file"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     )}
                 </div>
             </div>
