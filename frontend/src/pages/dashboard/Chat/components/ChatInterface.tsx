@@ -9,18 +9,15 @@ import { PromptInput } from './PromptInput';
 import EmptyState from './EmptyState';
 import { useChat } from '../../../../hooks/useChat';
 import { useAuth } from '../../../../context/AuthContext';
-import { ChevronDown, AlertCircle, X, Sparkles } from 'lucide-react';
+import { ChevronDown, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
-import { useQuery } from '@tanstack/react-query';
-import { skillsApi } from '../../../../api/skills';
 
 interface ChatInterfaceProps {
   sessionId?: string | null;
   onSessionCreate?: (newSessionId: string) => void;
-  showSkills?: boolean;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreate, showSkills = false }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreate }) => {
   const { user, loading: authLoading } = useAuth();
   const {
     messages,
@@ -32,17 +29,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
     removeFile,
     error,
     clearError,
-    selectedSkill,
-    setSelectedSkill,
   } = useChat(sessionId || null);
-
-  // Fetch available skills
-  const { data: skills = [] } = useQuery({
-    queryKey: ['chat-skills'],
-    queryFn: () => skillsApi.getSkills(),
-    enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
 
   const isAppLoading = authLoading || !user;
 
@@ -89,42 +76,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
   return (
     <div className="flex flex-col h-full relative bg-white">
-      {/* Skills Navigation Bar */}
-      {showSkills && skills.length > 0 && (
-        <div className="flex-shrink-0 bg-white border-b border-gray-100 py-3 shadow-sm z-20">
-          <div className="max-w-3xl mx-auto px-4">
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
-              <button
-                onClick={() => setSelectedSkill(null)}
-                className={cn(
-                  "px-4 py-1.5 text-sm font-medium rounded-full transition-all whitespace-nowrap border",
-                  !selectedSkill
-                    ? "bg-gray-900 text-white border-gray-900 shadow-sm"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                )}
-              >
-                All Skills
-              </button>
-
-              {skills.map((skill) => (
-                <button
-                  key={skill.id}
-                  onClick={() => setSelectedSkill(selectedSkill?.id === skill.id ? null : skill)}
-                  className={cn(
-                    "px-4 py-1.5 text-sm font-medium rounded-full transition-all whitespace-nowrap border flex items-center gap-1.5",
-                    selectedSkill?.id === skill.id
-                      ? "bg-gray-900 text-white border-gray-900 shadow-sm"
-                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                  )}
-                >
-                  <span>{skill.icon}</span>
-                  <span>{skill.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Messages area */}
       <div

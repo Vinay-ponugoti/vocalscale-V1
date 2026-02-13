@@ -1,25 +1,26 @@
-/**
- * Knowledge Chat Page
- * ChatGPT-style chat interface for VocalScale Business Growth Assistant
- */
+
 
 import { useState } from 'react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { useChatSessions } from '../../../hooks/useChat';
 import ChatSidebar from './components/ChatSidebar';
 import ChatInterface from './components/ChatInterface';
-import { Menu, SquarePen, ChevronDown, MoreHorizontal } from 'lucide-react';
+import ChatAnalytics from './components/ChatAnalytics';
+import { Menu, SquarePen, MessageSquare, BarChart3 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+
+type ActiveTab = 'chat' | 'analytics';
 
 const Chat = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showSkills, setShowSkills] = useState(false);
+  const [activeTab, setActiveTab] = useState<ActiveTab>('chat');
 
   const { sessions, isLoading: loadingSessions, deleteSession } = useChatSessions();
 
   const handleNewChat = () => {
     setSessionId(null);
+    setActiveTab('chat');
   };
 
   const handleDeleteSession = (id: string) => {
@@ -40,7 +41,10 @@ const Chat = () => {
         <ChatSidebar
           sessions={sessions}
           selectedId={sessionId}
-          onSelect={setSessionId}
+          onSelect={(id) => {
+            setSessionId(id);
+            setActiveTab('chat');
+          }}
           onNewChat={handleNewChat}
           onDelete={handleDeleteSession}
           isOpen={sidebarOpen}
@@ -50,8 +54,8 @@ const Chat = () => {
 
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col min-w-0 h-full">
-          {/* Header - ChatGPT Style */}
-          <header className="flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur-sm sticky top-0 z-30">
+          {/* Header */}
+          <header className="flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur-sm sticky top-0 z-30 border-b border-gray-100">
             <div className="flex items-center gap-3">
               {/* Mobile menu button */}
               <button
@@ -62,45 +66,63 @@ const Chat = () => {
                 <Menu size={24} className="text-gray-700" />
               </button>
 
-              {/* Model Name with dropdown indicator */}
+              {/* Title */}
+              <span className="font-semibold text-lg text-gray-900">VocalScale AI</span>
+            </div>
+
+            {/* Tab Buttons */}
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
               <button
-                onClick={() => setShowSkills(!showSkills)}
+                onClick={() => setActiveTab('chat')}
                 className={cn(
-                  "flex items-center gap-1 hover:bg-gray-100 rounded-lg px-2 py-1 transition-colors",
-                  showSkills && "bg-gray-100"
+                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                  activeTab === 'chat'
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
                 )}
               >
-                <span className="font-semibold text-lg text-gray-900">Google Gemini 2.5</span>
-                <ChevronDown size={16} className={cn("text-gray-400 transition-transform", showSkills && "rotate-180")} />
+                <MessageSquare size={15} />
+                <span className="hidden sm:inline">Chat</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                  activeTab === 'analytics'
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                )}
+              >
+                <BarChart3 size={15} />
+                <span className="hidden sm:inline">Analytics</span>
               </button>
             </div>
 
             {/* Right side actions */}
             <div className="flex items-center gap-1">
-              <button
-                onClick={handleNewChat}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="New chat"
-                title="New chat"
-              >
-                <SquarePen size={22} className="text-gray-600" />
-              </button>
-              <button
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="Options"
-              >
-                <MoreHorizontal size={22} className="text-gray-600" />
-              </button>
+              {activeTab === 'chat' && (
+                <button
+                  onClick={handleNewChat}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  aria-label="New chat"
+                  title="New chat"
+                >
+                  <SquarePen size={22} className="text-gray-600" />
+                </button>
+              )}
             </div>
           </header>
 
-          {/* Chat Interface */}
+          {/* Content Area */}
           <div className="flex-1 min-h-0">
-            <ChatInterface
-              sessionId={sessionId}
-              onSessionCreate={onSessionCreate}
-              showSkills={showSkills}
-            />
+            {activeTab === 'chat' ? (
+              <ChatInterface
+                sessionId={sessionId}
+                onSessionCreate={onSessionCreate}
+              />
+            ) : (
+              <ChatAnalytics />
+            )}
           </div>
         </div>
       </div>
