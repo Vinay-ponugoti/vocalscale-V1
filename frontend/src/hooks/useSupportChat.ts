@@ -19,7 +19,7 @@ export function useSupportChat() {
         if (isOpen && messages.length === 0) {
             setMessages([
                 {
-                    role: 'system',
+                    role: 'assistant',
                     content: 'Hi there! I am the VocalScale Support Bot. How can I help you today?',
                     timestamp: Date.now()
                 }
