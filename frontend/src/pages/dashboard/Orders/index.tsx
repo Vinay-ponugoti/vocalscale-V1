@@ -2,105 +2,55 @@ import React, { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { ordersApi, type Order, type OrderStats } from '../../../api/orders';
 import {
-  ShoppingBag, Search, Filter, RefreshCw,
-  CheckCircle, XCircle, Clock, Package,
+  ShoppingBag, Search, RefreshCw,
+  CheckCircle, Clock, Package,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
-  TrendingUp, AlertCircle, PackageCheck,
-  MoreHorizontal, Phone, Mail, User, Calendar,
-  ArrowRight, X // Added missing icons
+  AlertCircle, Phone, Mail, Calendar,
+  X, DollarSign, MessageSquare, Hash
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 
 const PAGE_SIZE = 20;
 
-// --- Components ---
-
-const StatusBadge = ({ status, className }: { status: string, className?: string }) => {
-  const getStatusColor = (s: string) => {
-    switch (s) {
-      case 'confirmed': return 'bg-green-50 text-green-700 ring-1 ring-green-100';
-      case 'ready': return 'bg-blue-50 text-blue-700 ring-1 ring-blue-100';
-      case 'picked_up': return 'bg-gray-50 text-gray-700 ring-1 ring-gray-100';
-      case 'cancelled': return 'bg-red-50 text-red-700 ring-1 ring-red-100';
-      default: return 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-100';
-    }
-  };
-
-  const getStatusDot = (s: string) => {
-    switch (s) {
-      case 'confirmed': return 'bg-green-500';
-      case 'ready': return 'bg-blue-500';
-      case 'picked_up': return 'bg-gray-500';
-      case 'cancelled': return 'bg-red-500';
-      default: return 'bg-yellow-500';
-    }
-  };
-
+// --- Status Badge ---
+const StatusBadge = ({ status }: { status: string }) => {
+  const isPending = status === 'pending';
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${getStatusColor(status)} ${className}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${getStatusDot(status)}`} />
-      {status.replace('_', ' ')}
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+      isPending
+        ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-200'
+        : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
+    }`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${isPending ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
+      {isPending ? 'Pending' : 'Confirmed'}
     </span>
-  );
-}
-
-
-const StatusDropdown = ({ currentStatus, onUpdate, loading }: { currentStatus: string, onUpdate: (s: string) => void, loading: boolean }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const statuses = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'confirmed', label: 'Confirmed' },
-    { value: 'ready', label: 'Ready' },
-    { value: 'picked_up', label: 'Picked Up' },
-    { value: 'cancelled', label: 'Cancelled' },
-  ];
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => !loading && setIsOpen(!isOpen)}
-        disabled={loading}
-        className={`flex items-center gap-1 rounded-full transition-all focus:outline-none ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:ring-2 hover:ring-offset-1 hover:ring-slate-100'}`}
-      >
-        <StatusBadge status={currentStatus} />
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50 animate-in fade-in zoom-in-95 duration-100">
-          {statuses.map((s) => (
-            <button
-              key={s.value}
-              onClick={() => {
-                onUpdate(s.value);
-                setIsOpen(false);
-              }}
-              className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 flex items-center gap-2 ${s.value === currentStatus ? 'font-medium text-indigo-600 bg-indigo-50' : 'text-slate-600'}`}
-            >
-              {/* Mini dot for consistent UI */}
-              <div className={`w-1.5 h-1.5 rounded-full ${s.value === currentStatus ? 'bg-indigo-600' : 'bg-slate-300'}`} />
-              {s.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
   );
 };
 
+// --- Status Toggle (simple click to toggle) ---
+const StatusToggle = ({ status, onToggle, loading }: { status: string; onToggle: () => void; loading: boolean }) => (
+  <button
+    onClick={(e) => { e.stopPropagation(); if (!loading) onToggle(); }}
+    disabled={loading}
+    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+      status === 'confirmed'
+        ? 'bg-emerald-500 focus:ring-emerald-500'
+        : 'bg-slate-300 focus:ring-slate-400'
+    } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+    title={status === 'pending' ? 'Mark as Confirmed' : 'Mark as Pending'}
+  >
+    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+      status === 'confirmed' ? 'translate-x-6' : 'translate-x-1'
+    }`} />
+  </button>
+);
 
-const OrderSheet = ({ order, onClose, onUpdateStatus }: { order: Order | null, onClose: () => void, onUpdateStatus: (id: string, s: string) => void }) => {
+// --- Order Detail Sheet ---
+const OrderSheet = ({ order, onClose, onToggleStatus }: {
+  order: Order | null;
+  onClose: () => void;
+  onToggleStatus: (id: string) => void;
+}) => {
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
@@ -115,139 +65,175 @@ const OrderSheet = ({ order, onClose, onUpdateStatus }: { order: Order | null, o
 
   const handleClose = () => {
     setIsClosing(true);
-    setTimeout(onClose, 300); // Match transition duration
+    setTimeout(onClose, 250);
   };
 
   if (!order) return null;
 
+  const isPending = order.status === 'pending';
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}
+        className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-250 ${isClosing ? 'opacity-0' : 'opacity-100'}`}
         onClick={handleClose}
       />
-
-      {/* Panel */}
-      <div className={`relative w-full max-w-md bg-white shadow-2xl h-full overflow-y-auto transform transition-transform duration-300 ${isClosing ? 'translate-x-full' : 'translate-x-0'}`}>
+      <div className={`relative w-full max-w-md bg-white shadow-2xl h-full overflow-y-auto transform transition-transform duration-250 ${isClosing ? 'translate-x-full' : 'translate-x-0'}`}>
 
         {/* Header */}
         <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-900">Order Details</h2>
-            <p className="text-xs text-slate-500 font-mono mt-0.5">ID: {order.id.slice(0, 8)}</p>
+            <p className="text-xs text-slate-400 font-mono mt-0.5">#{order.id.slice(0, 8)}</p>
           </div>
-          <button onClick={handleClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
-            <X size={20} />
+          <button onClick={handleClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+            <X size={18} />
           </button>
         </div>
 
-        <div className="p-6 space-y-8">
-          {/* Status Section */}
-          <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-sm font-medium text-slate-500">Current Status</span>
-              <StatusDropdown currentStatus={order.status} onUpdate={(s) => onUpdateStatus(order.id, s)} loading={false} />
+        <div className="p-6 space-y-6">
+
+          {/* Status Card */}
+          <div className={`rounded-xl p-4 border ${isPending ? 'bg-amber-50/50 border-amber-100' : 'bg-emerald-50/50 border-emerald-100'}`}>
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-xs font-medium text-slate-500 mb-1">Status</p>
+                <StatusBadge status={order.status} />
+              </div>
+              <StatusToggle
+                status={order.status}
+                onToggle={() => onToggleStatus(order.id)}
+                loading={false}
+              />
             </div>
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <Clock size={12} />
-              <span>Last updated {formatDistanceToNow(new Date(order.updated_at), { addSuffix: true })}</span>
-            </div>
+            <p className="text-xs text-slate-400 mt-3 flex items-center gap-1">
+              <Clock size={11} />
+              Updated {formatDistanceToNow(new Date(order.updated_at), { addSuffix: true })}
+            </p>
           </div>
 
-          {/* Customer Info */}
+          {/* Customer Details */}
           <div>
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Customer</h3>
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-lg">
-                {order.customer_name.charAt(0).toUpperCase()}
-              </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-slate-900 text-lg">{order.customer_name}</h4>
-                <div className="flex flex-col gap-2 mt-2">
-                  <a href={`tel:${order.customer_phone}`} className="flex items-center gap-2 text-sm text-slate-600 hover:text-indigo-600 transition-colors">
-                    <Phone size={14} />
-                    {order.customer_phone}
-                  </a>
-                  {order.customer_email && (
-                    <a href={`mailto:${order.customer_email}`} className="flex items-center gap-2 text-sm text-slate-600 hover:text-indigo-600 transition-colors">
-                      <Mail size={14} />
-                      {order.customer_email}
-                    </a>
-                  )}
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Customer Info</h3>
+            <div className="bg-white border border-slate-100 rounded-xl divide-y divide-slate-50">
+              <div className="flex items-center gap-3 px-4 py-3">
+                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
+                  {order.customer_name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">{order.customer_name}</p>
                 </div>
               </div>
+              <a href={`tel:${order.customer_phone}`} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <Phone size={14} className="text-blue-600" />
+                </div>
+                <span className="text-sm text-slate-700 font-medium">{order.customer_phone}</span>
+              </a>
+              {order.customer_email && (
+                <a href={`mailto:${order.customer_email}`} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                    <Mail size={14} className="text-purple-600" />
+                  </div>
+                  <span className="text-sm text-slate-700">{order.customer_email}</span>
+                </a>
+              )}
             </div>
           </div>
 
           {/* Order Items */}
           <div>
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Items</h3>
-            <div className="border rounded-xl p-4 flex gap-4 bg-white shadow-sm">
-              <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center shrink-0">
-                <Package size={24} className="text-slate-400" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-bold">{order.quantity}x</span>
-                  <span className="font-semibold text-slate-900">{order.product_name}</span>
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Order Details</h3>
+            <div className="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center shrink-0">
+                  <Package size={20} className="text-slate-400" />
                 </div>
-                {order.flavor && (
-                  <div className="text-sm text-slate-500 mt-1">Flavor: <span className="text-slate-700">{order.flavor}</span></div>
-                )}
-                {order.special_instructions && (
-                  <div className="mt-3 text-sm bg-yellow-50 text-yellow-800 p-3 rounded-lg flex gap-2">
-                    <div className='shrink-0 mt-0.5'><AlertCircle size={14} /></div>
-                    <span className="italic">"{order.special_instructions}"</span>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-900">{order.product_name}</p>
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="text-xs text-slate-500 flex items-center gap-1">
+                      <Hash size={10} /> Qty: {order.quantity}
+                    </span>
+                    {order.flavor && (
+                      <span className="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-medium">
+                        {order.flavor}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {(order.total_price || order.unit_price) && (
+                  <div className="text-right shrink-0">
+                    <p className="font-bold text-slate-900">
+                      ${(order.total_price || (order.unit_price! * order.quantity)).toFixed(2)}
+                    </p>
+                    {order.unit_price && order.quantity > 1 && (
+                      <p className="text-[10px] text-slate-400">${order.unit_price.toFixed(2)} each</p>
+                    )}
                   </div>
                 )}
               </div>
-            </div>
-          </div>
 
-          {/* Timeline / Additional Metadata */}
-          <div>
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Timeline</h3>
-            <div className="space-y-4 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
-              <div className="relative flex gap-4">
-                <div className="w-4 h-4 rounded-full bg-slate-200 border-2 border-white ring-1 ring-slate-100 shrink-0 z-10" />
-                <div>
-                  <p className="text-sm font-medium text-slate-900">Order Placed</p>
-                  <p className="text-xs text-slate-500">{format(new Date(order.created_at), 'MMM d, yyyy h:mm a')}</p>
-                </div>
-              </div>
-              {order.pickup_time && (
-                <div className="relative flex gap-4">
-                  <div className="w-4 h-4 rounded-full bg-indigo-200 border-2 border-white ring-1 ring-indigo-100 shrink-0 z-10" />
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">Scheduled Pickup</p>
-                    <p className="text-xs text-slate-500">{format(new Date(order.pickup_time), 'MMM d, h:mm a')}</p>
-                  </div>
+              {order.special_instructions && (
+                <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex gap-2">
+                  <MessageSquare size={14} className="text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-sm text-amber-800 italic">{order.special_instructions}</p>
                 </div>
               )}
             </div>
           </div>
 
+          {/* Pickup & Timeline */}
+          <div>
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Timeline</h3>
+            <div className="bg-white border border-slate-100 rounded-xl divide-y divide-slate-50">
+              <div className="flex items-center gap-3 px-4 py-3">
+                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center">
+                  <Clock size={14} className="text-slate-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400">Ordered</p>
+                  <p className="text-sm font-medium text-slate-900">{format(new Date(order.created_at), 'MMM d, yyyy · h:mm a')}</p>
+                </div>
+              </div>
+              {order.pickup_time && (
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                    <Calendar size={14} className="text-indigo-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">Pickup Time</p>
+                    <p className="text-sm font-medium text-slate-900">{format(new Date(order.pickup_time), 'MMM d · h:mm a')}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="sticky bottom-0 p-6 bg-white border-t border-slate-100 flex gap-3">
-          <button onClick={handleClose} className="flex-1 py-2.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+        {/* Footer */}
+        <div className="sticky bottom-0 p-4 bg-white border-t border-slate-100 flex gap-3">
+          <button onClick={handleClose} className="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
             Close
           </button>
-          {order.call_id && (
-            <button className="flex-1 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200">
-              View Call Log
-            </button>
-          )}
+          <button
+            onClick={() => onToggleStatus(order.id)}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm ${
+              isPending
+                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                : 'bg-amber-500 text-white hover:bg-amber-600'
+            }`}
+          >
+            {isPending ? 'Confirm Order' : 'Mark Pending'}
+          </button>
         </div>
-
       </div>
     </div>
   );
 };
 
 
+// --- Main Page ---
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -258,6 +244,7 @@ export default function OrdersPage() {
   const [total, setTotal] = useState(0);
   const [stats, setStats] = useState<OrderStats | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set());
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -284,35 +271,38 @@ export default function OrdersPage() {
     }
   };
 
-  useEffect(() => {
-    fetchOrders();
-  }, [page, statusFilter]);
+  useEffect(() => { fetchOrders(); }, [page, statusFilter]);
+  useEffect(() => { fetchStats(); }, []);
+  useEffect(() => { setPage(1); }, [statusFilter]);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  // Toggle between pending <-> confirmed
+  const handleToggleStatus = async (orderId: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    const newStatus = order.status === 'pending' ? 'confirmed' : 'pending';
 
-  // Update status (optimistic UI could be added here, currently refetches)
-  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     try {
+      setUpdatingIds(prev => new Set(prev).add(orderId));
+
       // Optimistic update
       setOrders(current => current.map(o => o.id === orderId ? { ...o, status: newStatus as any } : o));
-      if (selectedOrder && selectedOrder.id === orderId) {
-        setSelectedOrder(prev => prev ? ({ ...prev, status: newStatus as any }) : null);
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder(prev => prev ? { ...prev, status: newStatus as any } : null);
       }
 
       await ordersApi.updateOrderStatus(orderId, newStatus);
-      fetchStats(); // Update stats in background
+      fetchStats();
     } catch (err: any) {
       alert('Failed to update status: ' + err.message);
-      fetchOrders(); // Revert on failure
+      fetchOrders();
+    } finally {
+      setUpdatingIds(prev => {
+        const next = new Set(prev);
+        next.delete(orderId);
+        return next;
+      });
     }
   };
-
-  // Reset to page 1 when filter changes
-  useEffect(() => {
-    setPage(1);
-  }, [statusFilter]);
 
   const filteredOrders = orders.filter(order => {
     if (!searchQuery) return true;
@@ -327,11 +317,12 @@ export default function OrdersPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Orders</h1>
-            <p className="text-slate-500 mt-1 text-sm">Manage customer orders placed via AI agent</p>
+            <p className="text-slate-500 mt-1 text-sm">Manage orders placed through your AI receptionist</p>
           </div>
           <button
             onClick={() => { fetchOrders(); fetchStats(); }}
@@ -342,64 +333,76 @@ export default function OrdersPage() {
           </button>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards — only 3: Total, Pending, Confirmed */}
         {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {[
-              { label: 'Total Orders', value: stats.total, icon: Package, color: 'indigo' },
-              { label: 'Pending', value: stats.pending, icon: Clock, color: 'yellow' },
-              { label: 'Confirmed', value: stats.confirmed, icon: CheckCircle, color: 'green' },
-              { label: 'Ready', value: stats.ready, icon: PackageCheck, color: 'blue' },
-              { label: 'Cancelled', value: stats.cancelled, icon: AlertCircle, color: 'red' },
-            ].map((stat, i) => (
-              <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`w-8 h-8 rounded-lg bg-${stat.color}-50 flex items-center justify-center`}>
-                    <stat.icon size={16} className={`text-${stat.color}-600`} />
-                  </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+                  <Package size={18} className="text-indigo-600" />
                 </div>
-                <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
-                <p className="text-xs text-slate-500 font-medium mt-0.5 uppercase tracking-wide opacity-80">{stat.label}</p>
               </div>
-            ))}
+              <p className="text-3xl font-bold text-slate-900">{stats.total}</p>
+              <p className="text-xs text-slate-500 font-medium mt-1 uppercase tracking-wide">Total Orders</p>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                  <Clock size={18} className="text-amber-600" />
+                </div>
+                {stats.pending > 0 && (
+                  <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">
+                    Needs attention
+                  </span>
+                )}
+              </div>
+              <p className="text-3xl font-bold text-slate-900">{stats.pending}</p>
+              <p className="text-xs text-slate-500 font-medium mt-1 uppercase tracking-wide">Pending</p>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                  <CheckCircle size={18} className="text-emerald-600" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-slate-900">{stats.confirmed}</p>
+              <p className="text-xs text-slate-500 font-medium mt-1 uppercase tracking-wide">Confirmed</p>
+            </div>
           </div>
         )}
 
-        {/* Filters */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-4">
+        {/* Search + Filter Bar */}
+        <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search by name, phone, or product..."
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm bg-slate-50 focus:bg-white"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2 min-w-[200px]">
-            <Filter className="text-slate-400 w-4 h-4" />
-            <div className="relative w-full">
-              <select
-                className="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm appearance-none bg-white"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+          <div className="flex gap-2">
+            {['', 'pending', 'confirmed'].map((val) => (
+              <button
+                key={val}
+                onClick={() => setStatusFilter(val)}
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                  statusFilter === val
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
               >
-                <option value="">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="ready">Ready for Pickup</option>
-                <option value="picked_up">Picked Up</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-
+                {val === '' ? 'All' : val === 'pending' ? 'Pending' : 'Confirmed'}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Error State */}
+        {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3 animate-in slide-in-from-top-2">
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
             <AlertCircle size={18} className="text-red-500 shrink-0" />
             <div>
               <p className="text-sm font-medium text-red-800">Failed to load orders</p>
@@ -411,23 +414,23 @@ export default function OrdersPage() {
           </div>
         )}
 
-        {/* Orders List */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-[400px]">
+        {/* Orders Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           {loading && orders.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center p-16">
+            <div className="flex flex-col items-center justify-center p-20">
               <div className="w-10 h-10 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-3" />
               <p className="text-slate-400 text-sm">Loading orders...</p>
             </div>
           ) : filteredOrders.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center p-16 text-center">
+            <div className="flex flex-col items-center justify-center p-20 text-center">
               <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4">
                 <ShoppingBag className="w-7 h-7 text-slate-300" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-900">No orders found</h3>
-              <p className="text-slate-500 mt-1 text-sm">
-                {searchQuery ? 'Try adjusting your search query' :
+              <h3 className="text-lg font-semibold text-slate-900">No orders yet</h3>
+              <p className="text-slate-500 mt-1 text-sm max-w-xs">
+                {searchQuery ? 'Try a different search term' :
                   statusFilter ? 'No orders with this status' :
-                    'Orders placed via AI agent will appear here'}
+                    'Orders placed via your AI phone agent will show up here'}
               </p>
             </div>
           ) : (
@@ -435,88 +438,113 @@ export default function OrdersPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500">
-                      <th className="px-6 py-3 text-xs font-bold uppercase tracking-wider w-[25%]">Customer</th>
-                      <th className="px-6 py-3 text-xs font-bold uppercase tracking-wider w-[35%]">Product & Details</th>
-                      <th className="px-6 py-3 text-xs font-bold uppercase tracking-wider w-[20%]">Status</th>
-                      <th className="px-6 py-3 text-xs font-bold uppercase tracking-wider w-[15%]">Time</th>
-                      <th className="px-6 py-3 text-xs font-bold uppercase tracking-wider w-[5%]"></th>
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">Customer</th>
+                      <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">Order</th>
+                      <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">Price</th>
+                      <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">Pickup</th>
+                      <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">Status</th>
+                      <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">Placed</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {filteredOrders.map((order) => (
                       <tr
                         key={order.id}
-                        className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
+                        className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
                         onClick={() => setSelectedOrder(order)}
                       >
-                        <td className="px-6 py-4">
+                        {/* Customer — name + phone always visible */}
+                        <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs ring-2 ring-white shadow-sm">
+                            <div className="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">
                               {order.customer_name.charAt(0).toUpperCase()}
                             </div>
-                            <div>
-                              <div className="font-medium text-slate-900">{order.customer_name}</div>
-                              <div className="flex items-center gap-2 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button
-                                  className="text-slate-400 hover:text-indigo-600 p-1 -ml-1"
-                                  onClick={(e) => { e.stopPropagation(); window.location.href = `tel:${order.customer_phone}`; }}
-                                  title="Call Customer"
-                                >
-                                  <Phone size={12} />
-                                </button>
-                                {order.customer_email && (
-                                  <button
-                                    className="text-slate-400 hover:text-indigo-600 p-1"
-                                    onClick={(e) => { e.stopPropagation(); window.location.href = `mailto:${order.customer_email}`; }}
-                                    title="Email Customer"
-                                  >
-                                    <Mail size={12} />
-                                  </button>
-                                )}
-                              </div>
+                            <div className="min-w-0">
+                              <p className="font-semibold text-slate-900 truncate">{order.customer_name}</p>
+                              <a
+                                href={`tel:${order.customer_phone}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 mt-0.5 transition-colors"
+                              >
+                                <Phone size={10} />
+                                {order.customer_phone}
+                              </a>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className='flex items-start gap-3'>
-                            <div className="p-1 px-2 bg-slate-100 rounded text-xs font-bold text-slate-600 whitespace-nowrap">
-                              {order.quantity} x
+
+                        {/* Product + Qty + Flavor */}
+                        <td className="px-5 py-4">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="bg-slate-100 text-slate-600 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                {order.quantity}x
+                              </span>
+                              <span className="font-medium text-slate-900 truncate">{order.product_name}</span>
                             </div>
-                            <div>
-                              <div className="font-medium text-slate-900">{order.product_name}</div>
-                              <div className="flex flex-wrap gap-2 mt-1.5">
-                                {order.flavor && (
-                                  <span className="text-[10px] font-medium px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded border border-indigo-100">
-                                    {order.flavor}
-                                  </span>
-                                )}
-                                {order.special_instructions && (
-                                  <span className="text-[10px] font-medium px-1.5 py-0.5 bg-yellow-50 text-yellow-700 rounded border border-yellow-100 flex items-center gap-1">
-                                    <span>Note</span>
-                                  </span>
-                                )}
-                              </div>
+                            <div className="flex items-center gap-1.5 mt-1">
+                              {order.flavor && (
+                                <span className="text-[10px] font-medium px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded-full">
+                                  {order.flavor}
+                                </span>
+                              )}
+                              {order.special_instructions && (
+                                <span className="text-[10px] font-medium px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded-full flex items-center gap-0.5" title={order.special_instructions}>
+                                  <MessageSquare size={8} /> Note
+                                </span>
+                              )}
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                          <StatusDropdown currentStatus={order.status} onUpdate={(s) => handleStatusUpdate(order.id, s)} loading={false} />
+
+                        {/* Price */}
+                        <td className="px-5 py-4">
+                          {(order.total_price || order.unit_price) ? (
+                            <span className="font-semibold text-slate-900">
+                              ${(order.total_price || (order.unit_price! * order.quantity)).toFixed(2)}
+                            </span>
+                          ) : (
+                            <span className="text-slate-300 text-xs">—</span>
+                          )}
                         </td>
-                        <td className="px-6 py-4 text-sm text-slate-500">
-                          <div className="flex flex-col">
-                            <span className="text-slate-900 font-medium text-xs">
+
+                        {/* Pickup Time */}
+                        <td className="px-5 py-4">
+                          {order.pickup_time ? (
+                            <div>
+                              <p className="text-xs font-medium text-slate-900">{format(new Date(order.pickup_time), 'MMM d')}</p>
+                              <p className="text-[10px] text-slate-400">{format(new Date(order.pickup_time), 'h:mm a')}</p>
+                            </div>
+                          ) : (
+                            <span className="text-slate-300 text-xs">—</span>
+                          )}
+                        </td>
+
+                        {/* Status Toggle */}
+                        <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center gap-2">
+                            <StatusToggle
+                              status={order.status}
+                              onToggle={() => handleToggleStatus(order.id)}
+                              loading={updatingIds.has(order.id)}
+                            />
+                            <span className={`text-xs font-medium ${order.status === 'confirmed' ? 'text-emerald-600' : 'text-slate-400'}`}>
+                              {order.status === 'confirmed' ? 'Confirmed' : 'Pending'}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Time */}
+                        <td className="px-5 py-4">
+                          <div>
+                            <p className="text-xs font-medium text-slate-700">
                               {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
-                            </span>
-                            <span className="text-[10px] text-slate-400">
-                              {format(new Date(order.created_at), 'h:mm a')}
-                            </span>
+                            </p>
+                            <p className="text-[10px] text-slate-400">
+                              {format(new Date(order.created_at), 'MMM d, h:mm a')}
+                            </p>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors">
-                            <ArrowRight size={16} />
-                          </button>
                         </td>
                       </tr>
                     ))}
@@ -525,50 +553,17 @@ export default function OrdersPage() {
               </div>
 
               {/* Pagination */}
-              <div className="px-6 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+              <div className="px-5 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
                 <p className="text-xs text-slate-400">
-                  Showing {Math.min((page - 1) * PAGE_SIZE + 1, total)}–{Math.min(page * PAGE_SIZE, total)} of {total} orders
+                  {Math.min((page - 1) * PAGE_SIZE + 1, total)}–{Math.min(page * PAGE_SIZE, total)} of {total}
                 </p>
-
                 {totalPages > 1 && (
                   <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setPage(1)}
-                      disabled={page === 1}
-                      className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      title="First page"
-                    >
-                      <ChevronsLeft size={14} />
-                    </button>
-                    <button
-                      onClick={() => setPage(p => Math.max(1, p - 1))}
-                      disabled={page === 1}
-                      className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      title="Previous page"
-                    >
-                      <ChevronLeft size={14} />
-                    </button>
-
-                    <div className="flex items-center gap-1 px-2">
-                      <span className="text-xs text-slate-500 font-medium">Page {page} of {totalPages}</span>
-                    </div>
-
-                    <button
-                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                      disabled={page === totalPages}
-                      className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      title="Next page"
-                    >
-                      <ChevronRight size={14} />
-                    </button>
-                    <button
-                      onClick={() => setPage(totalPages)}
-                      disabled={page === totalPages}
-                      className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      title="Last page"
-                    >
-                      <ChevronsRight size={14} />
-                    </button>
+                    <button onClick={() => setPage(1)} disabled={page === 1} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 disabled:opacity-30 transition-colors"><ChevronsLeft size={14} /></button>
+                    <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 disabled:opacity-30 transition-colors"><ChevronLeft size={14} /></button>
+                    <span className="text-xs text-slate-500 font-medium px-3">{page} / {totalPages}</span>
+                    <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 disabled:opacity-30 transition-colors"><ChevronRight size={14} /></button>
+                    <button onClick={() => setPage(totalPages)} disabled={page === totalPages} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 disabled:opacity-30 transition-colors"><ChevronsRight size={14} /></button>
                   </div>
                 )}
               </div>
@@ -577,10 +572,11 @@ export default function OrdersPage() {
         </div>
       </div>
 
+      {/* Detail Sheet */}
       <OrderSheet
         order={selectedOrder}
         onClose={() => setSelectedOrder(null)}
-        onUpdateStatus={handleStatusUpdate}
+        onToggleStatus={handleToggleStatus}
       />
     </DashboardLayout>
   );

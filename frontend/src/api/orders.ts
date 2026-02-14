@@ -10,10 +10,14 @@ export interface Order {
     customer_phone: string;
     customer_email?: string;
     product_name: string;
+    product_sku?: string;
     quantity: number;
     flavor?: string;
-    status: 'pending' | 'confirmed' | 'ready' | 'picked_up' | 'cancelled';
+    unit_price?: number;
+    total_price?: number;
+    status: 'pending' | 'confirmed';
     call_id?: string;
+    call_sid?: string;
     pickup_time?: string;
     special_instructions?: string;
     created_at: string;
@@ -31,9 +35,6 @@ export interface OrderStats {
     total: number;
     pending: number;
     confirmed: number;
-    ready: number;
-    picked_up: number;
-    cancelled: number;
 }
 
 class OrdersAPI {
@@ -52,7 +53,7 @@ class OrdersAPI {
         const response = await fetch(url, config);
         if (!response.ok) {
             const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-            throw new Error(error.detail || `HTTP ${response.status}`);
+            throw new Error(error.detail || error.error || `HTTP ${response.status}`);
         }
         return response.json();
     }
@@ -61,7 +62,6 @@ class OrdersAPI {
         let query = `/orders?page=${page}&size=${size}`;
         if (status) query += `&status=${status}`;
         const data = await this.request(query);
-        // Normalize response — backend may return { orders: [...] }, { items: [...] }, or raw array
         if (Array.isArray(data)) {
             return { orders: data, total: data.length, page, size };
         }
