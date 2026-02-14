@@ -50,6 +50,21 @@ class SupportAPI {
             }),
         });
     }
+
+    async sendSupportChat(message: string, history: any[], metadata: any) {
+        return this.request('/support/chat', {
+            method: 'POST',
+            body: JSON.stringify({
+                ticket_id: `chat_${Date.now()}`,
+                user_id: 'dashboard_user', // Middleware will override
+                history,
+                user_metadata: metadata,
+                context: {
+                    source: 'dashboard_widget'
+                }
+            }),
+        });
+    }
 }
 
 export const supportApi = new SupportAPI();

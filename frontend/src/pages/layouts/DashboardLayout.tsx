@@ -32,7 +32,8 @@ import ProfileDropdown from '../../components/dashboard/ProfileDropdown';
 import { NavigationGuard } from '../../utils/navigationGuard';
 import { cn } from '../../lib/utils';
 import { PAGE_PADDING } from '../../constants/layout';
-// FloatingChat removed
+import { PAGE_PADDING } from '../../constants/layout';
+import SupportWidget from '../../components/SupportWidget';
 
 
 // --- DESIGN SYSTEM COLORS (Legacy constants for reference) ---
@@ -313,11 +314,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/reviews')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/support', label: 'Support Suite', icon: MessageSquare }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/support')}
             />
 
             <SectionLabel label="Configuration" sidebarOpen={sidebarOpen} />
@@ -631,11 +627,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     isActive={isActive('/dashboard/reviews')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
-                  <NavItem
-                    item={{ path: '/dashboard/support', label: 'Support Suite', icon: MessageSquare }}
-                    isActive={isActive('/dashboard/support')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
                 </div>
 
                 <div>
@@ -699,6 +690,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
         )}
+        <SupportWidget />
       </div>
     </>
   );
