@@ -60,6 +60,7 @@ const GetNewNumber = lazyImport(() => import('./pages/voice-setup/GetNewNumber')
 const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
 const Inventory = lazyImport(() => import('./pages/dashboard/Inventory'));
 const Orders = lazyImport(() => import('./pages/dashboard/Orders'));
+const SupportSuite = lazyImport(() => import('./pages/dashboard/Support'));
 
 function App() {
   return (
@@ -135,7 +136,9 @@ function App() {
                   <Route path="/dashboard/voice-setup/buy" element={<GetNewNumber />} />
                   <Route path="/dashboard/business-details" element={<BusinessSetup />} />
                   <Route path="/dashboard/inventory" element={<Inventory />} />
+                  <Route path="/dashboard/inventory" element={<Inventory />} />
                   <Route path="/dashboard/orders" element={<Orders />} />
+                  <Route path="/dashboard/support" element={<SupportSuite />} />
 
                   {/* Voice Model Setup Routes (Moved inside Dashboard) */}
                   <Route path="/dashboard/voice-model/*" element={

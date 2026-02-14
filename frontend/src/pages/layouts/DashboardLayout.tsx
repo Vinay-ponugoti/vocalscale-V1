@@ -19,7 +19,8 @@ import {
   Star,
   Brain,
   Package,
-  ShoppingBag
+  ShoppingBag,
+  MessageSquare
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -294,14 +295,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
             <SectionLabel label="Operations" sidebarOpen={sidebarOpen} />
             <NavItem
-              item={{ path: '/dashboard/appointments', label: 'Appointments', icon: Calendar }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/appointments')}
-            />
-            <NavItem
               item={{ path: '/dashboard/calls', label: 'Call Logs', icon: PhoneCall }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/calls')}
+            />
+            <NavItem
+              item={{ path: '/dashboard/appointments', label: 'Appointments', icon: Calendar }}
+              isCollapsed={!sidebarOpen}
+              isActive={isActive('/dashboard/appointments')}
             />
             <NavItem
               item={{ path: '/dashboard/orders', label: 'Orders', icon: ShoppingBag }}
@@ -312,6 +313,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/reviews')}
+            />
+            <NavItem
+              item={{ path: '/dashboard/support', label: 'Support Suite', icon: MessageSquare }}
+              isCollapsed={!sidebarOpen}
+              isActive={isActive('/dashboard/support')}
             />
 
             <SectionLabel label="Configuration" sidebarOpen={sidebarOpen} />
@@ -606,18 +612,28 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 <div>
                   <SectionLabel label="Operations" sidebarOpen={true} />
                   <NavItem
-                    item={{ path: '/dashboard/appointments', label: 'Appointments', icon: Calendar }}
-                    isActive={isActive('/dashboard/appointments')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
                     item={{ path: '/dashboard/calls', label: 'Call Logs', icon: PhoneCall }}
                     isActive={isActive('/dashboard/calls')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
                   <NavItem
+                    item={{ path: '/dashboard/appointments', label: 'Appointments', icon: Calendar }}
+                    isActive={isActive('/dashboard/appointments')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  <NavItem
+                    item={{ path: '/dashboard/orders', label: 'Orders', icon: ShoppingBag }}
+                    isActive={isActive('/dashboard/orders')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  <NavItem
                     item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
                     isActive={isActive('/dashboard/reviews')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  <NavItem
+                    item={{ path: '/dashboard/support', label: 'Support Suite', icon: MessageSquare }}
+                    isActive={isActive('/dashboard/support')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
                 </div>
