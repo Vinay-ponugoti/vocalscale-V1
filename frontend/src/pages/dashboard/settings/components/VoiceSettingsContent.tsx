@@ -162,8 +162,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                 key={g}
                 onClick={() => setGenderFilter(g)}
                 className={`px-3 py-1.5 text-[11px] font-medium rounded-md transition-all ${genderFilter === g
-                    ? 'bg-white text-slate-900 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
                   }`}
               >
                 {g === 'all' ? 'All' : g}
@@ -184,8 +184,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                 <div
                   key={voice.id}
                   className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors group ${isSelected
-                      ? 'bg-indigo-50/80'
-                      : 'hover:bg-slate-50'
+                    ? 'bg-indigo-50/80'
+                    : 'hover:bg-slate-50'
                     }`}
                   onClick={() => {
                     onChange({ voice_id: voice.id, model_name: voice.name || '' });
@@ -204,8 +204,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                         {voice.name}
                       </span>
                       <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${voice.gender === 'male' || voice.gender === 'Masculine'
-                          ? 'bg-blue-50 text-blue-600'
-                          : 'bg-pink-50 text-pink-600'
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'bg-pink-50 text-pink-600'
                         }`}>
                         {voice.gender === 'male' || voice.gender === 'Masculine' ? 'M' : 'F'}
                       </span>
@@ -222,8 +222,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                     }}
                     disabled={isVoiceLoading}
                     className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all flex-shrink-0 ${isVoicePlaying
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-600'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-600'
                       }`}
                   >
                     {isVoiceLoading ? (
@@ -341,8 +341,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                 key={tone.value}
                 onClick={() => onChange({ conversation_tone: tone.value })}
                 className={`relative py-3.5 px-3 rounded-xl border transition-all text-left group ${isActive
-                    ? 'bg-indigo-50 border-indigo-200 ring-1 ring-indigo-500/25'
-                    : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                  ? 'bg-indigo-50 border-indigo-200 ring-1 ring-indigo-500/25'
+                  : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                   }`}
               >
                 <div className="flex items-center gap-2 mb-1">
@@ -377,7 +377,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
         </p>
         <textarea
           rows={3}
-          placeholder="Hi! Thanks for calling [Business Name]. How can I help you today?"
+          placeholder="Hi! Thanks for calling [Business Name]. You are on a recorded line. How can I help you?"
           value={settings.custom_greeting}
           onChange={(e) => onChange({ custom_greeting: e.target.value })}
           className="w-full bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all resize-none font-medium text-[13px] leading-relaxed hover:border-slate-300"
