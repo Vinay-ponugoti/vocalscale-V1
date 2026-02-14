@@ -32,7 +32,6 @@ import ProfileDropdown from '../../components/dashboard/ProfileDropdown';
 import { NavigationGuard } from '../../utils/navigationGuard';
 import { cn } from '../../lib/utils';
 import { PAGE_PADDING } from '../../constants/layout';
-import { PAGE_PADDING } from '../../constants/layout';
 import SupportWidget from '../../components/SupportWidget';
 
 

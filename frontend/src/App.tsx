@@ -60,7 +60,6 @@ const GetNewNumber = lazyImport(() => import('./pages/voice-setup/GetNewNumber')
 const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
 const Inventory = lazyImport(() => import('./pages/dashboard/Inventory'));
 const Orders = lazyImport(() => import('./pages/dashboard/Orders'));
-const Orders = lazyImport(() => import('./pages/dashboard/Orders'));
 
 function App() {
   return (
