@@ -8,10 +8,11 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
   settings,
   availableVoices,
   onChange,
+  plan
 }) => {
   const { isLoading, isPlaying, playVoice, stopVoice } = useVoicePreview();
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
-  const [genderFilter, setGenderFilter] = useState<'all' | 'Masculine' | 'Feminine'>('all');
+  const [genderFilter, setGenderFilter] = useState<'all' | 'Male' | 'Female'>('all');
   const [voiceSearch, setVoiceSearch] = useState('');
 
   const handleVoicePreview = async (voiceId: string, providerVoiceId: string | null, sampleUrl: string | null) => {
@@ -41,7 +42,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
   React.useEffect(() => {
     const fetchFilteredVoices = async () => {
       try {
-        const response = await api.getVoices({ gender: genderFilter });
+        const filterGender = genderFilter === 'Male' ? 'Masculine' : genderFilter === 'Female' ? 'Feminine' : 'all';
+        const response = await api.getVoices({ gender: filterGender });
         if (response.data) {
           setDisplayVoices(response.data);
         }
@@ -62,7 +64,18 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
       providerVoiceId.includes(selectedLangBase);
   });
 
-  const filteredVoices = languageVoices.filter(voice => {
+  // Apply Plan Limits (Starter: 5 Male, 5 Female)
+  const planFilteredVoices = React.useMemo(() => {
+    if (plan === 'starter') {
+      const males = languageVoices.filter(v => v.gender === 'Masculine' || v.gender === 'male').slice(0, 5);
+      const females = languageVoices.filter(v => v.gender === 'Feminine' || v.gender === 'female').slice(0, 5);
+      // Combine and sort by name to keep consistent order
+      return [...males, ...females].sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return languageVoices;
+  }, [languageVoices, plan]);
+
+  const filteredVoices = planFilteredVoices.filter(voice => {
     if (!voiceSearch) return true;
     const q = voiceSearch.toLowerCase();
     return voice.name?.toLowerCase().includes(q) || voice.accent?.toLowerCase().includes(q);
@@ -144,15 +157,14 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             />
           </div>
           <div className="flex bg-slate-100 rounded-lg p-0.5 border border-slate-200">
-            {(['all', 'Masculine', 'Feminine'] as const).map((g) => (
+            {(['all', 'Male', 'Female'] as const).map((g) => (
               <button
                 key={g}
                 onClick={() => setGenderFilter(g)}
-                className={`px-3 py-1.5 text-[11px] font-medium rounded-md transition-all ${
-                  genderFilter === g
+                className={`px-3 py-1.5 text-[11px] font-medium rounded-md transition-all ${genderFilter === g
                     ? 'bg-white text-slate-900 shadow-sm'
                     : 'text-slate-500 hover:text-slate-700'
-                }`}
+                  }`}
               >
                 {g === 'all' ? 'All' : g}
               </button>
@@ -171,19 +183,17 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
               return (
                 <div
                   key={voice.id}
-                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors group ${
-                    isSelected
+                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors group ${isSelected
                       ? 'bg-indigo-50/80'
                       : 'hover:bg-slate-50'
-                  }`}
+                    }`}
                   onClick={() => {
                     onChange({ voice_id: voice.id, model_name: voice.name || '' });
                   }}
                 >
                   {/* Radio indicator */}
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                    isSelected ? 'border-indigo-600' : 'border-slate-300 group-hover:border-slate-400'
-                  }`}>
+                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'border-indigo-600' : 'border-slate-300 group-hover:border-slate-400'
+                    }`}>
                     {isSelected && <div className="w-2 h-2 rounded-full bg-indigo-600" />}
                   </div>
 
@@ -193,11 +203,10 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                       <span className={`text-[13px] font-medium ${isSelected ? 'text-indigo-900' : 'text-slate-800'}`}>
                         {voice.name}
                       </span>
-                      <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                        voice.gender === 'male' || voice.gender === 'Masculine'
+                      <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${voice.gender === 'male' || voice.gender === 'Masculine'
                           ? 'bg-blue-50 text-blue-600'
                           : 'bg-pink-50 text-pink-600'
-                      }`}>
+                        }`}>
                         {voice.gender === 'male' || voice.gender === 'Masculine' ? 'M' : 'F'}
                       </span>
                     </div>
@@ -212,11 +221,10 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                       handleVoicePreview(voice.id, voice.provider_voice_id || null, voice.sample_audio_url || null);
                     }}
                     disabled={isVoiceLoading}
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all flex-shrink-0 ${
-                      isVoicePlaying
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all flex-shrink-0 ${isVoicePlaying
                         ? 'bg-indigo-600 text-white'
                         : 'bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-600'
-                    }`}
+                      }`}
                   >
                     {isVoiceLoading ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -332,11 +340,10 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
               <button
                 key={tone.value}
                 onClick={() => onChange({ conversation_tone: tone.value })}
-                className={`relative py-3.5 px-3 rounded-xl border transition-all text-left group ${
-                  isActive
+                className={`relative py-3.5 px-3 rounded-xl border transition-all text-left group ${isActive
                     ? 'bg-indigo-50 border-indigo-200 ring-1 ring-indigo-500/25'
                     : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-base">{tone.icon}</span>
@@ -397,14 +404,12 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
           <button
             type="button"
             onClick={() => onChange({ is_active: !settings.is_active })}
-            className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
-              settings.is_active ? 'bg-indigo-600' : 'bg-slate-200'
-            }`}
+            className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${settings.is_active ? 'bg-indigo-600' : 'bg-slate-200'
+              }`}
           >
             <div
-              className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200 ${
-                settings.is_active ? 'translate-x-5' : 'translate-x-0'
-              }`}
+              className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200 ${settings.is_active ? 'translate-x-5' : 'translate-x-0'
+                }`}
             />
           </button>
         </div>

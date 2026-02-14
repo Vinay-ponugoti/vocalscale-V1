@@ -55,6 +55,7 @@ export interface VoiceSettingsProps {
   availableVoices: Voice[];
   onChange: (updates: Partial<VoiceSettings>) => void;
   onNavigateToAdvanced: () => void;
+  plan?: string;
 }
 
 export interface NotificationSettingsProps {

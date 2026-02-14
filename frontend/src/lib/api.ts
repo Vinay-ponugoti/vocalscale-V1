@@ -251,6 +251,15 @@ export const api = {
     return response.json();
   },
 
+  async getBilling() {
+    const headers = await getAuthHeader();
+    const response = await fetchWithTimeout(`${API_BASE}/billing`, {
+      headers,
+    }, 15000);
+    if (!response.ok) throw new Error('Failed to fetch billing info');
+    return response.json();
+  },
+
   async updateNotificationSettings(settings: Record<string, unknown>) {
     const headers = await getAuthHeader();
     const response = await fetchWithTimeout(`${API_BASE}/notification-settings`, {

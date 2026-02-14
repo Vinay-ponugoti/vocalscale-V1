@@ -45,6 +45,7 @@ const Settings = () => {
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [activeSection, setActiveSection] = useState('voice');
+  const [userPlan, setUserPlan] = useState<string>('');
 
   useEffect(() => {
     const anyChanges = unsavedChangesRef.current.voiceSettings ||
@@ -91,6 +92,12 @@ const Settings = () => {
           language: voiceSettingsResp.language || 'en-US',
           is_active: voiceSettingsResp.is_active !== undefined ? voiceSettingsResp.is_active : true
         });
+      }
+
+      // Load Billing Plan
+      const billingResp = await api.getBilling().catch(e => console.warn("Billing load failed", e));
+      if (billingResp?.plan) {
+        setUserPlan(billingResp.plan);
       }
 
       // Load notification settings from business setup API
@@ -380,6 +387,7 @@ const Settings = () => {
                         availableVoices={availableVoices}
                         onChange={handleVoiceChange}
                         onNavigateToAdvanced={() => navigate('/dashboard/voice-model/method')}
+                        plan={userPlan}
                       />
                     </div>
                   </div>
