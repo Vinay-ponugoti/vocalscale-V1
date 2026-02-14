@@ -1,36 +1,39 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reviewApi } from '../api/reviewApi';
-import type { Review, ReviewStats, AISummaryData } from '../types/review';
+import type { ReviewStats, AISummaryData } from '../types/review';
 
-export const useReviews = (days: number = 7) => {
+export const useReviews = (days: number = 30) => {
     const queryClient = useQueryClient();
 
-    // Fetch stats
     const statsQuery = useQuery<ReviewStats>({
         queryKey: ['reviews', 'stats', days],
         queryFn: () => reviewApi.getStats(days),
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
     });
 
-    // Fetch reviews list
-    const reviewsQuery = useQuery<{ reviews: Review[]; total: number }>({
+    const reviewsQuery = useQuery({
         queryKey: ['reviews', 'list', {}],
         queryFn: () => reviewApi.getReviews(),
-        staleTime: 2 * 60 * 1000, // 2 minutes
+        staleTime: 2 * 60 * 1000,
     });
 
-    // Fetch AI Summary
     const summaryQuery = useQuery<AISummaryData>({
         queryKey: ['reviews', 'summary'],
         queryFn: () => reviewApi.getAISummary(),
-        staleTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: 10 * 60 * 1000,
     });
 
-    // Mutation to regenerate summary
     const regenerateSummaryMutation = useMutation({
         mutationFn: () => reviewApi.regenerateSummary(),
         onSuccess: (newData) => {
             queryClient.setQueryData(['reviews', 'summary'], newData);
+        },
+    });
+
+    const syncReviewsMutation = useMutation({
+        mutationFn: () => reviewApi.syncReviews(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['reviews'] });
         },
     });
 
@@ -43,6 +46,7 @@ export const useReviews = (days: number = 7) => {
         reviews: {
             data: reviewsQuery.data?.reviews || [],
             total: reviewsQuery.data?.total || 0,
+            isPaid: reviewsQuery.data?.isPaid || false,
             loading: reviewsQuery.isLoading,
             error: reviewsQuery.error,
         },
@@ -52,6 +56,11 @@ export const useReviews = (days: number = 7) => {
             error: summaryQuery.error,
             regenerate: () => regenerateSummaryMutation.mutate(),
             isRegenerating: regenerateSummaryMutation.isPending,
+        },
+        sync: {
+            trigger: () => syncReviewsMutation.mutate(),
+            isSyncing: syncReviewsMutation.isPending,
+            error: syncReviewsMutation.error,
         },
         refresh: () => {
             queryClient.invalidateQueries({ queryKey: ['reviews'] });

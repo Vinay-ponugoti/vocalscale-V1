@@ -22,24 +22,22 @@ class ReviewAPI {
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-            throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
+            throw new Error(error.detail || error.error || `HTTP ${response.status}: ${response.statusText}`);
         }
 
         return response.json();
     }
 
-    // Get review stats
-    async getStats(days: number = 7): Promise<ReviewStats> {
+    async getStats(days: number = 30): Promise<ReviewStats> {
         return this.request(`/reviews/stats?days=${days}`);
     }
 
-    // Get reviews list
     async getReviews(params: {
         page?: number;
         limit?: number;
         search?: string;
         source?: string;
-    } = {}): Promise<{ reviews: Review[]; total: number }> {
+    } = {}): Promise<{ reviews: Review[]; total: number; isPaid: boolean }> {
         const queryParams = new URLSearchParams();
         if (params.page) queryParams.append('page', params.page.toString());
         if (params.limit) queryParams.append('limit', params.limit.toString());
@@ -50,29 +48,30 @@ class ReviewAPI {
         const endpoint = `/reviews/list${queryString ? `?${queryString}` : ''}`;
 
         const data = await this.request(endpoint);
-
         return {
             reviews: data.reviews || [],
-            total: data.total || 0
+            total: data.total || 0,
+            isPaid: data.isPaid || false,
         };
     }
 
-    // Get AI Summary
     async getAISummary(): Promise<AISummaryData> {
         return this.request('/reviews/summary');
     }
 
-    // Regenerate AI Summary
     async regenerateSummary(): Promise<AISummaryData> {
         return this.request('/reviews/summary/regenerate', { method: 'POST' });
     }
 
-    // Handlers for responding to reviews
     async postResponse(reviewId: string, text: string): Promise<{ success: boolean }> {
         return this.request(`/reviews/${reviewId}/respond`, {
             method: 'POST',
             body: JSON.stringify({ text }),
         });
+    }
+
+    async syncReviews(): Promise<{ success: boolean; synced: number; message: string }> {
+        return this.request('/reviews/sync', { method: 'POST' });
     }
 }
 

@@ -9,6 +9,7 @@ export interface Review {
   replied: boolean;
   critical?: boolean;
   source?: 'google_business' | 'google_places' | 'yelp' | 'tripadvisor';
+  sentiment?: 'Positive' | 'Neutral' | 'Negative';
   original_timestamp?: string;
 }
 
@@ -39,6 +40,7 @@ export interface ReviewStats {
     responseRate: number;
     responseTime: number;
   };
+  isPaid: boolean;
 }
 
 export interface AISummaryData {

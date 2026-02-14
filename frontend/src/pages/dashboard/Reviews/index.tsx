@@ -5,7 +5,7 @@ import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { useReviews } from '../../../hooks/useReviews';
 
 const Reviews = () => {
-  const { stats, reviews, summary } = useReviews();
+  const { stats, reviews, summary, sync } = useReviews();
 
   return (
     <DashboardLayout fullWidth>
@@ -13,6 +13,8 @@ const Reviews = () => {
         <ReviewOverview
           stats={stats.data}
           loading={stats.loading}
+          onSync={sync.trigger}
+          isSyncing={sync.isSyncing}
         />
 
         <AISummary
@@ -23,6 +25,7 @@ const Reviews = () => {
         <RecentReviews
           reviews={reviews.data}
           loading={reviews.loading}
+          isPaid={reviews.isPaid || stats.data?.isPaid}
         />
       </div>
     </DashboardLayout>

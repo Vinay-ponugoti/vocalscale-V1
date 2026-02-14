@@ -1,4 +1,4 @@
-import { Search, CheckCircle, Sparkles, Reply, Layers, MoreHorizontal, Filter } from 'lucide-react';
+import { Search, CheckCircle, Sparkles, Reply, Layers, MoreHorizontal, Filter, Lock } from 'lucide-react';
 import { StarRating } from '../../../../components/ui/StarRating';
 import {
   Card,
@@ -13,9 +13,24 @@ import type { Review } from '../../../../types/review';
 interface RecentReviewsProps {
   reviews: Review[];
   loading?: boolean;
+  isPaid?: boolean;
 }
 
-export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
+const SentimentBadge = ({ sentiment }: { sentiment?: string }) => {
+  if (!sentiment) return null;
+  const styles: Record<string, string> = {
+    Positive: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    Neutral: 'bg-amber-50 text-amber-600 border-amber-100',
+    Negative: 'bg-red-50 text-red-600 border-red-100',
+  };
+  return (
+    <Badge variant="outline" className={`${styles[sentiment] || ''} font-bold text-[10px] uppercase tracking-wider rounded-lg px-2 py-0.5`}>
+      {sentiment}
+    </Badge>
+  );
+};
+
+export const RecentReviews = ({ reviews, loading, isPaid }: RecentReviewsProps) => {
   if (loading) {
     return (
       <div className="space-y-6">
@@ -55,9 +70,6 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
               <Filter className="w-4 h-4 mr-2" />
               Filters
             </Button>
-            <Button variant="default" size="sm" className="flex-1 sm:flex-none rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-10 px-4">
-              View All
-            </Button>
           </div>
         </div>
       </div>
@@ -72,7 +84,9 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
                 </div>
                 <h3 className="text-base sm:text-lg font-bold text-slate-900">No feedback yet</h3>
                 <p className="text-slate-500 max-w-[240px] sm:max-w-xs mt-1 text-xs sm:text-sm">
-                  Once your customers start leaving reviews, they'll appear here for you to manage.
+                  {isPaid
+                    ? 'Click "Sync Google Reviews" above to pull in your latest reviews.'
+                    : 'Once your customers start leaving reviews, they\'ll appear here.'}
                 </p>
               </CardContent>
             </Card>
@@ -97,8 +111,6 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
                               {new Date(review.original_timestamp).toLocaleDateString([], {
                                 month: 'short',
                                 day: 'numeric',
-                                hour: 'numeric',
-                                minute: '2-digit'
                               })}
                             </span>
                           </>
@@ -108,6 +120,7 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {review.sentiment && <SentimentBadge sentiment={review.sentiment} />}
                   {review.critical && (
                     <Badge variant="destructive" className="bg-red-50 text-red-600 border-red-100 hover:bg-red-50 animate-pulse font-black text-[10px] uppercase tracking-wider rounded-lg px-2.5 py-1">
                       Priority
@@ -128,11 +141,10 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
                     <div className="flex items-center gap-3">
                       <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 border-emerald-100/50 font-bold uppercase tracking-wider text-[10px] rounded-lg px-3 py-1.5 flex items-center gap-2">
                         <CheckCircle className="w-3.5 h-3.5" strokeWidth={3} />
-                        AI Responded
+                        Responded
                       </Badge>
-                      <button className="text-[11px] font-bold text-slate-400 hover:text-indigo-600 transition-colors">Edit Response</button>
                     </div>
-                  ) : (
+                  ) : isPaid ? (
                     <div className="flex items-center gap-2">
                       <Button size="sm" className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] uppercase tracking-wider px-4 h-9 shadow-lg shadow-indigo-100 flex items-center gap-2">
                         <Sparkles className="w-4 h-4" />
@@ -143,9 +155,14 @@ export const RecentReviews = ({ reviews, loading }: RecentReviewsProps) => {
                         Manual
                       </Button>
                     </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <Lock className="w-3.5 h-3.5" />
+                      <span className="text-xs font-medium">Upgrade to reply to reviews</span>
+                    </div>
                   )}
 
-                  {!review.replied && review.critical && (
+                  {!review.replied && review.critical && isPaid && (
                     <button className="text-[11px] font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-wider">
                       Escalate
                     </button>
