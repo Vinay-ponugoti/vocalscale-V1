@@ -1,9 +1,6 @@
 import { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from "./components/ui/toaster";
-import { Toaster as Sonner } from "./components/ui/sonner";
-import { TooltipProvider } from "./components/ui/tooltip";
+// removed missing imports
 import ScrollToTop from './components/ScrollToTop';
 import { LazyMotion, domAnimation } from 'framer-motion';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -65,6 +62,7 @@ const Orders = lazyImport(() => import('./pages/dashboard/Orders'));
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <PageTracking />
       <WebVitalsTracking />
       <LazyMotion features={domAnimation}>
