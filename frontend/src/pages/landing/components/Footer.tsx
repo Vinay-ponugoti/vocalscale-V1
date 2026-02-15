@@ -10,7 +10,7 @@ export function Footer() {
     ],
     Company: [
       { label: 'About Us', href: '/terms' },
-      { label: 'Blog', href: '#' },
+      { label: 'Blog', href: '/blog' },
     ],
     Support: [
       { label: 'Privacy Policy', href: '/privacy' },

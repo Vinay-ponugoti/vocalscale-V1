@@ -9,7 +9,7 @@ import type {
   BusinessHour,
   Service,
   UrgentCallRule,
-  BookingRequirement,
+  BusinessBookingRequirement as BookingRequirement,
   BusinessSetupData
 } from '../types/business';
 

@@ -5,7 +5,7 @@ import { Calendar, Clock, ArrowRight, Sparkles, Search, Filter } from 'lucide-re
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
 import { SEO } from '../../components/SEO';
-import { blogPosts } from '../../data/blog-posts';
+import { blogPosts } from '../../content/blog/posts';
 
 export default function BlogIndex() {
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -141,8 +141,8 @@ export default function BlogIndex() {
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
                     className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${activeCategory === cat
-                        ? 'bg-slate-900 text-white shadow-md transform scale-105'
-                        : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                      ? 'bg-slate-900 text-white shadow-md transform scale-105'
+                      : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
                       }`}
                   >
                     {cat}

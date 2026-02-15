@@ -5,7 +5,7 @@ import { Calendar, Clock, User, ArrowLeft, Share2, Tag } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
 import { SEO } from '../../components/SEO';
-import { blogPosts } from '../../data/blog-posts';
+import { blogPosts } from '../../content/blog/posts';
 
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();

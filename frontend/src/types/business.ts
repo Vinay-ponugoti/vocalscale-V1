@@ -38,7 +38,7 @@ export interface UrgentCallRule {
   contact?: string;
 }
 
-export interface BookingRequirement {
+export interface BusinessBookingRequirement {
   id?: string;
   field_name: string;
   required: boolean;
@@ -50,5 +50,5 @@ export interface BusinessSetupData {
   business_hours?: BusinessHour[];
   services?: Service[];
   urgent_call_rules?: UrgentCallRule[];
-  booking_requirements?: BookingRequirement[];
+  booking_requirements?: BusinessBookingRequirement[];
 }

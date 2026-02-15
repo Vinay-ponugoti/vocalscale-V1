@@ -1,7 +1,7 @@
 import { env } from '../config/env';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getAuthHeader } from '../lib/api';
-import type { BusinessDetails, BusinessHour, Service, UrgentCallRule, BookingRequirement, BusinessSetupData } from '../types/business';
+import type { BusinessDetails, BusinessHour, Service, UrgentCallRule, BusinessBookingRequirement as BookingRequirement, BusinessSetupData } from '../types/business';
 
 const API_BASE_URL = env.API_URL;
 
