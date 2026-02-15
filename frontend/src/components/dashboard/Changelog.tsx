@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Sparkles, Gift, Zap, Bug } from 'lucide-react';
 
 interface ChangelogEntry {
@@ -156,16 +156,14 @@ export const ChangelogModal = ({ isOpen, onClose }: ChangelogModalProps) => {
 };
 
 // Hook to manage changelog state
+// eslint-disable-next-line react-refresh/only-export-components
 export const useChangelog = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [hasNewUpdates, setHasNewUpdates] = useState(false);
-
-    useEffect(() => {
+    const [hasNewUpdates, setHasNewUpdates] = useState(() => {
+        if (typeof window === 'undefined') return false;
         const lastSeenVersion = localStorage.getItem(CHANGELOG_STORAGE_KEY);
-        if (lastSeenVersion !== CURRENT_VERSION) {
-            setHasNewUpdates(true);
-        }
-    }, []);
+        return lastSeenVersion !== CURRENT_VERSION;
+    });
 
     const openChangelog = () => {
         setIsOpen(true);

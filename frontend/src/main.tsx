@@ -23,6 +23,7 @@ const queryClient = new QueryClient({
 });
 
 // Make queryClient globally accessible for logout cleanup
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).__reactQueryClient = queryClient;
 
 

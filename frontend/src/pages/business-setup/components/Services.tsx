@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 import { m, AnimatePresence } from 'framer-motion';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
-import { useToast } from '../../../hooks/useToast';
 import type { Service as GlobalService } from '../../../types/business';
 
 // --- Styled Components to match previous pages ---
@@ -36,7 +35,7 @@ interface Service extends Omit<GlobalService, 'price'> {
 
 export const Services: React.FC = () => {
   const { state, actions } = useBusinessSetup();
-  const { showToast } = useToast();
+  // const { showToast } = useToast();
   const [localServices, setLocalServices] = useState<Service[]>([]);
   const lastSyncedRef = React.useRef<string>('');
 

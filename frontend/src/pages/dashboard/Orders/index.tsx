@@ -2,107 +2,41 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { ordersApi, type Order, type OrderStats } from '../../../api/orders';
 import {
-  ShoppingBag, Search, RefreshCw, Filter, Download, Printer,
+  ShoppingBag, Search, RefreshCw, Download,
   CheckCircle, Clock, Package, X, Phone, Mail, Calendar,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
-  AlertCircle, DollarSign, MessageSquare, Hash, MoreHorizontal,
-  ArrowUpDown, Eye, Check, XCircle, RotateCcw
+  AlertCircle, DollarSign, MessageSquare, Hash,
+  ArrowUpDown, Eye
 } from 'lucide-react';
-import { format, formatDistanceToNow, subDays, startOfDay, endOfDay } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 
 const PAGE_SIZE = 20;
 
 // --- Status Types ---
-type OrderStatus = 'pending' | 'processing' | 'confirmed' | 'cancelled' | 'refunded';
+// Matches backend constraints: only pending and confirmed are supported.
+type OrderStatus = 'pending' | 'confirmed';
 
 // --- Status Badge Component ---
 const StatusBadge = ({ status }: { status: string }) => {
-  const statusConfig: Record<OrderStatus, { bg: string; text: string; ring: string; icon: React.ReactNode; label: string }> = {
-    pending: { bg: 'bg-amber-50', text: 'text-amber-700', ring: 'ring-amber-200', icon: <Clock size={10} />, label: 'Pending' },
-    processing: { bg: 'bg-blue-50', text: 'text-blue-700', ring: 'ring-blue-200', icon: <RotateCcw size={10} className="animate-spin" />, label: 'Processing' },
-    confirmed: { bg: 'bg-emerald-50', text: 'text-emerald-700', ring: 'ring-emerald-200', icon: <CheckCircle size={10} />, label: 'Confirmed' },
-    cancelled: { bg: 'bg-red-50', text: 'text-red-700', ring: 'ring-red-200', icon: <XCircle size={10} />, label: 'Cancelled' },
-    refunded: { bg: 'bg-purple-50', text: 'text-purple-700', ring: 'ring-purple-200', icon: <RotateCcw size={10} />, label: 'Refunded' },
-  };
-  
-  const config = statusConfig[status as OrderStatus] || statusConfig.pending;
-  const isActive = status === 'pending' || status === 'processing';
-  
+  const isConfirmed = status === 'confirmed';
+
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${config.bg} ${config.text} ring-1 ${config.ring}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'animate-pulse' : ''} ${
-        status === 'pending' ? 'bg-amber-500' : 
-        status === 'processing' ? 'bg-blue-500' :
-        status === 'confirmed' ? 'bg-emerald-500' :
-        status === 'cancelled' ? 'bg-red-500' : 'bg-purple-500'
-      }`} />
-      {config.label}
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${isConfirmed
+      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      : 'bg-amber-50 text-amber-700 border-amber-200'
+      }`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${isConfirmed ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'
+        }`} />
+      {isConfirmed ? 'Confirmed' : 'Pending'}
     </span>
   );
 };
 
-// --- Status Toggle with Multiple Options ---
-const StatusToggle = ({ 
-  status, 
-  onStatusChange, 
-  loading 
-}: { 
-  status: string; 
-  onStatusChange: (id: string, newStatus: OrderStatus) => void; 
-  loading: boolean 
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  const handleStatusChange = (newStatus: OrderStatus) => {
-    onStatusChange(status, newStatus);
-    setIsOpen(false);
-  };
-  
-  return (
-    <div className="relative">
-      <button
-        onClick={(e) => { e.stopPropagation(); if (!loading) setIsOpen(!isOpen); }}
-        disabled={loading}
-        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
-          status === 'confirmed' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' :
-          status === 'cancelled' ? 'border-red-200 bg-red-50 text-red-700' :
-          status === 'refunded' ? 'border-purple-200 bg-purple-50 text-purple-700' :
-          status === 'processing' ? 'border-blue-200 bg-blue-50 text-blue-700' :
-          'border-amber-200 bg-amber-50 text-amber-700'
-        } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-sm'}`}
-      >
-        <StatusBadge status={status} />
-        <ChevronLeft size={14} className={`transition-transform ${isOpen ? 'rotate-90' : ''}`} />
-      </button>
-      
-      {isOpen && (
-        <div className="absolute top-full mt-1 right-0 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-20 min-w-[140px]">
-          <button onClick={() => handleStatusChange('pending')} className="w-full px-3 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2">
-            <Clock size={14} className="text-amber-500" /> Pending
-          </button>
-          <button onClick={() => handleStatusChange('processing')} className="w-full px-3 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2">
-            <RotateCcw size={14} className="text-blue-500" /> Processing
-          </button>
-          <button onClick={() => handleStatusChange('confirmed')} className="w-full px-3 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2">
-            <CheckCircle size={14} className="text-emerald-500" /> Confirmed
-          </button>
-          <button onClick={() => handleStatusChange('cancelled')} className="w-full px-3 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2">
-            <XCircle size={14} className="text-red-500" /> Cancelled
-          </button>
-          <button onClick={() => handleStatusChange('refunded')} className="w-full px-3 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2">
-            <RotateCcw size={14} className="text-purple-500" /> Refunded
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
 // --- Quick Action Button ---
-const QuickActionButton = ({ icon: Icon, label, onClick }: { icon: React.ElementType; label: string; onClick: () => void }) => (
+const QuickActionButton = ({ icon: Icon, label, onClick, className }: { icon: React.ElementType; label: string; onClick: () => void; className?: string }) => (
   <button
     onClick={(e) => { e.stopPropagation(); onClick(); }}
-    className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+    className={`p-1.5 rounded-lg hover:bg-slate-100 transition-colors ${className || 'text-slate-400 hover:text-slate-600'}`}
     title={label}
   >
     <Icon size={14} />
@@ -110,16 +44,16 @@ const QuickActionButton = ({ icon: Icon, label, onClick }: { icon: React.Element
 );
 
 // --- Order Detail Sheet ---
-const OrderSheet = ({ order, onClose, onStatusChange }: {
+const OrderSheet = ({ order, onClose, onStatusChange, updating }: {
   order: Order | null;
   onClose: () => void;
   onStatusChange: (id: string, status: OrderStatus) => void;
+  updating: boolean;
 }) => {
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     if (order) {
-      setIsClosing(false);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -133,6 +67,9 @@ const OrderSheet = ({ order, onClose, onStatusChange }: {
   };
 
   if (!order) return null;
+
+  const nextStatus = order.status === 'confirmed' ? 'pending' : 'confirmed';
+  const actionLabel = order.status === 'confirmed' ? 'Mark as Pending' : 'Confirm Order';
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -169,7 +106,7 @@ const OrderSheet = ({ order, onClose, onStatusChange }: {
                 </p>
               </div>
             </div>
-            
+
             {/* Timeline */}
             <div className="mt-4 pt-4 border-t border-slate-100">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Timeline</p>
@@ -290,17 +227,15 @@ const OrderSheet = ({ order, onClose, onStatusChange }: {
               <Phone size={16} /> Call
             </a>
             <button
-              onClick={() => {
-                const nextStatus = order.status === 'confirmed' ? 'cancelled' : 'confirmed';
-                onStatusChange(order.id, nextStatus);
-              }}
-              className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-colors shadow-sm ${
-                order.status === 'confirmed'
-                  ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-emerald-500 text-white hover:bg-emerald-600'
-              }`}
+              onClick={() => onStatusChange(order.id, nextStatus)}
+              disabled={updating}
+              className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-colors shadow-sm text-white flex items-center justify-center gap-2 ${order.status === 'confirmed'
+                ? 'bg-slate-500 hover:bg-slate-600'
+                : 'bg-emerald-500 hover:bg-emerald-600'
+                } ${updating ? 'opacity-75 cursor-not-allowed' : ''}`}
             >
-              {order.status === 'confirmed' ? 'Cancel Order' : 'Confirm Order'}
+              {updating ? <RefreshCw size={16} className="animate-spin" /> : null}
+              {actionLabel}
             </button>
           </div>
         </div>
@@ -325,13 +260,13 @@ export default function OrdersPage() {
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const fetchOrders = async () => {
+  const fetchOrders = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const [ordersRes, statsRes] = await Promise.all([
-        ordersApi.getOrders({ page, pageSize: PAGE_SIZE, status: statusFilter || undefined }),
-        ordersApi.getStats()
+        ordersApi.getOrders(page, PAGE_SIZE, statusFilter || undefined),
+        ordersApi.getOrderStats()
       ]);
       setOrders(ordersRes.orders || []);
       setTotal(ordersRes.total || 0);
@@ -341,18 +276,28 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, statusFilter]);
 
   useEffect(() => {
     fetchOrders();
-  }, [page, statusFilter]);
+  }, [fetchOrders]);
 
   const handleToggleStatus = async (orderId: string, newStatus: OrderStatus) => {
     setUpdatingIds(prev => new Set(prev).add(orderId));
     try {
-      await ordersApi.updateStatus(orderId, newStatus);
-      await fetchOrders();
-      setSelectedOrder(null);
+      await ordersApi.updateOrderStatus(orderId, newStatus);
+      const updatedOrders = orders.map(o =>
+        o.id === orderId ? { ...o, status: newStatus } : o
+      );
+      setOrders(updatedOrders);
+
+      // Update selected order if it's the one being modified
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus });
+      }
+
+      // Refresh stats quietly
+      ordersApi.getOrderStats().then(setStats);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update status');
     } finally {
@@ -364,20 +309,20 @@ export default function OrdersPage() {
     }
   };
 
-  // Filter and sort orders client-side
+  // Filter and sort orders client-side (in addition to server-side status filter)
   const filteredOrders = useMemo(() => {
     let result = [...orders];
-    
+
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(o => 
+      result = result.filter(o =>
         o.customer_name.toLowerCase().includes(query) ||
         o.customer_phone.includes(query) ||
         o.product_name.toLowerCase().includes(query)
       );
     }
-    
+
     // Sort
     result.sort((a, b) => {
       switch (sortBy) {
@@ -391,7 +336,7 @@ export default function OrdersPage() {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
     });
-    
+
     return result;
   }, [orders, searchQuery, sortBy]);
 
@@ -401,7 +346,7 @@ export default function OrdersPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        
+
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -409,8 +354,8 @@ export default function OrdersPage() {
             <p className="text-sm text-slate-500 mt-1">Manage and track all your orders</p>
           </div>
           <div className="flex items-center gap-3">
-            <button 
-              onClick={fetchOrders} 
+            <button
+              onClick={fetchOrders}
               className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 hover:shadow-sm transition-all"
               title="Refresh"
             >
@@ -487,25 +432,22 @@ export default function OrdersPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          
+
           <div className="flex flex-wrap items-center gap-3">
             {/* Status Filter */}
             <div className="flex bg-slate-100 p-1 rounded-xl">
               {[
                 { value: '', label: 'All', icon: ShoppingBag },
                 { value: 'pending', label: 'Pending', icon: Clock },
-                { value: 'processing', label: 'Processing', icon: RotateCcw },
                 { value: 'confirmed', label: 'Confirmed', icon: CheckCircle },
-                { value: 'cancelled', label: 'Cancelled', icon: XCircle },
               ].map((option) => (
                 <button
                   key={option.value}
                   onClick={() => setStatusFilter(option.value)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    statusFilter === option.value
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === option.value
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-700'
+                    }`}
                 >
                   <option.icon size={14} />
                   {option.label}
@@ -560,8 +502,8 @@ export default function OrdersPage() {
               </div>
               <h3 className="text-xl font-bold text-slate-900">No orders found</h3>
               <p className="text-slate-500 mt-2 text-sm max-w-md">
-                {searchQuery || statusFilter 
-                  ? 'Try adjusting your search or filters' 
+                {searchQuery || statusFilter
+                  ? 'Try adjusting your search or filters'
                   : 'Orders placed via your AI phone agent will appear here'}
               </p>
             </div>
@@ -577,7 +519,7 @@ export default function OrdersPage() {
                       <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">Pickup</th>
                       <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">Status</th>
                       <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">Ordered</th>
-                      <th className="px-4 py-4"></th>
+                      <th className="px-4 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -655,12 +597,8 @@ export default function OrdersPage() {
                         </td>
 
                         {/* Status */}
-                        <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                          <StatusToggle
-                            status={order.status}
-                            onStatusChange={(id, status) => handleToggleStatus(id, status)}
-                            loading={updatingIds.has(order.id)}
-                          />
+                        <td className="px-6 py-4">
+                          <StatusBadge status={order.status} />
                         </td>
 
                         {/* Time */}
@@ -677,15 +615,29 @@ export default function OrdersPage() {
 
                         {/* Actions */}
                         <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <QuickActionButton 
-                              icon={Eye} 
-                              label="View Details" 
-                              onClick={() => setSelectedOrder(order)} 
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <QuickActionButton
+                              icon={Eye}
+                              label="View Details"
+                              onClick={() => setSelectedOrder(order)}
                             />
-                            <a href={`tel:${order.customer_phone}`}>
-                              <QuickActionButton icon={Phone} label="Call Customer" onClick={() => {}} />
-                            </a>
+
+                            {order.status === 'pending' && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleStatus(order.id, 'confirmed');
+                                }}
+                                disabled={updatingIds.has(order.id)}
+                                className={`p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 transition-colors ${updatingIds.has(order.id) ? 'opacity-50' : ''}`}
+                                title="Confirm Order"
+                              >
+                                {updatingIds.has(order.id)
+                                  ? <RefreshCw size={14} className="animate-spin" />
+                                  : <CheckCircle size={14} />
+                                }
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -703,16 +655,16 @@ export default function OrdersPage() {
                 </p>
                 {totalPages > 1 && (
                   <div className="flex items-center gap-2">
-                    <button 
-                      onClick={() => setPage(1)} 
-                      disabled={page === 1} 
+                    <button
+                      onClick={() => setPage(1)}
+                      disabled={page === 1}
                       className="p-2 rounded-lg text-slate-400 hover:bg-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                     >
                       <ChevronsLeft size={16} />
                     </button>
-                    <button 
-                      onClick={() => setPage(p => Math.max(1, p - 1))} 
-                      disabled={page === 1} 
+                    <button
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={page === 1}
                       className="p-2 rounded-lg text-slate-400 hover:bg-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                     >
                       <ChevronLeft size={16} />
@@ -720,16 +672,16 @@ export default function OrdersPage() {
                     <span className="text-sm text-slate-600 font-medium px-4">
                       Page {page} of {totalPages}
                     </span>
-                    <button 
-                      onClick={() => setPage(p => Math.min(totalPages, p + 1))} 
-                      disabled={page === totalPages} 
+                    <button
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
                       className="p-2 rounded-lg text-slate-400 hover:bg-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                     >
                       <ChevronRight size={16} />
                     </button>
-                    <button 
-                      onClick={() => setPage(totalPages)} 
-                      disabled={page === totalPages} 
+                    <button
+                      onClick={() => setPage(totalPages)}
+                      disabled={page === totalPages}
                       className="p-2 rounded-lg text-slate-400 hover:bg-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                     >
                       <ChevronsRight size={16} />
@@ -744,9 +696,11 @@ export default function OrdersPage() {
 
       {/* Detail Sheet */}
       <OrderSheet
+        key={selectedOrder?.id}
         order={selectedOrder}
         onClose={() => setSelectedOrder(null)}
         onStatusChange={handleToggleStatus}
+        updating={selectedOrder ? updatingIds.has(selectedOrder.id) : false}
       />
     </DashboardLayout>
   );

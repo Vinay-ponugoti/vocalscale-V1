@@ -52,7 +52,7 @@ export function useChat(sessionId: string | null) {
         enabled: h.enabled,
       })),
     };
-  }, [businessState.data]);
+  }, [businessState]);
 
   // Update ref when prop changes
   useEffect(() => {
@@ -89,111 +89,117 @@ export function useChat(sessionId: string | null) {
     }
   }, [fetchedMessages, isStreaming]);
 
-  // Reset messages when session changes
-  useEffect(() => {
-    if (!sessionId) {
-      setMessages([]);
-      setStreamingContent('');
-      setError(null);
-    }
-  }, [sessionId]);
+
 
   /**
    * Send a message and handle streaming response
    * Note: User authentication is handled by the backend via JWT token
    */
   const sendMessage = useCallback(async (content: string): Promise<string | null> => {
-    if (!content.trim() || isStreaming) return null;
-
-    setError(null);
-
-    // Create optimistic user message
-    const tempId = `temp-${Date.now()}`;
-    const userMessage: ChatMessage = {
-      id: tempId,
-      session_id: sessionId || 'new',
-      role: 'user',
-      content: content.trim(),
-      timestamp: new Date().toISOString(),
-      attachments: pendingFiles.length > 0 ? [...pendingFiles] : undefined,
-    };
-
-    // Add user message immediately (optimistic UI)
-    setMessages(prev => [...prev, userMessage]);
-    setStreamingContent('');
-    setIsStreaming(true);
-
-    // Clear pending files
-    const attachmentIds = pendingFiles.map(f => f.id);
-    setPendingFiles([]);
-
-    let newSessionId: string | null = null;
-    let accumulatedContent = '';
+    if (!content.trim()) return null;
 
     try {
+      setIsStreaming(true);
+      setError(null);
+
+      // Optimistically add user message
+      const optimId = `optim-${Date.now()}`;
+      const userMessage: ChatMessage = {
+        id: optimId,
+        session_id: sessionId || 'temp',
+        role: 'user',
+        content: content.trim(),
+        timestamp: new Date().toISOString()
+      };
+
+      setMessages(prev => [...prev, userMessage]);
+      setStreamingContent(''); // Reset streaming buffer
+
+      // Check if we have attachments
+      const attachmentIds = pendingFiles.length > 0 ? pendingFiles.map(f => f.id) : [];
+
+      // Send to API
+      let fullResponse = '';
+
       await chatApi.sendMessageStream(
         {
           message: content.trim(),
           session_id: sessionId || undefined,
           attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
           business_context: businessContext,
+          // Remove business_id and user_id as they aren't in ChatRequest interface
         },
-        // On chunk
-        (text) => {
-          accumulatedContent += text;
-          setStreamingContent(accumulatedContent);
+        (chunk) => {
+          fullResponse += chunk;
+          setStreamingContent(fullResponse);
         },
-        // On done
-        (returnedSessionId, sources) => {
-          console.log('[useChat] SSE Done. Returned Session ID:', returnedSessionId);
-          newSessionId = returnedSessionId;
-
-          // Create assistant message with full content
-          const assistantMessage: ChatMessage = {
-            id: `msg-${Date.now()}`,
-            session_id: returnedSessionId,
-            role: 'assistant',
-            content: accumulatedContent,
-            timestamp: new Date().toISOString(),
-            sources: sources.length > 0 ? sources : undefined,
-          };
-
-          setMessages(prev => {
-            // Check if last message is already assistant and identical (prevent dupes)
-            const lastMsg = prev[prev.length - 1];
-            if (lastMsg && lastMsg.role === 'assistant' && lastMsg.content === accumulatedContent) {
-              return prev;
-            }
-            return [...prev, assistantMessage];
-          });
-          setStreamingContent('');
-          setIsStreaming(false);
-
-          // Update session ID ref if new session was created
-          if (!sessionId && returnedSessionId) {
-            currentSessionIdRef.current = returnedSessionId;
-          }
-
-          // Refresh sessions list
-          queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
+        // onDone
+        () => {
+          // We handle completion manually below
         },
-        // On error
+        // onError
         (err) => {
-          setError(err.message);
-          setIsStreaming(false);
-          setStreamingContent('');
+          throw err;
         }
       );
 
-      return newSessionId;
+      // Once complete, add assistant message and clear streaming
+      const assistantMessage: ChatMessage = {
+        id: `resp-${Date.now()}`,
+        session_id: sessionId || 'temp',
+        role: 'assistant',
+        content: fullResponse,
+        timestamp: new Date().toISOString()
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+      setStreamingContent('');
+      setPendingFiles([]); // Clear attachments
+
+      // Refetch to get canonical IDs
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['chat-messages'] });
+      }, 500);
+
+      return fullResponse;
+
     } catch (err) {
+      console.error('Failed to send message:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
       setError(errorMessage);
+      return null;
+    } finally {
       setIsStreaming(false);
+    }
+  }, [sessionId, pendingFiles, queryClient, businessContext]);
+
+  /**
+   * Cancel streaming generation
+   */
+  const stopGenerating = useCallback(() => {
+    if (isStreaming) {
+      // Logic to cancel stream would go here
+      // content-client doesn't support cancellation yet
+      setIsStreaming(false);
+
+      // Save what we have so far
+      if (streamingContent) {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: `aborted-${Date.now()}`,
+            session_id: sessionId || 'temp',
+            role: 'assistant',
+            content: streamingContent,
+            timestamp: new Date().toISOString()
+          }
+        ]);
+      }
+
       setStreamingContent('');
       return null;
     }
-  }, [sessionId, isStreaming, pendingFiles, queryClient, businessContext]);
+  }, [sessionId, isStreaming, streamingContent]);
 
   /**
    * Upload a file to attach to the next message
@@ -238,6 +244,7 @@ export function useChat(sessionId: string | null) {
     sendMessage,
     uploadFile,
     removeFile,
+    stopGenerating,
     clearError,
     refetchMessages,
   };

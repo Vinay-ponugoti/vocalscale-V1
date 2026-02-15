@@ -7,8 +7,6 @@ import {
     Search,
     Mic,
     MessageSquare,
-    Image as ImageIcon,
-    Printer,
     Phone,
     ArrowUpRight,
     Clock,

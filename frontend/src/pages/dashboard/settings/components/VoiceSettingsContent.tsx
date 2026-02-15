@@ -37,7 +37,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
     if (genderFilter === 'all') {
       setDisplayVoices(availableVoices);
     }
-  }, [availableVoices]);
+  }, [availableVoices, genderFilter]);
 
   React.useEffect(() => {
     const fetchFilteredVoices = async () => {

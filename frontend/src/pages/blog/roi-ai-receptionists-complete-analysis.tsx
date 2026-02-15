@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, ArrowLeft, CheckCircle, TrendingUp, DollarSign, Heart, ArrowRight, Calculator, BarChart3, PieChart, Phone } from 'lucide-react';
+import { Calendar, Clock, User, ArrowLeft, CheckCircle, TrendingUp, DollarSign, ArrowRight, Calculator, BarChart3, PieChart, Phone } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
 import { SEO } from '../../components/SEO';

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {
     Upload, FileText, Check, Loader2,
-    AlertCircle, Package, FileSpreadsheet,
+    AlertCircle, FileSpreadsheet,
     Image, File, X
 } from 'lucide-react';
 import { m, AnimatePresence } from 'framer-motion';
@@ -190,9 +190,10 @@ export const InventoryUpload: React.FC<InventoryUploadProps> = ({ onUploadSucces
                     idx === i ? { ...f, status: 'success' as const, message: result.message || 'Uploaded successfully', result } : f
                 ));
                 successCount++;
-            } catch (error: any) {
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Upload failed';
                 setFiles(prev => prev.map((f, idx) =>
-                    idx === i ? { ...f, status: 'error' as const, message: error.message || 'Upload failed' } : f
+                    idx === i ? { ...f, status: 'error' as const, message: errorMessage } : f
                 ));
             }
         }
@@ -229,15 +230,13 @@ export const InventoryUpload: React.FC<InventoryUploadProps> = ({ onUploadSucces
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`relative p-6 border-2 border-dashed rounded-xl transition-all cursor-pointer flex flex-col items-center justify-center text-center gap-3 ${
-                    isDragging
-                        ? 'border-indigo-400 bg-indigo-50/50 scale-[1.01]'
-                        : 'border-slate-200 bg-slate-50 hover:border-indigo-300 hover:bg-indigo-50/30'
-                } ${isUploading ? 'pointer-events-none opacity-60' : ''}`}
+                className={`relative p-6 border-2 border-dashed rounded-xl transition-all cursor-pointer flex flex-col items-center justify-center text-center gap-3 ${isDragging
+                    ? 'border-indigo-400 bg-indigo-50/50 scale-[1.01]'
+                    : 'border-slate-200 bg-slate-50 hover:border-indigo-300 hover:bg-indigo-50/30'
+                    } ${isUploading ? 'pointer-events-none opacity-60' : ''}`}
             >
-                <div className={`p-3 rounded-full border transition-all shadow-sm ${
-                    isDragging ? 'bg-indigo-100 border-indigo-300 text-indigo-600' : 'bg-white border-slate-200 text-indigo-600'
-                }`}>
+                <div className={`p-3 rounded-full border transition-all shadow-sm ${isDragging ? 'bg-indigo-100 border-indigo-300 text-indigo-600' : 'bg-white border-slate-200 text-indigo-600'
+                    }`}>
                     <Upload size={24} />
                 </div>
                 <div>
@@ -268,20 +267,18 @@ export const InventoryUpload: React.FC<InventoryUploadProps> = ({ onUploadSucces
                                 initial={{ opacity: 0, y: -4 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
-                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                                    item.status === 'success' ? 'bg-green-50 border-green-200' :
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${item.status === 'success' ? 'bg-green-50 border-green-200' :
                                     item.status === 'error' ? 'bg-red-50 border-red-200' :
-                                    item.status === 'uploading' ? 'bg-indigo-50 border-indigo-200' :
-                                    'bg-white border-slate-200'
-                                }`}
+                                        item.status === 'uploading' ? 'bg-indigo-50 border-indigo-200' :
+                                            'bg-white border-slate-200'
+                                    }`}
                             >
                                 {/* File Icon */}
-                                <div className={`p-2 rounded-lg shrink-0 ${
-                                    item.status === 'success' ? 'bg-green-100' :
+                                <div className={`p-2 rounded-lg shrink-0 ${item.status === 'success' ? 'bg-green-100' :
                                     item.status === 'error' ? 'bg-red-100' :
-                                    item.status === 'uploading' ? 'bg-indigo-100' :
-                                    'bg-slate-100'
-                                }`}>
+                                        item.status === 'uploading' ? 'bg-indigo-100' :
+                                            'bg-slate-100'
+                                    }`}>
                                     {item.status === 'uploading' ? (
                                         <Loader2 size={18} className="text-indigo-600 animate-spin" />
                                     ) : item.status === 'success' ? (
@@ -297,11 +294,10 @@ export const InventoryUpload: React.FC<InventoryUploadProps> = ({ onUploadSucces
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-medium text-slate-900 truncate">{item.file.name}</p>
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${
-                                            getFileCategory(item.file.name) === 'spreadsheet'
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-blue-100 text-blue-700'
-                                        }`}>
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${getFileCategory(item.file.name) === 'spreadsheet'
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-blue-100 text-blue-700'
+                                            }`}>
                                             {getCategoryLabel(item.file.name)}
                                         </span>
                                     </div>

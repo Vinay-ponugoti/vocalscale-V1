@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import {
   Building2, Mail, Phone, MapPin, Zap, Globe,
@@ -6,6 +7,47 @@ import {
   Sparkles, X, ChevronDown
 } from 'lucide-react';
 import { businessSetupAPI } from '../../../api/businessSetup';
+
+interface GoogleBusinessResult {
+  place_id: string;
+  name: string;
+  formatted_address: string;
+  website?: string;
+  formatted_phone_number?: string;
+  types?: string[];
+  rating?: number;
+  user_ratings_total?: number;
+  photos?: Array<{
+    photo_reference: string;
+    height: number;
+    width: number;
+  }>;
+  opening_hours?: {
+    periods?: Array<{
+      open: { day: number; time: string };
+      close: { day: number; time: string };
+    }>;
+    weekday_text?: string[];
+  };
+  photo_url?: string;
+}
+
+type BusinessHours = {
+  day_of_week: string;
+  open_time: string;
+  close_time: string;
+  enabled: boolean;
+}[];
+
+const defaultBusinessHours: BusinessHours = [
+  { day_of_week: 'monday', open_time: '09:00', close_time: '17:00', enabled: true },
+  { day_of_week: 'tuesday', open_time: '09:00', close_time: '17:00', enabled: true },
+  { day_of_week: 'wednesday', open_time: '09:00', close_time: '17:00', enabled: true },
+  { day_of_week: 'thursday', open_time: '09:00', close_time: '17:00', enabled: true },
+  { day_of_week: 'friday', open_time: '09:00', close_time: '17:00', enabled: true },
+  { day_of_week: 'saturday', open_time: '', close_time: '', enabled: false },
+  { day_of_week: 'sunday', open_time: '', close_time: '', enabled: false }
+];
 
 // --- Reusable Styled Components (Editorial/Neubrutalist Aesthetic) ---
 
@@ -66,13 +108,14 @@ const Label = ({ children, optional }: { children: React.ReactNode, optional?: b
 // --- Search Result Component (Matches User Image Design) ---
 
 interface SearchResultProps {
-  business: any;
-  onSelect: (placeId: string) => void;
+  business: GoogleBusinessResult;
+  onSelect: (business: GoogleBusinessResult) => void;
+  isSelected: boolean;
 }
 
 const SearchResultCard = ({ business, onSelect }: SearchResultProps) => (
   <button
-    onClick={() => onSelect(business.place_id)}
+    onClick={() => onSelect(business)}
     className="w-full bg-white text-left rounded-xl border border-slate-200 hover:border-indigo-400 p-2 flex items-start gap-4 transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-0.5 group"
   >
     {/* Image Section */}
@@ -128,7 +171,7 @@ export const BusinessDetails: React.FC = () => {
 
   // Search States
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<GoogleBusinessResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isPopulating, setIsPopulating] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -145,12 +188,18 @@ export const BusinessDetails: React.FC = () => {
   }, [data.business.auto_setup, showSuccessMessage]);
 
   // Helper function to parse Google Places hours
-  const parseGoogleHours = (openingHours: any) => {
-    if (!openingHours?.periods) return [];
+  const parseGoogleHours = (openingHours: GoogleBusinessResult['opening_hours']) => {
+    if (!openingHours || !openingHours.periods) return defaultBusinessHours;
 
-    const dayMap: { [key: number]: any } = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dayMap: { [key: number]: any } = {
+      0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday',
+      4: 'Thursday', 5: 'Friday', 6: 'Saturday'
+    };
 
-    openingHours.periods.forEach((period: any) => {
+
+
+    openingHours.periods.forEach((period) => {
       const day = period.open.day; // 0=Sunday, 1=Monday, etc.
       const openTime = formatGoogleTime(period.open.time);
       const closeTime = period.close ? formatGoogleTime(period.close.time) : '';
@@ -201,7 +250,8 @@ export const BusinessDetails: React.FC = () => {
     }
   };
 
-  const handleSelectBusiness = async (placeId: string) => {
+  const handleSelectBusiness = async (business: GoogleBusinessResult) => {
+    const placeId = business.place_id;
     setIsPopulating(true);
     try {
       const details = await businessSetupAPI.getGooglePlaceDetails(placeId);
@@ -235,10 +285,12 @@ export const BusinessDetails: React.FC = () => {
           const urlToParse = url.startsWith('http') ? url : `https://${url}`;
           const urlObj = new URL(urlToParse);
           return `${urlObj.origin}${urlObj.pathname}`;
-        } catch (e) {
-          return url; // Return original if parsing fails
+        } catch (error) {
+          console.error('Failed to resolve photo URL', error);
+          return url;
         }
       };
+
 
       // Auto-populate business fields and mark setup as complete
       actions.updateBusiness({
@@ -365,7 +417,8 @@ export const BusinessDetails: React.FC = () => {
                     <SearchResultCard
                       key={i}
                       business={business}
-                      onSelect={handleSelectBusiness}
+                      onSelect={(b) => { handleSelectBusiness(b); }}
+                      isSelected={false}
                     />
                   ))}
                   <p className="text-center text-[10px] text-slate-400 font-medium py-2">Showing top 5 results for relevance</p>

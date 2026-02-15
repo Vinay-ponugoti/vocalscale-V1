@@ -1,74 +1,7 @@
 import { env } from '../config/env';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getAuthHeader } from '../lib/api';
-
-// Import types directly inline to avoid module issues
-interface BusinessDetails {
-  id?: string;
-  user_id?: string;
-  business_name: string;
-  category?: string;
-  phone?: string;
-  address?: string;
-  description?: string;
-  email?: string;
-  website?: string;
-  contact_name?: string;
-  timezone?: string;
-  place_id?: string;
-  rating?: number;
-  user_ratings_total?: number;
-  auto_setup?: boolean;
-  image_url?: string;
-}
-
-interface BusinessHour {
-  id?: string;
-  day_of_week: string;
-  open_time?: string;
-  close_time?: string;
-  enabled: boolean;
-}
-
-interface Service {
-  id?: string;
-  name: string;
-  price?: number;
-  description?: string;
-}
-
-interface UrgentCallRule {
-  id?: string;
-  condition_text: string;
-  action: string;
-  contact?: string;
-  transfer_number?: string;
-  is_enabled?: boolean;
-  user_id?: string;
-  rule_type?: 'urgent' | 'standard';
-}
-
-interface BookingRequirement {
-  id?: string;
-  field_name: string;
-  required: boolean;
-  field_type: string;
-}
-
-interface BusinessSetupData {
-  business: BusinessDetails;
-  business_hours?: BusinessHour[];
-  services?: Service[];
-  urgent_call_rules?: UrgentCallRule[];
-  booking_requirements?: BookingRequirement[];
-}
-
-interface Review {
-  author_name: string;
-  rating: number;
-  text: string;
-  time: number;
-  relative_time_description: string;
-}
+import type { BusinessDetails, BusinessHour, Service, UrgentCallRule, BookingRequirement, BusinessSetupData } from '../types/business';
 
 const API_BASE_URL = env.API_URL;
 
@@ -155,7 +88,6 @@ class BusinessSetupAPI {
     });
   }
 
-  // Google Places Search
   async searchGooglePlaces(query: string): Promise<any[]> {
     return this.request(`/google-places/search?query=${encodeURIComponent(query)}`);
   }
@@ -166,7 +98,7 @@ class BusinessSetupAPI {
   }
 
   // Save reviews
-  async saveReviews(reviews: Review[], businessId: string): Promise<{ status: string; saved: number }> {
+  async saveReviews(reviews: any[], businessId: string): Promise<{ status: string; saved: number }> {
     return this.request('/reviews', {
       method: 'POST',
       body: JSON.stringify({
@@ -181,7 +113,7 @@ class BusinessSetupAPI {
     const url = `${env.KNOWLEDGE_API_URL}/upload`;
     const headers = await getAuthHeader();
 
-    const formData = new FormData();
+    const formData: any = new FormData();
     formData.append('file', file);
 
     const response = await fetch(url, {
@@ -309,6 +241,7 @@ class BusinessSetupAPI {
       return [];
     }
     const data = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.files || [];
   }
 

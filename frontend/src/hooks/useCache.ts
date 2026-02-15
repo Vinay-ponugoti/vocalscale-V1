@@ -19,6 +19,7 @@ export const useLocalStorageCache = <T>({
 }: UseLocalStorageCacheOptions<T>) => {
   const [data, setData] = useState<T>(() => {
     try {
+      if (typeof window === 'undefined') return defaultValue;
       const cached = safeLocalStorage.getItem(key);
       if (cached) {
         const parsed: CachedData<T> = JSON.parse(cached);
@@ -37,14 +38,16 @@ export const useLocalStorageCache = <T>({
   // Sync state when key changes
   useEffect(() => {
     try {
+      if (typeof window === 'undefined') return;
+
       const cached = safeLocalStorage.getItem(key);
       if (cached) {
         const parsed: CachedData<T> = JSON.parse(cached);
         const now = Date.now();
         if (now - parsed.timestamp < ttl) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setData(parsed.data);
         } else {
-          safeLocalStorage.removeItem(key);
           setData(defaultValue);
         }
       } else {

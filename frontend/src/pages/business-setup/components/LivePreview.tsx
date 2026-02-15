@@ -1,9 +1,21 @@
+import React from 'react';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import { Mic, Sparkles, Activity, Clock, Phone, Signal, Wifi } from 'lucide-react';
 
 export const LivePreview = () => {
   const { state } = useBusinessSetup();
   const businessName = state.data.business.business_name || "Your Business";
+
+  const [pulseBars, setPulseBars] = React.useState<Array<{ id: number, height: string, duration: string, opacity: number }>>([]);
+
+  React.useEffect(() => {
+    setPulseBars(Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      height: Math.random() > 0.5 ? '24px' : '12px',
+      duration: `${0.8 + Math.random() * 0.5}s`,
+      opacity: 0.6 + Math.random() * 0.4
+    })));
+  }, []);
 
   return (
     <div className="w-full lg:sticky lg:top-8 animate-in fade-in slide-in-from-right-4 duration-700">
@@ -39,17 +51,19 @@ export const LivePreview = () => {
 
           {/* Audio Waveform Visualization */}
           <div className="relative z-10 h-16 flex items-center justify-center gap-1.5 mb-8">
-            {[...Array(12)].map((_, i) => (
-              <div
-                key={i}
-                className="w-1.5 bg-indigo-400/80 rounded-full animate-pulse"
-                style={{
-                  height: Math.random() > 0.5 ? '24px' : '12px',
-                  animationDuration: `${0.8 + Math.random() * 0.5}s`,
-                  opacity: 0.6 + Math.random() * 0.4
-                }}
-              />
-            ))}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1">
+              {pulseBars.map((bar) => (
+                <div
+                  key={bar.id}
+                  className="w-1.5 bg-indigo-400/80 rounded-full animate-pulse"
+                  style={{
+                    height: bar.height,
+                    animationDuration: bar.duration,
+                    opacity: bar.opacity
+                  }}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Live Transcript Bubble */}

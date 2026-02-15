@@ -19,8 +19,7 @@ import {
   Star,
   Brain,
   Package,
-  ShoppingBag,
-  MessageSquare
+  ShoppingBag
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -35,27 +34,7 @@ import { PAGE_PADDING } from '../../constants/layout';
 import SupportWidget from '../../components/SupportWidget';
 
 
-// --- DESIGN SYSTEM COLORS (Legacy constants for reference) ---
-// Note: These are now mapped to CSS variables in index.css
-const DS = {
-  // 60% White / Grayscale
-  white: 'var(--ds-white)',
-  surface: 'var(--ds-surface)',
-  offWhite: 'var(--ds-off-white)',
-  border: 'var(--ds-border)',
-
-  // 30% Charcoal / Slate
-  ink: 'var(--ds-ink)',
-  charcoal: 'var(--ds-charcoal)',
-  stone: 'var(--ds-stone)',
-  subtleText: 'var(--ds-subtle-text)',
-
-  // 10% Electric Blue
-  electric: 'var(--ds-electric)',
-  electricDark: 'var(--ds-electric-dark)',
-  electricLight: 'var(--ds-electric-light)',
-  electricTint: 'var(--ds-electric-tint)'
-};
+// 30% Charcoal / Slate
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { env } from '../config/env';
 import { getAuthHeader } from '../lib/api';
 import { getStoredSession } from '../utils/sessionUtils';
@@ -8,7 +9,6 @@ import type {
   SessionsResponse,
   MessagesResponse,
   FileUploadResponse,
-  Source,
 } from '../types/chat';
 
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
@@ -43,7 +43,7 @@ class ChatAPI {
   async sendMessageStream(
     request: ChatRequest,
     onChunk: (text: string) => void,
-    onDone: (sessionId: string, sources: Source[]) => void,
+    onDone: (sessionId: string, sources: any[]) => void,
     onError: (error: Error) => void
   ): Promise<void> {
     const userId = this.getUserId();

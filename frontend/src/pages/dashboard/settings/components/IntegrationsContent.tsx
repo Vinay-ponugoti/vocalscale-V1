@@ -63,7 +63,7 @@ const IntegrationsContent = () => {
         } finally {
             setLoading(false);
         }
-    }, [getAuthHeader]);
+    }, []);
 
     useEffect(() => {
         fetchStatus();

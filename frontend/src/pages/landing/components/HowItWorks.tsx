@@ -1,4 +1,4 @@
-import { Sparkles, Puzzle, ArrowRight, Phone, Calendar, Headphones, Zap } from 'lucide-react';
+import { Sparkles, Puzzle, Phone, Zap, Headphones, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect, useRef } from 'react';
 

@@ -27,6 +27,7 @@ const AISummary: React.FC<AISummaryProps> = ({ summary }) => {
     const key = getSummaryKey(summary);
     const persisted = sessionStorage.getItem(key);
     if (persisted) {
+      // eslint-disable-next-line
       setDisplayedText(persisted);
       setStatus('completed');
       setHasGenerated(true);

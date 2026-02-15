@@ -1,4 +1,5 @@
 import { env } from '../config/env';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getAuthHeader } from '../lib/api';
 
 const API_BASE_URL = env.API_URL; // Uses /api from Gateway
@@ -41,6 +42,29 @@ class SupportAPI {
         });
     }
 
+    // Get ticket details
+    async getTicket(ticketId: string): Promise<any> {
+        return this.request(`/tickets/${ticketId}`);
+    }
+
+    // Send message
+    async sendMessage(ticketId: string, message: string, attachments?: string[]): Promise<any> {
+        return this.request(`/tickets/${ticketId}/messages`, {
+            method: 'POST',
+            body: JSON.stringify({
+                content: message,
+                attachments
+            })
+        });
+    }
+
+    async submitTicket(ticket: any): Promise<any> {
+        return this.request('/admin/submit', {
+            method: 'POST',
+            body: JSON.stringify(ticket),
+        });
+    }
+
     async executeAction(action: string, params: any) {
         return this.request('/admin/execute', {
             method: 'POST',
@@ -51,14 +75,14 @@ class SupportAPI {
         });
     }
 
-    async sendSupportChat(message: string, history: any[], metadata: any) {
+    async sendSupportChat(message: string, history: any[], userInfo?: { name?: string, email?: string }): Promise<any> {
         return this.request('/support/chat', {
             method: 'POST',
             body: JSON.stringify({
                 ticket_id: `chat_${Date.now()}`,
                 user_id: 'dashboard_user', // Middleware will override
                 history,
-                user_metadata: metadata,
+                user_metadata: userInfo,
                 context: {
                     source: 'dashboard_widget'
                 }

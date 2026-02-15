@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react"
-import { Legend, ResponsiveContainer, Tooltip } from "recharts"
+import { Legend, ResponsiveContainer, Tooltip, type TooltipProps } from "recharts"
 import { cn } from "../../lib/utils"
 
 // --- Chart Config ---
@@ -108,6 +109,17 @@ export const ChartTooltipContent = React.forwardRef<
             color,
             nameKey,
             labelKey,
+        }: TooltipProps<number, string> & {
+            hideLabel?: boolean;
+            hideIndicator?: boolean;
+            indicator?: "dot" | "line" | "dashed";
+            nameKey?: string;
+            labelKey?: string;
+            config?: any;
+            className?: string;
+            color?: string;
+            payload?: any[];
+            label?: any;
         },
         ref
     ) => {

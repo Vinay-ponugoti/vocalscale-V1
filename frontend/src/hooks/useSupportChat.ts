@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supportApi } from '../api/support';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,7 +13,6 @@ export function useSupportChat() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-
     // Initial greeting
     useEffect(() => {
         if (isOpen && messages.length === 0) {
@@ -25,7 +24,8 @@ export function useSupportChat() {
                 }
             ]);
         }
-    }, [isOpen]);
+    }, [isOpen, messages.length]);
+
 
     const sendMessage = async (content: string) => {
         if (!content.trim()) return;

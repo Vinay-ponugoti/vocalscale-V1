@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 interface TurnstileWidgetProps {
     siteKey: string;
@@ -37,26 +38,7 @@ const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const [widgetId, setWidgetId] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!containerRef.current || !siteKey) return;
-
-        // Wait for turnstile to load with a 10 second timeout
-        const startTime = Date.now();
-        const interval = setInterval(() => {
-            if (window.turnstile) {
-                clearInterval(interval);
-                renderWidget();
-            } else if (Date.now() - startTime > 10000) {
-                clearInterval(interval);
-                console.error('Turnstile failed to load within 10 seconds');
-                if (onError) onError(new Error('Security verification failed to load. Please refresh the page.'));
-            }
-        }, 100);
-
-        return () => clearInterval(interval);
-    }, [siteKey]);
-
-    const renderWidget = () => {
+    const renderWidget = useCallback(() => {
         if (!window.turnstile || !containerRef.current) return;
 
         // If widget already exists, reset it
@@ -84,7 +66,26 @@ const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
         } catch (err) {
             console.error('Failed to render Turnstile:', err);
         }
-    };
+    }, [siteKey, theme, onVerify, onError, onExpire, widgetId]);
+
+    useEffect(() => {
+        if (!containerRef.current || !siteKey) return;
+
+        // Wait for turnstile to load with a 10 second timeout
+        const startTime = Date.now();
+        const interval = setInterval(() => {
+            if (window.turnstile) {
+                clearInterval(interval);
+                renderWidget();
+            } else if (Date.now() - startTime > 10000) {
+                clearInterval(interval);
+                console.error('Turnstile failed to load within 10 seconds');
+                if (onError) onError(new Error('Security verification failed to load. Please refresh the page.'));
+            }
+        }, 100);
+
+        return () => clearInterval(interval);
+    }, [siteKey, renderWidget, onError]);
 
     return <div ref={containerRef} className="w-full flex justify-center my-4" />;
 };

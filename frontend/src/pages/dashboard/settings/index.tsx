@@ -113,19 +113,18 @@ const Settings = () => {
         let bookingEmailEnabled = true; // default ON
 
         if (businessSetup.urgent_call_rules) {
-          const urgentRule = businessSetup.urgent_call_rules.find((r: any) => r.rule_type === 'urgent');
+          const urgentRule = businessSetup.urgent_call_rules.find((r: { rule_type: string; is_enabled?: boolean; transfer_number?: string }) => r.rule_type === 'urgent');
           if (urgentRule) {
             urgentTransferEnabled = urgentRule.is_enabled ?? false;
             urgentTransferNumber = urgentRule.transfer_number || '';
           }
 
-          const standardRule = businessSetup.urgent_call_rules.find((r: any) => r.rule_type === 'standard');
+          const standardRule = businessSetup.urgent_call_rules.find((r: { rule_type: string; is_enabled?: boolean; transfer_number?: string }) => r.rule_type === 'standard');
           if (standardRule) {
             standardTransferEnabled = standardRule.is_enabled ?? false;
             standardTransferNumber = standardRule.transfer_number || '';
           }
-
-          const bookingEmailRule = businessSetup.urgent_call_rules.find((r: any) => r.rule_type === 'booking_email');
+          const bookingEmailRule = businessSetup.urgent_call_rules.find((r: { rule_type: string; is_enabled?: boolean }) => r.rule_type === 'booking_email');
           if (bookingEmailRule) {
             bookingEmailEnabled = bookingEmailRule.is_enabled ?? true;
           }

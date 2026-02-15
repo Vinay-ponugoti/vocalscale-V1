@@ -140,7 +140,7 @@ const Login = () => {
       // We check the health endpoint instead of the OAuth URL (which redirects to Google)
       try {
         const supabaseOrigin = new URL(url).origin;
-        const healthCheck = await Promise.race([
+        await Promise.race([
           fetch(`${supabaseOrigin}/auth/v1/health`, { method: 'GET', mode: 'cors' }),
           new Promise<never>((_, reject) =>
             setTimeout(() => reject(new Error('timeout')), 8000)

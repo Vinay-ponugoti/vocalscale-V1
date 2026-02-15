@@ -16,8 +16,11 @@ export const WebVitalsTracking = () => {
     // First Input Delay (FID)
     const fidObserver = new PerformanceObserver((entryList) => {
       entryList.getEntries().forEach((entry) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const fidEntry = entry as any;
-        metrics.trackWebVitals('FID', (fidEntry.processingStart - fidEntry.startTime) / 1000);
+        if (fidEntry.processingStart) {
+          metrics.trackWebVitals('FID', (fidEntry.processingStart - fidEntry.startTime) / 1000);
+        }
       });
     });
     fidObserver.observe({ type: 'first-input', buffered: true });
@@ -26,6 +29,7 @@ export const WebVitalsTracking = () => {
     let clsValue = 0;
     const clsObserver = new PerformanceObserver((entryList) => {
       for (const entry of entryList.getEntries()) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const clsEntry = entry as any;
         if (!clsEntry.hadRecentInput) {
           clsValue += clsEntry.value;

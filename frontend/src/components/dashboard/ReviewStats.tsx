@@ -11,7 +11,6 @@ import {
 import { Badge } from '../ui/Badge';
 import {
   Tooltip,
-  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,

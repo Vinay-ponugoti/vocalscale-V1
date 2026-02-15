@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { User, Sparkles, Copy, Check, ThumbsUp, ThumbsDown, Share, RotateCcw, MoreHorizontal, Pencil, FileText, Brain } from 'lucide-react';
+import { User, Sparkles, Copy, Check, ThumbsUp, ThumbsDown, Share, RotateCcw, Pencil, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { ChatMessage as ChatMessageType, Source } from '../../../../types/chat';

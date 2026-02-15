@@ -51,7 +51,7 @@ interface InventoryItem {
     stock_status: string;
     sku: string;
     size: string;
-    details: any;
+    details: Record<string, unknown>;
 }
 
 type SortField = 'name' | 'price' | 'stock_status' | 'sub_category';
@@ -210,7 +210,7 @@ const Inventory = () => {
 
     // ---------- Computed data ----------
     const filteredItems = useMemo(() => {
-        let result = items.filter(item =>
+        const result = items.filter(item =>
             item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.sub_category?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -632,11 +632,10 @@ const Inventory = () => {
                                                     <button
                                                         key={page}
                                                         onClick={() => setCurrentPage(page as number)}
-                                                        className={`min-w-[28px] h-7 rounded-lg text-xs font-medium transition-colors ${
-                                                            currentPage === page
+                                                        className={`min-w-[28px] h-7 rounded-lg text-xs font-medium transition-colors ${currentPage === page
                                                                 ? 'bg-indigo-600 text-white shadow-sm'
                                                                 : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {page}
                                                     </button>
@@ -712,16 +711,15 @@ const Inventory = () => {
                                 return (
                                     <div key={file.id} className="px-6 py-3 flex items-center gap-3 hover:bg-slate-50/50 transition-colors group">
                                         {/* File Icon */}
-                                        <div className={`p-2 rounded-lg shrink-0 ${
-                                            isSpreadsheet ? 'bg-green-50' :
-                                            isPdf ? 'bg-red-50' :
-                                            isImage ? 'bg-purple-50' :
-                                            'bg-blue-50'
-                                        }`}>
+                                        <div className={`p-2 rounded-lg shrink-0 ${isSpreadsheet ? 'bg-green-50' :
+                                                isPdf ? 'bg-red-50' :
+                                                    isImage ? 'bg-purple-50' :
+                                                        'bg-blue-50'
+                                            }`}>
                                             {isSpreadsheet ? <FileSpreadsheet size={16} className="text-green-600" /> :
-                                             isPdf ? <FileText size={16} className="text-red-600" /> :
-                                             isImage ? <Image size={16} className="text-purple-600" /> :
-                                             <FileText size={16} className="text-blue-600" />}
+                                                isPdf ? <FileText size={16} className="text-red-600" /> :
+                                                    isImage ? <Image size={16} className="text-purple-600" /> :
+                                                        <FileText size={16} className="text-blue-600" />}
                                         </div>
 
                                         {/* File Info */}
@@ -745,22 +743,20 @@ const Inventory = () => {
                                         </div>
 
                                         {/* Status Badge */}
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${
-                                            file.status === 'COMPLETED' ? 'bg-green-50 text-green-700 ring-1 ring-green-100' :
-                                            file.status === 'PROCESSING' ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-100' :
-                                            file.status === 'PENDING' ? 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-100' :
-                                            'bg-red-50 text-red-700 ring-1 ring-red-100'
-                                        }`}>
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${file.status === 'COMPLETED' ? 'bg-green-50 text-green-700 ring-1 ring-green-100' :
+                                                file.status === 'PROCESSING' ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-100' :
+                                                    file.status === 'PENDING' ? 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-100' :
+                                                        'bg-red-50 text-red-700 ring-1 ring-red-100'
+                                            }`}>
                                             {file.status === 'PROCESSING' && <Loader2 size={10} className="animate-spin" />}
-                                            <span className={`w-1.5 h-1.5 rounded-full ${
-                                                file.status === 'COMPLETED' ? 'bg-green-500' :
-                                                file.status === 'PROCESSING' ? 'bg-blue-500' :
-                                                file.status === 'PENDING' ? 'bg-yellow-500' :
-                                                'bg-red-500'
-                                            }`} />
+                                            <span className={`w-1.5 h-1.5 rounded-full ${file.status === 'COMPLETED' ? 'bg-green-500' :
+                                                    file.status === 'PROCESSING' ? 'bg-blue-500' :
+                                                        file.status === 'PENDING' ? 'bg-yellow-500' :
+                                                            'bg-red-500'
+                                                }`} />
                                             {file.status === 'COMPLETED' ? 'Trained' :
-                                             file.status === 'PROCESSING' ? 'Processing' :
-                                             file.status === 'PENDING' ? 'Pending' : 'Failed'}
+                                                file.status === 'PROCESSING' ? 'Processing' :
+                                                    file.status === 'PENDING' ? 'Pending' : 'Failed'}
                                         </span>
 
                                         {/* Delete */}

@@ -51,7 +51,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   const [quality, setQuality] = useState<AudioQuality | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [permissionStatus, setPermissionStatus] = useState<'prompt' | 'granted' | 'denied' | 'unknown'>('unknown');
-  
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -61,16 +61,15 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   const startTimeRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Check microphone permission on mount
-  useEffect(() => {
-    checkMicrophonePermission();
-  }, []);
+
+
+
 
   const checkMicrophonePermission = useCallback(async () => {
     try {
       const status = await navigator.permissions.query({ name: 'microphone' as PermissionName });
       setPermissionStatus(status.state as 'prompt' | 'granted' | 'denied');
-      
+
       status.addEventListener('change', () => {
         setPermissionStatus(status.state as 'prompt' | 'granted' | 'denied');
       });
@@ -80,16 +79,21 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     }
   }, []);
 
+  // Check microphone permission on mount
+  useEffect(() => {
+    checkMicrophonePermission();
+  }, [checkMicrophonePermission]);
+
   const initializeAudioContext = (stream: MediaStream) => {
     try {
       const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       audioContextRef.current = new AudioContextClass();
       analyserRef.current = audioContextRef.current.createAnalyser();
       analyserRef.current.fftSize = 256;
-      
+
       const source = audioContextRef.current.createMediaStreamSource(stream);
       source.connect(analyserRef.current);
-      
+
       return true;
     } catch (error) {
       console.error('Failed to initialize audio context:', error);
@@ -103,7 +107,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         score: 0,
         level: 'poor',
         issues: duration < minDuration ? ['Recording too short'] : ['No audio data'],
-        recommendations: duration < minDuration 
+        recommendations: duration < minDuration
           ? [`Record at least ${minDuration} seconds`]
           : ['Check your microphone']
       });
@@ -189,13 +193,13 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     // Calculate audio levels
     let sum = 0;
     let peak = 0;
-    
+
     for (let i = 0; i < dataArray.length; i++) {
       const value = dataArray[i];
       sum += value;
       peak = Math.max(peak, value);
     }
-    
+
     const average = sum / dataArray.length;
     const rms = Math.sqrt(sum / dataArray.length);
 
@@ -209,7 +213,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     if (startTimeRef.current) {
       const currentDuration = (Date.now() - startTimeRef.current) / 1000;
       setDuration(currentDuration);
-      
+
       // Auto-stop if exceeds max duration
       if (currentDuration >= maxDuration) {
         stopRecording();
@@ -222,7 +226,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   const startRecording = useCallback(async () => {
     try {
       setError(null);
-      
+
       // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -235,7 +239,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       });
 
       streamRef.current = stream;
-      
+
       // Initialize audio analysis
       if (!initializeAudioContext(stream)) {
         throw new Error('Failed to initialize audio analysis');
@@ -255,7 +259,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
         chunksRef.current = [];
-        
+
         const metadata: RecordingMetadata = {
           duration: duration,
           sampleRate: audioContextRef.current?.sampleRate || 44100,
@@ -265,18 +269,18 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
           timestamp: Date.now(),
           quality: quality || undefined
         };
-        
+
         onRecordingComplete(audioBlob, metadata);
       };
 
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
       startTimeRef.current = Date.now();
-      
+
       mediaRecorder.start();
       setIsRecording(true);
       setDuration(0);
-      
+
       // Start audio level analysis
       analyzeAudioLevels();
 
@@ -313,7 +317,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.pause();
       setIsPaused(true);
-      
+
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -377,10 +381,9 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
         {/* Duration Bar */}
         <div className="w-full bg-white-light rounded-full h-2 mb-4">
-          <div 
-            className={`h-2 rounded-full transition-all duration-300 ${
-              duration < minDuration ? 'bg-yellow-500' : 'bg-green-500'
-            }`}
+          <div
+            className={`h-2 rounded-full transition-all duration-300 ${duration < minDuration ? 'bg-yellow-500' : 'bg-green-500'
+              }`}
             style={{ width: `${Math.min((duration / maxDuration) * 100, 100)}%` }}
           />
         </div>
@@ -391,11 +394,10 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             <div className="text-xs text-charcoal-medium mb-1">Audio Levels</div>
             <div className="flex items-center space-x-2">
               <div className="flex-1 bg-white-light rounded-full h-4 overflow-hidden">
-                <div 
-                  className={`h-full transition-all duration-100 ${
-                    audioLevels.peak > 0.9 ? 'bg-red-500' : 
+                <div
+                  className={`h-full transition-all duration-100 ${audioLevels.peak > 0.9 ? 'bg-red-500' :
                     audioLevels.peak > 0.7 ? 'bg-yellow-500' : 'bg-green-500'
-                  }`}
+                    }`}
                   style={{ width: `${audioLevels.peak * 100}%` }}
                 />
               </div>
@@ -408,11 +410,10 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
         {/* Quality Assessment */}
         {quality && (
-          <div className={`mb-4 p-3 rounded-lg border ${
-            quality.level === 'excellent' || quality.level === 'good' 
-              ? 'bg-green-50 border-green-200' 
-              : 'bg-yellow-50 border-yellow-200'
-          }`}>
+          <div className={`mb-4 p-3 rounded-lg border ${quality.level === 'excellent' || quality.level === 'good'
+            ? 'bg-green-50 border-green-200'
+            : 'bg-yellow-50 border-yellow-200'
+            }`}>
             <div className="flex items-center space-x-2 mb-2">
               {getQualityIcon()}
               <span className={`font-medium ${getQualityColor()}`}>
@@ -422,7 +423,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                 ({quality.score}/100)
               </span>
             </div>
-            
+
             {quality.issues.length > 0 && (
               <div className="text-sm text-charcoal-medium">
                 <div className="font-medium mb-1">Issues:</div>
@@ -452,15 +453,14 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         <button
           onClick={toggleRecording}
           disabled={disabled}
-          className={`relative inline-flex items-center justify-center w-16 h-16 rounded-full transition-all duration-200 ${
-            disabled 
-              ? 'bg-charcoal-light cursor-not-allowed' 
-              : isRecording 
-                ? isPaused 
-                  ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
-                  : 'bg-red-500 hover:bg-red-600 text-white'
-                : 'bg-blue-electric hover:bg-blue-dark text-white'
-          }`}
+          className={`relative inline-flex items-center justify-center w-16 h-16 rounded-full transition-all duration-200 ${disabled
+            ? 'bg-charcoal-light cursor-not-allowed'
+            : isRecording
+              ? isPaused
+                ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                : 'bg-red-500 hover:bg-red-600 text-white'
+              : 'bg-blue-electric hover:bg-blue-dark text-white'
+            }`}
         >
           {isRecording ? (
             isPaused ? (

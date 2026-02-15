@@ -4,60 +4,15 @@ import { businessSetupAPI } from '../api/businessSetup';
 import { useAuth } from './AuthContext';
 
 // Import types directly inline to avoid module issues
-interface BusinessDetails {
-  id?: string;
-  user_id?: string;
-  business_name: string;
-  category?: string;
-  phone?: string;
-  address?: string;
-  description?: string;
-  email?: string;
-  website?: string;
-  timezone?: string;
-  place_id?: string;
-  rating?: number;
-  auto_setup?: boolean;
-  image_url?: string;
-  user_ratings_total?: number;
-}
+import type {
+  BusinessDetails,
+  BusinessHour,
+  Service,
+  UrgentCallRule,
+  BookingRequirement,
+  BusinessSetupData
+} from '../types/business';
 
-interface BusinessHour {
-  id?: string;
-  day_of_week: string;
-  open_time?: string;
-  close_time?: string;
-  enabled: boolean;
-}
-
-interface Service {
-  id?: string;
-  name: string;
-  price?: number;
-  description?: string;
-}
-
-interface UrgentCallRule {
-  id?: string;
-  condition_text: string;
-  action: string;
-  contact?: string;
-}
-
-interface BookingRequirement {
-  id?: string;
-  field_name: string;
-  required: boolean;
-  field_type: string;
-}
-
-interface BusinessSetupData {
-  business: BusinessDetails;
-  business_hours?: BusinessHour[];
-  services?: Service[];
-  urgent_call_rules?: UrgentCallRule[];
-  booking_requirements?: BookingRequirement[];
-}
 
 interface BusinessSetupState {
   data: BusinessSetupData;
@@ -223,10 +178,9 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
       showToast?.(errorMessage, 'error');
       return false;
 
-    } finally {
       dispatch({ type: 'SET_SAVING', payload: false });
     }
-  }, []);
+  }, [refreshProfile, updateProfile]);
 
   const updateBusiness = useCallback((data: Partial<BusinessDetails>) => {
     dispatch({ type: 'UPDATE_BUSINESS', payload: data });
@@ -317,6 +271,7 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useBusinessSetup = () => {
   const context = useContext(BusinessSetupContext);
   if (context === undefined) {

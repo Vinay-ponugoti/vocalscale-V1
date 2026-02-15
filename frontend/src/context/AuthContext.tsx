@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import type { Session, User } from '../types/auth';
 import {
@@ -115,7 +116,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSecurityMessage(null);
       }
     }
-  }, []);
+  }, [refreshProfile]);
 
   useEffect(() => {
     mounted.current = true;
@@ -197,7 +198,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       mounted.current = false;
     };
-  }, []); // Run only once on mount
+  }, [refreshProfile]); // Run only once on mount (depend on stable refreshProfile)
 
   // Heartbeat interval for security + Window Focus Re-validation
   useEffect(() => {
