@@ -1,4 +1,4 @@
-import { Twitter, Linkedin, Github, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function Footer() {
@@ -39,22 +39,7 @@ export function Footer() {
             <p className="text-slate-500 mb-8 text-sm leading-relaxed font-medium">
               Empowering small businesses with human-like AI voice technology. The future of customer interaction is here.
             </p>
-            <div className="flex gap-3">
-              {[
-                { Icon: Twitter, label: 'Twitter' },
-                { Icon: Linkedin, label: 'LinkedIn' },
-                { Icon: Github, label: 'GitHub' },
-              ].map(({ Icon, label }) => (
-                <a
-                  key={label}
-                  href="#"
-                  aria-label={label}
-                  className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all"
-                >
-                  <Icon size={16} />
-                </a>
-              ))}
-            </div>
+
           </div>
 
           {/* Links */}
