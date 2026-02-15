@@ -141,5 +141,54 @@ export const blogPosts: BlogPost[] = [
         tags: ["Customer Service", "Performance", "Study"],
         slug: "ai-vs-human-receptionists-performance",
         image: "/api/placeholder/800/400"
+    },
+    {
+        id: "6",
+        title: "Product Improvements",
+        excerpt: "New filters, Twilio call-to-action templates, and screen capture support.",
+        content: `
+      <p>The new filters are available on paid plans, on both Cloud and self-hosted deployments.</p>
+      
+      <h3>Other Improvements</h3>
+      <ul>
+        <li>Added call-to-action template support for Twilio. You can now send WhatsApp templates with CTA buttons through Twilio.</li>
+        <li>Added support for pasting screenshots and files directly in the new conversation modal, similar to the reply editor.</li>
+        <li>Fixed the SDK to correctly respect the enableFileUpload flag when explicitly set, instead of overriding it with inbox defaults.</li>
+        <li>Fixed contact form buttons being cut off on mobile web.</li>
+        <li>Fixed an issue where invalid attachments in the clipboard could block normal text paste.</li>
+        <li>Fixed orphaned inbox members causing errors in the widget API.</li>
+        <li>Improved handling of empty custom attributes in settings.</li>
+      </ul>
+      <p>Thanks to everyone reporting issues and sharing feedback.</p>
+    `,
+        author: {
+            name: "VocalScale Team",
+            role: "Product",
+            avatar: "/api/placeholder/100/100"
+        },
+        date: "2026-02-02",
+        readTime: "3 min read",
+        tags: ["Product Updates"],
+        slug: "product-improvements-feb-2026",
+        image: "/api/placeholder/800/400"
+    },
+    {
+        id: "7",
+        title: "Captain AI Credits and Billing",
+        excerpt: "Clearer billing controls for Captain AI usage.",
+        content: `
+      <p>This release introduces clearer billing controls for Captain. The goal is simple: make AI usage easier to understand and easier to manage as teams scale.</p>
+      <p>Captain uses AI credits to measure usage. Credits are consumed only when Captain helps you resolve conversations or generate content.</p>
+    `,
+        author: {
+            name: "Pranav Raj S",
+            role: "Founder",
+            avatar: "/api/placeholder/100/100"
+        },
+        date: "2025-12-19",
+        readTime: "2 min read",
+        tags: ["Product Updates"],
+        slug: "captain-ai-credits-billing",
+        image: "/api/placeholder/800/400"
     }
 ];
