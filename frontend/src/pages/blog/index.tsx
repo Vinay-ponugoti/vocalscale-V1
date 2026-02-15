@@ -1,293 +1,223 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, ArrowRight, Tag, Sparkles } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, Sparkles, Search, Filter } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
 import { SEO } from '../../components/SEO';
-
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  date: string;
-  readTime: string;
-  tags: string[];
-  slug: string;
-  image: string;
-}
-
-const blogPosts: BlogPost[] = [
-  {
-    id: "1",
-    title: "How AI Receptionists Are Transforming Healthcare Practices in 2024",
-    excerpt: "Discover how medical practices are reducing missed calls by 85% and saving $50,000+ annually with AI receptionist technology.",
-    content: "Full article content here...",
-    author: "Dr. Sarah Johnson",
-    date: "2024-01-15",
-    readTime: "8 min read",
-    tags: ["Healthcare", "AI", "Medical Practice"],
-    slug: "ai-receptionists-healthcare-2024",
-    image: "/api/placeholder/800/400"
-  },
-  {
-    id: "2",
-    title: "The ROI of AI Receptionists: A Complete Cost-Benefit Analysis",
-    excerpt: "Comprehensive analysis showing how businesses save 70% on reception costs while improving customer satisfaction scores.",
-    content: "Full article content here...",
-    author: "Michael Chen",
-    date: "2024-01-10",
-    readTime: "12 min read",
-    tags: ["ROI", "Cost Analysis", "Business"],
-    slug: "roi-ai-receptionists-complete-analysis",
-    image: "/api/placeholder/800/400"
-  },
-  {
-    id: "3",
-    title: "Legal Firms: Never Miss a Potential Client Call Again",
-    excerpt: "How law firms are using AI receptionists to capture 40% more leads and provide 24/7 client intake without hiring additional staff.",
-    content: "Full article content here...",
-    author: "Jennifer Martinez",
-    date: "2024-01-08",
-    readTime: "10 min read",
-    tags: ["Legal", "Lead Generation", "Client Intake"],
-    slug: "legal-firms-never-miss-calls",
-    image: "/api/placeholder/800/400"
-  },
-  {
-    id: "4",
-    title: "Small Business Guide: Implementing AI Receptionists in 30 Days",
-    excerpt: "Step-by-step guide for small businesses to deploy AI receptionist technology quickly and effectively.",
-    content: "Full article content here...",
-    author: "David Thompson",
-    date: "2024-01-05",
-    readTime: "15 min read",
-    tags: ["Small Business", "Implementation", "Guide"],
-    slug: "small-business-ai-receptionist-guide",
-    image: "/api/placeholder/800/400"
-  },
-  {
-    id: "5",
-    title: "Customer Service Revolution: AI vs Human Receptionists Performance Study",
-    excerpt: "Data-driven comparison of AI receptionists vs human staff across 500+ businesses showing surprising results.",
-    content: "Full article content here...",
-    author: "Lisa Anderson",
-    date: "2024-01-03",
-    readTime: "11 min read",
-    tags: ["Customer Service", "Performance", "Study"],
-    slug: "ai-vs-human-receptionists-performance",
-    image: "/api/placeholder/800/400"
-  }
-];
+import { blogPosts } from '../../data/blog-posts';
 
 export default function BlogIndex() {
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Extract unique categories
+  const categories = ['All', ...Array.from(new Set(blogPosts.flatMap(post => post.tags)))];
+
+  // Filter posts based on search and category
+  const filteredPosts = blogPosts.filter(post => {
+    const matchesCategory = activeCategory === 'All' || post.tags.includes(activeCategory);
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const featuredPost = blogPosts.find(p => p.featured) || blogPosts[0];
+  const regularPosts = filteredPosts.filter(p => p.id !== featuredPost.id);
+
   return (
-    <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900 flex flex-col relative overflow-hidden font-sans">
       <SEO
         title="VocalScale Blog | AI Receptionist Insights"
         description="Latest news, tips, and insights on AI receptionists, business automation, and customer service trends."
         canonical="https://www.vocalscale.com/blog"
       />
-      {/* Background Effects - "Luminous Enterprise" */}
+
+      {/* Background Effects */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        {/* Soft Modern Gradients */}
-        <motion.div
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.4, 0.3],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] bg-blue-200/40 blur-[120px] rounded-full mix-blend-multiply"
-        />
-        <motion.div
-          animate={{
-            x: [0, -50, 0],
-            y: [0, -30, 0],
-            scale: [1.1, 1, 1.1],
-            opacity: [0.3, 0.4, 0.3],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-200/40 blur-[120px] rounded-full mix-blend-multiply"
-        />
-
-        {/* Subtle Grid Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-
-        {/* White fade at bottom to blend content */}
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-slate-50 to-transparent" />
       </div>
 
-      <div className="relative z-10 flex flex-col">
+      <div className="relative z-10 flex flex-col w-full">
         <Header />
 
         {/* Hero Section */}
-        <section className="pt-32 pb-16 px-6 md:px-8 relative">
-          <div className="max-w-7xl mx-auto text-center">
+        <section className="pt-32 pb-12 px-6 md:px-8 relative bg-white border-b border-slate-100">
+          <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8 shadow-sm"
+              className="max-w-3xl"
             >
-              <Sparkles className="h-4 w-4 text-blue-600 fill-blue-600/20" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">Insights & Updates</span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-[-0.03em] text-slate-900 mb-6 leading-tight">
+                Insights for the <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Modern Practice</span>
+              </h1>
+              <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed mb-8">
+                Discover strategies, success stories, and the latest in AI technology designed to transform how you handle patient communication.
+              </p>
             </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
-            >
-              VocalScale <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 italic tracking-tight">Blog</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed mb-8"
-            >
-              Discover insights, strategies, and success stories about AI receptionist technology
-              and how it's transforming businesses across industries.
-            </motion.p>
-          </div>
-        </section>
-
-        {/* Blog Posts Grid */}
-        <section className="pb-24 px-6 md:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogPosts.map((post, index) => (
-                <motion.article
-                  key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  className="bg-white/60 backdrop-blur-sm rounded-[2rem] border border-slate-200 overflow-hidden hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 group flex flex-col h-full"
-                >
-                  {/* Image Placeholder */}
-                  <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-grid-slate-900/[0.05] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
-                    <div className="text-center relative z-10 p-6">
-                      <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform duration-500 text-blue-600">
-                        <Tag className="w-8 h-8" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 md:p-8 flex flex-col flex-grow">
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-black uppercase tracking-wider rounded-full border border-blue-100"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Title */}
-                    <h2 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
-                      <Link to={`/blog/${post.slug}`}>
-                        {post.title}
-                      </Link>
-                    </h2>
-
-                    {/* Excerpt */}
-                    <p className="text-slate-600 text-sm leading-relaxed mb-6 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-
-                    <div className="mt-auto pt-6 border-t border-slate-100/50">
-                      {/* Meta */}
-                      <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-4">
-                        <div className="flex items-center">
-                          <Calendar className="w-3 h-3 mr-1.5" />
-                          {new Date(post.date).toLocaleDateString()}
-                        </div>
-                        <div className="flex items-center">
-                          <Clock className="w-3 h-3 mr-1.5" />
-                          {post.readTime}
-                        </div>
-                      </div>
-
-                      {/* Author */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-slate-700">
-                          By {post.author}
-                        </span>
-                        <Link
-                          to={`/blog/${post.slug}`}
-                          className="inline-flex items-center text-blue-600 hover:text-blue-700 text-xs font-black uppercase tracking-wider group/link"
-                        >
-                          Read Article
-                          <ArrowRight className="w-3 h-3 ml-1 transition-transform group-hover/link:translate-x-1" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </motion.article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 md:py-32 relative overflow-hidden">
-          <div className="absolute inset-0 bg-slate-900 text-white z-0">
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] opacity-20" />
-          </div>
-
-          <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-3xl md:text-5xl font-black tracking-tight text-white mb-6"
-            >
-              Ready to Transform Your Business?
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed"
-            >
-              Join thousands of businesses already using AI receptionists to handle calls 24/7 with zero missed opportunities.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <Link
-                to="/signup"
-                className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:-translate-y-1 active:scale-95"
+            {/* Featured Post Card (Hero) */}
+            {activeCategory === 'All' && !searchQuery && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mt-12 group relative overflow-hidden rounded-3xl bg-slate-900 text-white shadow-2xl"
               >
-                Start Free Trial
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </motion.div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 mix-blend-overlay z-0" />
+                <div className="grid md:grid-cols-2 gap-8 md:gap-12 relative z-10">
+                  <div className="p-8 md:p-12 flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-6">
+                      <span className="px-3 py-1 bg-blue-500/20 text-blue-200 text-xs font-bold uppercase tracking-wider rounded-full border border-blue-500/30 backdrop-blur-md">
+                        Featured Article
+                      </span>
+                      <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                        {featuredPost.readTime}
+                      </span>
+                    </div>
+                    <Link to={`/blog/${featuredPost.slug}`} className="block group-hover:text-blue-200 transition-colors duration-300">
+                      <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                        {featuredPost.title}
+                      </h2>
+                    </Link>
+                    <p className="text-slate-300 text-lg mb-8 line-clamp-3">
+                      {featuredPost.excerpt}
+                    </p>
+                    <div className="flex items-center justify-between mt-auto">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-slate-700" />
+                        <div>
+                          <p className="text-sm font-bold text-white">{featuredPost.author.name}</p>
+                          <p className="text-xs text-slate-400">{new Date(featuredPost.date).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <Link
+                        to={`/blog/${featuredPost.slug}`}
+                        className="px-6 py-3 bg-white text-slate-900 rounded-full font-bold text-sm hover:bg-blue-50 transition-colors flex items-center gap-2"
+                      >
+                        Read Article <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="min-h-[300px] md:min-h-full bg-slate-800 relative overflow-hidden">
+                    {/* Image Placeholder */}
+                    <div className="absolute inset-0 flex items-center justify-center text-slate-700 bg-slate-800">
+                      <Sparkles className="w-24 h-24 opacity-10" />
+                    </div>
+                    {/* In production, use standard img tag: <img src={featuredPost.image} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" /> */}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </section>
+
+        {/* Filters & Grid */}
+        <section className="py-12 px-6 md:px-8 bg-slate-50">
+          <div className="max-w-7xl mx-auto">
+
+            {/* Controls */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+              {/* Search */}
+              <div className="relative w-full md:w-96">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow shadow-sm"
+                />
+              </div>
+
+              {/* Categories */}
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${activeCategory === cat
+                        ? 'bg-slate-900 text-white shadow-md transform scale-105'
+                        : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                      }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Grid */}
+            {regularPosts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {regularPosts.map((post, index) => (
+                  <motion.article
+                    key={post.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                    className="group bg-white rounded-3xl border border-slate-100 overflow-hidden hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 hover:-translate-y-1 flex flex-col h-full"
+                  >
+                    {/* Image */}
+                    <div className="h-56 bg-slate-100 relative overflow-hidden group-hover:opacity-90 transition-opacity">
+                      {/* Placeholder */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Filter className="w-12 h-12 text-slate-300" />
+                      </div>
+                    </div>
+
+                    <div className="p-8 flex flex-col flex-grow">
+                      <div className="flex gap-2 mb-4">
+                        {post.tags.slice(0, 2).map(tag => (
+                          <span key={tag} className="text-[10px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <Link to={`/blog/${post.slug}`}>
+                        <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+                          {post.title}
+                        </h3>
+                      </Link>
+
+                      <p className="text-slate-600 text-sm leading-relaxed mb-6 line-clamp-3">
+                        {post.excerpt}
+                      </p>
+
+                      <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between text-xs font-semibold text-slate-500">
+                        <div className="flex items-center gap-2">
+                          <span>{post.author.name}</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(post.date).toLocaleDateString()}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {post.readTime}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.article>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-24">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-slate-400" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">No articles found</h3>
+                <p className="text-slate-500">Try adjusting your search or category filter.</p>
+              </div>
+            )}
           </div>
         </section>
 
