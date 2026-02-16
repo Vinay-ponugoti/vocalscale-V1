@@ -1,32 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { ordersApi, type Order, type OrderStats } from '../../../api/orders';
-import { Card, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import Input from '@/components/ui/InputField';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/Select';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetFooter,
-  SheetClose,
-} from '@/components/ui/sheet';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   ShoppingBag,
   Search,
@@ -44,327 +18,260 @@ import {
   AlertCircle,
   DollarSign,
   MessageSquare,
-  Hash,
   Eye,
-  TrendingUp,
+  X,
+  Hash,
   Calendar,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { cn } from '@/lib/utils';
 
 const PAGE_SIZE = 20;
 
 type OrderStatus = 'pending' | 'confirmed';
 
-// --- Types ---
 interface OrderWithMeta extends Order {
   totalAmount: number;
 }
 
-// --- Enhanced Status Config ---
+// --- Status config ---
 const statusConfig = {
   pending: {
     label: 'Pending',
-    variant: 'warning' as const,
-    icon: Clock,
-    color: 'text-amber-700',
-    bg: 'bg-gradient-to-br from-amber-50 to-amber-100/50',
-    border: 'border-amber-300',
-    iconBg: 'bg-amber-100',
-    iconColor: 'text-amber-600',
+    dotColor: 'bg-amber-500',
+    pillBg: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
   },
   confirmed: {
     label: 'Confirmed',
-    variant: 'success' as const,
-    icon: CheckCircle,
-    color: 'text-emerald-700',
-    bg: 'bg-gradient-to-br from-emerald-50 to-emerald-100/50',
-    border: 'border-emerald-300',
-    iconBg: 'bg-emerald-100',
-    iconColor: 'text-emerald-600',
+    dotColor: 'bg-green-500',
+    pillBg: 'bg-green-50 text-green-700 ring-1 ring-green-100',
   },
 };
 
-// --- Enhanced Status Badge ---
+// --- Status Badge (matches Inventory stock badges) ---
 const StatusBadge = ({ status }: { status: OrderStatus }) => {
   const config = statusConfig[status];
-  const Icon = config.icon;
-
   return (
-    <Badge
-      variant={config.variant}
-      className={cn(
-        'gap-1.5 font-semibold border-2 px-3 py-1 shadow-sm',
-        config.bg,
-        config.color,
-        config.border,
-      )}
-    >
-      <Icon className="h-3.5 w-3.5" />
+    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold ${config.pillBg}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${config.dotColor}`} />
       {config.label}
-    </Badge>
+    </span>
   );
 };
 
-// --- Enhanced Stat Card ---
-const StatCard = ({
-  title,
-  value,
-  description,
-  icon: Icon,
-  gradient,
-  iconColor,
-  accentColor,
-}: {
-  title: string;
-  value: string | number;
-  description: string;
-  icon: React.ElementType;
-  gradient: string;
-  iconColor: string;
-  accentColor: string;
-}) => (
-  <Card className={cn(
-    'relative overflow-hidden border-2 transition-all hover:shadow-lg hover:-translate-y-1',
-    accentColor
-  )}>
-    <div className={cn('absolute inset-0 opacity-5', gradient)} />
-    <CardContent className="p-6 relative">
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{title}</p>
-          <p className="text-4xl font-bold tracking-tight">{value}</p>
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <TrendingUp className="h-3 w-3" />
-            {description}
-          </p>
-        </div>
-        <div className={cn(
-          'h-14 w-14 rounded-xl flex items-center justify-center shadow-lg',
-          gradient
-        )}>
-          <Icon className={cn('h-7 w-7', iconColor)} />
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-);
-
-// --- Enhanced Order Detail Sheet ---
-const OrderDetailSheet = ({
+// --- Order Detail Slide-over ---
+const OrderDetailPanel = ({
   order,
   open,
-  onOpenChange,
+  onClose,
   onStatusChange,
   updating,
 }: {
   order: OrderWithMeta | null;
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onClose: () => void;
   onStatusChange: (id: string, status: OrderStatus) => void;
   updating: boolean;
 }) => {
-  if (!order) return null;
+  if (!order || !open) return null;
 
   const nextStatus = order.status === 'confirmed' ? 'pending' : 'confirmed';
   const actionLabel = order.status === 'confirmed' ? 'Mark as Pending' : 'Confirm Order';
-  const ActionIcon = order.status === 'confirmed' ? Clock : CheckCircle;
-
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-lg flex flex-col">
-        <SheetHeader className="space-y-3 pb-4 border-b-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <SheetTitle className="text-2xl font-bold">Order Details</SheetTitle>
-              <SheetDescription className="font-mono text-sm font-semibold text-primary mt-1">
-                #{order.id.slice(0, 8).toUpperCase()}
-              </SheetDescription>
-            </div>
-            <StatusBadge status={order.status} />
-          </div>
-        </SheetHeader>
+    <div className="fixed inset-0 z-50">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
 
-        <ScrollArea className="flex-1 -mx-6 px-6 py-6">
-          <div className="space-y-6">
-            {/* Amount & Timeline */}
-            <div className="space-y-4">
-              <div className={cn(
-                'p-6 rounded-xl border-2 shadow-sm',
-                'bg-gradient-to-br from-slate-50 to-slate-100/50'
-              )}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Total Amount</p>
-                    <p className="text-4xl font-bold text-slate-900 mt-1">${order.totalAmount.toFixed(2)}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Ordered</p>
-                    <p className="font-semibold text-slate-700 mt-1">
-                      {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
+      {/* Panel */}
+      <div className="fixed inset-y-0 right-0 w-full sm:max-w-md bg-white shadow-xl flex flex-col animate-in slide-in-from-right duration-300 z-50">
+        {/* Header */}
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 tracking-tight">Order Details</h2>
+            <p className="text-xs font-mono font-semibold text-indigo-600 mt-0.5">
+              #{order.id.slice(0, 8).toUpperCase()}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <StatusBadge status={order.status} />
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Amount & Timeline */}
+          <div className="bg-slate-50 rounded-xl p-5 border border-slate-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
+                <p className="text-2xl font-bold text-slate-900">${order.totalAmount.toFixed(2)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ordered</p>
+                <p className="text-sm font-semibold text-slate-600">
+                  {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Timeline */}
+          <div>
+            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+              <Calendar size={12} />
+              Timeline
+            </h4>
+            <div className="space-y-3 relative pl-5 border-l-2 border-slate-100">
+              <div className="relative">
+                <div className="absolute -left-[13px] w-3 h-3 rounded-full bg-indigo-500 border-2 border-white shadow-sm" />
+                <div className="bg-white p-3 rounded-lg border border-slate-100">
+                  <p className="text-sm font-semibold text-slate-900">Order Placed</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {format(new Date(order.created_at), 'MMM d, yyyy · h:mm a')}
+                  </p>
+                </div>
+              </div>
+              {order.pickup_time && (
+                <div className="relative">
+                  <div className="absolute -left-[13px] w-3 h-3 rounded-full bg-green-500 border-2 border-white shadow-sm" />
+                  <div className="bg-white p-3 rounded-lg border border-slate-100">
+                    <p className="text-sm font-semibold text-slate-900">Pickup Scheduled</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {format(new Date(order.pickup_time), 'MMM d, yyyy · h:mm a')}
                     </p>
                   </div>
                 </div>
-              </div>
+              )}
+            </div>
+          </div>
 
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Timeline
-                </h4>
-                <div className="space-y-4 relative pl-6 border-l-2 border-slate-200">
-                  <div className="relative">
-                    <div className="absolute -left-[25px] w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 border-4 border-white shadow-md" />
-                    <div className="bg-white p-4 rounded-lg border-2 border-slate-100 shadow-sm">
-                      <p className="font-bold text-slate-900">Order Placed</p>
-                      <p className="text-sm text-slate-600 mt-1">
-                        {format(new Date(order.created_at), 'MMM d, yyyy · h:mm a')}
-                      </p>
-                    </div>
+          {/* Customer */}
+          <div>
+            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Customer</h4>
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-sm ring-1 ring-indigo-500/10">
+                  {order.customer_name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">{order.customer_name}</p>
+                  <p className="text-xs text-slate-400">
+                    Customer since {format(new Date(order.created_at), 'MMM yyyy')}
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <a
+                  href={`tel:${order.customer_phone}`}
+                  className="flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center ring-1 ring-blue-500/10">
+                    <Phone size={14} className="text-blue-600" />
                   </div>
-                  {order.pickup_time && (
-                    <div className="relative">
-                      <div className="absolute -left-[25px] w-5 h-5 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 border-4 border-white shadow-md" />
-                      <div className="bg-white p-4 rounded-lg border-2 border-slate-100 shadow-sm">
-                        <p className="font-bold text-slate-900">Pickup Scheduled</p>
-                        <p className="text-sm text-slate-600 mt-1">
-                          {format(new Date(order.pickup_time), 'MMM d, yyyy · h:mm a')}
-                        </p>
-                      </div>
+                  <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">{order.customer_phone}</span>
+                </a>
+                {order.customer_email && (
+                  <a
+                    href={`mailto:${order.customer_email}`}
+                    className="flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors group"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center ring-1 ring-purple-500/10">
+                      <Mail size={14} className="text-purple-600" />
                     </div>
+                    <span className="text-sm font-medium text-slate-700 truncate group-hover:text-slate-900">{order.customer_email}</span>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Order Items */}
+          <div>
+            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Items</h4>
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <div className="flex gap-3">
+                <div className="w-14 h-14 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
+                  <Package size={24} className="text-slate-300" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-semibold text-slate-900 truncate">{order.product_name}</p>
+                    <p className="font-bold text-slate-900 shrink-0">${order.totalAmount.toFixed(2)}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-50 text-slate-600 ring-1 ring-slate-100">
+                      <Hash size={10} />
+                      {order.quantity}x
+                    </span>
+                    {order.flavor && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+                        {order.flavor}
+                      </span>
+                    )}
+                  </div>
+                  {order.unit_price && order.quantity > 1 && (
+                    <p className="text-xs text-slate-400 mt-1.5">${order.unit_price.toFixed(2)} each</p>
                   )}
                 </div>
               </div>
-            </div>
 
-            <Separator className="my-6" />
-
-            {/* Customer Info */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Customer</h4>
-              <Card className="border-2 shadow-sm">
-                <CardContent className="p-5">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-14 w-14 border-2 border-primary shadow-md">
-                      <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white text-xl font-bold">
-                        {order.customer_name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-lg truncate text-slate-900">{order.customer_name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Customer since {format(new Date(order.created_at), 'MMM yyyy')}
-                      </p>
-                    </div>
+              {order.special_instructions && (
+                <div className="mt-3 p-3 bg-amber-50 border border-amber-100 rounded-lg flex gap-2">
+                  <MessageSquare size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wide mb-0.5">Special Instructions</p>
+                    <p className="text-xs text-amber-800">{order.special_instructions}</p>
                   </div>
-                  <Separator className="my-4" />
-                  <div className="space-y-3">
-                    <a
-                      href={`tel:${order.customer_phone}`}
-                      className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 border-2 border-blue-200 hover:bg-blue-100 hover:border-blue-300 transition-all group"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
-                        <Phone className="h-5 w-5 text-white" />
-                      </div>
-                      <span className="font-semibold text-blue-900 group-hover:text-blue-700">{order.customer_phone}</span>
-                    </a>
-                    {order.customer_email && (
-                      <a
-                        href={`mailto:${order.customer_email}`}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-purple-50 border-2 border-purple-200 hover:bg-purple-100 hover:border-purple-300 transition-all group"
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm">
-                          <Mail className="h-5 w-5 text-white" />
-                        </div>
-                        <span className="font-semibold text-purple-900 truncate group-hover:text-purple-700">{order.customer_email}</span>
-                      </a>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Order Items */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Items</h4>
-              <Card className="border-2 shadow-sm">
-                <CardContent className="p-5">
-                  <div className="flex gap-4">
-                    <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shrink-0 shadow-sm border-2 border-slate-200">
-                      <Package className="h-10 w-10 text-slate-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="font-bold text-lg truncate text-slate-900">{order.product_name}</p>
-                        <p className="font-bold text-xl text-primary">${order.totalAmount.toFixed(2)}</p>
-                      </div>
-                      <div className="flex items-center gap-2 mt-3 flex-wrap">
-                        <Badge variant="secondary" className="gap-1.5 font-semibold border-2">
-                          <Hash className="h-3.5 w-3.5" />
-                          {order.quantity}x
-                        </Badge>
-                        {order.flavor && (
-                          <Badge variant="outline" className="font-semibold border-2">{order.flavor}</Badge>
-                        )}
-                      </div>
-                      {order.unit_price && order.quantity > 1 && (
-                        <p className="text-sm text-muted-foreground mt-2 font-medium">
-                          ${order.unit_price.toFixed(2)} each
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {order.special_instructions && (
-                    <div className="mt-4 p-4 bg-gradient-to-br from-amber-50 to-amber-100/50 border-2 border-amber-300 rounded-xl flex gap-3 shadow-sm">
-                      <MessageSquare className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs font-bold text-amber-900 mb-1 uppercase tracking-wide">Special Instructions</p>
-                        <p className="text-sm text-amber-900 font-medium">{order.special_instructions}</p>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                </div>
+              )}
             </div>
           </div>
-        </ScrollArea>
+        </div>
 
-        <SheetFooter className="flex-col gap-2 sm:flex-row border-t-2 pt-4">
-          <SheetClose asChild>
-            <Button variant="outline" className="w-full sm:w-auto font-semibold border-2">Close</Button>
-          </SheetClose>
-          <Button
-            variant="outline"
-            className="w-full sm:w-auto gap-2 font-semibold border-2"
-            asChild
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-slate-100 flex items-center gap-2 shrink-0 bg-white">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
           >
-            <a href={`tel:${order.customer_phone}`}>
-              <Phone className="h-4 w-4" />
-              Call Customer
-            </a>
-          </Button>
-          <Button
-            className={cn(
-              "w-full sm:w-auto gap-2 font-semibold shadow-md",
-              order.status === 'confirmed'
-                ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700'
-                : 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700'
-            )}
+            Close
+          </button>
+          <a
+            href={`tel:${order.customer_phone}`}
+            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors inline-flex items-center gap-1.5"
+          >
+            <Phone size={14} />
+            Call
+          </a>
+          <button
+            className={`ml-auto px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors inline-flex items-center gap-1.5 shadow-sm ${order.status === 'confirmed'
+                ? 'bg-amber-500 hover:bg-amber-600'
+                : 'bg-green-600 hover:bg-green-700'
+              }`}
             onClick={() => onStatusChange(order.id, nextStatus)}
             disabled={updating}
           >
             {updating ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
+              <RefreshCw size={14} className="animate-spin" />
+            ) : order.status === 'confirmed' ? (
+              <Clock size={14} />
             ) : (
-              <ActionIcon className="h-4 w-4" />
+              <CheckCircle size={14} />
             )}
             {actionLabel}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -379,7 +286,7 @@ export default function OrdersPage() {
   const [total, setTotal] = useState(0);
   const [stats, setStats] = useState<OrderStats | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<OrderWithMeta | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
   const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set());
   const [sortConfig, setSortConfig] = useState<{
     key: 'created_at' | 'total_price';
@@ -466,7 +373,6 @@ export default function OrdersPage() {
         setSelectedOrder({ ...selectedOrder, status: newStatus });
       }
 
-      // Refresh stats
       const newStats = await ordersApi.getOrderStats();
       setStats(newStats);
     } catch (err) {
@@ -482,305 +388,328 @@ export default function OrdersPage() {
 
   const handleRowClick = (order: OrderWithMeta) => {
     setSelectedOrder(order);
-    setSheetOpen(true);
+    setPanelOpen(true);
   };
 
   const totalRevenue = stats ? (stats.pending * 25 + stats.confirmed * 25) : 0;
 
   return (
     <DashboardLayout>
-      <div className="space-y-8 pb-8">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-              Orders
-            </h1>
-            <p className="text-muted-foreground mt-2 text-base">
-              Manage and track all your orders in one place
-            </p>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Orders</h1>
+            <p className="text-slate-500 mt-1 text-sm">Manage and track all your orders in one place.</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="icon"
+          <div className="flex items-center gap-2">
+            <button
               onClick={fetchOrders}
               disabled={loading}
-              className="h-10 w-10 border-2 shadow-sm"
+              className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors border border-transparent hover:border-slate-100"
+              title="Refresh"
             >
-              <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
-            </Button>
-            <Button variant="outline" className="gap-2 font-semibold border-2 shadow-sm">
-              <Download className="h-4 w-4" />
+              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+            </button>
+            <button className="px-4 py-2 rounded-xl text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-colors inline-flex items-center gap-2 shadow-sm">
+              <Download size={14} />
               Export
-            </Button>
+            </button>
           </div>
         </div>
 
-        {/* Stats Grid */}
+        {/* Stats Cards */}
         {stats && (
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            <StatCard
-              title="Total Orders"
-              value={stats.total}
-              description="All time orders"
-              icon={ShoppingBag}
-              gradient="bg-gradient-to-br from-blue-500 to-blue-600"
-              iconColor="text-white"
-              accentColor="border-l-blue-500"
-            />
-            <StatCard
-              title="Pending"
-              value={stats.pending}
-              description="Awaiting confirmation"
-              icon={Clock}
-              gradient="bg-gradient-to-br from-amber-500 to-amber-600"
-              iconColor="text-white"
-              accentColor="border-l-amber-500"
-            />
-            <StatCard
-              title="Confirmed"
-              value={stats.confirmed}
-              description="Ready for pickup"
-              icon={CheckCircle}
-              gradient="bg-gradient-to-br from-emerald-500 to-emerald-600"
-              iconColor="text-white"
-              accentColor="border-l-emerald-500"
-            />
-            <StatCard
-              title="Revenue"
-              value={`$${totalRevenue.toFixed(0)}`}
-              description="Estimated total"
-              icon={DollarSign}
-              gradient="bg-gradient-to-br from-purple-500 to-purple-600"
-              iconColor="text-white"
-              accentColor="border-l-purple-500"
-            />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                  <ShoppingBag size={16} className="text-indigo-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Total Orders</p>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                  <Clock size={16} className="text-amber-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-slate-900">{stats.pending}</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Pending</p>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                  <CheckCircle size={16} className="text-green-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-slate-900">{stats.confirmed}</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Confirmed</p>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                  <DollarSign size={16} className="text-purple-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-slate-900">${totalRevenue.toFixed(0)}</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Revenue</p>
+            </div>
           </div>
         )}
 
-        {/* Filters */}
-        <Card className="border-2 shadow-sm">
-          <CardContent className="p-5">
-            <div className="flex flex-col lg:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  label=''
-                  placeholder="Search customers, phone, or products..."
-                  className="pl-10 h-11 border-2 font-medium"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+        {/* Search & Filters */}
+        <div className="flex flex-col lg:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input
+              type="text"
+              placeholder="Search customers, phone, or products..."
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-600"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <Tabs
-                  value={statusFilter}
-                  onValueChange={(v) => {
-                    setStatusFilter(v as OrderStatus | 'all');
-                    setPage(1);
-                  }}
-                  className="w-auto"
+          <div className="flex items-center gap-2">
+            {/* Status Filter */}
+            <div className="flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              {(['all', 'pending', 'confirmed'] as const).map((val) => (
+                <button
+                  key={val}
+                  onClick={() => { setStatusFilter(val); setPage(1); }}
+                  className={`px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${statusFilter === val
+                      ? 'bg-slate-900 text-white'
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                    }`}
                 >
-                  <TabsList className="h-11 border-2 shadow-sm">
-                    <TabsTrigger value="all" className="font-semibold">All Orders</TabsTrigger>
-                    <TabsTrigger value="pending" className="font-semibold">Pending</TabsTrigger>
-                    <TabsTrigger value="confirmed" className="font-semibold">Confirmed</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-
-                <Select
-                  value={`${sortConfig.key}-${sortConfig.direction}`}
-                  onValueChange={(v) => {
-                    const [key, direction] = v.split('-') as [typeof sortConfig.key, typeof sortConfig.direction];
-                    setSortConfig({ key, direction });
-                  }}
-                >
-                  <SelectTrigger className="h-11 w-auto font-semibold border-2 shadow-sm">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="created_at-desc">Newest First</SelectItem>
-                    <SelectItem value="created_at-asc">Oldest First</SelectItem>
-                    <SelectItem value="total_price-desc">Price: High to Low</SelectItem>
-                    <SelectItem value="total_price-asc">Price: Low to High</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                  {val === 'all' ? 'All' : val}
+                </button>
+              ))}
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Sort */}
+            <div className="relative">
+              <select
+                value={`${sortConfig.key}-${sortConfig.direction}`}
+                onChange={(e) => {
+                  const [key, direction] = e.target.value.split('-') as [typeof sortConfig.key, typeof sortConfig.direction];
+                  setSortConfig({ key, direction });
+                }}
+                className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
+              >
+                <option value="created_at-desc">Newest First</option>
+                <option value="created_at-asc">Oldest First</option>
+                <option value="total_price-desc">Price: High to Low</option>
+                <option value="total_price-asc">Price: Low to High</option>
+              </select>
+              <ChevronRight size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
+            </div>
+          </div>
+        </div>
 
         {/* Error State */}
         {error && (
-          <Card className="border-2 border-red-200 bg-red-50">
-            <CardContent className="flex flex-col items-center justify-center text-center py-12">
-              <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
-                <AlertCircle className="h-8 w-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-bold text-red-900">Something went wrong</h3>
-              <p className="mt-2 text-red-700 font-medium max-w-md">
-                {error}. Please try refreshing the page.
-              </p>
-              <Button
-                onClick={fetchOrders}
-                className="mt-4 bg-red-600 hover:bg-red-700 font-semibold"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Try Again
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="bg-white border border-red-200 rounded-xl p-8 text-center">
+            <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mb-4 mx-auto text-red-500 ring-1 ring-red-500/10">
+              <AlertCircle size={28} />
+            </div>
+            <h3 className="text-slate-900 font-bold text-base tracking-tight mb-1">Something went wrong</h3>
+            <p className="text-slate-500 text-sm mb-4 max-w-md mx-auto">{error}. Please try again.</p>
+            <button
+              onClick={fetchOrders}
+              className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors inline-flex items-center gap-2"
+            >
+              <RefreshCw size={14} />
+              Try Again
+            </button>
+          </div>
         )}
 
         {/* Table */}
         {!error && (
-          <Card className="border-2 shadow-sm overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50 hover:bg-slate-50">
-                  <TableHead className="font-bold text-slate-900">Order ID</TableHead>
-                  <TableHead className="font-bold text-slate-900">Customer</TableHead>
-                  <TableHead className="font-bold text-slate-900">Product</TableHead>
-                  <TableHead className="text-right font-bold text-slate-900">Amount</TableHead>
-                  <TableHead className="hidden md:table-cell font-bold text-slate-900">Date</TableHead>
-                  <TableHead className="font-bold text-slate-900">Status</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell colSpan={7} className="h-20 text-center">
-                        <div className="flex items-center justify-center gap-3">
-                          <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-                          <span className="font-medium text-muted-foreground">Loading orders...</span>
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50/80 border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Order ID</th>
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Product</th>
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Amount</th>
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">Date</th>
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 w-[50px]" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {loading ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <tr key={i}>
+                        <td colSpan={7} className="px-6 py-6 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <RefreshCw size={16} className="animate-spin text-slate-300" />
+                            <span className="text-sm text-slate-400">Loading orders...</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : filteredOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-16 text-center">
+                        <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <ShoppingBag size={28} className="text-slate-300" />
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : filteredOrders.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-32 text-center">
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center">
-                          <ShoppingBag className="h-8 w-8 text-slate-400" />
-                        </div>
-                        <p className="text-lg font-semibold text-slate-900">No orders found</p>
-                        <p className="text-sm text-muted-foreground">Try adjusting your filters</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredOrders.map(order => (
-                    <TableRow
-                      key={order.id}
-                      onClick={() => handleRowClick(order)}
-                      className='cursor-pointer hover:bg-slate-50 transition-colors'
-                    >
-                      <TableCell className="font-mono text-sm font-bold text-primary">
-                        #{order.id.slice(0, 6).toUpperCase()}
-                      </TableCell>
-                      <TableCell>
-                        <div className='font-bold text-slate-900'>{order.customer_name}</div>
-                        <div className='text-sm text-muted-foreground font-medium'>{order.customer_phone}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className='font-bold text-slate-900'>{order.product_name}</div>
-                        {order.flavor && (
-                          <div className='text-sm text-muted-foreground font-medium'>{order.flavor}</div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right font-bold text-lg text-slate-900">
-                        ${order.totalAmount.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell text-sm text-muted-foreground font-medium">
-                        {format(new Date(order.created_at), 'MMM d, yyyy')}
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status={order.status} />
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant='ghost'
-                          size='icon'
-                          className='h-9 w-9 hover:bg-slate-100'
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRowClick(order);
-                          }}
-                        >
-                          <Eye className='h-4 w-4' />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </Card>
-        )}
-
-        {/* Pagination */}
-        {!error && filteredOrders.length > 0 && (
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground font-medium">
-              Showing <span className="font-bold text-slate-900">{Math.min(PAGE_SIZE * (page - 1) + 1, total)}</span> - <span className="font-bold text-slate-900">{Math.min(page * PAGE_SIZE, total)}</span> of <span className="font-bold text-slate-900">{total}</span> orders
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setPage(1)}
-                disabled={page === 1}
-                className="h-9 w-9 border-2 shadow-sm"
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="h-9 w-9 border-2 shadow-sm"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm font-bold w-10 text-center bg-slate-100 px-3 py-2 rounded-lg border-2">{page}</span>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="h-9 w-9 border-2 shadow-sm"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setPage(totalPages)}
-                disabled={page === totalPages}
-                className="h-9 w-9 border-2 shadow-sm"
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
+                        <h3 className="text-slate-900 font-semibold mb-1">No orders found</h3>
+                        <p className="text-slate-500 text-sm">Try adjusting your filters.</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredOrders.map(order => (
+                      <tr
+                        key={order.id}
+                        onClick={() => handleRowClick(order)}
+                        className="cursor-pointer hover:bg-slate-50/50 transition-colors group"
+                      >
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-xs font-bold text-indigo-600">
+                            #{order.id.slice(0, 6).toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-slate-900">{order.customer_name}</div>
+                          <div className="text-xs text-slate-400 mt-0.5">{order.customer_phone}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-slate-900">{order.product_name}</div>
+                          {order.flavor && (
+                            <div className="text-xs text-slate-400 mt-0.5">{order.flavor}</div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <span className="font-semibold text-slate-900">${order.totalAmount.toFixed(2)}</span>
+                        </td>
+                        <td className="px-6 py-4 hidden md:table-cell text-sm text-slate-500">
+                          {format(new Date(order.created_at), 'MMM d, yyyy')}
+                        </td>
+                        <td className="px-6 py-4">
+                          <StatusBadge status={order.status} />
+                        </td>
+                        <td className="px-6 py-4">
+                          <button
+                            className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors opacity-0 group-hover:opacity-100"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRowClick(order);
+                            }}
+                          >
+                            <Eye size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
+
+            {/* Pagination footer */}
+            {filteredOrders.length > 0 && (
+              <div className="px-6 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+                <p className="text-xs text-slate-400">
+                  Showing {Math.min(PAGE_SIZE * (page - 1) + 1, total)}–{Math.min(page * PAGE_SIZE, total)} of {total}
+                </p>
+                {totalPages > 1 && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setPage(1)}
+                      disabled={page === 1}
+                      className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title="First page"
+                    >
+                      <ChevronsLeft size={14} />
+                    </button>
+                    <button
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title="Previous page"
+                    >
+                      <ChevronLeft size={14} />
+                    </button>
+
+                    {/* Page numbers */}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(p => {
+                        if (totalPages <= 7) return true;
+                        if (p === 1 || p === totalPages) return true;
+                        if (Math.abs(p - page) <= 1) return true;
+                        return false;
+                      })
+                      .reduce<(number | 'ellipsis')[]>((acc, p, idx, arr) => {
+                        if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push('ellipsis');
+                        acc.push(p);
+                        return acc;
+                      }, [])
+                      .map((p, idx) =>
+                        p === 'ellipsis' ? (
+                          <span key={`e-${idx}`} className="px-1 text-xs text-slate-300">...</span>
+                        ) : (
+                          <button
+                            key={p}
+                            onClick={() => setPage(p as number)}
+                            className={`min-w-[28px] h-7 rounded-lg text-xs font-medium transition-colors ${page === p
+                                ? 'bg-indigo-600 text-white shadow-sm'
+                                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+                              }`}
+                          >
+                            {p}
+                          </button>
+                        )
+                      )}
+
+                    <button
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title="Next page"
+                    >
+                      <ChevronRight size={14} />
+                    </button>
+                    <button
+                      onClick={() => setPage(totalPages)}
+                      disabled={page === totalPages}
+                      className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title="Last page"
+                    >
+                      <ChevronsRight size={14} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {selectedOrder && (
-        <OrderDetailSheet
-          order={selectedOrder}
-          open={sheetOpen}
-          onOpenChange={setSheetOpen}
-          onStatusChange={handleToggleStatus}
-          updating={updatingIds.has(selectedOrder.id)}
-        />
-      )}
+      {/* Order Detail Panel */}
+      <OrderDetailPanel
+        order={selectedOrder}
+        open={panelOpen}
+        onClose={() => setPanelOpen(false)}
+        onStatusChange={handleToggleStatus}
+        updating={selectedOrder ? updatingIds.has(selectedOrder.id) : false}
+      />
     </DashboardLayout>
   );
 }
