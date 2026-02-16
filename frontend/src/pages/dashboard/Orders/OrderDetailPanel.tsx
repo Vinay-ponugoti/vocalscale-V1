@@ -1,6 +1,4 @@
 import {
-    CheckCircle,
-    Clock,
     RefreshCw,
     Phone,
     Mail,
@@ -9,6 +7,8 @@ import {
     Hash,
     Calendar,
     X,
+    XCircle,
+    CheckCircle,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { statusConfig, type OrderWithMeta, type OrderStatus } from '@/types/orders';
@@ -39,9 +39,6 @@ export const OrderDetailPanel = ({
     updating: boolean;
 }) => {
     if (!order || !open) return null;
-
-    const nextStatus = order.status === 'confirmed' ? 'pending' : 'confirmed';
-    const actionLabel = order.status === 'confirmed' ? 'Mark as Pending' : 'Confirm Order';
 
     return (
         <div className="fixed inset-0 z-50">
@@ -218,23 +215,27 @@ export const OrderDetailPanel = ({
                         <Phone size={14} />
                         Call
                     </a>
-                    <button
-                        className={`ml-auto px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors inline-flex items-center gap-1.5 shadow-sm ${order.status === 'confirmed'
-                            ? 'bg-amber-500 hover:bg-amber-600'
-                            : 'bg-green-600 hover:bg-green-700'
-                            }`}
-                        onClick={() => onStatusChange(order.id, nextStatus)}
-                        disabled={updating}
-                    >
-                        {updating ? (
-                            <RefreshCw size={14} className="animate-spin" />
-                        ) : order.status === 'confirmed' ? (
-                            <Clock size={14} />
-                        ) : (
-                            <CheckCircle size={14} />
-                        )}
-                        {actionLabel}
-                    </button>
+
+                    {/* Action Button: Confirmed -> Cancelled, Cancelled -> Confirmed */}
+                    {order.status === 'confirmed' ? (
+                        <button
+                            className="ml-auto px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                            onClick={() => onStatusChange(order.id, 'cancelled')}
+                            disabled={updating}
+                        >
+                            {updating ? <RefreshCw size={14} className="animate-spin" /> : <XCircle size={14} />}
+                            Cancel Order
+                        </button>
+                    ) : (
+                        <button
+                            className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-xl transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                            onClick={() => onStatusChange(order.id, 'confirmed')}
+                            disabled={updating}
+                        >
+                            {updating ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+                            Reactivate Order
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

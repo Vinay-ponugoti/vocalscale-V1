@@ -15,11 +15,11 @@ export interface Order {
     flavor?: string;
     unit_price?: number;
     total_price?: number;
-    status: 'pending' | 'confirmed';
+    status: 'confirmed' | 'cancelled';
     call_id?: string;
     call_sid?: string;
     pickup_time?: string;
-    special_instructions?: string;
+    special_instructions?: string; // ---
     created_at: string;
     updated_at: string;
 }
@@ -33,8 +33,8 @@ export interface OrdersResponse {
 
 export interface OrderStats {
     total: number;
-    pending: number;
     confirmed: number;
+    cancelled: number;
 }
 
 class OrdersAPI {

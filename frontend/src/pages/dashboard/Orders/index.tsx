@@ -15,6 +15,8 @@ import {
   X,
   ArrowLeft,
   ArrowRight,
+  CheckCircle,
+  XCircle,
 } from 'lucide-react';
 import { startOfDay, endOfDay, isSameDay, addDays, subDays } from 'date-fns';
 
@@ -24,7 +26,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showConfirmedOnly, setShowConfirmedOnly] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<OrderStatus>('confirmed');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -49,7 +51,7 @@ export default function OrdersPage() {
         ordersApi.getOrders(
           page,
           PAGE_SIZE,
-          showConfirmedOnly ? 'confirmed' : undefined
+          statusFilter
         ),
         ordersApi.getOrderStats()
       ]);
@@ -61,7 +63,7 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, showConfirmedOnly]);
+  }, [page, statusFilter]);
 
   useEffect(() => {
     fetchOrders();
@@ -134,8 +136,12 @@ export default function OrdersPage() {
         setSelectedOrder({ ...selectedOrder, status: newStatus });
       }
 
+      // Refresh stats and potentially list if we want to move it out of the current view
       const newStats = await ordersApi.getOrderStats();
       setStats(newStats);
+
+      // Optional: Refresh list if we want to remove it from view immediately
+      fetchOrders();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update status');
     } finally {
@@ -229,17 +235,29 @@ export default function OrdersPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Confirmed Toggle */}
-            <button
-              onClick={() => { setShowConfirmedOnly(!showConfirmedOnly); setPage(1); }}
-              className={`px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors border shadow-sm inline-flex items-center gap-1.5 ${showConfirmedOnly
-                ? 'bg-green-600 text-white border-green-600'
-                : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-700'
-                }`}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${showConfirmedOnly ? 'bg-white' : 'bg-green-500'}`} />
-              Confirmed
-            </button>
+            {/* Status Filter */}
+            <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200">
+              <button
+                onClick={() => { setStatusFilter('confirmed'); setPage(1); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${statusFilter === 'confirmed'
+                    ? 'bg-white text-green-700 shadow-sm ring-1 ring-black/5'
+                    : 'text-slate-500 hover:text-slate-700'
+                  }`}
+              >
+                <CheckCircle size={12} className={statusFilter === 'confirmed' ? 'text-green-500' : 'text-slate-400'} />
+                Confirmed
+              </button>
+              <button
+                onClick={() => { setStatusFilter('cancelled'); setPage(1); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${statusFilter === 'cancelled'
+                    ? 'bg-white text-red-700 shadow-sm ring-1 ring-black/5'
+                    : 'text-slate-500 hover:text-slate-700'
+                  }`}
+              >
+                <XCircle size={12} className={statusFilter === 'cancelled' ? 'text-red-500' : 'text-slate-400'} />
+                Cancelled
+              </button>
+            </div>
 
             {/* Sort */}
             <div className="relative">
