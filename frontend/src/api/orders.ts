@@ -81,7 +81,13 @@ class OrdersAPI {
     }
 
     async getOrderStats(): Promise<OrderStats> {
-        return this.request('/orders/stats');
+        const stats = await this.request('/orders/stats');
+        // Merge pending into confirmed for frontend display
+        return {
+            total: stats.total,
+            confirmed: (stats.confirmed || 0) + (stats.pending || 0),
+            cancelled: stats.cancelled || 0
+        };
     }
 }
 

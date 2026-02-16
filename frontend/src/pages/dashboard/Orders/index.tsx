@@ -47,17 +47,36 @@ export default function OrdersPage() {
     setLoading(true);
     setError(null);
     try {
-      const [ordersRes, statsRes] = await Promise.all([
-        ordersApi.getOrders(
-          page,
-          PAGE_SIZE,
-          statusFilter
-        ),
-        ordersApi.getOrderStats()
-      ]);
-      setOrders(ordersRes.orders || []);
-      setTotal(ordersRes.total || 0);
-      setStats(statsRes);
+      let ordersData: Order[] = [];
+      let totalCount = 0;
+
+      if (statusFilter === 'confirmed') {
+        // Fetch both pending and confirmed explicitly to ensure we get everything
+        // We increase page size to capture most active orders since we're merging client-side
+        const [pendingRes, confirmedRes] = await Promise.all([
+          ordersApi.getOrders(1, 100, 'pending'),
+          ordersApi.getOrders(1, 100, 'confirmed')
+        ]);
+
+        ordersData = [...(pendingRes.orders || []), ...(confirmedRes.orders || [])];
+        totalCount = (pendingRes.total || 0) + (confirmedRes.total || 0);
+
+        // Stats
+        const statsRes = await ordersApi.getOrderStats();
+        setStats(statsRes);
+      } else {
+        // Cancelled view
+        const [ordersRes, statsRes] = await Promise.all([
+          ordersApi.getOrders(page, PAGE_SIZE, 'cancelled'),
+          ordersApi.getOrderStats()
+        ]);
+        ordersData = ordersRes.orders || [];
+        totalCount = ordersRes.total || 0;
+        setStats(statsRes);
+      }
+
+      setOrders(ordersData);
+      setTotal(totalCount);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load orders');
     } finally {
@@ -69,12 +88,21 @@ export default function OrdersPage() {
     fetchOrders();
   }, [fetchOrders]);
 
-  // Process orders with computed fields
+  // Process orders with computed fields and normalize status
   const processedOrders = useMemo(() => {
-    return orders.map(order => ({
-      ...order,
-      totalAmount: order.total_price || (order.unit_price || 0) * order.quantity,
-    }));
+    return orders.map(order => {
+      // Treat 'pending' as 'confirmed' for display
+      const currentStatus = order.status as string;
+      const normalizedStatus = (currentStatus === 'pending' || currentStatus === 'confirmed')
+        ? 'confirmed' as OrderStatus
+        : 'cancelled' as OrderStatus;
+
+      return {
+        ...order,
+        status: normalizedStatus,
+        totalAmount: order.total_price || (order.unit_price || 0) * order.quantity,
+      };
+    });
   }, [orders]);
 
   // Filter and sort orders client-side (including date filter)
@@ -240,8 +268,8 @@ export default function OrdersPage() {
               <button
                 onClick={() => { setStatusFilter('confirmed'); setPage(1); }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${statusFilter === 'confirmed'
-                    ? 'bg-white text-green-700 shadow-sm ring-1 ring-black/5'
-                    : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white text-green-700 shadow-sm ring-1 ring-black/5'
+                  : 'text-slate-500 hover:text-slate-700'
                   }`}
               >
                 <CheckCircle size={12} className={statusFilter === 'confirmed' ? 'text-green-500' : 'text-slate-400'} />
@@ -250,8 +278,8 @@ export default function OrdersPage() {
               <button
                 onClick={() => { setStatusFilter('cancelled'); setPage(1); }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${statusFilter === 'cancelled'
-                    ? 'bg-white text-red-700 shadow-sm ring-1 ring-black/5'
-                    : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white text-red-700 shadow-sm ring-1 ring-black/5'
+                  : 'text-slate-500 hover:text-slate-700'
                   }`}
               >
                 <XCircle size={12} className={statusFilter === 'cancelled' ? 'text-red-500' : 'text-slate-400'} />
