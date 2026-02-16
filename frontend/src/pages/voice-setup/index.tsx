@@ -158,10 +158,10 @@ const VoiceSetup = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex-1 flex flex-col bg-background dark:bg-slate-950 min-h-screen scrollbar-premium">
+      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto custom-scrollbar">
 
         {/* Standard Page Header */}
-        <header className="px-6 py-5 md:px-8 md:py-6 border-b border-border bg-card/50 flex flex-col md:flex-row md:items-center justify-between gap-6 sticky top-0 z-10 backdrop-blur-xl">
+        <header className="px-6 py-5 md:px-8 md:py-6 border-b border-slate-100 bg-white/80 flex flex-col md:flex-row md:items-center justify-between gap-6 sticky top-0 z-10 backdrop-blur-xl">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
               <Smartphone className="w-5 h-5 md:w-6 md:h-6 text-primary" strokeWidth={1.5} />
@@ -253,11 +253,9 @@ const VoiceSetup = () => {
             </div>
           )}
 
-          {/* Table Container */}
-          <div className="bg-card border border-border rounded-[2.5rem] shadow-premium-lg overflow-hidden relative">
-
-            {/* Table Header / Action Bar */}
-            <div className="px-10 py-8 border-b border-border flex flex-col sm:flex-row items-center justify-between gap-6 bg-muted/20">
+          {/* Table Header / Action Bar */}
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="px-6 md:px-10 py-6 md:py-8 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="flex items-center gap-6 w-full sm:w-auto">
                 <div className="relative flex-grow sm:flex-grow-0 group">
                   <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -283,7 +281,7 @@ const VoiceSetup = () => {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-border bg-slate-50/50">
+                  <tr className="border-b border-slate-100 bg-slate-50/50">
                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-1/4">Number</th>
                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-1/4">Alias</th>
                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-1/6">Status</th>
@@ -291,7 +289,7 @@ const VoiceSetup = () => {
                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right w-1/6">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/50">
+                <tbody className="divide-y divide-slate-100">
                   {loading ? (
                     [1, 2, 3].map((i) => (
                       <tr key={i} className="animate-pulse">
@@ -397,17 +395,17 @@ const VoiceSetup = () => {
 
             {/* Mobile Card View */}
             <div className="block md:hidden">
-              <div className="p-4 space-y-4">
+              <div className="divide-y divide-slate-100">
                 {loading ? (
                   [1, 2].map(i => (
-                    <div key={i} className="bg-background rounded-2xl p-6 border border-border animate-pulse h-40" />
+                    <div key={i} className="p-5 animate-pulse h-32" />
                   ))
                 ) : numbers.length > 0 ? (
                   numbers.map((num: PhoneNumber) => (
                     <div
                       key={num.id}
                       onClick={() => navigate(`/dashboard/voice-setup/numbers/${num.id}`)}
-                      className="bg-background rounded-3xl p-6 border border-border shadow-sm active:scale-[0.98] transition-all relative overflow-hidden"
+                      className="p-5 active:bg-slate-50 transition-all cursor-pointer"
                     >
                       <div className="flex items-start justify-between mb-6">
                         <div className="flex items-center gap-4">
@@ -456,14 +454,15 @@ const VoiceSetup = () => {
               </div>
             </div>
 
-            {/* Premium Table Footer */}
+            {/* Table Footer */}
             {numbers.length > 0 && (
-              <div className="px-10 py-6 border-t border-border flex items-center justify-between bg-muted/20">
-                <div className="flex items-center gap-4 font-black uppercase tracking-widest text-[9px] text-muted-foreground">
-                  Showing {numbers.length} of {numbers.length} allocations
+              <div className="px-6 md:px-10 py-5 border-t border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-4 font-black uppercase tracking-widest text-[9px] text-slate-400">
+                  Showing {numbers.length} of {numbers.length} numbers
                 </div>
-                <div className="flex items-center gap-3 font-black uppercase tracking-widest text-[9px] text-muted-foreground opacity-30">
-                  Global Edge Network Status: Operational
+                <div className="flex items-center gap-2">
+                  <div className="size-1.5 rounded-full bg-emerald-500"></div>
+                  <span className="font-black uppercase tracking-widest text-[9px] text-slate-400">Operational</span>
                 </div>
               </div>
             )}
@@ -474,7 +473,7 @@ const VoiceSetup = () => {
       {/* Premium Edit Modal */}
       {editingNumber && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-card rounded-[3rem] border border-border shadow-premium-2xl w-full max-w-lg overflow-hidden relative animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-lg overflow-hidden relative animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
             <div className="absolute top-0 inset-x-0 h-2 bg-primary shadow-glow-blue" />
 
             <div className="flex items-center justify-between p-10 pb-6">
