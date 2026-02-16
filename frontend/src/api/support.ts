@@ -75,11 +75,11 @@ class SupportAPI {
         });
     }
 
-    async sendSupportChat(message: string, history: any[], userInfo?: { name?: string, email?: string }): Promise<any> {
+    async sendSupportChat(message: string, history: any[], userInfo?: { name?: string, email?: string }, ticketId?: string): Promise<any> {
         return this.request('/support/chat', {
             method: 'POST',
             body: JSON.stringify({
-                ticket_id: `chat_${Date.now()}`,
+                ticket_id: ticketId || crypto.randomUUID(),
                 user_id: 'dashboard_user', // Middleware will override
                 history,
                 user_metadata: userInfo,
