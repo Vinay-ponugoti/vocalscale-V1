@@ -63,6 +63,16 @@ export default function OrdersPage() {
 
         // Stats
         const statsRes = await ordersApi.getOrderStats();
+
+        // Calculate revenue from loaded orders if backend returns 0
+        const calculatedRevenue = ordersData.reduce((sum, o) => {
+          return sum + (o.total_price || (o.unit_price || 0) * o.quantity);
+        }, 0);
+
+        if (!statsRes.revenue && calculatedRevenue > 0) {
+          statsRes.revenue = calculatedRevenue;
+        }
+
         setStats(statsRes);
       } else {
         // Cancelled view

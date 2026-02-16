@@ -11,7 +11,7 @@ interface OrderStatsGridProps {
 }
 
 export const OrderStatsGrid = ({ stats }: OrderStatsGridProps) => {
-    const totalRevenue = (stats.confirmed * 25);
+    const totalRevenue = stats.revenue;
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -48,7 +48,7 @@ export const OrderStatsGrid = ({ stats }: OrderStatsGridProps) => {
                         <DollarSign size={16} className="text-purple-600" />
                     </div>
                 </div>
-                <p className="text-2xl font-bold text-slate-900">${totalRevenue.toFixed(0)}</p>
+                <p className="text-2xl font-bold text-slate-900">${totalRevenue.toFixed(2)}</p>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">Revenue</p>
             </div>
         </div>

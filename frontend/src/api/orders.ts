@@ -35,6 +35,7 @@ export interface OrderStats {
     total: number;
     confirmed: number;
     cancelled: number;
+    revenue: number;
 }
 
 class OrdersAPI {
@@ -86,7 +87,8 @@ class OrdersAPI {
         return {
             total: stats.total,
             confirmed: (stats.confirmed || 0) + (stats.pending || 0),
-            cancelled: stats.cancelled || 0
+            cancelled: stats.cancelled || 0,
+            revenue: stats.revenue || stats.total_revenue || stats.total_amount || 0
         };
     }
 }
