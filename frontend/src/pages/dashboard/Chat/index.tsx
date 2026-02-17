@@ -40,7 +40,7 @@ const Chat = () => {
   };
 
   return (
-    <DashboardLayout fullWidth>
+    <DashboardLayout fullWidth hideTopNav>
       <div className="h-full flex bg-white">
         {/* Sidebar */}
         <ChatSidebar
@@ -62,7 +62,7 @@ const Chat = () => {
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col min-w-0 h-full">
           {/* Header */}
-          <header className="flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur-sm sticky top-0 z-30 border-b border-gray-100">
+          <header className="flex items-center justify-between px-4 py-2 bg-white sticky top-0 z-30">
             <div className="flex items-center gap-3">
               {/* Mobile menu button */}
               <button

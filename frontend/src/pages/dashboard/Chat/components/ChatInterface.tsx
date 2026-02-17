@@ -138,7 +138,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
       {/* Input area - ChatGPT style fixed at bottom on mobile */}
       <div
         className={cn(
-          "bg-white border-t border-gray-200",
+          "bg-white",
           "px-4 py-4",
           // Mobile: fixed positioning
           "fixed bottom-0 left-0 right-0 md:relative",
