@@ -65,25 +65,9 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
   return (
     <div className={cn(
       'group flex gap-4 md:gap-6 py-6 md:py-8 first:pt-0',
-      isUser ? 'flex-row-reverse' : 'flex-row'
+      'flex-row'
     )}>
-      {/* Avatar */}
-      <div
-        className={cn(
-          'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm border',
-          isUser
-            ? 'bg-white border-gray-200 text-gray-600'
-            : 'bg-white border-gray-200 text-blue-600'
-        )}
-      >
-        {isUser ? (
-          <User size={16} strokeWidth={2} />
-        ) : assistantIcon ? (
-          <span className="text-lg leading-none">{assistantIcon}</span>
-        ) : (
-          <Sparkles size={16} strokeWidth={2} className={isStreaming ? "animate-pulse" : ""} />
-        )}
-      </div>
+
 
       {/* Content Container */}
       <div className={cn('flex-1 min-w-0 max-w-3xl', isUser && 'text-right')}>
@@ -103,8 +87,8 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
           className={cn(
             'relative',
             isUser
-              ? 'inline-block bg-blue-50/50 text-gray-800 px-5 py-3.5 rounded-2xl rounded-tr-sm text-left border border-blue-100/50'
-              : 'text-gray-800 leading-7 text-[15px]'
+              ? 'inline-block bg-blue-50/50 text-black px-5 py-3.5 rounded-2xl rounded-tr-sm text-left border border-blue-100/50'
+              : 'text-black leading-7 text-[15px]'
           )}
         >
           {/* Streaming Indicator */}

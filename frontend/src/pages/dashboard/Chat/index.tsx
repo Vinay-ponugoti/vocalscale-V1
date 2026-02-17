@@ -6,7 +6,7 @@ import { useChatSessions } from '../../../hooks/useChat';
 import ChatSidebar from './components/ChatSidebar';
 import ChatInterface from './components/ChatInterface';
 import ChatAnalytics from './components/ChatAnalytics';
-import { Menu, SquarePen, MessageSquare, BarChart3 } from 'lucide-react';
+import { Menu, SquarePen, MessageSquare, BarChart3, PanelLeftOpen } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
 type ActiveTab = 'chat' | 'analytics';
@@ -72,6 +72,18 @@ const Chat = () => {
               >
                 <Menu size={24} className="text-gray-700" />
               </button>
+
+              {/* Desktop open sidebar button */}
+              {!isDesktopOpen && (
+                <button
+                  onClick={onToggleDesktopSidebar}
+                  className="hidden lg:block p-1 -ml-1 hover:bg-gray-100 rounded-lg transition-colors"
+                  aria-label="Open sidebar"
+                  title="Open sidebar"
+                >
+                  <PanelLeftOpen size={24} className="text-gray-700" />
+                </button>
+              )}
 
               {/* Title */}
               <span className="font-semibold text-lg text-gray-900">VocalScale AI</span>
