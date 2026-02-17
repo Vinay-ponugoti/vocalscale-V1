@@ -48,7 +48,7 @@ class ChatAPI {
     onDone: (data: DoneEvent) => void,
     onError: (error: Error) => void,
     onImageStatus?: (status: string) => void,
-    onImageReady?: (images: GeneratedImage[], generationId: string, enhancedPrompt: string, availablePresets: Record<string, string>) => void
+    onImageReady?: (images: GeneratedImage[], generationId: string, enhancedPrompt: string, availablePresets: Record<string, string>, socialContent?: import('../types/chat').SocialContent | null) => void
   ): Promise<void> {
     const userId = this.getUserId();
     const headers = await getAuthHeader(userId);
@@ -120,7 +120,8 @@ class ChatAPI {
                       data.images,
                       data.generation_id || '',
                       data.enhanced_prompt || '',
-                      data.available_presets || {}
+                      data.available_presets || {},
+                      data.social_content || null
                     );
                   }
                   break;

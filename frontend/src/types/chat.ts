@@ -11,6 +11,12 @@ export interface GeneratedImage {
   dimensions: string;
 }
 
+export interface SocialContent {
+  caption: string;
+  hashtags: string;
+  ideas: string;
+}
+
 export interface ImageStatusEvent {
   status: 'enhancing_prompt' | 'generating' | 'uploading' | 'complete';
 }
@@ -20,6 +26,7 @@ export interface ImageReadyEvent {
   generation_id: string;
   enhanced_prompt: string;
   available_presets: Record<string, string>;
+  social_content?: SocialContent | null;
 }
 
 export interface ChatMessage {
@@ -33,6 +40,7 @@ export interface ChatMessage {
   images?: GeneratedImage[];
   generation_id?: string;
   available_presets?: Record<string, string>;
+  social_content?: SocialContent | null;
 }
 
 export interface FileAttachment {

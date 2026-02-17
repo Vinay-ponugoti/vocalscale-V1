@@ -6,7 +6,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatApi } from '../api/chat';
-import type { ChatMessage, FileAttachment, BusinessContext, GeneratedImage, DoneEvent } from '../types/chat';
+import type { ChatMessage, FileAttachment, BusinessContext, GeneratedImage, DoneEvent, SocialContent } from '../types/chat';
 import { useAuth } from '../context/AuthContext';
 import { useBusinessSetup } from '../context/BusinessSetupContext';
 
@@ -127,6 +127,7 @@ export function useChat(sessionId: string | null) {
       let receivedImages: GeneratedImage[] = [];
       let receivedGenerationId: string | undefined;
       let receivedPresets: Record<string, string> = {};
+      let receivedSocialContent: SocialContent | null = null;
 
       console.log('[useChat] Starting message send...');
       setImageStatus(null);
@@ -166,10 +167,11 @@ export function useChat(sessionId: string | null) {
           console.log(`[useChat] Image status: ${status}`);
         },
         // onImageReady
-        (images, generationId, _enhancedPrompt, availablePresets) => {
+        (images, generationId, _enhancedPrompt, availablePresets, socialContent) => {
           receivedImages = images;
           receivedGenerationId = generationId;
           receivedPresets = availablePresets;
+          receivedSocialContent = socialContent ?? null;
           setPendingImages(images);
           setImageStatus('complete');
           console.log(`[useChat] Images ready: ${images.length} images, generation_id=${generationId}`);
@@ -188,6 +190,7 @@ export function useChat(sessionId: string | null) {
         images: receivedImages.length > 0 ? receivedImages : undefined,
         generation_id: receivedGenerationId,
         available_presets: Object.keys(receivedPresets).length > 0 ? receivedPresets : undefined,
+        social_content: receivedSocialContent,
       };
 
       setMessages(prev => [...prev, assistantMessage]);

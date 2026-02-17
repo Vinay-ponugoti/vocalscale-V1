@@ -164,6 +164,7 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
             generationId={message.generation_id}
             availablePresets={message.available_presets}
             sessionId={message.session_id}
+            socialContent={message.social_content}
           />
         )}
 
