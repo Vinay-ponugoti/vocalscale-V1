@@ -13,7 +13,8 @@ type ActiveTab = 'chat' | 'analytics';
 
 const Chat = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar state
+  const [isDesktopOpen, setIsDesktopOpen] = useState(true); // Desktop sidebar state
   const [activeTab, setActiveTab] = useState<ActiveTab>('chat');
 
   const { sessions, isLoading: loadingSessions, deleteSession } = useChatSessions();
@@ -34,6 +35,10 @@ const Chat = () => {
     setSessionId(newSessionId);
   };
 
+  const onToggleDesktopSidebar = () => {
+    setIsDesktopOpen((prev) => !prev);
+  };
+
   return (
     <DashboardLayout fullWidth>
       <div className="h-full flex bg-white">
@@ -50,6 +55,8 @@ const Chat = () => {
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           loading={loadingSessions}
+          isDesktopOpen={isDesktopOpen}
+          onToggleDesktopSidebar={onToggleDesktopSidebar}
         />
 
         {/* Main Chat Area */}
