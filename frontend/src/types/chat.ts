@@ -87,6 +87,10 @@ export interface DoneEvent {
   sources: Source[];
   intent?: string;
   skill_used?: string;
+  tokens_used?: number;
+  prompt_tokens?: number;
+  completion_tokens?: number;
+  cost_cents?: number;
 }
 
 export interface ErrorEvent {

@@ -94,6 +94,7 @@ export function useChat(sessionId: string | null) {
   /**
    * Send a message and handle streaming response
    * Note: User authentication is handled by the backend via JWT token
+   * Returns the session_id (new or existing) so the parent can track it
    */
   const sendMessage = useCallback(async (content: string): Promise<string | null> => {
     if (!content.trim()) return null;
@@ -118,8 +119,9 @@ export function useChat(sessionId: string | null) {
       // Check if we have attachments
       const attachmentIds = pendingFiles.length > 0 ? pendingFiles.map(f => f.id) : [];
 
-      // Send to API
+      // Send to API — capture session_id from SSE done event
       let fullResponse = '';
+      let returnedSessionId: string | null = null;
 
       await chatApi.sendMessageStream(
         {
@@ -127,15 +129,16 @@ export function useChat(sessionId: string | null) {
           session_id: sessionId || undefined,
           attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
           business_context: businessContext,
-          // Remove business_id and user_id as they aren't in ChatRequest interface
         },
+        // onChunk
         (chunk) => {
           fullResponse += chunk;
           setStreamingContent(fullResponse);
         },
-        // onDone
-        () => {
-          // We handle completion manually below
+        // onDone — capture the session_id the backend created/returned
+        (newSessionId, sources) => {
+          returnedSessionId = newSessionId;
+          console.log(`[useChat] SSE done: session_id=${newSessionId}, sources=${sources?.length || 0}`);
         },
         // onError
         (err) => {
@@ -144,9 +147,10 @@ export function useChat(sessionId: string | null) {
       );
 
       // Once complete, add assistant message and clear streaming
+      const resolvedSessionId = returnedSessionId || sessionId || 'temp';
       const assistantMessage: ChatMessage = {
         id: `resp-${Date.now()}`,
-        session_id: sessionId || 'temp',
+        session_id: resolvedSessionId,
         role: 'assistant',
         content: fullResponse,
         timestamp: new Date().toISOString()
@@ -156,12 +160,19 @@ export function useChat(sessionId: string | null) {
       setStreamingContent('');
       setPendingFiles([]); // Clear attachments
 
-      // Refetch to get canonical IDs
+      // Update the ref so subsequent messages use the correct session
+      if (returnedSessionId) {
+        currentSessionIdRef.current = returnedSessionId;
+      }
+
+      // Refetch messages and sessions list to show the new conversation
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ['chat-messages'] });
+        queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
       }, 500);
 
-      return fullResponse;
+      // Return the session_id (not the response text) so parent can update state
+      return returnedSessionId;
 
     } catch (err) {
       console.error('Failed to send message:', err);
