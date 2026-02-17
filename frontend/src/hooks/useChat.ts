@@ -128,6 +128,7 @@ export function useChat(sessionId: string | null) {
       let receivedGenerationId: string | undefined;
       let receivedPresets: Record<string, string> = {};
 
+      console.log('[useChat] Starting message send...');
       setImageStatus(null);
       setPendingImages([]);
 
@@ -172,6 +173,7 @@ export function useChat(sessionId: string | null) {
           setPendingImages(images);
           setImageStatus('complete');
           console.log(`[useChat] Images ready: ${images.length} images, generation_id=${generationId}`);
+          console.log(`[useChat] Image URLs:`, images.map((img: GeneratedImage) => img.url));
         }
       );
 
