@@ -2,6 +2,26 @@
  * Chat types for Knowledge Chat feature
  */
 
+// Image Generation types
+export interface GeneratedImage {
+  url: string;
+  aspect_ratio: string;
+  preset: string;
+  preset_label: string;
+  dimensions: string;
+}
+
+export interface ImageStatusEvent {
+  status: 'enhancing_prompt' | 'generating' | 'uploading' | 'complete';
+}
+
+export interface ImageReadyEvent {
+  images: GeneratedImage[];
+  generation_id: string;
+  enhanced_prompt: string;
+  available_presets: Record<string, string>;
+}
+
 export interface ChatMessage {
   id: string;
   session_id: string;
@@ -10,6 +30,9 @@ export interface ChatMessage {
   timestamp: string;
   attachments?: FileAttachment[];
   sources?: Source[];
+  images?: GeneratedImage[];
+  generation_id?: string;
+  available_presets?: Record<string, string>;
 }
 
 export interface FileAttachment {
@@ -91,6 +114,8 @@ export interface DoneEvent {
   prompt_tokens?: number;
   completion_tokens?: number;
   cost_cents?: number;
+  images?: GeneratedImage[];
+  generation_id?: string;
 }
 
 export interface ErrorEvent {

@@ -8,6 +8,7 @@ import { User, Sparkles, Copy, Check, ThumbsUp, ThumbsDown, Share, RotateCcw, Pe
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { ChatMessage as ChatMessageType, Source } from '../../../../types/chat';
+import ImageCard from './ImageCard';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '../../../../lib/utils';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -155,6 +156,16 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
           </div>
 
         </div>
+
+        {/* Generated Images */}
+        {message.images && message.images.length > 0 && (
+          <ImageCard
+            images={message.images}
+            generationId={message.generation_id}
+            availablePresets={message.available_presets}
+            sessionId={message.session_id}
+          />
+        )}
 
         {/* Sources */}
         {message.sources && message.sources.length > 0 && (

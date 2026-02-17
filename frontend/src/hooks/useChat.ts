@@ -6,7 +6,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatApi } from '../api/chat';
-import type { ChatMessage, FileAttachment, BusinessContext } from '../types/chat';
+import type { ChatMessage, FileAttachment, BusinessContext, GeneratedImage, DoneEvent } from '../types/chat';
 import { useAuth } from '../context/AuthContext';
 import { useBusinessSetup } from '../context/BusinessSetupContext';
 
@@ -22,6 +22,8 @@ export function useChat(sessionId: string | null) {
   const [isStreaming, setIsStreaming] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<FileAttachment[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [imageStatus, setImageStatus] = useState<string | null>(null);
+  const [pendingImages, setPendingImages] = useState<GeneratedImage[]>([]);
 
   // Track the actual session ID (may be updated when new session is created)
   const currentSessionIdRef = useRef<string | null>(sessionId);
@@ -122,6 +124,12 @@ export function useChat(sessionId: string | null) {
       // Send to API — capture session_id from SSE done event
       let fullResponse = '';
       let returnedSessionId: string | null = null;
+      let receivedImages: GeneratedImage[] = [];
+      let receivedGenerationId: string | undefined;
+      let receivedPresets: Record<string, string> = {};
+
+      setImageStatus(null);
+      setPendingImages([]);
 
       await chatApi.sendMessageStream(
         {
@@ -135,14 +143,35 @@ export function useChat(sessionId: string | null) {
           fullResponse += chunk;
           setStreamingContent(fullResponse);
         },
-        // onDone — capture the session_id the backend created/returned
-        (newSessionId, sources) => {
-          returnedSessionId = newSessionId;
-          console.log(`[useChat] SSE done: session_id=${newSessionId}, sources=${sources?.length || 0}`);
+        // onDone — capture the full done event data
+        (doneData: DoneEvent) => {
+          returnedSessionId = doneData.session_id;
+          // Capture images from done event if present
+          if (doneData.images && doneData.images.length > 0) {
+            receivedImages = doneData.images;
+          }
+          if (doneData.generation_id) {
+            receivedGenerationId = doneData.generation_id;
+          }
+          console.log(`[useChat] SSE done: session_id=${doneData.session_id}, sources=${doneData.sources?.length || 0}, images=${doneData.images?.length || 0}`);
         },
         // onError
         (err) => {
           throw err;
+        },
+        // onImageStatus
+        (status) => {
+          setImageStatus(status);
+          console.log(`[useChat] Image status: ${status}`);
+        },
+        // onImageReady
+        (images, generationId, _enhancedPrompt, availablePresets) => {
+          receivedImages = images;
+          receivedGenerationId = generationId;
+          receivedPresets = availablePresets;
+          setPendingImages(images);
+          setImageStatus('complete');
+          console.log(`[useChat] Images ready: ${images.length} images, generation_id=${generationId}`);
         }
       );
 
@@ -153,12 +182,17 @@ export function useChat(sessionId: string | null) {
         session_id: resolvedSessionId,
         role: 'assistant',
         content: fullResponse,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        images: receivedImages.length > 0 ? receivedImages : undefined,
+        generation_id: receivedGenerationId,
+        available_presets: Object.keys(receivedPresets).length > 0 ? receivedPresets : undefined,
       };
 
       setMessages(prev => [...prev, assistantMessage]);
       setStreamingContent('');
       setPendingFiles([]); // Clear attachments
+      setImageStatus(null);
+      setPendingImages([]);
 
       // Update the ref so subsequent messages use the correct session
       if (returnedSessionId) {
@@ -252,6 +286,8 @@ export function useChat(sessionId: string | null) {
     isLoading,
     pendingFiles,
     error,
+    imageStatus,
+    pendingImages,
     sendMessage,
     uploadFile,
     removeFile,
