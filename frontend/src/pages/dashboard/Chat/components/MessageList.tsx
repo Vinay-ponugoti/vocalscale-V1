@@ -21,7 +21,7 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, isStreaming,
     }, [messages, isStreaming, streamingContent]);
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-2">
+        <div className="max-w-3xl mx-auto px-4 py-4">
             {messages.map((message) => {
                 if (!message || !message.id) return null;
 

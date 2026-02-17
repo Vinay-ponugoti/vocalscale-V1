@@ -6,7 +6,7 @@ import { useChatSessions } from '../../../hooks/useChat';
 import ChatSidebar from './components/ChatSidebar';
 import ChatInterface from './components/ChatInterface';
 import ChatAnalytics from './components/ChatAnalytics';
-import { Menu, SquarePen, MessageSquare, BarChart3, PanelLeftOpen } from 'lucide-react';
+import { Menu, MessageSquare, BarChart3, PanelLeftOpen } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
 type ActiveTab = 'chat' | 'analytics';
@@ -62,7 +62,7 @@ const Chat = () => {
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col min-w-0 h-full">
           {/* Header */}
-          <header className="flex items-center justify-between px-4 py-2 bg-white sticky top-0 z-30">
+          <header className="flex items-center justify-between px-4 pt-4 pb-2 bg-white sticky top-0 z-30">
             <div className="flex items-center gap-3">
               {/* Mobile menu button */}
               <button
@@ -117,19 +117,8 @@ const Chat = () => {
               </button>
             </div>
 
-            {/* Right side actions */}
-            <div className="flex items-center gap-1">
-              {activeTab === 'chat' && (
-                <button
-                  onClick={handleNewChat}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  aria-label="New chat"
-                  title="New chat"
-                >
-                  <SquarePen size={22} className="text-gray-600" />
-                </button>
-              )}
-            </div>
+            {/* Spacer to balance header layout */}
+            <div className="w-10" />
           </header>
 
           {/* Content Area */}

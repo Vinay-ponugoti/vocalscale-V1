@@ -87,8 +87,8 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
           className={cn(
             'relative',
             isUser
-              ? 'inline-block bg-blue-50/50 text-black px-5 py-3.5 rounded-2xl rounded-tr-sm text-left border border-blue-100/50'
-              : 'text-black leading-7 text-[15px]'
+              ? 'inline-block bg-gray-50 text-slate-900 px-5 py-3.5 rounded-2xl rounded-tr-sm text-left border border-gray-100'
+              : 'text-slate-900 leading-7 text-[15px]'
           )}
         >
           {/* Streaming Indicator */}
@@ -100,11 +100,11 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
             </div>
           )}
 
-          <div className={cn("markdown-content prose prose-slate prose-sm max-w-none break-words", isUser && "prose-p:m-0")}>
+          <div className={cn("markdown-content prose prose-slate prose-sm max-w-none break-words [&_p]:text-slate-900 [&_li]:text-slate-900 [&_strong]:text-slate-900 [&_h1]:text-slate-900 [&_h2]:text-slate-900 [&_h3]:text-slate-900", isUser && "prose-p:m-0")}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                p: ({ children }) => <p className="mb-4 last:mb-0 leading-relaxed">{children}</p>,
+                p: ({ children }) => <p className="mb-4 last:mb-0 leading-relaxed text-slate-900">{children}</p>,
                 ul: ({ children }) => <ul className="my-4 list-disc pl-6 space-y-1">{children}</ul>,
                 ol: ({ children }) => <ol className="my-4 list-decimal pl-6 space-y-1">{children}</ol>,
                 li: ({ children }) => <li className="pl-1">{children}</li>,
@@ -143,7 +143,7 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
                 table: ({ children }) => <div className="overflow-x-auto my-4 border rounded-lg"><table className="w-full text-sm">{children}</table></div>,
                 th: ({ children }) => <th className="bg-gray-50 px-4 py-2 text-left font-semibold border-b">{children}</th>,
                 td: ({ children }) => <td className="px-4 py-2 border-b last:border-0">{children}</td>,
-                blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-200 pl-4 py-1 my-4 text-gray-500 italic">{children}</blockquote>
+                blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-200 pl-4 py-1 my-4 text-slate-700 italic">{children}</blockquote>
               }}
             >
               {message.content}
