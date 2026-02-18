@@ -1,3 +1,5 @@
+import { getDevelopmentHeaders } from '../lib/devHeaders';
+
 /**
  * Retry a function with exponential backoff
  * @param fn Function to retry
@@ -37,7 +39,7 @@ export async function retryWithBackoff<T>(
 export async function checkBackendHealth(apiUrl: string): Promise<boolean> {
     const response = await fetch(`${apiUrl}/health`, {
         method: 'GET',
-        headers: { 'ngrok-skip-browser-warning': 'true' },
+        headers: getDevelopmentHeaders(),
         signal: AbortSignal.timeout(3000) // Reduced from 5s to 3s
     });
 

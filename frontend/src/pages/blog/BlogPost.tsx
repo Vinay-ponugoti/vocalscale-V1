@@ -6,6 +6,7 @@ import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
 import { SEO } from '../../components/SEO';
 import { blogPosts } from '../../content/blog/posts';
+import { sanitizeHtml } from '../../lib/sanitize';
 
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();
@@ -85,9 +86,15 @@ export default function BlogPost() {
                     </motion.header>
 
                     {/* Article Content */}
+                    {/* SECURITY NOTE: dangerouslySetInnerHTML is used here for blog content rendering.
+                        All HTML is sanitized using DOMPurify (sanitizeHtml) to prevent XSS attacks.
+                        Blog post content is currently from hardcoded posts.ts data (safe source).
+                        If migrating to a CMS in the future, ensure server-side validation and
+                        additional sanitization are implemented.
+                    */}
                     <div
                         className="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-img:rounded-2xl prose-strong:text-slate-900 prose-p:leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
                     />
 
                     {/* Share Section */}

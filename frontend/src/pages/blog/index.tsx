@@ -6,6 +6,7 @@ import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
 import { SEO } from '../../components/SEO';
 import { blogPosts } from '../../content/blog/posts';
+import { sanitizeHtml } from '../../lib/sanitize';
 
 export default function BlogIndex() {
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -132,14 +133,14 @@ export default function BlogIndex() {
                           {post.title}
                         </h2>
 
-                        {/* Render HTML Content safely */}
+                        {/* Render HTML Content safely with sanitization */}
                         <div
                           className="prose prose-slate prose-sm max-w-none
                                 prose-headings:font-bold prose-headings:text-slate-900 prose-headings:text-sm prose-headings:uppercase prose-headings:tracking-wider prose-headings:mb-3
                                 prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-4
                                 prose-ul:list-disc prose-ul:pl-4 prose-ul:space-y-2 prose-li:text-slate-600
                                 prose-a:text-blue-600 prose-strong:text-slate-800"
-                          dangerouslySetInnerHTML={{ __html: post.content }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
                         />
 
                         <div className="flex items-center gap-3 mt-8 pt-6 border-t border-slate-50">

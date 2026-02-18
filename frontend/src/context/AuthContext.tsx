@@ -7,6 +7,7 @@ import {
 } from '../utils/sessionUtils';
 import { safeLocalStorage, safeSessionStorage } from '../utils/storageUtils';
 import { env } from '../config/env';
+import { getDevelopmentHeaders } from '../lib/devHeaders';
 
 interface AuthContextType {
   session: Session | null;
@@ -69,7 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await fetch(`${env.API_URL}/profile`, {
         headers: {
           'Authorization': `Bearer ${currentSession.access_token}`,
-          'ngrok-skip-browser-warning': 'true'
+          ...getDevelopmentHeaders()
         }
       });
 
@@ -132,7 +133,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
+            ...getDevelopmentHeaders()
           },
           body: JSON.stringify({
             access_token: session.provider_token,
@@ -271,7 +272,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'ngrok-skip-browser-warning': 'true'
+            ...getDevelopmentHeaders()
           }
         }).catch(() => null);
       }
@@ -356,7 +357,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               headers: {
                 'Authorization': `Bearer ${newSession.access_token}`,
                 'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true'
+                ...getDevelopmentHeaders()
               },
               body: JSON.stringify({
                 access_token: newSession.provider_token,
