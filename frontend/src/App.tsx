@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 // removed missing imports
 import ScrollToTop from './components/ScrollToTop';
 import { LazyMotion, domAnimation } from 'framer-motion';
@@ -13,7 +13,7 @@ import { SetupProvider } from './context/SetupContext';
 import { SearchProvider } from './context/SearchProvider';
 import { PageTracking } from './components/PageTracking';
 import { WebVitalsTracking } from './components/WebVitalsTracking';
-import { ChatWidget } from './components/ChatWidget';
+
 
 // Lazy Load Pages
 import { lazyImport } from './utils/lazyImport';
@@ -60,15 +60,6 @@ const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
 const Inventory = lazyImport(() => import('./pages/dashboard/Inventory'));
 const Orders = lazyImport(() => import('./pages/dashboard/Orders'));
 
-// Only show ChatWidget on dashboard / app pages, not on the public landing / marketing pages
-function AppWidgets() {
-  const { pathname } = useLocation();
-  const isPublicPage = ['/', '/privacy', '/terms', '/pricing', '/features', '/process', '/blog', '/login', '/signup', '/forgot-password', '/auth/callback'].some(
-    p => pathname === p || pathname.startsWith('/blog/')
-  );
-  if (isPublicPage) return null;
-  return <ChatWidget position="bottom-right" />;
-}
 
 function App() {
   return (
@@ -166,8 +157,6 @@ function App() {
         </Suspense>
       </LazyMotion>
       
-      {/* Chat Widget - Only shown on dashboard/app pages, not on public landing */}
-      <AppWidgets />
     </Router>
   );
 }
