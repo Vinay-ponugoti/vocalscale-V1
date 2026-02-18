@@ -140,13 +140,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
       {/* Input area */}
       <div
-        className="bg-white/80 backdrop-blur-sm border-t border-gray-100 px-4 py-4 shrink-0 z-20"
-        style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+        className="bg-white/80 backdrop-blur-sm border-t border-gray-100 px-4 pt-3 pb-3 shrink-0 z-20"
+        style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
       >
         <div className="max-w-3xl mx-auto">
           {/* Image generation status badge */}
           {imageStatus && imageStatus !== 'complete' && (
-            <div className="mb-3 flex justify-center">
+            <div className="mb-2 flex justify-center">
               <ImageStatusBadge status={imageStatus} />
             </div>
           )}
@@ -158,7 +158,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
             onRemoveFile={removeFile}
             placeholder={isAppLoading ? "Authenticating..." : "Ask anything — try: 'Create a 20% off Instagram post'"}
           />
-          <p className="text-center text-[11px] text-gray-400 mt-2 select-none">
+          <p className="text-center text-[11px] text-gray-400 mt-1.5 select-none">
             VocalScale AI can make mistakes. Verify important information.
           </p>
         </div>

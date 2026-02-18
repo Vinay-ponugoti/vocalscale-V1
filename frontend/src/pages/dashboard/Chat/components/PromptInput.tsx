@@ -146,13 +146,13 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             disabled={disabled}
             placeholder={placeholder || 'Ask anything'}
             className={cn(
-              'flex-1 resize-none bg-transparent outline-none ring-0',
+              'flex-1 resize-none bg-transparent ring-0',
               'text-[15px] text-gray-900 placeholder:text-gray-400',
               'font-sans leading-relaxed',
               'min-h-[26px] max-h-[120px] py-0.5',
               disabled && 'opacity-50 cursor-not-allowed',
             )}
-            style={{ border: 'none', boxShadow: 'none' }}
+            style={{ border: 'none', boxShadow: 'none', outline: 'none' }}
           />
 
           {/* Right actions */}
@@ -188,11 +188,6 @@ export const PromptInput: React.FC<PromptInputProps> = ({
         </div>
       </div>
 
-      {/* Hint */}
-      <p className="text-center text-[11px] text-gray-400 mt-2 select-none">
-        Press <kbd className="px-1 py-0.5 bg-gray-100 rounded text-[10px] font-mono">Enter</kbd> to send
-        · <kbd className="px-1 py-0.5 bg-gray-100 rounded text-[10px] font-mono">Shift+Enter</kbd> for newline
-      </p>
     </div>
   );
 };
