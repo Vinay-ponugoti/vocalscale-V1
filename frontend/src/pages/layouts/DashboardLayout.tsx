@@ -668,7 +668,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
         )}
-        <SupportWidget />
+        {/* SupportWidget only on Help Center page */}
+        {location.pathname === '/dashboard/help' && <SupportWidget />}
       </div>
     </>
   );
