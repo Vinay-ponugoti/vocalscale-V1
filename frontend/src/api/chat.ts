@@ -9,6 +9,7 @@ import type {
   SessionsResponse,
   MessagesResponse,
   FileUploadResponse,
+  GeneratedImage,
 } from '../types/chat';
 
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
@@ -216,6 +217,35 @@ class ChatAPI {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ detail: 'Failed to delete session' }));
       throw new Error(errorData.detail || `HTTP ${response.status}`);
+    }
+  }
+
+  /**
+   * Regenerate an AI image (stub for ImageCard component)
+   * TODO: Implement with actual image generation API
+   */
+  async regenerateImage(imageId: string): Promise<GeneratedImage> {
+    // Stub implementation - replace with actual API call
+    const userId = this.getUserId();
+    const headers = await getAuthHeader(userId);
+
+    try {
+      const response = await fetch(`${KNOWLEDGE_URL}/images/${imageId}/regenerate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to regenerate image');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('[ChatAPI] regenerateImage failed:', error);
+      throw error;
     }
   }
 }

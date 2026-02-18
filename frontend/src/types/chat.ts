@@ -92,3 +92,27 @@ export interface DoneEvent {
 export interface ErrorEvent {
   error: string;
 }
+
+// AI Image generation types
+export interface GeneratedImage {
+  id: string;
+  url: string;
+  prompt: string;
+  size: string;
+  preset?: string;
+  preset_label?: string;
+  dimensions?: string;
+  created_at: string;
+  caption?: string;
+  hashtags?: string[];
+  ideas?: string[];
+}
+
+export interface SocialContent {
+  type: 'caption' | 'hashtags' | 'ideas';
+  content: string;
+  platform?: string;
+  caption?: string;
+  hashtags?: string[];
+  ideas?: string[];
+}
