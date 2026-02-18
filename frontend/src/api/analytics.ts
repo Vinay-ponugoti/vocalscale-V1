@@ -2,8 +2,6 @@
  * Chat Analytics API client
  */
 
-import { env } from '../config/env';
-import { getAuthHeader } from '../lib/api';
 import { getStoredSession } from '../utils/sessionUtils';
 import type { ChatAnalytics } from '../types/analytics';
 
