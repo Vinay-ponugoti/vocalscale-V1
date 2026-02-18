@@ -41,6 +41,8 @@ export interface ChatMessage {
   generation_id?: string;
   available_presets?: Record<string, string>;
   social_content?: SocialContent | null;
+  // Persisted from Supabase — mapped back to `images` on load
+  image_data?: GeneratedImage[];
 }
 
 export interface FileAttachment {

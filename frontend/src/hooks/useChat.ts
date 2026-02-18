@@ -84,10 +84,20 @@ export function useChat(sessionId: string | null) {
     }
   }, [sessionId]);
 
-  // Sync fetched messages when they arrive from Supabase
+  // Sync fetched messages when they arrive from Supabase.
+  // Map image_data (persisted JSON) back to the images/generation_id fields
+  // so images survive page reload.
+  // While streaming, skip the sync — we don't want to overwrite the live
+  // assistant message that already has images attached in memory.
   useEffect(() => {
     if (fetchedMessages && !isStreaming) {
-      setMessages(fetchedMessages);
+      const mapped = fetchedMessages.map((msg) => {
+        if (msg.image_data && msg.image_data.length > 0) {
+          return { ...msg, images: msg.image_data };
+        }
+        return msg;
+      });
+      setMessages(mapped);
     }
   }, [fetchedMessages, isStreaming]);
 
