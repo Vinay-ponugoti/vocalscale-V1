@@ -17,7 +17,10 @@ export default defineConfig(({ mode }) => {
     csp += ` style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;`;
     csp += ` img-src 'self' data: blob: https://c.bing.com https://*.google-analytics.com;`;
     csp += ` media-src 'self' data: https://*.r2.dev https://api.vocalscale.com;`;
-    csp += ` connect-src ${allowedOrigins} ${isDev || allowInternet ? 'https:' : ''} wss:;`;
+    // Always include the known production API origins; extend with env-var for extras
+    const prodOrigins = `'self' https://api.vocalscale.com https://billing.vocalscale.com https://knowledge.vocalscale.com https://*.supabase.co https://static.cloudflareinsights.com https://challenges.cloudflare.com https://*.clarity.ms https://c.bing.com https://www.google-analytics.com`;
+    const extraOrigins = allowedOrigins !== 'self' ? ` ${allowedOrigins}` : '';
+    csp += ` connect-src ${prodOrigins}${extraOrigins} ${isDev || allowInternet ? 'https:' : ''} wss:;`;
     csp += ` font-src 'self' https://fonts.gstatic.com;`;
     csp += ` frame-src 'self' https://challenges.cloudflare.com;`;
 
@@ -37,11 +40,13 @@ export default defineConfig(({ mode }) => {
           const clarityId = process.env.VITE_CLARITY_PROJECT_ID || '';
           const csp = buildCSP().replace('%%VITE_CSP_NONCE%%', nonce);
 
+          // Use global regex so ALL occurrences of the nonce placeholder are replaced
+          // (Clarity script + GA script both use %%VITE_CSP_NONCE%%)
           return html
             .replace('%%VITE_GA_TRACKING_ID%%', gaId)
             .replace('%%VITE_CLARITY_PROJECT_ID%%', clarityId)
             .replace('%%VITE_CSP%%', csp)
-            .replace('%%VITE_CSP_NONCE%%', nonce);
+            .replace(/%%VITE_CSP_NONCE%%/g, nonce);
         },
       },
     ],
