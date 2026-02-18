@@ -12,6 +12,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { cn } from '../../../../lib/utils';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import ImageCard from './ImageCard';
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -171,6 +172,17 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
           </div>
 
         </div>
+
+        {/* Generated Images + Social Content */}
+        {message.images && message.images.length > 0 && (
+          <ImageCard
+            images={message.images}
+            generationId={message.generation_id}
+            availablePresets={message.available_presets}
+            sessionId={message.session_id}
+            socialContent={message.social_content}
+          />
+        )}
 
         {/* Sources */}
         {message.sources && message.sources.length > 0 && (

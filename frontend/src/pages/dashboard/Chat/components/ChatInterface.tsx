@@ -11,6 +11,7 @@ import { useChat } from '../../../../hooks/useChat';
 import { useAuth } from '../../../../context/AuthContext';
 import { ChevronDown, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
+import { ImageStatusBadge } from './ImageCard';
 
 interface ChatInterfaceProps {
   sessionId?: string | null;
@@ -29,6 +30,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
     removeFile,
     error,
     clearError,
+    imageStatus,
   } = useChat(sessionId || null);
 
   const isAppLoading = authLoading || !user;
@@ -147,13 +149,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
       >
         <div className="max-w-3xl mx-auto">
+          {/* Image generation status badge */}
+          {imageStatus && imageStatus !== 'complete' && (
+            <div className="mb-3 flex justify-center">
+              <ImageStatusBadge status={imageStatus} />
+            </div>
+          )}
           <PromptInput
             onSend={handleSendMessage}
             onFileUpload={uploadFile}
             disabled={isStreaming || isAppLoading}
             pendingFiles={pendingFiles}
             onRemoveFile={removeFile}
-            placeholder={isAppLoading ? "Authenticating..." : "Ask anything"}
+            placeholder={isAppLoading ? "Authenticating..." : "Ask anything — try: 'Create a 20% off Instagram post'"}
           />
           <p className="text-center text-xs text-gray-400 mt-2">
             VocalScale can make mistakes. Check important info.
