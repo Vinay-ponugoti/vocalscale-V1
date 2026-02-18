@@ -241,7 +241,6 @@ class BusinessSetupAPI {
       return [];
     }
     const data = await response.json();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.files || [];
   }
 

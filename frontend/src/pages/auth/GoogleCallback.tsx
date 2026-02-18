@@ -6,6 +6,7 @@ import { env } from '../../config/env';
 import { useAuth } from '../../context/AuthContext';
 import { PageLoader } from '../../components/ui/PageLoader';
 import { fetchUserProfile } from '../../utils/sessionUtils';
+import { getDevelopmentHeaders } from '../../lib/devHeaders';
 
 const GoogleCallback = () => {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ const GoogleCallback = () => {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${accessToken}`,
-              'ngrok-skip-browser-warning': 'true'
+              ...getDevelopmentHeaders()
             },
             body: JSON.stringify({
               access_token: accessToken,
@@ -99,7 +100,7 @@ const GoogleCallback = () => {
         const dateStr = now.toISOString().split('T')[0];
         const authHeaders = {
           'Authorization': `Bearer ${accessToken}`,
-          'ngrok-skip-browser-warning': 'true'
+          ...getDevelopmentHeaders()
         };
 
         const prefetchOptions = { staleTime: 1000 * 60 * 5 };

@@ -1,4 +1,5 @@
 import { env } from '../config/env';
+import { getDevelopmentHeaders } from './devHeaders';
 
 const METRICS_ENDPOINT = `${env.API_URL}/metrics/frontend`;
 
@@ -103,7 +104,7 @@ class MetricsCollector {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true',
+            ...getDevelopmentHeaders(),
           },
           body: payload,
           // Use keepalive for critical metrics if not unloading

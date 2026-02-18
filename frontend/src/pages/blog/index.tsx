@@ -1,34 +1,26 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, ArrowRight, Search, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import { Header } from '../landing/components/Header';
 import { Footer } from '../landing/components/Footer';
 import { SEO } from '../../components/SEO';
 import { blogPosts } from '../../content/blog/posts';
+import { sanitizeHtml } from '../../lib/sanitize';
 
 export default function BlogIndex() {
   const [activeCategory, setActiveCategory] = useState<string>('All');
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Extract unique tags (limit to 8 for "Topics")
   const allTags = Array.from(new Set(blogPosts.flatMap(post => post.tags)));
   const topics = allTags.filter(t => t !== 'Product Updates').slice(0, 8);
 
-  // Filter posts
+  // Filter posts by category
   let filteredPosts = blogPosts.filter(post => {
     const matchesCategory = activeCategory === 'All'
-      ? !post.tags.includes('Product Updates') // Exclude product updates from "All" (assumed standard behavior) or keep them? User said "remove all blogs keep only one", likely referring to the Blog tab.
+      ? !post.tags.includes('Product Updates')
       : post.tags.includes(activeCategory);
-
-    // For 'All' or generic 'Blog' category, we might want to exclude Product Updates if they are treated separately
-    // But for now, let's just stick to the category filter.
-
-    // Specific constraint: "in blog page remove all blogs keeps only one"
-    // This implies for the main list view, we show only 1.
-    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesCategory;
   });
 
   // Sort by date desc
@@ -141,14 +133,14 @@ export default function BlogIndex() {
                           {post.title}
                         </h2>
 
-                        {/* Render HTML Content safely */}
+                        {/* Render HTML Content safely with sanitization */}
                         <div
-                          className="prose prose-slate prose-sm max-w-none 
+                          className="prose prose-slate prose-sm max-w-none
                                 prose-headings:font-bold prose-headings:text-slate-900 prose-headings:text-sm prose-headings:uppercase prose-headings:tracking-wider prose-headings:mb-3
                                 prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-4
                                 prose-ul:list-disc prose-ul:pl-4 prose-ul:space-y-2 prose-li:text-slate-600
                                 prose-a:text-blue-600 prose-strong:text-slate-800"
-                          dangerouslySetInnerHTML={{ __html: post.content }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
                         />
 
                         <div className="flex items-center gap-3 mt-8 pt-6 border-t border-slate-50">
@@ -165,7 +157,7 @@ export default function BlogIndex() {
                   ))}
                 </div>
               ) : (
-                /* LAYOUT: STANDARD LIST (For Blog/All - Limited to 1) */
+                /* LAYOUT: STANDARD LIST (For Blog/All - Limited to 10) */
                 filteredPosts.length > 0 ? (
                   filteredPosts.map((post) => (
                     <motion.article

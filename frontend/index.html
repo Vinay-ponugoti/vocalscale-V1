@@ -10,8 +10,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob: https://challenges.cloudflare.com https://www.clarity.ms https://scripts.clarity.ms; img-src 'self' https: data: blob: https://c.bing.com https://*.clarity.ms; media-src 'self' https: data: https://*.r2.dev https://api.vocalscale.com; font-src 'self' https: fonts.gstatic.com; connect-src 'self' https: wss: http://34.132.14.121:8001 https://api.vocalscale.com https://billing.vocalscale.com https://knowledge.vocalscale.com https://*.supabase.co wss://*.supabase.co https://formsubmit.co https://*.clarity.ms https://c.bing.com;">
+  <meta http-equiv="Content-Security-Policy" content="%%VITE_CSP%%">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -44,15 +43,15 @@
       c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
       t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
       y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
-    })(window, document, "clarity", "script", "ve8uvwhwb7");
+    })(window, document, "clarity", "script", "%%VITE_CLARITY_PROJECT_ID%%");
   </script>
 
   <!-- Google Analytics 4 -->
-  <script>
+  <script nonce="%%VITE_CSP_NONCE%%">
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'G-ZX6K9J9X');
+    gtag('config', '%%VITE_GA_TRACKING_ID%%');
 
     // Optional: Performance monitoring
     if ('PerformanceObserver' in window) {

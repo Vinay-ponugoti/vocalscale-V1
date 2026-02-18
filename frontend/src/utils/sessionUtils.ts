@@ -1,32 +1,169 @@
 import type { Session } from '../types/auth';
 import { env } from '../config/env';
 import { safeLocalStorage, safeSessionStorage } from './storageUtils';
+import { safeEncrypt, safeDecrypt } from './cryptoUtils';
+import { getDevelopmentHeaders } from '../lib/devHeaders';
 
 const SESSION_KEY = 'voice_ai_session';
+const LAST_ACTIVITY_KEY = 'voice_ai_last_activity';
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes idle timeout
+const SESSION_WARNING_THRESHOLD = 5 * 60; // Show warning 5 minutes before expiry
+const TOKEN_ROTATION_THRESHOLD = 15 * 60; // Rotate tokens every 15 minutes (if backend supports)
+
+// Session metadata for security tracking
+interface SessionMetadata {
+  lastTokenRotation: number;
+  createdAt: number;
+  deviceFingerprint: string;
+}
 
 export interface SessionValidationResult {
   isValid: boolean;
   session: Session | null;
   error?: string;
   backendReachable?: boolean;
+  warning?: string;
 }
 
-export const storeSession = (session: Session | null, remember: boolean = true) => {
+export interface SessionWarning {
+  type: 'expiring' | 'idle' | 'rotating';
+  message: string;
+  timeRemaining?: number;
+}
+
+/**
+ * Generate simple device fingerprint for session validation
+ */
+function getDeviceFingerprint(): string {
+  try {
+    const parts = [
+      navigator.userAgent,
+      navigator.language,
+      screen.colorDepth,
+      new Date().getTimezoneOffset(),
+      !!window.sessionStorage,
+      !!window.localStorage,
+    ];
+    // Simple hash (not cryptographic, just for tracking)
+    return parts.join('|').split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0).toString(36);
+  } catch (e) {
+    return 'unknown';
+  }
+}
+
+/**
+ * Encrypt sensitive session data before storage
+ * SECURITY: Encrypts access_token and refresh_token individually
+ */
+async function encryptSensitiveSession(session: Session): Promise<Session> {
+  try {
+    const encrypted: Session = { ...session };
+    
+    // Encrypt access token
+    if (encrypted.access_token) {
+      encrypted.access_token = await safeEncrypt(encrypted.access_token);
+    }
+    
+    // Encrypt refresh token
+    if (encrypted.refresh_token) {
+      encrypted.refresh_token = await safeEncrypt(encrypted.refresh_token);
+    }
+    
+    // Mark as encrypted
+    (encrypted as any)._encrypted = true;
+    
+    return encrypted;
+  } catch (e) {
+    console.error('Failed to encrypt session data:', e);
+    // Fall back to unencrypted if encryption fails
+    return session;
+  }
+}
+
+/**
+ * Decrypt sensitive session data after retrieval
+ */
+async function decryptSensitiveSession(session: Session): Promise<Session> {
+  try {
+    // Check if data is already encrypted
+    if (!(session as any)._encrypted) {
+      return session; // Already decrypted
+    }
+    
+    const decrypted: Session = { ...session };
+    
+    // Decrypt access token
+    if (decrypted.access_token) {
+      decrypted.access_token = await safeDecrypt(decrypted.access_token);
+    }
+    
+    // Decrypt refresh token
+    if (decrypted.refresh_token) {
+      decrypted.refresh_token = await safeDecrypt(decrypted.refresh_token);
+    }
+    
+    delete (decrypted as any)._encrypted;
+    
+    return decrypted;
+  } catch (e) {
+    console.error('Failed to decrypt session data:', e);
+    // Return session as-is if decryption fails
+    return session;
+  }
+}
+
+/**
+ * Store session with encryption and metadata
+ */
+export const storeSession = async (session: Session | null, remember: boolean = true) => {
   if (session) {
-    if (remember) {
-      safeLocalStorage.setItem(SESSION_KEY, JSON.stringify(session));
-      safeSessionStorage.removeItem(SESSION_KEY); // maintain only one copy
-    } else {
-      safeSessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-      safeLocalStorage.removeItem(SESSION_KEY); // maintain only one copy
+    try {
+      // Encrypt sensitive data
+      const encryptedSession = await encryptSensitiveSession(session);
+      
+      // Add metadata
+      const metadata: SessionMetadata = {
+        lastTokenRotation: Date.now(),
+        createdAt: Date.now(),
+        deviceFingerprint: getDeviceFingerprint(),
+      };
+      
+      // Combine session with metadata
+      const sessionWithMeta = {
+        ...encryptedSession,
+        _metadata: metadata
+      };
+      
+      const sessionJson = JSON.stringify(sessionWithMeta);
+      
+      if (remember) {
+        safeLocalStorage.setItem(SESSION_KEY, sessionJson);
+        safeSessionStorage.removeItem(SESSION_KEY);
+      } else {
+        safeSessionStorage.setItem(SESSION_KEY, sessionJson);
+        safeLocalStorage.removeItem(SESSION_KEY);
+      }
+      
+      // Update last activity timestamp
+      updateLastActivity();
+    } catch (e) {
+      console.error('Failed to store session:', e);
     }
   } else {
     safeLocalStorage.removeItem(SESSION_KEY);
     safeSessionStorage.removeItem(SESSION_KEY);
+    safeLocalStorage.removeItem(LAST_ACTIVITY_KEY);
+    safeSessionStorage.removeItem(LAST_ACTIVITY_KEY);
   }
 };
 
-export const getStoredSession = (): Session | null => {
+/**
+ * Retrieve and decrypt session
+ */
+export const getStoredSession = async (): Promise<Session | null> => {
   // Check sessionStorage first (current tab session)
   let stored = safeSessionStorage.getItem(SESSION_KEY);
 
@@ -38,7 +175,36 @@ export const getStoredSession = (): Session | null => {
   if (!stored) return null;
 
   try {
-    return JSON.parse(stored);
+    const sessionData = JSON.parse(stored);
+    
+    // Extract and validate metadata
+    const metadata = sessionData._metadata;
+    if (metadata) {
+      // Verify device fingerprint on persistent sessions
+      const currentFingerprint = getDeviceFingerprint();
+      if (metadata.deviceFingerprint && metadata.deviceFingerprint !== currentFingerprint) {
+        console.warn('Session device fingerprint mismatch - possible theft attempt');
+        // Clear the suspicious session
+        await storeSession(null);
+        return null;
+      }
+      
+      // Check if session is too old (stale)
+      const age = Date.now() - metadata.createdAt;
+      const maxAge = 90 * 24 * 60 * 60 * 1000; // 90 days
+      if (age > maxAge) {
+        console.warn('Session is too old, clearing');
+        await storeSession(null);
+        return null;
+      }
+      
+      delete sessionData._metadata;
+    }
+    
+    // Decrypt sensitive data
+    const decryptedSession = await decryptSensitiveSession(sessionData);
+    
+    return decryptedSession;
   } catch (e) {
     console.error('Failed to parse stored session:', e);
     // Determine where it came from to remove it
@@ -51,9 +217,36 @@ export const getStoredSession = (): Session | null => {
   }
 };
 
-export const getAuthToken = (): string | null => {
-  const session = getStoredSession();
+/**
+ * Get stored session synchronously (for use during initial load)
+ * Note: This won't decrypt tokens - use getStoredSession() for full decryption
+ */
+export const getStoredSessionSync = (): Session | null => {
+  let stored = safeSessionStorage.getItem(SESSION_KEY);
+  if (!stored) {
+    stored = safeLocalStorage.getItem(SESSION_KEY);
+  }
+  if (!stored) return null;
+  try {
+    return JSON.parse(stored);
+  } catch (e) {
+    return null;
+  }
+};
 
+/**
+ * Get auth token (deprecated - use getAuthTokenAsync for decrypted token)
+ */
+export const getAuthToken = (): string | null => {
+  const session = getStoredSessionSync();
+  return session?.access_token || null;
+};
+
+/**
+ * Get auth token asynchronously (properly decrypted)
+ */
+export const getAuthTokenAsync = async (): Promise<string | null> => {
+  const session = await getStoredSession();
   return session?.access_token || null;
 };
 
@@ -80,7 +273,7 @@ export const fetchUserProfile = async (accessToken: string): Promise<UserProfile
     const response = await fetch(`${env.API_URL}/auth/validate`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
-        'ngrok-skip-browser-warning': 'true'
+        ...getDevelopmentHeaders()
       }
     });
 
@@ -90,7 +283,6 @@ export const fetchUserProfile = async (accessToken: string): Promise<UserProfile
 
     const data: ValidationResponse = await response.json();
 
-    // Ensure user_id exists - return null if missing to trigger fallback handling
     if (!data.user_id) {
       console.warn('[fetchUserProfile] No user_id in validation response:', Object.keys(data));
       return null;
@@ -108,8 +300,86 @@ export const fetchUserProfile = async (accessToken: string): Promise<UserProfile
   }
 };
 
+/**
+ * Update last activity timestamp
+ */
+export const updateLastActivity = () => {
+  const timestamp = Date.now();
+  safeSessionStorage.setItem(LAST_ACTIVITY_KEY, timestamp.toString());
+  
+  // Also update in localStorage if using persistent session
+  const stored = safeLocalStorage.getItem(SESSION_KEY);
+  if (stored) {
+    safeLocalStorage.setItem(LAST_ACTIVITY_KEY, timestamp.toString());
+  }
+};
+
+/**
+ * Get time since last activity
+ */
+export const getIdleTime = (): number => {
+  const sessionTime = safeSessionStorage.getItem(LAST_ACTIVITY_KEY);
+  const localTime = safeLocalStorage.getItem(LAST_ACTIVITY_KEY);
+  
+  const latestTime = sessionTime || localTime;
+  if (!latestTime) return 0;
+  
+  try {
+    return Date.now() - parseInt(latestTime, 10);
+  } catch (e) {
+    return 0;
+  }
+};
+
+/**
+ * Check if session is idle (user inactive for too long)
+ */
+export const isSessionIdle = (timeoutMs: number = IDLE_TIMEOUT_MS): boolean => {
+  return getIdleTime() > timeoutMs;
+};
+
+/**
+ * Get session warning if any
+ */
+export const getSessionWarning = async (): Promise<SessionWarning | null> => {
+  const session = await getStoredSession();
+  
+  if (!session) {
+    return null;
+  }
+  
+  // Check idle timeout
+  const idleTime = getIdleTime();
+  const idleWarningThreshold = IDLE_TIMEOUT_MS - (5 * 60 * 1000); // 5 minutes before timeout
+  
+  if (idleTime > idleWarningThreshold) {
+    const remainingMinutes = Math.max(0, Math.ceil((IDLE_TIMEOUT_MS - idleTime) / 60000));
+    return {
+      type: 'idle',
+      message: `You've been inactive. Your session will expire in ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}.`,
+      timeRemaining: IDLE_TIMEOUT_MS - idleTime
+    };
+  }
+  
+  // Check session expiry warning
+  const remainingSeconds = getSessionTimeRemaining(session);
+  if (remainingSeconds > 0 && remainingSeconds < SESSION_WARNING_THRESHOLD) {
+    const minutes = Math.floor(remainingSeconds / 60);
+    return {
+      type: 'expiring',
+      message: `Your session will expire in ${minutes} minute${minutes !== 1 ? 's' : ''}.`,
+      timeRemaining: remainingSeconds * 1000
+    };
+  }
+  
+  return null;
+};
+
+/**
+ * Validate session with enhanced security checks
+ */
 export const validateSession = async (): Promise<SessionValidationResult> => {
-  const session = getStoredSession();
+  const session = await getStoredSession();
 
   if (!session) {
     return {
@@ -119,10 +389,25 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
     };
   }
 
-  // Check local expiration first for immediate feedback
+  // Check idle timeout
+  if (isSessionIdle()) {
+    console.warn('Session idle timeout exceeded. Clearing session.');
+    await storeSession(null);
+    return {
+      isValid: false,
+      session: null,
+      error: 'Session expired due to inactivity',
+      backendReachable: true
+    };
+  }
+  
+  // Update activity timestamp on validation
+  updateLastActivity();
+
+  // Check local expiration first
   if (isSessionExpired(session)) {
     console.warn('Session expired (local check). Clearing storage.');
-    storeSession(null);
+    await storeSession(null);
     return {
       isValid: false,
       session: null,
@@ -131,15 +416,15 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
     };
   }
 
-  // Backend validation - enforce backend dependency
+  // Backend validation
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout for backend check (increased from 2s)
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     const response = await fetch(`${env.API_URL}/auth/validate`, {
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
-        'ngrok-skip-browser-warning': 'true'
+        ...getDevelopmentHeaders()
       },
       signal: controller.signal
     });
@@ -148,11 +433,9 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
     if (!response.ok) {
       console.warn('Backend session validation failed:', response.status);
 
-      // CRITICAL: If 401, session is definitely invalid/expired.
-      // We MUST clear it to trigger a redirect.
       if (response.status === 401) {
         console.error('Session expired (401). Clearing stored session.');
-        storeSession(null);
+        await storeSession(null);
         return {
           isValid: false,
           session: null,
@@ -161,8 +444,6 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
         };
       }
 
-      // For other errors (5xx, etc), we might be in a temporary glitch.
-      // We keep the local session but flag the backend status.
       return {
         isValid: true,
         session,
@@ -171,7 +452,6 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
       };
     }
 
-    // Parse the validation response to get user data
     const validationData = await response.json();
 
     if (validationData.user_id) {
@@ -182,16 +462,15 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
         full_name: validationData.user_metadata?.full_name || session.user?.full_name || '',
         avatar_url: validationData.user_metadata?.avatar_url || validationData.user_metadata?.picture || '',
       };
-      storeSession(session);
-    } else {
-      // Backend returned OK but without user_id - log this for debugging
-      console.warn('[validateSession] Backend returned OK but no user_id in response:', Object.keys(validationData));
-
-      // If the session already has a valid user.id, keep it
-      // Otherwise this is a problem state
-      if (!session.user?.id) {
-        console.error('[validateSession] Session has no user ID and backend did not provide one');
+      
+      // Check if token needs rotation
+      const shouldRotate = shouldRotateToken(session);
+      if (shouldRotate) {
+        console.log('Token rotation advised (backend support required)');
+        // Note: Actual rotation requires backend endpoint support
       }
+      
+      await storeSession(session, safeLocalStorage.getItem(SESSION_KEY) === JSON.stringify(session));
     }
 
     return {
@@ -201,16 +480,72 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
     };
 
   } catch (e: unknown) {
-    // Handle network errors (offline, etc)
     const isAbort = e instanceof Error && e.name === 'AbortError';
     console.error(isAbort ? 'Session validation timed out' : 'Backend unreachable:', e);
 
     return {
-      isValid: true, // Keep session alive - don't logout if internet is just flaky
+      isValid: true,
       session,
       error: isAbort ? 'Validation timeout' : 'Network error',
       backendReachable: false
     };
+  }
+};
+
+/**
+ * Check if token should be rotated
+ */
+function shouldRotateToken(session: Session): boolean {
+  // Try to get metadata from stored data
+  const stored = safeSessionStorage.getItem(SESSION_KEY) || safeLocalStorage.getItem(SESSION_KEY);
+  if (!stored) return false;
+  
+  try {
+    const sessionData = JSON.parse(stored);
+    const metadata = sessionData._metadata as SessionMetadata | undefined;
+    
+    if (metadata?.lastTokenRotation) {
+      const age = Date.now() - metadata.lastTokenRotation;
+      return age > TOKEN_ROTATION_THRESHOLD * 1000;
+    }
+  } catch (e) {
+    // Ignore parse errors
+  }
+  
+  return false;
+}
+
+/**
+ * Rotate access token (requires backend support)
+ * Call this after a successful API response that returns a new token
+ */
+export const rotateAccessToken = async (newToken: string, newRefreshToken?: string): Promise<void> => {
+  const session = await getStoredSession();
+  if (!session) return;
+  
+  const now = Date.now();
+  const stored = safeSessionStorage.getItem(SESSION_KEY) || safeLocalStorage.getItem(SESSION_KEY);
+  const remember = !!safeLocalStorage.getItem(SESSION_KEY);
+  
+  try {
+    const sessionData = JSON.parse(stored || '{}') as any;
+    const metadata = sessionData._metadata as SessionMetadata | undefined;
+    
+    const updatedSession = {
+      ...session,
+      access_token: newToken,
+      refresh_token: newRefreshToken || session.refresh_token,
+      _metadata: {
+        lastTokenRotation: now,
+        createdAt: metadata?.createdAt || now,
+        deviceFingerprint: metadata?.deviceFingerprint || getDeviceFingerprint()
+      }
+    };
+    
+    await storeSession(updatedSession, remember);
+    console.log('Access token rotated successfully');
+  } catch (e) {
+    console.error('Failed to rotate token:', e);
   }
 };
 
@@ -232,4 +567,36 @@ export const formatSessionTimeRemaining = (seconds: number): string => {
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
   if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
   return `${Math.floor(seconds / 86400)}d`;
+};
+
+/**
+ * Hook-like function to set up activity tracking
+ * Call this in your app root or auth context
+ */
+export const setupActivityTracking = (onIdle?: () => void, checkInterval: number = 60000) => {
+  // Update activity on various user actions
+  const activityEvents = [
+    'mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'
+  ];
+  
+  const handler = () => updateLastActivity();
+  
+  activityEvents.forEach(event => {
+    document.addEventListener(event, handler, { passive: true });
+  });
+  
+  // Periodic idle check
+  const intervalId = setInterval(() => {
+    if (isSessionIdle() && onIdle) {
+      onIdle();
+    }
+  }, checkInterval);
+  
+  // Return cleanup function
+  return () => {
+    activityEvents.forEach(event => {
+      document.removeEventListener(event, handler);
+    });
+    clearInterval(intervalId);
+  };
 };

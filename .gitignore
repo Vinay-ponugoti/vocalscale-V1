@@ -19,6 +19,14 @@ dist-ssr
 .agent/
 .vsfront/
 
+# Workspace organization (local)
+.backup/
+.workspace/
+.temp/  # Changed from temp/ to avoid conflict with workspace temp/
+
+# Configuration
+.config/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -29,3 +37,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Scripts (maintenance)
+archive-old.sh
+daily-template.sh

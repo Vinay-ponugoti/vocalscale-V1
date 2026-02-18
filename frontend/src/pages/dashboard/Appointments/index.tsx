@@ -17,6 +17,7 @@ import {
 import {
   toZonedTime
 } from 'date-fns-tz';
+import { escapeHtml } from '../../../lib/sanitize';
 
 // --- DESIGN SYSTEM COLORS (Consistent with DashboardLayout) ---
 const DS = {
@@ -262,14 +263,29 @@ const FullScreenAppointments: React.FC = () => {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', appt.id);
 
-    // Custom drag image
+    // Custom drag image - use DOM manipulation instead of innerHTML to prevent XSS
     const ghost = document.createElement('div');
     ghost.className = 'px-3 py-2 rounded-lg shadow-xl text-sm font-medium';
     ghost.style.backgroundColor = DS.electric;
     ghost.style.color = 'white';
-    ghost.innerHTML = `<span class="font-bold">${appt.customer_name}</span><br/><span class="text-xs opacity-80">${formatTime(getZonedTime(appt.start_time))}</span>`;
     ghost.style.position = 'absolute';
     ghost.style.top = '-1000px';
+
+    // Safe DOM manipulation (no XSS risk)
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'font-bold';
+    nameSpan.textContent = appt.customer_name;
+
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'text-xs opacity-80';
+    timeSpan.textContent = formatTime(getZonedTime(appt.start_time));
+
+    const br = document.createElement('br');
+
+    ghost.appendChild(nameSpan);
+    ghost.appendChild(br);
+    ghost.appendChild(timeSpan);
+
     document.body.appendChild(ghost);
     e.dataTransfer.setDragImage(ghost, 50, 20);
     setTimeout(() => document.body.removeChild(ghost), 0);
