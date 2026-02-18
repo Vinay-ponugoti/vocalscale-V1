@@ -77,7 +77,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
   const showEmptyState = !sessionId && messages.length === 0;
 
   return (
-    <div className="flex flex-col h-full relative bg-white overflow-hidden">
+    <div className="flex flex-col h-full relative bg-[#fafafa] overflow-hidden">
 
       {/* Messages area */}
       <div
@@ -91,16 +91,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
       >
         {/* Error Banner */}
         {error && (
-          <div className="sticky top-0 z-10 p-3 bg-red-50 border-b border-red-200 text-red-700 flex items-center justify-between">
+          <div className="sticky top-0 z-10 px-4 py-2.5 bg-red-50 border-b border-red-200 text-red-700 flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
-              <AlertCircle size={16} />
+              <AlertCircle size={15} />
               <span className="font-medium">Error:</span> {error}
             </div>
             <button
               onClick={clearError}
-              className="p-1 hover:bg-red-100 rounded transition-colors"
+              className="p-1 hover:bg-red-100 rounded-lg transition-colors"
             >
-              <X size={16} />
+              <X size={15} />
             </button>
           </div>
         )}
@@ -116,27 +116,31 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         )}
       </div>
 
-      {/* Scroll to bottom button — absolute within the chat column */}
+      {/* Scroll to bottom button — premium pill with blue hover glow */}
       <button
         onClick={scrollToBottom}
         className={cn(
           "absolute left-1/2 -translate-x-1/2 z-40",
-          "bottom-[80px]",
-          "w-9 h-9 bg-white border border-gray-200 rounded-full",
-          "flex items-center justify-center shadow-md",
-          "transition-all duration-200 hover:bg-gray-50",
+          "bottom-[96px]",
+          "flex items-center gap-1.5 px-3.5 py-2 rounded-full",
+          "bg-white border border-gray-200",
+          "shadow-[0_2px_12px_rgba(0,0,0,0.10)]",
+          "text-gray-600 text-xs font-medium",
+          "hover:border-blue-200 hover:shadow-[0_4px_16px_rgba(59,130,246,0.15)] hover:text-blue-600",
+          "transition-all duration-200",
           showScrollButton
             ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-2 pointer-events-none"
+            : "opacity-0 translate-y-3 pointer-events-none"
         )}
         aria-label="Scroll to bottom"
       >
-        <ChevronDown size={20} className="text-gray-600" />
+        <ChevronDown size={14} />
+        <span>Latest</span>
       </button>
 
-      {/* Input area — sticky within the chat column, never covers sidebar */}
+      {/* Input area */}
       <div
-        className="bg-white border-t border-gray-200 px-4 py-4 shrink-0 z-20"
+        className="bg-white/80 backdrop-blur-sm border-t border-gray-100 px-4 py-4 shrink-0 z-20"
         style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
       >
         <div className="max-w-3xl mx-auto">
@@ -154,8 +158,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
             onRemoveFile={removeFile}
             placeholder={isAppLoading ? "Authenticating..." : "Ask anything — try: 'Create a 20% off Instagram post'"}
           />
-          <p className="text-center text-xs text-gray-400 mt-2">
-            VocalScale can make mistakes. Check important info.
+          <p className="text-center text-[11px] text-gray-400 mt-2 select-none">
+            VocalScale AI can make mistakes. Verify important information.
           </p>
         </div>
       </div>

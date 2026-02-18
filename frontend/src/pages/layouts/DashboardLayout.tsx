@@ -40,6 +40,7 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
   fullWidth?: boolean;
   secondaryNav?: React.ReactNode;
+  hideHeader?: boolean;
 }
 
 // --- UI COMPONENTS ---
@@ -100,7 +101,8 @@ const NavItem = ({
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
   fullWidth = false,
-  secondaryNav
+  secondaryNav,
+  hideHeader = false,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -393,8 +395,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* MAIN CONTENT WRAPPER */}
         <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
 
-          {/* TOP NAVIGATION BAR */}
-          <header className="h-20 backdrop-blur-xl border-b border-[hsl(var(--ds-border))] shrink-0 z-50 px-2 md:px-10 flex items-center justify-between transition-all duration-300" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)' }}>
+          {/* TOP NAVIGATION BAR — hidden for fullscreen pages like Chat */}
+          {!hideHeader && <header className="h-20 backdrop-blur-xl border-b border-[hsl(var(--ds-border))] shrink-0 z-50 px-2 md:px-10 flex items-center justify-between transition-all duration-300" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)' }}>
 
             {/* Mobile Menu Toggle - Always visible on mobile, positioned at start */}
             <button
@@ -536,7 +538,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 />
               </div>
             </div>
-          </header>
+          </header>}
 
           {/* PAGE CONTENT */}
           <main

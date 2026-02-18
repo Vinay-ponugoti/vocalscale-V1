@@ -36,7 +36,7 @@ const Chat = () => {
   };
 
   return (
-    <DashboardLayout fullWidth>
+    <DashboardLayout fullWidth hideHeader>
       <div className="h-full flex bg-white">
         {/* Sidebar */}
         <ChatSidebar

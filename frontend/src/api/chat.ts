@@ -105,29 +105,22 @@ class ChatAPI {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
+              // Capture and clear event type before dispatching
+              const evt = currentEventType;
+              currentEventType = '';
 
-              // ── Text chunk ───────────────────────────────────────────────
-              if (currentEventType === 'chunk' || data.text) {
+              // Dispatch strictly by event type — never guess from payload shape
+              // (the 'done' payload also contains images/generation_id so shape-guessing breaks)
+              if (evt === 'chunk') {
+                // ── Text chunk ─────────────────────────────────────────────
                 if (data.text) onChunk(data.text);
-              }
 
-              // ── Done (session_id + sources) ──────────────────────────────
-              else if (currentEventType === 'done' || (data.session_id !== undefined && data.sources !== undefined)) {
-                onDone({
-                  session_id: data.session_id,
-                  sources: data.sources || [],
-                  intent: data.intent,
-                  skill_used: data.skill_used,
-                });
-              }
+              } else if (evt === 'image_status') {
+                // ── Image status ────────────────────────────────────────────
+                onImageStatus?.(data.status ?? 'analyzing');
 
-              // ── Image status update ──────────────────────────────────────
-              else if (currentEventType === 'image_status' || data.status) {
-                onImageStatus?.(data.status || currentEventType);
-              }
-
-              // ── Image ready ──────────────────────────────────────────────
-              else if (currentEventType === 'image_ready' || data.images) {
+              } else if (evt === 'image_ready') {
+                // ── Image ready ─────────────────────────────────────────────
                 if (data.images?.length > 0) {
                   onImageReady?.(
                     data.images,
@@ -137,19 +130,34 @@ class ChatAPI {
                     data.social_content ?? null,
                   );
                 }
-              }
 
-              // ── Error ────────────────────────────────────────────────────
-              else if (data.error) {
-                onError(new Error(data.error));
+              } else if (evt === 'done') {
+                // ── Done ────────────────────────────────────────────────────
+                onDone({
+                  session_id: data.session_id,
+                  sources: data.sources || [],
+                  intent: data.intent,
+                  skill_used: data.skill_used,
+                });
+
+              } else if (evt === 'error') {
+                // ── Error ───────────────────────────────────────────────────
+                onError(new Error(data.error || 'Unknown stream error'));
+
+              } else {
+                // ── Fallback: no event type — infer from payload ────────────
+                if (data.text) onChunk(data.text);
+                else if (data.session_id !== undefined) {
+                  onDone({ session_id: data.session_id, sources: data.sources || [] });
+                } else if (data.error) {
+                  onError(new Error(data.error));
+                }
               }
 
             } catch {
               console.warn('[ChatAPI] Failed to parse SSE data:', line);
+              currentEventType = '';
             }
-
-            // Reset event type after consuming a data line
-            currentEventType = '';
           }
         }
       }
