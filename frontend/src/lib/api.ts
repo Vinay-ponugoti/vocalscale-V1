@@ -1,5 +1,5 @@
 import { env } from '../config/env';
-import { getAuthToken } from '../utils/sessionUtils';
+import { getAuthTokenAsync } from '../utils/sessionUtils';
 import { metrics } from './metrics';
 import { getDevelopmentHeaders } from './devHeaders';
 
@@ -503,7 +503,7 @@ function logDetailedError(error: unknown, context: string): void {
 // ============================================================================
 
 export async function getAuthHeader(userId?: string): Promise<Record<string, string>> {
-  const token = getAuthToken();
+  const token = await getAuthTokenAsync();
 
   return {
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
