@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VocalScale Status</title>
+    <meta name="description" content="Real-time status monitoring for VocalScale platform services." />
+    <link rel="icon" href="https://www.vocalscale.com/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #1a202c;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-wrapper {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ─── Header ─── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 0 32px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-wrap img {
+            height: 44px;
+            width: auto;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a202c;
+            letter-spacing: -0.02em;
+        }
+
+        .subscribe-btn {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .subscribe-btn:hover {
+            background: #2563eb;
+        }
+
+        /* ─── Active Incident Banner ─── */
+        .incident-banner {
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 36px;
+            display: none;
+        }
+
+        .incident-banner.active {
+            display: block;
+        }
+
+        .incident-banner-header {
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .incident-banner-header.warning {
+            background: #e89a3c;
+        }
+
+        .incident-banner-header.critical {
+            background: #e74c3c;
+        }
+
+        .incident-banner-header.maintenance {
+            background: #3b82f6;
+        }
+
+        .incident-banner-body {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            padding: 20px;
+        }
+
+        .incident-update {
+            margin-bottom: 20px;
+        }
+
+        .incident-update:last-child {
+            margin-bottom: 0;
+        }
+
+        .incident-update-label {
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .incident-update-text {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .incident-update-time {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* ─── Uptime Intro ─── */
+        .uptime-intro {
+            text-align: right;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .uptime-intro a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .uptime-intro a:hover {
+            text-decoration: underline;
+        }
+
+        /* ─── Services Section ─── */
+        .services-container {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 40px;
+        }
+
+        .service-row {
+            padding: 20px 24px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .service-row:last-child {
+            border-bottom: none;
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .service-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .service-name .info-icon {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-left: 6px;
+            cursor: help;
+        }
+
+        .service-status-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .service-status-label.operational {
+            color: #48bb78;
+        }
+
+        .service-status-label.degraded {
+            color: #ecc94b;
+        }
+
+        .service-status-label.down {
+            color: #f56565;
+        }
+
+        .service-status-label.checking {
+            color: #a0aec0;
+        }
+
+        /* ─── Uptime Bar ─── */
+        .uptime-bar-container {
+            margin-bottom: 4px;
+        }
+
+        .uptime-bars {
+            display: flex;
+            gap: 1.5px;
+            height: 34px;
+            align-items: stretch;
+        }
+
+        .uptime-bar {
+            flex: 1;
+            border-radius: 2px;
+            min-width: 0;
+            cursor: pointer;
+            transition: opacity 0.15s;
+            position: relative;
+        }
+
+        .uptime-bar:hover {
+            opacity: 0.75;
+        }
+
+        .uptime-bar.good {
+            background: #48bb78;
+        }
+
+        .uptime-bar.degraded {
+            background: #ecc94b;
+        }
+
+        .uptime-bar.down {
+            background: #f56565;
+        }
+
+        .uptime-bar.no-data {
+            background: #e2e8f0;
+        }
+
+        .uptime-bar-tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a202c;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .uptime-bar:hover .uptime-bar-tooltip {
+            display: block;
+        }
+
+        .uptime-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+
+        .uptime-bar-labels .uptime-percent {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .uptime-labels-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-top: 6px;
+        }
+
+        .uptime-label {
+            font-size: 12px;
+            color: #a0aec0;
+        }
+
+        .uptime-label.center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .uptime-label-line {
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+            margin: 0 8px;
+        }
+
+        /* ─── Past Incidents ─── */
+        .past-incidents {
+            margin-bottom: 60px;
+        }
+
+        .past-incidents-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 24px;
+        }
+
+        .incident-date-group {
+            margin-bottom: 32px;
+        }
+
+        .incident-date {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a202c;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+
+        .incident-none {
+            font-size: 14px;
+            color: #a0aec0;
+        }
+
+        .incident-entry-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .incident-entry-update {
+            margin-bottom: 16px;
+        }
+
+        .incident-entry-update p {
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .incident-entry-update .incident-entry-time {
+            font-size: 13px;
+            color: #a0aec0;
+            margin-top: 2px;
+        }
+
+        /* ─── Footer ─── */
+        .footer {
+            text-align: center;
+            padding: 24px 0 32px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: auto;
+        }
+
+        .footer p {
+            font-size: 12px;
+            color: #a0aec0;
+        }
+
+        .footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ─── Loading Shimmer ─── */
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, #e2e8f0 25%, #edf2f7 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 2px;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 640px) {
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .uptime-bars {
+                height: 28px;
+            }
+
+            .service-row {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- Header -->
+        <div class="header">
+            <a href="https://www.vocalscale.com" class="logo-wrap">
+                <img src="https://www.vocalscale.com/logo.png" alt="VocalScale" onerror="this.style.display='none'" />
+                <span class="logo-text">VocalScale</span>
+            </a>
+            <a href="mailto:support@vocalscale.com" class="subscribe-btn">Subscribe to Updates</a>
+        </div>
+
+        <!-- Active Incident Banner (shown dynamically) -->
+        <div class="incident-banner" id="incidentBanner">
+            <div class="incident-banner-header warning" id="bannerHeader">Service Disruption</div>
+            <div class="incident-banner-body" id="bannerBody"></div>
+        </div>
+
+        <!-- Uptime Intro -->
+        <p class="uptime-intro">Uptime over the past 90 days. <a href="#">View historical uptime.</a></p>
+
+        <!-- Services -->
+        <div class="services-container" id="servicesContainer">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- Past Incidents -->
+        <div class="past-incidents">
+            <h2 class="past-incidents-title">Past Incidents</h2>
+            <div id="pastIncidents">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="page-wrapper">
+            <p>&copy; 2026 <a href="https://www.vocalscale.com">VocalScale</a> &bull; AI Voice Platform</p>
+        </div>
+    </div>
+
+    <script>
+        // ─── Service Definitions ───
+        const SERVICES = [
+            { name: 'API Gateway', url: 'https://api.vocalscale.com/api/health', key: 'api' },
+            { name: 'Authentication', url: 'https://xevxrrofqmvvkmglsgym.supabase.co/auth/v1/health', key: 'auth' },
+            { name: 'Payment Service', url: 'https://billing.vocalscale.com/api/health', key: 'payment' },
+            { name: 'Knowledge Engine', url: 'https://api.vocalscale.com/knowledge/health', key: 'knowledge' },
+            { name: 'Website', url: 'https://www.vocalscale.com', key: 'website' },
+        ];
+
+        // ─── Simulated 90-day uptime data ───
+        // In production, this would come from a monitoring API
+        function generate90DayData() {
+            const data = {};
+            const now = new Date();
+            SERVICES.forEach(s => {
+                const days = [];
+                for (let i = 89; i >= 0; i--) {
+                    const d = new Date(now);
+                    d.setDate(d.getDate() - i);
+                    days.push({
+                        date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        status: 'good' // Default to good, will be updated by live check for today
+                    });
+                }
+                data[s.key] = days;
+            });
+            return data;
+        }
+
+        let uptimeData = generate90DayData();
+        let results = {};
+
+        // ─── Render Services ───
+        function renderServices() {
+            const container = document.getElementById('servicesContainer');
+            container.innerHTML = SERVICES.map(s => {
+                const r = results[s.key] || { status: 'checking', time: null };
+                const statusClass = r.status === 'checking' ? 'checking' :
+                    r.status === 'operational' ? 'operational' :
+                        r.status === 'degraded' ? 'degraded' : 'down';
+                const statusText = r.status === 'checking' ? 'Checking...' :
+                    r.status === 'operational' ? 'Operational' :
+                        r.status === 'degraded' ? 'Degraded Performance' : 'Major Outage';
+
+                const days = uptimeData[s.key] || [];
+
+                // Update today's bar based on live check
+                if (days.length > 0 && r.status !== 'checking') {
+                    days[days.length - 1].status = r.status === 'operational' ? 'good' :
+                        r.status === 'degraded' ? 'degraded' : 'down';
+                }
+
+                const goodDays = days.filter(d => d.status === 'good').length;
+                const uptimePercent = days.length > 0 ? ((goodDays / days.length) * 100).toFixed(2) : '100.00';
+
+                const barsHtml = days.map(d =>
+                    `<div class="uptime-bar ${d.status}" title="${d.date}">
+          <div class="uptime-bar-tooltip">${d.date}: ${d.status === 'good' ? 'No downtime' : d.status === 'degraded' ? 'Degraded performance' : 'Major outage'}</div>
+        </div>`
+                ).join('');
+
+                return `
+        <div class="service-row">
+          <div class="service-header">
+            <span class="service-name">${s.name} <span class="info-icon" title="Health check: ${s.url}">?</span></span>
+            <span class="service-status-label ${statusClass}">${statusText}</span>
+          </div>
+          <div class="uptime-bar-container">
+            <div class="uptime-bars">${barsHtml}</div>
+            <div class="uptime-labels-row">
+              <span class="uptime-label">90 days ago</span>
+              <span class="uptime-label-line"></span>
+              <span class="uptime-label">${uptimePercent} % uptime</span>
+              <span class="uptime-label-line"></span>
+              <span class="uptime-label">Today</span>
+            </div>
+          </div>
+        </div>
+      `;
+            }).join('');
+        }
+
+        // ─── Update Incident Banner ───
+        function updateBanner() {
+            const banner = document.getElementById('incidentBanner');
+            const downServices = SERVICES.filter(s => results[s.key]?.status === 'down');
+            const degradedServices = SERVICES.filter(s => results[s.key]?.status === 'degraded');
+
+            if (downServices.length > 0) {
+                banner.classList.add('active');
+                const header = document.getElementById('bannerHeader');
+                header.className = 'incident-banner-header critical';
+                header.textContent = `Service Disruption — ${downServices.map(s => s.name).join(', ')}`;
+
+                const body = document.getElementById('bannerBody');
+                const now = new Date();
+                const timeStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+                    ' - ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+                body.innerHTML = `
+        <div class="incident-update">
+          <p class="incident-update-text">
+            <span class="incident-update-label">Investigating</span> - We have detected connectivity issues with ${downServices.map(s => s.name).join(', ')}.
+            Our team is actively investigating the issue.
+          </p>
+          <p class="incident-update-time">${timeStr}</p>
+        </div>
+      `;
+            } else if (degradedServices.length > 0) {
+                banner.classList.add('active');
+                const header = document.getElementById('bannerHeader');
+                header.className = 'incident-banner-header warning';
+                header.textContent = `Degraded Performance — ${degradedServices.map(s => s.name).join(', ')}`;
+
+                const body = document.getElementById('bannerBody');
+                const now = new Date();
+                const timeStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+                    ' - ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+                body.innerHTML = `
+        <div class="incident-update">
+          <p class="incident-update-text">
+            <span class="incident-update-label">Monitoring</span> - We are observing slower than normal response times for ${degradedServices.map(s => s.name).join(', ')}.
+          </p>
+          <p class="incident-update-time">${timeStr}</p>
+        </div>
+      `;
+            } else {
+                banner.classList.remove('active');
+            }
+        }
+
+        // ─── Render Past Incidents ───
+        function renderPastIncidents() {
+            const container = document.getElementById('pastIncidents');
+            const now = new Date();
+            let html = '';
+
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                html += `
+        <div class="incident-date-group">
+          <div class="incident-date">${dateStr}</div>
+          <p class="incident-none">No incidents reported.</p>
+        </div>
+      `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ─── Check Service Health ───
+        async function checkService(service) {
+            const start = performance.now();
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 10000);
+
+                await fetch(service.url, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    signal: controller.signal,
+                    cache: 'no-store'
+                });
+
+                clearTimeout(timeout);
+                const elapsed = Math.round(performance.now() - start);
+
+                results[service.key] = {
+                    status: elapsed > 5000 ? 'degraded' : 'operational',
+                    time: elapsed
+                };
+            } catch {
+                results[service.key] = {
+                    status: 'down',
+                    time: Math.round(performance.now() - start)
+                };
+            }
+
+            renderServices();
+            updateBanner();
+        }
+
+        // ─── Check All Services ───
+        async function checkAll() {
+            SERVICES.forEach(s => { results[s.key] = { status: 'checking', time: null }; });
+            renderServices();
+
+            await Promise.all(SERVICES.map(s => checkService(s)));
+        }
+
+        // ─── Init ───
+        renderServices();
+        renderPastIncidents();
+        checkAll();
+
+        // Auto-refresh every 60 seconds
+        setInterval(checkAll, 60000);
+    </script>
+
+</body>
+
+</html>

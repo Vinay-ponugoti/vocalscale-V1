@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob: https://challenges.cloudflare.com https://www.clarity.ms https://scripts.clarity.ms; img-src 'self' https: data: blob: https://c.bing.com https://*.clarity.ms; media-src 'self' https: data: https://*.r2.dev https://api.vocalscale.com; font-src 'self' https: fonts.gstatic.com; connect-src 'self' https: wss: http://34.132.14.121:8001 https://api.vocalscale.com https://billing.vocalscale.com https://knowledge.vocalscale.com https://*.supabase.co wss://*.supabase.co https://formsubmit.co https://*.clarity.ms https://c.bing.com;">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=DM+Serif+Display:ital@0;1&display=swap"
+    rel="stylesheet">
+  <title>AI Voice Agent for Business | VocalScale</title>
+  <meta name="description"
+    content="VocalScale's AI voice agents handle customer calls, book appointments, and answer inquiries 24/7. Automate your business phone line today." />
+  <meta name="keywords"
+    content="AI receptionist, answering service, call automation, virtual receptionist, small business AI, auto scheduler" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://vocalscale.ai/" />
+  <meta property="og:title" content="AI Voice Agent for Business | VocalScale" />
+  <meta property="og:description"
+    content="VocalScale's AI voice agents handle customer calls, book appointments, and answer inquiries 24/7. Automate your business phone line today." />
+  <meta property="og:image" content="/logo.png" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://vocalscale.ai/" />
+  <meta property="twitter:title" content="AI Voice Agent for Business | VocalScale" />
+  <meta property="twitter:description"
+    content="VocalScale's AI voice agents handle customer calls, book appointments, and answer inquiries 24/7. Automate your business phone line today." />
+  <meta property="twitter:image" content="/logo.png" />
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", "ve8uvwhwb7");
+  </script>
+
+  <!-- Google Analytics 4 -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-ZX6K9J9X');
+
+    // Optional: Performance monitoring
+    if ('PerformanceObserver' in window) {
+      const perfObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.entryType === 'navigation') {
+            gtag('event', 'timing_complete', {
+              'name_to': entry.name,
+              'value': entry.duration,
+              'event_category': 'SEO'
+            });
+          }
+        }
+      });
+      perfObserver.observe({ entryTypes: ['navigation'] });
+    }
+  </script>
+
+  <!-- Organization Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "VocalScale",
+    "url": "https://vocalscale.com",
+    "logo": "https://vocalscale.com/logo.png",
+    "description": "VocalScale provides AI-powered voice agents for businesses, handling customer calls, appointments, and inquiries 24/7.",
+    "sameAs": [
+      "https://www.linkedin.com/company/vocalscale",
+      "https://twitter.com/vocalscale"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+1-800-555-0199",
+      "email": "support@vocalscale.com",
+      "contactType": "customer service"
+    }
+  }
+  </script>
+
+  <!-- Enhanced Product Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "VocalScale AI Receptionist",
+    "image": "https://vocalscale.com/product-image.jpg",
+    "description": "Advanced AI-powered voice agent service for businesses. Automate customer calls, appointment scheduling, and inquiries with natural-sounding AI receptionists available 24/7.",
+    "brand": {
+      "@type": "Brand",
+      "name": "VocalScale",
+      "url": "https://vocalscale.com",
+      "logo": "https://vocalscale.com/logo.png"
+    },
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web-based",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Starter Plan",
+        "price": "69",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "69",
+          "priceCurrency": "USD",
+          "billingDuration": "P1M",
+          "unitCode": "MON"
+        },
+        "availability": "https://schema.org/InStock",
+        "validThrough": "2024-12-31"
+      },
+      {
+        "@type": "Offer",
+        "name": "Professional Plan",
+        "price": "118",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "118",
+          "priceCurrency": "USD",
+          "billingDuration": "P1M",
+          "unitCode": "MON"
+        },
+        "availability": "https://schema.org/InStock",
+        "validThrough": "2024-12-31"
+      }
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "1,247",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "featureList": [
+      "24/7 AI Receptionist",
+      "Appointment Scheduling",
+      "Call Routing and Transfer",
+      "Natural Language Processing",
+      "Multi-language Support",
+      "CRM Integration",
+      "Real-time Analytics",
+      "Custom Knowledge Base",
+      "Sentiment Analysis",
+      "Call Recording and Transcripts"
+    ],
+    "screenshot": "https://vocalscale.com/dashboard-screenshot.jpg",
+    "softwareVersion": "2.0",
+    "datePublished": "2024-01-01",
+    "dateModified": "2024-12-01",
+    "author": {
+      "@type": "Organization",
+      "name": "VocalScale",
+      "url": "https://vocalscale.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "VocalScale",
+      "url": "https://vocalscale.com",
+      "logo": "https://vocalscale.com/logo.png"
+    },
+    "supportingData": {
+      "@type": "Dataset",
+      "name": "AI Receptionist Performance Metrics",
+      "description": "Real-time analytics and performance data for AI receptionist interactions"
+    }
+  }
+  </script>
+
+  <!-- Enhanced FAQ Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is VocalScale AI Receptionist?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "VocalScale is an advanced AI-powered voice agent service that acts as a virtual receptionist for businesses. It handles customer calls, schedules appointments, answers inquiries, and provides 24/7 customer support using natural-sounding AI technology."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much does VocalScale cost?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "VocalScale offers two main pricing plans: Starter at $69/month with 300 AI minutes included, and Professional at $118/month with 1,000 AI minutes included. Additional minutes are charged at $0.094 per minute. Annual billing provides up to 40% savings."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can VocalScale integrate with my existing systems?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, VocalScale integrates with popular CRM systems, calendar applications, and business tools. The Professional plan includes advanced integrations with Google Calendar, CRM platforms, and custom API connections for enterprise clients."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is VocalScale suitable for my industry?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "VocalScale serves various industries including healthcare, legal, real estate, e-commerce, restaurants, and professional services. The AI can be trained with industry-specific knowledge and terminology to provide accurate responses."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How quickly can I get started with VocalScale?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can start using VocalScale within minutes of signing up. The setup process includes selecting your phone number, configuring your business information, and training the AI with your specific requirements. Most businesses are operational within 24 hours."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Review Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    "itemReviewed": {
+      "@type": "SoftwareApplication",
+      "name": "VocalScale AI Receptionist",
+      "url": "https://vocalscale.com"
+    },
+    "reviewRating": {
+      "@type": "Rating",
+      "ratingValue": "4.8",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "name": "Excellent AI Receptionist Solution",
+    "author": {
+      "@type": "Person",
+      "name": "Sarah Johnson",
+      "jobTitle": "Medical Practice Manager"
+    },
+    "reviewBody": "VocalScale has transformed our medical practice. The AI receptionist handles appointment scheduling, patient inquiries, and after-hours calls flawlessly. We've seen a 40% increase in appointment bookings and our patients love the 24/7 availability. The setup was incredibly easy and the cost savings compared to a traditional receptionist are substantial.",
+    "datePublished": "2024-11-15",
+    "publisher": {
+      "@type": "Organization",
+      "name": "VocalScale"
+    }
+  }
+  </script>
+
+  <!-- Local Business Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "VocalScale",
+    "url": "https://vocalscale.com",
+    "logo": "https://vocalscale.com/logo.png",
+    "description": "AI-powered voice agent service providing 24/7 virtual receptionist solutions for businesses",
+    "telephone": "+1-800-555-0199",
+    "email": "support@vocalscale.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "123 Business Ave",
+      "addressLocality": "San Francisco",
+      "addressRegion": "CA",
+      "postalCode": "94105",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "37.7749",
+      "longitude": "-122.4194"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday"
+        ],
+        "opens": "09:00",
+        "closes": "17:00"
+      }
+    ],
+    "serviceArea": {
+      "@type": "State",
+      "name": "California"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "AI Receptionist Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "AI Receptionist - Starter Plan",
+            "description": "300 minutes of AI receptionist service per month"
+          },
+          "price": "69",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "AI Receptionist - Professional Plan",
+            "description": "1000 minutes of AI receptionist service per month"
+          },
+          "price": "118",
+          "priceCurrency": "USD"
+        }
+      ]
+    }
+  }
+  </script>
+</head>
+
+<body style="background-color: #F8FAFC; margin: 0;" class="antialiased">
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
