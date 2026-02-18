@@ -287,6 +287,7 @@ interface FileUploadOptions {
   maxSizeBytes?: number;
   allowedTypes?: string[];
   onProgress?: (percent: number) => void;
+  onRateLimit?: (retryAfter: number) => void;
 }
 
 const DEFAULT_UPLOAD_OPTIONS: FileUploadOptions = {
@@ -402,6 +403,18 @@ async function uploadFileWithProgress(
       });
       if (xhr.status >= 200 && xhr.status < 300) {
         resolve(response);
+      } else if (xhr.status === 429) {
+        // Rate limited
+        const retryAfter = parseInt(xhr.getResponseHeader('Retry-After') || '1', 10);
+        if (options.onRateLimit) {
+          options.onRateLimit(retryAfter);
+        }
+        const error = new Error(
+          `Upload rate limited. Please wait ${retryAfter} seconds before trying again.`
+        );
+        (error as any).code = 'RATE_LIMITED';
+        (error as any).retryAfter = retryAfter;
+        reject(error);
       } else {
         reject(new Error(xhr.responseText || 'Upload failed'));
       }
@@ -486,6 +499,7 @@ function createUserFriendlyError(error: unknown, defaultPrefix: string = 'An err
 function logDetailedError(error: unknown, context: string): void {
   // Placeholder for error logging service integration
   // Example with Sentry (commented out):
+  // import * as Sentry from '@sentry/browser';
   // Sentry.captureException(error, { tags: { context } });
 
   // For now, log to console in development
@@ -495,7 +509,12 @@ function logDetailedError(error: unknown, context: string): void {
 
   // In production, this would send to your error tracking service
   // Could also integrate with custom metrics
-  metrics.trackError(context, error instanceof Error ? error.message : String(error));
+  try {
+    const page = typeof window !== 'undefined' ? window.location.pathname : 'unknown';
+    metrics.trackError(context, page);
+  } catch {
+    // Silently fail if metrics tracking doesn't work
+  }
 }
 
 // ============================================================================
@@ -561,8 +580,7 @@ async function fetchWithTimeout(
     }
 
     if (!response.ok) {
-      // Don't consume the body here, let the caller handle it if they want
-      // but we should log it for debugging
+      // Don't consume the body here, but we should log it for debugging
       try {
         const clonedResponse = response.clone();
         const text = await clonedResponse.text();
@@ -573,8 +591,594 @@ async function fetchWithTimeout(
       return response;
     }
 
-    // Check if the response is actually JSON before parsing
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      console.error('[API Error] Expected JSON but got:', text.substring(0
+    return response;
+  } catch (e: unknown) {
+    clearTimeout(timeoutId);
+    if (e instanceof DOMException && e.name === 'AbortError') {
+      throw new Error('Request timed out');
+    }
+    console.error(`[API Network Error] ${url}`, e);
+    throw e;
+  }
+}
+
+// ============================================================================
+// API CLIENT METHODS
+// ============================================================================
+
+export const api = {
+  /**
+   * Upload voice file with validation, rate limiting, and progress tracking
+   */
+  async uploadVoice(
+    file: File | Blob,
+    options: FileUploadOptions = {}
+  ) {
+    const uploadOptions = {
+      maxSizeBytes: 10 * 1024 * 1024, // 10MB for voice files
+      allowedTypes: ['audio/*'],
+      ...options,
+    };
+
+    let uploadProgress = 0;
+
+    try {
+      const headers = await getAuthHeader();
+      const response = await uploadFileWithProgress(
+        `${API_BASE}/voice/upload`,
+        file,
+        headers,
+        {
+          ...uploadOptions,
+          onProgress: (percent) => {
+            uploadProgress = percent;
+            if (options.onProgress) {
+              options.onProgress(percent);
+            }
+          },
+        }
+      );
+
+      return response.json(); // { url: string }
+    } catch (error) {
+      const userError = createUserFriendlyError(error, 'Voice upload failed');
+      if (userError.code === 'RATE_LIMITED') {
+        userError.message = `Upload rate limit exceeded. Please wait ${(error as any).retryAfter} seconds.`;
+      }
+      throw userError;
+    }
+  },
+
+  /**
+   * Process voice with input validation
+   */
+  async processVoice(voiceSampleUrl: string) {
+    // Validate URL
+    if (!voiceSampleUrl || typeof voiceSampleUrl !== 'string') {
+      const error = createUserFriendlyError(new Error('Voice sample URL is required'), 'Processing failed');
+      error.code = 'INVALID_INPUT';
+      throw error;
+    }
+
+    // Sanitize URL parameter
+    const sanitizedUrl = sanitizeString(voiceSampleUrl, 1000);
+    if (!sanitizedUrl || !sanitizedUrl.startsWith('http')) {
+      const error = createUserFriendlyError(new Error('Invalid voice sample URL'), 'Processing failed');
+      error.code = 'INVALID_INPUT';
+      throw error;
+    }
+
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithExponentialBackoff(
+        `${API_BASE}/voice/process`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...headers,
+          },
+          body: JSON.stringify({ voice_sample_url: sanitizedUrl }),
+        },
+        {
+          maxRetries: 3,
+          initialDelayMs: 1000,
+          maxDelayMs: 10000,
+          backoffMultiplier: 2,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Processing failed with status ${response.status}`);
+      }
+
+      return response.json(); // { audio_url: string | null, clone_id: string, status: string }
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Voice processing failed');
+    }
+  },
+
+  /**
+   * Get voice status
+   */
+  async getVoiceStatus(cloneId: string) {
+    // Validate clone ID
+    if (!cloneId || typeof cloneId !== 'string') {
+      const error = createUserFriendlyError(new Error('Clone ID is required'), 'Status check failed');
+      error.code = 'INVALID_INPUT';
+      throw error;
+    }
+
+    const sanitizedCloneId = sanitizeString(cloneId, 100);
+    if (!sanitizedCloneId) {
+      const error = createUserFriendlyError(new Error('Invalid clone ID'), 'Status check failed');
+      error.code = 'INVALID_INPUT';
+      throw error;
+    }
+
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/voice/status/${sanitizedCloneId}`, {
+        headers,
+      }, 15000);
+
+      if (!response.ok) {
+        throw new Error('Failed to get voice status');
+      }
+
+      return response.json(); // { id: string, status: string, sample_url: string | null }
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to retrieve voice status');
+    }
+  },
+
+  /**
+   * Get user profile
+   */
+  async getProfile() {
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/profile`, {
+        headers,
+      }, 15000);
+
+      if (!response.ok) {
+        throw new Error('Failed to get profile');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to retrieve profile');
+    }
+  },
+
+  /**
+   * Update user profile with validation and sanitization
+   */
+  async updateProfile(updates: Record<string, unknown>) {
+    // Validate and sanitize updates
+    const validation = validateProfileUpdates(updates);
+
+    if (!validation.valid) {
+      const error = new Error(`Validation failed: ${validation.errors.join(', ')}`);
+      const userError = createUserFriendlyError(error, 'Profile update failed');
+      userError.code = 'VALIDATION_ERROR';
+      throw userError;
+    }
+
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/profile`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers,
+        },
+        body: JSON.stringify(validation.sanitized),
+      }, 30000);
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to update profile');
+    }
+  },
+
+  /**
+   * Synthesize speech with input validation
+   */
+  async synthesize(text: string, voiceSampleUrl: string) {
+    // Validate text
+    if (!text || typeof text !== 'string') {
+      const error = createUserFriendlyError(new Error('Text is required'), 'Synthesis failed');
+      error.code = 'INVALID_INPUT';
+      throw error;
+    }
+
+    // Sanitize text (limit length to prevent abuse)
+    const sanitizedText = sanitizeString(text, 10000);
+    if (!sanitizedText) {
+      const error = createUserFriendlyError(new Error('Invalid text'), 'Synthesis failed');
+      error.code = 'INVALID_INPUT';
+      throw error;
+    }
+
+    // Validate and sanitize voice sample URL
+    const sanitizedUrl = sanitizeString(voiceSampleUrl, 1000);
+    if (!sanitizedUrl || !sanitizedUrl.startsWith('http')) {
+      const error = createUserFriendlyError(new Error('Invalid voice sample URL'), 'Synthesis failed');
+      error.code = 'INVALID_INPUT';
+      throw error;
+    }
+
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithExponentialBackoff(
+        `${API_BASE}/synthesize`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...headers,
+          },
+          body: JSON.stringify({
+            text: sanitizedText,
+            voice_sample_url: sanitizedUrl
+          }),
+        },
+        {
+          maxRetries: 3,
+          initialDelayMs: 1000,
+          maxDelayMs: 15000,
+          backoffMultiplier: 2,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Synthesis failed with status ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Speech synthesis failed');
+    }
+  },
+
+  // --- Voice Settings API ---
+
+  /**
+   * Get voices with query parameter sanitization
+   */
+  async getVoices(filters?: { gender?: string; language?: string }) {
+    try {
+      const headers = await getAuthHeader();
+
+      // Sanitize filters
+      const sanitizedFilters = filters ? sanitizeUrlParams(filters) : {};
+      const params = new URLSearchParams();
+
+      if (sanitizedFilters.gender && sanitizedFilters.gender !== 'all') {
+        params.append('gender', sanitizedFilters.gender);
+      }
+      if (sanitizedFilters.language) {
+        params.append('language', sanitizedFilters.language);
+      }
+
+      const queryString = params.toString();
+      const url = `${API_BASE}/voices${queryString ? `?${queryString}` : ''}`;
+
+      const response = await fetchWithTimeout(url, {
+        headers,
+      }, 15000);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch voices');
+      }
+
+      return response.json(); // { data: Voice[], count: number }
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to fetch voices');
+    }
+  },
+
+  /**
+   * Get voice sample URL with query parameter sanitization
+   */
+  getVoiceSampleUrl(voiceId: string, text?: string) {
+    const sanitizedVoiceId = sanitizeString(voiceId, 100);
+    const params = new URLSearchParams();
+
+    if (text) {
+      const sanitizedText = sanitizeString(text, 500);
+      params.append('text', sanitizedText);
+    }
+
+    const queryString = params.toString();
+    return `${API_BASE}/samples/${sanitizedVoiceId}${queryString ? `?${queryString}` : ''}`;
+  },
+
+  /**
+   * Get voice settings
+   */
+  async getVoiceSettings() {
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/voice-settings`, {
+        headers,
+      }, 15000);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch voice settings');
+      }
+
+      return response.json(); // VoiceSettings
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to fetch voice settings');
+    }
+  },
+
+  /**
+   * Update voice settings with input validation
+   */
+  async updateVoiceSettings(updates: Record<string, unknown>) {
+    // Sanitize updates (basic validation)
+    const sanitized: Record<string, unknown> = {};
+    const allowedFields = ['pitch', 'speed', 'volume', 'default_voice_id'];
+
+    for (const [key, value] of Object.entries(updates)) {
+      if (!allowedFields.includes(key)) continue;
+
+      if (typeof value === 'number') {
+        // Clamp numeric values
+        if (key === 'pitch' || key === 'speed' || key === 'volume') {
+          sanitized[key] = Math.max(0, Math.min(2, value));
+        } else {
+          sanitized[key] = value;
+        }
+      } else if (typeof value === 'string') {
+        sanitized[key] = sanitizeString(value, 100);
+      }
+    }
+
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/voice-settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers,
+        },
+        body: JSON.stringify(sanitized),
+      }, 30000);
+
+      if (!response.ok) {
+        throw new Error('Failed to update voice settings');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to update voice settings');
+    }
+  },
+
+  // --- Business Setup API ---
+
+  /**
+   * Get business setup
+   */
+  async getBusinessSetup() {
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/business-setup`, {
+        headers,
+      }, 15000);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch business setup');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to fetch business setup');
+    }
+  },
+
+  /**
+   * Update business setup with input validation
+   */
+  async updateBusinessSetup(updates: Record<string, unknown>) {
+    // Sanitize business setup updates
+    const sanitized: Record<string, unknown> = {};
+    const allowedFields = [
+      'business_name', 'industry', 'website', 'description',
+      'phone', 'email', 'address', 'timezone'
+    ];
+    const maxFieldLengths = {
+      business_name: 200,
+      industry: 100,
+      website: 500,
+      description: 1000,
+      phone: 50,
+      email: 254,
+      address: 500,
+      timezone: 50,
+    };
+
+    for (const [key, value] of Object.entries(updates)) {
+      if (!allowedFields.includes(key)) continue;
+
+      if (key === 'email') {
+        const emailValidation = validateEmail(value);
+        if (emailValidation.valid) {
+          sanitized[key] = value;
+        }
+      } else if (typeof value === 'string' && key in maxFieldLengths) {
+        sanitized[key] = sanitizeString(value, maxFieldLengths[key as keyof typeof maxFieldLengths]);
+      } else if (value !== null && value !== undefined) {
+        sanitized[key] = value;
+      }
+    }
+
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/business-setup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers,
+        },
+        body: JSON.stringify(sanitized),
+      }, 30000);
+
+      if (!response.ok) {
+        throw new Error('Failed to update business setup');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to update business setup');
+    }
+  },
+
+  /**
+   * Get billing information
+   */
+  async getBilling() {
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/billing`, {
+        headers,
+      }, 15000);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch billing info');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to fetch billing information');
+    }
+  },
+
+  /**
+   * Update notification settings
+   */
+  async updateNotificationSettings(settings: Record<string, unknown>) {
+    // Sanitize notification settings
+    const sanitized: Record<string, unknown> = {};
+    const allowedFields = [
+      'email_notifications', 'sms_notifications', 'push_notifications',
+      'booking_reminders', 'cancellation_alerts', 'promotion_updates'
+    ];
+
+    for (const [key, value] of Object.entries(settings)) {
+      if (!allowedFields.includes(key)) continue;
+
+      if (typeof value === 'boolean') {
+        sanitized[key] = value;
+      } else {
+        sanitized[key] = Boolean(value);
+      }
+    }
+
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/notification-settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers,
+        },
+        body: JSON.stringify(sanitized),
+      }, 30000);
+
+      if (!response.ok) {
+        throw new Error('Failed to update notification settings');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to update notification settings');
+    }
+  },
+
+  /**
+   * Get booking requirements
+   */
+  async getBookingRequirements() {
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/booking-requirements`, {
+        headers,
+      }, 15000);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch booking requirements');
+      }
+
+      return response.json(); // { data: BookingRequirement[], count: number }
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to fetch booking requirements');
+    }
+  },
+
+  /**
+   * Update booking requirements with input validation
+   */
+  async updateBookingRequirements(
+    requirements: Array<{
+      field_name: string;
+      required: boolean;
+      field_type: string;
+      description?: string;
+      status?: 'optional' | 'recommended' | 'required';
+    }>
+  ) {
+    // Validate and sanitize requirements
+    const sanitized = requirements.map(req => ({
+      field_name: sanitizeString(req.field_name, 100),
+      required: Boolean(req.required),
+      field_type: sanitizeString(req.field_type, 50),
+      description: req.description ? sanitizeString(req.description, 500) : undefined,
+      status: req.status && ['optional', 'recommended', 'required'].includes(req.status)
+        ? req.status
+        : undefined,
+    }));
+
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetchWithTimeout(`${API_BASE}/booking-requirements`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers,
+        },
+        body: JSON.stringify(sanitized),
+      }, 30000);
+
+      if (!response.ok) {
+        throw new Error('Failed to update booking requirements');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw createUserFriendlyError(error, 'Failed to update booking requirements');
+    }
+  }
+};
+
+// ============================================================================
+// EXPORTS FOR TESTING AND MONITORING
+// ============================================================================
+
+export const rateLimitersExport = rateLimiters;
+export const getRateLimiterForEndpointExport = getRateLimiterForEndpoint;
+export const sanitizeStringExport = sanitizeString;
+export const validateEmailExport = validateEmail;
+export const validateProfileUpdatesExport = validateProfileUpdates;
+export const sanitizeUrlParamsExport = sanitizeUrlParams;
+export const createUserFriendlyErrorExport = createUserFriendlyError;
+export const logDetailedErrorExport = logDetailedError;

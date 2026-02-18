@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { env } from '../config/env';
 import { getAuthHeader } from '../lib/api';
-import { getStoredSession } from '../utils/sessionUtils';
+import { getStoredSessionSync } from '../utils/sessionUtils';
 import type {
   ChatRequest,
   ChatSession,
@@ -23,7 +23,7 @@ class ChatAPI {
    */
   private getUserId(): string | undefined {
     try {
-      const session = getStoredSession();
+      const session = getStoredSessionSync();
       // Check both id and user_id fields (Supabase vs our API format)
       const userId = session?.user?.id || (session?.user as any)?.user_id || (session?.user as any)?.sub;
 

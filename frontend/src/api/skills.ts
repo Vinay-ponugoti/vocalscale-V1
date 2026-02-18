@@ -4,7 +4,7 @@
 
 import { env } from '../config/env';
 import { getAuthHeader } from '../lib/api';
-import { getStoredSession } from '../utils/sessionUtils';
+import { getStoredSessionSync } from '../utils/sessionUtils';
 import type { Skill, SkillsResponse } from '../types/skills';
 
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
@@ -12,7 +12,7 @@ const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
 class SkillsAPI {
   private getUserId(): string | undefined {
     try {
-      const session = getStoredSession();
+      const session = getStoredSessionSync();
       return session?.user?.id;
     } catch {
       return undefined;

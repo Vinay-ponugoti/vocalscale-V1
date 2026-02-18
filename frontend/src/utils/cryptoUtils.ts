@@ -34,7 +34,7 @@ async function deriveKey(baseKey: string, salt: Uint8Array): Promise<CryptoKey> 
   return crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: salt,
+      salt: salt as BufferSource,
       iterations: KEY_DERIVATION_ITERATIONS,
       hash: 'SHA-256',
     },
@@ -122,7 +122,7 @@ export async function encrypt(plaintext: string): Promise<string> {
     const data = encoder.encode(plaintext);
     
     const ciphertext = await crypto.subtle.encrypt(
-      { name: ALGORITHM, iv },
+      { name: ALGORITHM, iv: iv as BufferSource },
       key,
       data
     );
@@ -153,9 +153,9 @@ export async function decrypt(encrypted: string): Promise<string> {
     
     const key = await deriveKey(getBaseSecret(), salt);
     const decrypted = await crypto.subtle.decrypt(
-      { name: ALGORITHM, iv },
+      { name: ALGORITHM, iv: iv as BufferSource },
       key,
-      ciphertext
+      ciphertext as BufferSource
     );
     
     const decoder = new TextDecoder();

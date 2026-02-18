@@ -38,7 +38,7 @@ DOMPurify.addHook('uponSanitizeElement', (node, data) => {
  * @param options Optional DOMPurify configuration
  * @returns Sanitized HTML safe to render
  */
-export function sanitizeHtml(dirty: string, options?: { allowedTags?: string[], allowedAttributes?: Record<string, string[]> }): string {
+export function sanitizeHtml(dirty: string, options?: { allowedTags?: string[], allowedAttributes?: string[] }): string {
   return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: options?.allowedTags || [
       'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',

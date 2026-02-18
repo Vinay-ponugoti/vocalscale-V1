@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, LogIn, ShieldAlert } from 'lucide-react';
+import { Mail, Lock, LogIn } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AuthLayout from '../layouts/AuthLayout';
 import { useAuth } from '../../context/AuthContext';
@@ -10,7 +10,6 @@ import { isSessionExpired } from '../../utils/sessionUtils';
 import Button from '../../components/ui/Button';
 import TurnstileWidget from '../../components/ui/TurnstileWidget';
 import ServiceStatusPage from '../../components/ui/ServiceStatusPage';
-import { getDevelopmentHeaders } from '../../lib/devHeaders';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,7 +23,6 @@ const Login = () => {
     }
   }, [session, navigate]);
 
-  // Form state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
@@ -34,105 +32,12 @@ const Login = () => {
   const [serviceDown, setServiceDown] = useState(false);
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
-  // Rate limiting tracking
-  const [failedAttempts, setFailedAttempts] = useState(0);
-  const [lastFailedAttempt, setLastFailedAttempt] = useState<number>(0);
-  const [rateLimitCooldown, setRateLimitCooldown] = useState(0);
-
-  // Form submission prevention
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Password strength calculation
-  const passwordStrength = useMemo(() => {
-    const p = password;
-    if (!p) return { score: 0, label: 'Weak', color: 'bg-slate-200', textColor: 'text-slate-400' };
-    
-    let score = 0;
-    if (p.length >= 8) score++;
-    if (p.length >= 12) score++;
-    if (/[a-z]/.test(p)) score++;
-    if (/[A-Z]/.test(p)) score++;
-    if (/[0-9]/.test(p)) score++;
-    if (/[^a-zA-Z0-9]/.test(p)) score++;
-
-    // Max score is 4 for display
-    const displayScore = Math.min(4, Math.floor(score / 1.5));
-
-    const strengthMap = [
-      { score: 0, label: 'Very Weak', color: 'bg-red-500', textColor: 'text-red-500' },
-      { score: 1, label: 'Weak', color: 'bg-orange-500', textColor: 'text-orange-500' },
-      { score: 2, label: 'Fair', color: 'bg-yellow-500', textColor: 'text-yellow-500' },
-      { score: 3, label: 'Good', color: 'bg-emerald-500', textColor: 'text-emerald-500' },
-      { score: 4, label: 'Strong', color: 'bg-green-600', textColor: 'text-green-600' }
-    ];
-
-    return strengthMap[displayScore];
-  }, [password]);
-
-  // Rate limit cooldown effect
-  useEffect(() => {
-    if (rateLimitCooldown > 0) {
-      const timer = setInterval(() => {
-        setRateLimitCooldown(prev => Math.max(0, prev - 1));
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [rateLimitCooldown]);
-
-  // Check rate limit
-  const isRateLimited = useMemo(() => {
-    if (rateLimitCooldown > 0) return true;
-    
-    // Lock out after 5 failed attempts for 5 minutes
-    if (failedAttempts >= 5) {
-      const timeSinceLastFail = Date.now() - lastFailedAttempt;
-      if (timeSinceLastFail < 5 * 60 * 1000) {
-        setRateLimitCooldown(Math.ceil((5 * 60 * 1000 - timeSinceLastFail) / 1000));
-        return true;
-      } else {
-        // Reset after cooldown expires
-        setFailedAttempts(0);
-      }
-    }
-    return false;
-  }, [failedAttempts, lastFailedAttempt, rateLimitCooldown]);
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // Prevent form resubmission
-    if (isSubmitting || loading) {
-      console.warn('Form submission already in progress');
-      return;
-    }
-
-    // Check rate limit
-    if (isRateLimited) {
-      const msg = `Too many attempts. Please wait ${Math.ceil(rateLimitCooldown / 60)} minute${rateLimitCooldown > 60 ? 's' : ''}.`;
-      setError(msg);
-      showToast(msg, 'error');
-      return;
-    }
-
     if (!isConfigured) {
       const msg = 'Service unavailable.';
-      setError(msg);
-      showToast(msg, 'error');
-      return;
-    }
-
-    // Validate email
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      const msg = 'Please enter a valid email address.';
-      setError(msg);
-      showToast(msg, 'error');
-      return;
-    }
-
-    // Validate password
-    if (!password || password.length < 6) {
-      const msg = 'Password must be at least 6 characters.';
       setError(msg);
       showToast(msg, 'error');
       return;
@@ -145,10 +50,8 @@ const Login = () => {
       return;
     }
 
-    setIsSubmitting(true);
     setLoading(true);
     setServiceDown(false);
-    
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: 'POST',
@@ -166,22 +69,11 @@ const Login = () => {
           setServiceDown(true);
           return;
         }
-        
-        // Track failed attempts for rate limiting
-        setFailedAttempts(prev => prev + 1);
-        setLastFailedAttempt(Date.now());
-        
         let errorMsg = 'Invalid email or password.';
         try {
           const errorData = await response.json();
           errorMsg = errorData.detail || errorMsg;
-          
-          // Check for rate limit message from server
-          if (response.status === 429) {
-            errorMsg = errorData.detail || 'Too many login attempts. Please try again later.';
-          }
         } catch { /* ignore parse errors */ }
-        
         throw new Error(errorMsg);
       }
 
@@ -189,10 +81,6 @@ const Login = () => {
       const { session } = responseData;
 
       if (session && (session.access_token || session.refresh_token)) {
-        // Reset failed attempts on success
-        setFailedAttempts(0);
-        setLastFailedAttempt(0);
-        
         setAuthSession(session, rememberMe);
 
         // Prefetch critical dashboard data
@@ -200,7 +88,7 @@ const Login = () => {
         const dateStr = now.toISOString().split('T')[0];
         const authHeaders = {
           'Authorization': `Bearer ${session.access_token}`,
-          ...getDevelopmentHeaders()
+          'ngrok-skip-browser-warning': 'true'
         };
 
         queryClient.prefetchQuery({
@@ -229,17 +117,10 @@ const Login = () => {
       }
     } finally {
       setLoading(false);
-      setIsSubmitting(false);
     }
   };
 
   const handleGoogleLogin = async () => {
-    if (isRateLimited) {
-      const msg = `Too many attempts. Please wait ${Math.ceil(rateLimitCooldown / 60)} minute${rateLimitCooldown > 60 ? 's' : ''}.`;
-      showToast(msg, 'error');
-      return;
-    }
-
     if (!isConfigured) {
       showToast('Service unavailable.', 'error');
       return;
@@ -256,6 +137,7 @@ const Login = () => {
       const { url } = await response.json();
 
       // Pre-flight check: verify Supabase auth is reachable before redirecting
+      // We check the health endpoint instead of the OAuth URL (which redirects to Google)
       try {
         const supabaseOrigin = new URL(url).origin;
         await Promise.race([
@@ -325,22 +207,6 @@ const Login = () => {
             </motion.div>
           )}
 
-          {/* Rate Limit Warning */}
-          {isRateLimited && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-6 w-full p-4 bg-amber-50 text-amber-700 text-xs font-bold rounded-2xl border border-amber-200 flex items-center gap-3"
-            >
-              <ShieldAlert className="w-4 h-4" />
-              <span>
-                {rateLimitCooldown > 60 
-                  ? `Too many attempts. Try again in ${Math.ceil(rateLimitCooldown / 60)} minutes.`
-                  : `Too many attempts. Try again in ${rateLimitCooldown} seconds.`}
-              </span>
-            </motion.div>
-          )}
-
           {/* Error Callout */}
           {error && (
             <motion.div
@@ -350,18 +216,6 @@ const Login = () => {
             >
               <div className="w-1.5 h-1.5 bg-red-600 rounded-full" />
               {error}
-            </motion.div>
-          )}
-
-          {/* Failed attempts indicator (when approaching rate limit) */}
-          {failedAttempts >= 3 && failedAttempts < 5 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mb-6 text-xs text-amber-600 font-medium flex items-center gap-2"
-            >
-              <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-              {5 - failedAttempts} attempt{5 - failedAttempts !== 1 ? 's' : ''} remaining before temporary lockout
             </motion.div>
           )}
 
@@ -375,8 +229,7 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
                 required
-                disabled={loading || isRateLimited}
-                autoComplete="email"
+                disabled={loading}
                 className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-100 focus:border-slate-300 focus:bg-white rounded-[1rem] text-[15px] text-slate-900 placeholder:text-slate-400 transition-all outline-none"
               />
             </div>
@@ -389,29 +242,10 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 required
-                disabled={loading || isRateLimited}
-                autoComplete="current-password"
+                disabled={loading}
                 className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-100 focus:border-slate-300 focus:bg-white rounded-[1rem] text-[15px] text-slate-900 placeholder:text-slate-400 transition-all outline-none"
               />
             </div>
-
-            {/* Password Strength Indicator */}
-            {password && (
-              <div className="px-1">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-slate-500">Password Strength</span>
-                  <span className={`text-xs font-bold ${passwordStrength.textColor}`}>
-                    {passwordStrength.label}
-                  </span>
-                </div>
-                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${passwordStrength.color} transition-all duration-300`}
-                    style={{ width: `${(passwordStrength.score + 1) * 25}%` }}
-                  />
-                </div>
-              </div>
-            )}
 
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-2">
@@ -420,7 +254,6 @@ const Login = () => {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  disabled={loading || isRateLimited}
                   className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer accent-slate-900"
                 />
                 <label htmlFor="remember-me" className="text-sm font-medium text-slate-600 cursor-pointer select-none">
@@ -435,12 +268,61 @@ const Login = () => {
             <Button
               type="submit"
               isLoading={loading}
-              disabled={isRateLimited || isSubmitting}
-              className="w-full h-14 bg-[#1e293b] hover:bg-[#020617] text-white rounded-[1rem] font-bold text-[16px] shadow-lg shadow-slate-950/20 active:scale-[0.98] transition-all mt-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1e293b]"
+              className="w-full h-14 bg-[#1e293b] hover:bg-[#020617] text-white rounded-[1rem] font-bold text-[16px] shadow-lg shadow-slate-950/20 active:scale-[0.98] transition-all mt-4"
             >
-              {isRateLimited ? 'Please Wait' : 'Get Started'}
+              Get Started
             </Button>
 
             {turnstileSiteKey && (
               <TurnstileWidget
                 siteKey={turnstileSiteKey}
+                onVerify={(token) => setTurnstileToken(token)}
+              />
+            )}
+          </form>
+
+          {/* Design Match: Custom Divider */}
+          <div className="relative w-full my-12">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-100/50 border-dashed"></div>
+            </div>
+            <div className="relative flex justify-center text-[12px] font-medium tracking-tight">
+              <span className="bg-white px-4 text-slate-400">Or sign in with</span>
+            </div>
+          </div>
+
+          {/* Design Match: Bottom Logo Options (Google Only) */}
+          <div className="w-full flex justify-center">
+            <button
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              className="w-32 h-16 bg-white hover:bg-slate-50 border border-slate-200 rounded-[1rem] flex items-center justify-center transition-all active:scale-[0.95] shadow-sm group disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-900 rounded-full animate-spin" />
+              ) : (
+                <img
+                  alt="Google"
+                  className="w-6 h-6 grayscale group-hover:grayscale-0 transition-all"
+                  src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                />
+              )}
+            </button>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-12 text-center">
+            <p className="text-sm font-medium text-slate-400">
+              Fresh here?{' '}
+              <Link to="/signup" className="text-slate-900 font-bold hover:underline underline-offset-4">
+                Create a free account
+              </Link>
+            </p>
+          </div>
+        </div>
+      )}
+    </AuthLayout>
+  );
+};
+
+export default Login;
