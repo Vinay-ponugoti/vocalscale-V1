@@ -13,7 +13,7 @@ import { SetupProvider } from './context/SetupContext';
 import { SearchProvider } from './context/SearchProvider';
 import { PageTracking } from './components/PageTracking';
 import { WebVitalsTracking } from './components/WebVitalsTracking';
-import { ChatWidget } from './components/ChatWidget';
+
 
 // Lazy Load Pages
 import { lazyImport } from './utils/lazyImport';
@@ -59,6 +59,7 @@ const GetNewNumber = lazyImport(() => import('./pages/voice-setup/GetNewNumber')
 const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
 const Inventory = lazyImport(() => import('./pages/dashboard/Inventory'));
 const Orders = lazyImport(() => import('./pages/dashboard/Orders'));
+
 
 function App() {
   return (
@@ -156,8 +157,6 @@ function App() {
         </Suspense>
       </LazyMotion>
       
-      {/* Chat Widget - Available on all pages */}
-      <ChatWidget position="bottom-right" />
     </Router>
   );
 }

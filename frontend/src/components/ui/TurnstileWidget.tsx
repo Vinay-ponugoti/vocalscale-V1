@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface TurnstileWidgetProps {
     siteKey: string;
@@ -33,59 +33,83 @@ const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
     onVerify,
     onError,
     onExpire,
-    theme = 'auto',
+    theme = 'light',
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [widgetId, setWidgetId] = useState<string | null>(null);
+    // Use a ref instead of state so widgetId never triggers re-renders
+    const widgetIdRef = useRef<string | null>(null);
+    // Keep callbacks in refs so the effect never needs to re-run when they change
+    const onVerifyRef = useRef(onVerify);
+    const onErrorRef = useRef(onError);
+    const onExpireRef = useRef(onExpire);
 
-    const renderWidget = useCallback(() => {
-        if (!window.turnstile || !containerRef.current) return;
-
-        // If widget already exists, reset it
-        if (widgetId) {
-            window.turnstile.reset(widgetId);
-            return;
-        }
-
-        try {
-            const id = window.turnstile.render(containerRef.current, {
-                sitekey: siteKey,
-                theme,
-                callback: (token: string) => {
-                    onVerify(token);
-                },
-                'error-callback': (error: any) => {
-                    console.error('Turnstile error:', error);
-                    if (onError) onError(error);
-                },
-                'expired-callback': () => {
-                    if (onExpire) onExpire();
-                },
-            });
-            setWidgetId(id);
-        } catch (err) {
-            console.error('Failed to render Turnstile:', err);
-        }
-    }, [siteKey, theme, onVerify, onError, onExpire, widgetId]);
+    // Keep callback refs up-to-date without re-running the effect
+    useEffect(() => { onVerifyRef.current = onVerify; }, [onVerify]);
+    useEffect(() => { onErrorRef.current = onError; }, [onError]);
+    useEffect(() => { onExpireRef.current = onExpire; }, [onExpire]);
 
     useEffect(() => {
         if (!containerRef.current || !siteKey) return;
 
-        // Wait for turnstile to load with a 10 second timeout
-        const startTime = Date.now();
-        const interval = setInterval(() => {
-            if (window.turnstile) {
-                clearInterval(interval);
-                renderWidget();
-            } else if (Date.now() - startTime > 10000) {
-                clearInterval(interval);
-                console.error('Turnstile failed to load within 10 seconds');
-                if (onError) onError(new Error('Security verification failed to load. Please refresh the page.'));
-            }
-        }, 100);
+        let intervalId: ReturnType<typeof setInterval>;
+        let cancelled = false;
 
-        return () => clearInterval(interval);
-    }, [siteKey, renderWidget, onError]);
+        const render = () => {
+            if (cancelled || !window.turnstile || !containerRef.current) return;
+            // Already rendered — don't render again
+            if (widgetIdRef.current !== null) return;
+
+            try {
+                const id = window.turnstile.render(containerRef.current, {
+                    sitekey: siteKey,
+                    theme,
+                    callback: (token: string) => {
+                        onVerifyRef.current(token);
+                    },
+                    'error-callback': (error: any) => {
+                        console.error('Turnstile error:', error);
+                        onErrorRef.current?.(error);
+                    },
+                    'expired-callback': () => {
+                        onExpireRef.current?.();
+                    },
+                });
+                widgetIdRef.current = id;
+            } catch (err) {
+                console.error('Failed to render Turnstile:', err);
+            }
+        };
+
+        if (window.turnstile) {
+            // Script already loaded — render immediately
+            render();
+        } else {
+            // Poll until the Cloudflare script loads (max 10s)
+            const startTime = Date.now();
+            intervalId = setInterval(() => {
+                if (window.turnstile) {
+                    clearInterval(intervalId);
+                    render();
+                } else if (Date.now() - startTime > 10000) {
+                    clearInterval(intervalId);
+                    console.error('Turnstile failed to load within 10 seconds');
+                    onErrorRef.current?.(new Error('Security verification failed to load. Please refresh the page.'));
+                }
+            }, 100);
+        }
+
+        return () => {
+            cancelled = true;
+            clearInterval(intervalId);
+            // Clean up widget on unmount
+            if (widgetIdRef.current && window.turnstile) {
+                try { window.turnstile.remove(widgetIdRef.current); } catch { /* ignore */ }
+                widgetIdRef.current = null;
+            }
+        };
+    // Only re-run if siteKey or theme changes — never on callback changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [siteKey, theme]);
 
     return <div ref={containerRef} className="w-full flex justify-center my-4" />;
 };

@@ -1,7 +1,25 @@
 /**
  * Chat types for Knowledge Chat feature
+ * Kept in sync with backend models.py + image_service.py
  */
 
+// ─── Social Media Content ────────────────────────────────────────────────────
+export interface SocialContent {
+  caption: string;
+  hashtags: string;
+  ideas: string;
+}
+
+// ─── Images ──────────────────────────────────────────────────────────────────
+export interface GeneratedImage {
+  url: string;
+  aspect_ratio?: string;
+  preset: string;
+  preset_label?: string;
+  dimensions?: string;
+}
+
+// ─── Chat Messages ───────────────────────────────────────────────────────────
 export interface ChatMessage {
   id: string;
   session_id: string;
@@ -10,8 +28,20 @@ export interface ChatMessage {
   timestamp: string;
   attachments?: FileAttachment[];
   sources?: Source[];
+
+  // Image generation fields
+  images?: GeneratedImage[];
+  generation_id?: string;
+  available_presets?: Record<string, string>;
+
+  // Caption / hashtags / ideas
+  social_content?: SocialContent | null;
+
+  // Persisted from Supabase — mapped back to `images` + `social_content` on load
+  image_data?: GeneratedImage[];
 }
 
+// ─── Supporting Types ─────────────────────────────────────────────────────────
 export interface FileAttachment {
   id: string;
   name: string;
@@ -77,7 +107,7 @@ export interface FileUploadResponse {
   status: string;
 }
 
-// SSE Event types
+// ─── SSE Event Types ──────────────────────────────────────────────────────────
 export interface ChunkEvent {
   text: string;
 }
@@ -93,26 +123,10 @@ export interface ErrorEvent {
   error: string;
 }
 
-// AI Image generation types
-export interface GeneratedImage {
-  id: string;
-  url: string;
-  prompt: string;
-  size: string;
-  preset?: string;
-  preset_label?: string;
-  dimensions?: string;
-  created_at: string;
-  caption?: string;
-  hashtags?: string[];
-  ideas?: string[];
-}
-
-export interface SocialContent {
-  type: 'caption' | 'hashtags' | 'ideas';
-  content: string;
-  platform?: string;
-  caption?: string;
-  hashtags?: string[];
-  ideas?: string[];
+export interface ImageReadyEvent {
+  images: GeneratedImage[];
+  generation_id: string;
+  enhanced_prompt: string;
+  available_presets: Record<string, string>;
+  social_content?: SocialContent | null;
 }

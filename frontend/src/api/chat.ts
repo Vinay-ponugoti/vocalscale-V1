@@ -10,6 +10,8 @@ import type {
   MessagesResponse,
   FileUploadResponse,
   GeneratedImage,
+  DoneEvent,
+  SocialContent,
 } from '../types/chat';
 
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
@@ -39,13 +41,22 @@ class ChatAPI {
   }
 
   /**
-   * Send a chat message and receive streaming response via SSE
+   * Send a chat message and receive streaming response via SSE.
+   * Handles text chunks, done events, image status, and image ready events.
    */
   async sendMessageStream(
     request: ChatRequest,
     onChunk: (text: string) => void,
-    onDone: (sessionId: string, sources: any[]) => void,
-    onError: (error: Error) => void
+    onDone: (data: DoneEvent) => void,
+    onError: (error: Error) => void,
+    onImageStatus?: (status: string) => void,
+    onImageReady?: (
+      images: GeneratedImage[],
+      generationId: string,
+      enhancedPrompt: string,
+      availablePresets: Record<string, string>,
+      socialContent: SocialContent | null,
+    ) => void,
   ): Promise<void> {
     const userId = this.getUserId();
     const headers = await getAuthHeader(userId);
@@ -59,7 +70,6 @@ class ChatAPI {
         },
         body: JSON.stringify(request),
       });
-      // ... (rest of the content)
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
@@ -73,13 +83,11 @@ class ChatAPI {
 
       const decoder = new TextDecoder();
       let buffer = '';
+      let currentEventType = '';
 
       while (true) {
         const { done, value } = await reader.read();
-
-        if (done) {
-          break;
-        }
+        if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split('\n');
@@ -89,27 +97,66 @@ class ChatAPI {
 
         for (const line of lines) {
           if (line.startsWith('event: ')) {
-            // SSE event type line - we'll use it to parse the next data line
+            // Track the current SSE event type for the following data line
+            currentEventType = line.slice(7).trim();
             continue;
           }
 
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
+              // Capture and clear event type before dispatching
+              const evt = currentEventType;
+              currentEventType = '';
 
-              if (data.text) {
-                onChunk(data.text);
+              // Dispatch strictly by event type — never guess from payload shape
+              // (the 'done' payload also contains images/generation_id so shape-guessing breaks)
+              if (evt === 'chunk') {
+                // ── Text chunk ─────────────────────────────────────────────
+                if (data.text) onChunk(data.text);
+
+              } else if (evt === 'image_status') {
+                // ── Image status ────────────────────────────────────────────
+                onImageStatus?.(data.status ?? 'analyzing');
+
+              } else if (evt === 'image_ready') {
+                // ── Image ready ─────────────────────────────────────────────
+                if (data.images?.length > 0) {
+                  onImageReady?.(
+                    data.images,
+                    data.generation_id || '',
+                    data.enhanced_prompt || '',
+                    data.available_presets || {},
+                    data.social_content ?? null,
+                  );
+                }
+
+              } else if (evt === 'done') {
+                // ── Done ────────────────────────────────────────────────────
+                onDone({
+                  session_id: data.session_id,
+                  sources: data.sources || [],
+                  intent: data.intent,
+                  skill_used: data.skill_used,
+                });
+
+              } else if (evt === 'error') {
+                // ── Error ───────────────────────────────────────────────────
+                onError(new Error(data.error || 'Unknown stream error'));
+
+              } else {
+                // ── Fallback: no event type — infer from payload ────────────
+                if (data.text) onChunk(data.text);
+                else if (data.session_id !== undefined) {
+                  onDone({ session_id: data.session_id, sources: data.sources || [] });
+                } else if (data.error) {
+                  onError(new Error(data.error));
+                }
               }
 
-              if (data.session_id !== undefined && data.sources !== undefined) {
-                onDone(data.session_id, data.sources || []);
-              }
-
-              if (data.error) {
-                onError(new Error(data.error));
-              }
             } catch {
-              console.warn('Failed to parse SSE data:', line);
+              console.warn('[ChatAPI] Failed to parse SSE data:', line);
+              currentEventType = '';
             }
           }
         }
@@ -120,7 +167,9 @@ class ChatAPI {
         try {
           const data = JSON.parse(buffer.slice(6));
           if (data.text) onChunk(data.text);
-          if (data.session_id !== undefined) onDone(data.session_id, data.sources || []);
+          if (data.session_id !== undefined) {
+            onDone({ session_id: data.session_id, sources: data.sources || [] });
+          }
         } catch {
           // Ignore parse errors for final buffer
         }
@@ -221,25 +270,35 @@ class ChatAPI {
   }
 
   /**
-   * Regenerate an AI image (stub for ImageCard component)
-   * TODO: Implement with actual image generation API
+   * Regenerate images for additional size presets.
+   * Calls POST /chat/images/regenerate with generationId, sessionId, and desired preset names.
+   * Returns { images: GeneratedImage[] }
    */
-  async regenerateImage(imageId: string): Promise<GeneratedImage> {
-    // Stub implementation - replace with actual API call
+  async regenerateImage(
+    generationId: string,
+    sessionId: string,
+    presetNames: string[],
+  ): Promise<{ images: GeneratedImage[] }> {
     const userId = this.getUserId();
     const headers = await getAuthHeader(userId);
 
     try {
-      const response = await fetch(`${KNOWLEDGE_URL}/images/${imageId}/regenerate`, {
+      const response = await fetch(`${KNOWLEDGE_URL}/chat/images/regenerate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...headers,
         },
+        body: JSON.stringify({
+          generation_id: generationId,
+          session_id: sessionId,
+          presets: presetNames,
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to regenerate image');
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to regenerate image' }));
+        throw new Error(errorData.detail || `HTTP ${response.status}`);
       }
 
       return await response.json();
