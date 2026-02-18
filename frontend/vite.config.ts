@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
       react(),
       {
         name: 'html-inject',
-        transformIndexHtml: (html, { server }) => {
+        transformIndexHtml: (html) => {
           // Generate nonce for CSP
           const nonce = Math.random().toString(36).substring(2, 10);
           // Get environment variables

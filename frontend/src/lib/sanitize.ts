@@ -48,14 +48,12 @@ export function sanitizeHtml(dirty: string, options?: { allowedTags?: string[], 
       'br', 'hr', 'div', 'span',
       'table', 'thead', 'tbody', 'tr', 'th', 'td'
     ],
-    ALLOWED_ATTR: options?.allowedAttributes || [
-      'href', 'alt', 'title', 'class',
-      'rel', 'target'  // We control 'rel' and 'target' via hooks
-    ],
+    ALLOWED_ATTR: (options?.allowedAttributes
+      ? Object.keys(options.allowedAttributes)
+      : ['href', 'alt', 'title', 'class', 'rel', 'target']),
     ALLOW_DATA_ATTR: false,
     FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input'],
     FORBID_ATTR: ['onclick', 'onload', 'onerror', 'onmouseover', 'onmouseout'],
-    ...options
   });
 }
 

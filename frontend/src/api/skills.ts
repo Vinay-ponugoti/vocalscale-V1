@@ -10,9 +10,9 @@ import type { Skill, SkillsResponse } from '../types/skills';
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
 
 class SkillsAPI {
-  private getUserId(): string | undefined {
+  private async getUserId(): Promise<string | undefined> {
     try {
-      const session = getStoredSession();
+      const session = await getStoredSession();
       return session?.user?.id;
     } catch {
       return undefined;
@@ -23,7 +23,7 @@ class SkillsAPI {
    * Get all available skills
    */
   async getSkills(): Promise<Skill[]> {
-    const userId = this.getUserId();
+    const userId = await this.getUserId();
     const headers = await getAuthHeader(userId);
 
     const response = await fetch(`${KNOWLEDGE_URL}/chat/skills`, {
@@ -43,7 +43,7 @@ class SkillsAPI {
    * Get a specific skill by ID
    */
   async getSkill(skillId: string): Promise<Skill> {
-    const userId = this.getUserId();
+    const userId = await this.getUserId();
     const headers = await getAuthHeader(userId);
 
     const response = await fetch(`${KNOWLEDGE_URL}/chat/skills/${skillId}`, {

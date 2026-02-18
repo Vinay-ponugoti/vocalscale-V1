@@ -10,9 +10,9 @@ import type { ChatAnalytics } from '../types/analytics';
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
 
 class AnalyticsAPI {
-  private getUserId(): string | undefined {
+  private async getUserId(): Promise<string | undefined> {
     try {
-      const session = getStoredSession();
+      const session = await getStoredSession();
       return session?.user?.id;
     } catch {
       return undefined;
@@ -23,7 +23,7 @@ class AnalyticsAPI {
    * Get chat analytics for the dashboard
    */
   async getChatAnalytics(days: number = 7): Promise<ChatAnalytics> {
-    const userId = this.getUserId();
+    const userId = await this.getUserId();
     const headers = await getAuthHeader(userId);
 
     const response = await fetch(

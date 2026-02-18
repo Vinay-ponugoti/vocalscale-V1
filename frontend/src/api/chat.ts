@@ -21,9 +21,9 @@ class ChatAPI {
   /**
    * Get the current user ID for header isolation
    */
-  private getUserId(): string | undefined {
+  private async getUserId(): Promise<string | undefined> {
     try {
-      const session = getStoredSession();
+      const session = await getStoredSession();
       // Check both id and user_id fields (Supabase vs our API format)
       const userId = session?.user?.id || (session?.user as any)?.user_id || (session?.user as any)?.sub;
 
@@ -58,7 +58,7 @@ class ChatAPI {
       socialContent: SocialContent | null,
     ) => void,
   ): Promise<void> {
-    const userId = this.getUserId();
+    const userId = await this.getUserId();
     const headers = await getAuthHeader(userId);
 
     try {
@@ -193,7 +193,7 @@ class ChatAPI {
    * Upload a file to attach to chat
    */
   async uploadFile(file: File): Promise<FileUploadResponse> {
-    const userId = this.getUserId();
+    const userId = await this.getUserId();
     const headers = await getAuthHeader(userId);
     const formData = new FormData();
     formData.append('file', file);
@@ -219,7 +219,7 @@ class ChatAPI {
    * Get list of chat sessions
    */
   async getSessions(): Promise<ChatSession[]> {
-    const userId = this.getUserId();
+    const userId = await this.getUserId();
     const headers = await getAuthHeader(userId);
 
     const response = await fetch(`${KNOWLEDGE_URL}/chat/sessions`, {
@@ -241,7 +241,7 @@ class ChatAPI {
    * Get messages for a specific session
    */
   async getMessages(sessionId: string): Promise<ChatMessage[]> {
-    const userId = this.getUserId();
+    const userId = await this.getUserId();
     const headers = await getAuthHeader(userId);
 
     const response = await fetch(`${KNOWLEDGE_URL}/chat/sessions/${sessionId}/messages`, {
@@ -263,7 +263,7 @@ class ChatAPI {
    * Delete a chat session
    */
   async deleteSession(sessionId: string): Promise<void> {
-    const userId = this.getUserId();
+    const userId = await this.getUserId();
     const headers = await getAuthHeader(userId);
 
     const response = await fetch(`${KNOWLEDGE_URL}/chat/sessions/${sessionId}`, {
@@ -289,7 +289,7 @@ class ChatAPI {
     sessionId: string,
     presetNames: string[],
   ): Promise<{ images: GeneratedImage[] }> {
-    const userId = this.getUserId();
+    const userId = await this.getUserId();
     const headers = await getAuthHeader(userId);
 
     try {

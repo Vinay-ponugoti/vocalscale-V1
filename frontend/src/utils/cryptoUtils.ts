@@ -21,7 +21,7 @@ const SALT_LENGTH = 16;
 const KEY_DERIVATION_ITERATIONS = 100000;
 
 // Derives a consistent encryption key from a base secret and salt
-async function deriveKey(baseKey: string, salt: Uint8Array): Promise<CryptoKey> {
+async function deriveKey(baseKey: string, salt: Uint8Array<ArrayBuffer>): Promise<CryptoKey> {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
@@ -66,15 +66,15 @@ function getBaseSecret(): string {
 }
 
 // Generate random bytes
-function getRandomBytes(length: number): Uint8Array {
-  const bytes = new Uint8Array(length);
+function getRandomBytes(length: number): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(length) as Uint8Array<ArrayBuffer>;
   crypto.getRandomValues(bytes);
   return bytes;
 }
 
 // Combine salt + IV + ciphertext for storage
-function combineBytes(salt: Uint8Array, iv: Uint8Array, ciphertext: Uint8Array): Uint8Array {
-  const combined = new Uint8Array(salt.length + iv.length + ciphertext.length);
+function combineBytes(salt: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer>, ciphertext: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer> {
+  const combined = new Uint8Array(salt.length + iv.length + ciphertext.length) as Uint8Array<ArrayBuffer>;
   combined.set(salt, 0);
   combined.set(iv, salt.length);
   combined.set(ciphertext, salt.length + iv.length);
@@ -82,7 +82,7 @@ function combineBytes(salt: Uint8Array, iv: Uint8Array, ciphertext: Uint8Array):
 }
 
 // Extract components from combined bytes
-function extractBytes(combined: Uint8Array): { salt: Uint8Array; iv: Uint8Array; ciphertext: Uint8Array } {
+function extractBytes(combined: Uint8Array<ArrayBuffer>): { salt: Uint8Array<ArrayBuffer>; iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
   return {
     salt: combined.slice(0, SALT_LENGTH),
     iv: combined.slice(SALT_LENGTH, SALT_LENGTH + IV_LENGTH),
@@ -97,10 +97,10 @@ function bytesToBase64(bytes: Uint8Array): string {
 }
 
 // Convert base64 string to bytes
-function base64ToBytes(base64: string): Uint8Array {
+function base64ToBytes(base64: string): Uint8Array<ArrayBuffer> {
   try {
     const binary = atob(base64);
-    return new Uint8Array(Array.from(binary).map(c => c.charCodeAt(0)));
+    return new Uint8Array(Array.from(binary).map(c => c.charCodeAt(0))) as Uint8Array<ArrayBuffer>;
   } catch (e) {
     throw new Error('Invalid base64 string');
   }
@@ -127,7 +127,7 @@ export async function encrypt(plaintext: string): Promise<string> {
       data
     );
     
-    const combined = combineBytes(salt, iv, new Uint8Array(ciphertext));
+    const combined = combineBytes(salt, iv, new Uint8Array(ciphertext) as Uint8Array<ArrayBuffer>);
     return bytesToBase64(combined);
   } catch (e) {
     console.error('Encryption failed:', e);

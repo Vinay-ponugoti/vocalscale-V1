@@ -577,4 +577,96 @@ async function fetchWithTimeout(
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
-      console.error('[API Error] Expected JSON but got:', text.substring(0
+      console.error('[API Error] Expected JSON but got:', text.substring(0, 500));
+      // Return a synthetic JSON response to avoid downstream parse errors
+      return new Response(JSON.stringify({ detail: text.substring(0, 200) }), {
+        status: response.status,
+        statusText: response.statusText,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+// ============================================================================
+// API OBJECT — Convenience wrapper used by settings and setup pages
+// ============================================================================
+
+import { env as _env } from '../config/env';
+
+const _API_BASE = _env.API_URL;
+const _KNOWLEDGE_BASE = _env.KNOWLEDGE_API_URL;
+
+async function _apiRequest(url: string, options: RequestInit = {}): Promise<any> {
+  const headers = await getAuthHeader();
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+      ...(options.headers as Record<string, string> | undefined),
+    },
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(err.detail || `HTTP ${response.status}: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+export const api = {
+  // Profile
+  getProfile: () => _apiRequest(`${_API_BASE}/profile`),
+  updateProfile: (data: Record<string, unknown>) =>
+    _apiRequest(`${_API_BASE}/profile`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  // Voice
+  getVoices: (params?: { gender?: string }) => {
+    const qs = params?.gender ? `?gender=${encodeURIComponent(params.gender)}` : '';
+    return _apiRequest(`${_API_BASE}/voices${qs}`);
+  },
+  getVoiceSettings: () => _apiRequest(`${_API_BASE}/voice-settings`),
+  updateVoiceSettings: (data: Record<string, unknown>) =>
+    _apiRequest(`${_API_BASE}/voice-settings`, { method: 'PUT', body: JSON.stringify(data) }),
+  getVoiceSampleUrl: (providerVoiceId: string): string =>
+    `${_API_BASE}/voices/${encodeURIComponent(providerVoiceId)}/sample`,
+  uploadVoice: (voiceData: Blob | File) => {
+    const formData = new FormData();
+    formData.append('file', voiceData);
+    return getAuthHeader().then(headers =>
+      fetch(`${_API_BASE}/voice/upload`, {
+        method: 'POST',
+        headers: { ...headers },
+        body: formData,
+      }).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+    );
+  },
+  processVoice: (publicUrl: string) =>
+    _apiRequest(`${_API_BASE}/voice/process`, { method: 'POST', body: JSON.stringify({ url: publicUrl }) }),
+  getVoiceStatus: (cloneId: string) =>
+    _apiRequest(`${_API_BASE}/voice/status/${encodeURIComponent(cloneId)}`),
+  synthesize: (text: string, voiceUrl: string) =>
+    _apiRequest(`${_API_BASE}/synthesize`, { method: 'POST', body: JSON.stringify({ text, voice_url: voiceUrl }) }),
+
+  // Billing
+  getBilling: () => _apiRequest(`${_API_BASE}/billing`),
+
+  // Business / Settings
+  getBusinessSetup: () => _apiRequest(`${_API_BASE}/business`),
+  getBookingRequirements: () => _apiRequest(`${_API_BASE}/booking-requirements`),
+  updateBookingRequirements: (requirements: unknown[]) =>
+    _apiRequest(`${_API_BASE}/booking-requirements`, {
+      method: 'PUT',
+      body: JSON.stringify({ booking_requirements: requirements }),
+    }),
+
+  // Notifications
+  updateNotificationSettings: (data: Record<string, unknown>) =>
+    _apiRequest(`${_API_BASE}/notification-settings`, { method: 'PUT', body: JSON.stringify(data) }),
+};
