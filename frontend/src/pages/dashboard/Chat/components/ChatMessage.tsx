@@ -64,6 +64,13 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null);
   const [copied, setCopied] = useState(false);
 
+  // Debug log — remove once images are confirmed working
+  if (message.images && message.images.length > 0) {
+    console.log(`[ChatMessage] Rendering msg ${message.id} WITH ${message.images.length} image(s). First URL: ${message.images[0]?.url?.slice(0, 80)}`);
+  } else if (!isUser && !isStreaming) {
+    console.log(`[ChatMessage] Rendering assistant msg ${message.id} — NO images. keys: [${Object.keys(message).join(', ')}]`);
+  }
+
   const handleCopyMessage = async () => {
     try {
       await navigator.clipboard.writeText(message.content);

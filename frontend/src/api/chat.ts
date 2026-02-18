@@ -99,6 +99,7 @@ class ChatAPI {
           if (line.startsWith('event: ')) {
             // Track the current SSE event type for the following data line
             currentEventType = line.slice(7).trim();
+            console.log(`[SSE] event header received: "${currentEventType}"`);
             continue;
           }
 
@@ -109,6 +110,8 @@ class ChatAPI {
               const evt = currentEventType;
               currentEventType = '';
 
+              console.log(`[SSE] dispatching event: "${evt || '(no type)'}" | keys: [${Object.keys(data).join(', ')}]`);
+
               // Dispatch strictly by event type — never guess from payload shape
               // (the 'done' payload also contains images/generation_id so shape-guessing breaks)
               if (evt === 'chunk') {
@@ -117,10 +120,12 @@ class ChatAPI {
 
               } else if (evt === 'image_status') {
                 // ── Image status ────────────────────────────────────────────
+                console.log(`[SSE] image_status → "${data.status}"`);
                 onImageStatus?.(data.status ?? 'analyzing');
 
               } else if (evt === 'image_ready') {
                 // ── Image ready ─────────────────────────────────────────────
+                console.log(`[SSE] image_ready → images: ${data.images?.length ?? 0}, generation_id: ${data.generation_id}, has social_content: ${!!data.social_content}`);
                 if (data.images?.length > 0) {
                   onImageReady?.(
                     data.images,
@@ -129,10 +134,13 @@ class ChatAPI {
                     data.available_presets || {},
                     data.social_content ?? null,
                   );
+                } else {
+                  console.warn('[SSE] image_ready event received but images array is empty or missing!', data);
                 }
 
               } else if (evt === 'done') {
                 // ── Done ────────────────────────────────────────────────────
+                console.log(`[SSE] done → session_id: ${data.session_id}, sources: ${data.sources?.length ?? 0}`);
                 onDone({
                   session_id: data.session_id,
                   sources: data.sources || [],
@@ -142,10 +150,12 @@ class ChatAPI {
 
               } else if (evt === 'error') {
                 // ── Error ───────────────────────────────────────────────────
+                console.error(`[SSE] error event: ${data.error}`);
                 onError(new Error(data.error || 'Unknown stream error'));
 
               } else {
                 // ── Fallback: no event type — infer from payload ────────────
+                console.log(`[SSE] no event type — inferring from payload shape. keys: [${Object.keys(data).join(', ')}]`);
                 if (data.text) onChunk(data.text);
                 else if (data.session_id !== undefined) {
                   onDone({ session_id: data.session_id, sources: data.sources || [] });

@@ -36,6 +36,9 @@ export function useChat(sessionId: string | null) {
   const [pendingImages, setPendingImages] = useState<GeneratedImage[]>([]);
 
   const currentSessionIdRef = useRef<string | null>(sessionId);
+  // Guard: when images arrive via stream, block the sync effect from overwriting
+  // local messages (which already have images) with stale fetchedMessages (no images yet)
+  const hasLocalImagesRef = useRef(false);
 
   const businessContext = useMemo<BusinessContext | undefined>(() => {
     const { data } = businessState;
@@ -85,10 +88,18 @@ export function useChat(sessionId: string | null) {
   }, [sessionId]);
 
   // Sync fetched messages — map image_data → images, preserve social_content
+  // Guard: skip sync when local images exist (stream just delivered them) to
+  // prevent race condition where stale fetchedMessages overwrites image state.
   useEffect(() => {
     if (fetchedMessages && !isStreaming) {
+      console.log(`[useChat] Sync effect: fetchedMessages=${fetchedMessages.length}, hasLocalImages=${hasLocalImagesRef.current}`);
+      if (hasLocalImagesRef.current) {
+        console.log('[useChat] Sync skipped — local images present, waiting for backend to persist');
+        return;
+      }
       const mapped = fetchedMessages.map((msg) => {
         if (msg.image_data && msg.image_data.length > 0 && (!msg.images || msg.images.length === 0)) {
+          console.log(`[useChat] Sync: mapping image_data→images for msg ${msg.id} (${msg.image_data.length} images)`);
           return { ...msg, images: msg.image_data };
         }
         return msg;
@@ -108,6 +119,7 @@ export function useChat(sessionId: string | null) {
       setError(null);
       setImageStatus(null);
       setPendingImages([]);
+      hasLocalImagesRef.current = false; // reset for new message
 
       const optimId = `optim-${Date.now()}`;
       setMessages(prev => [...prev, {
@@ -157,11 +169,15 @@ export function useChat(sessionId: string | null) {
           receivedGenerationId = generationId;
           receivedPresets = availablePresets;
           receivedSocialContent = socialContent ?? null;
+          hasLocalImagesRef.current = true; // block sync effect overwrite
           setPendingImages(images);
           setImageStatus('complete');
-          console.log(`[useChat] Images ready: ${images.length}, caption chars: ${socialContent?.caption?.length ?? 0}`);
+          console.log(`[useChat] onImageReady: ${images.length} images, generation_id: ${generationId}, caption chars: ${socialContent?.caption?.length ?? 0}`);
+          console.log('[useChat] onImageReady: first image url:', images[0]?.url?.slice(0, 80));
         },
       );
+
+      console.log(`[useChat] Stream finished. receivedImages: ${receivedImages.length}, fullResponse length: ${fullResponse.length}`);
 
       const assistantMessage: ChatMessage = {
         id: `resp-${Date.now()}`,
@@ -175,7 +191,13 @@ export function useChat(sessionId: string | null) {
         social_content: receivedSocialContent,
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      console.log(`[useChat] assistantMessage built. id: ${assistantMessage.id}, has images: ${!!assistantMessage.images}, count: ${assistantMessage.images?.length ?? 0}`);
+
+      setMessages(prev => {
+        const next = [...prev, assistantMessage];
+        console.log(`[useChat] setMessages called. total messages: ${next.length}, last has images: ${!!next[next.length - 1]?.images}`);
+        return next;
+      });
       setStreamingContent('');
       setPendingFiles([]);
 
@@ -187,6 +209,13 @@ export function useChat(sessionId: string | null) {
         // the backend has persisted image_data (race condition).
         if (receivedImages.length === 0) {
           queryClient.invalidateQueries({ queryKey: ['chat-messages'] });
+        } else {
+          console.log('[useChat] Skipping chat-messages invalidation — images are in local state');
+          // After a longer delay, allow the sync effect to re-run (backend should have persisted by then)
+          setTimeout(() => {
+            console.log('[useChat] Releasing hasLocalImagesRef guard after 10s');
+            hasLocalImagesRef.current = false;
+          }, 10000);
         }
       }, 800);
 
@@ -197,8 +226,9 @@ export function useChat(sessionId: string | null) {
       setError(err instanceof Error ? err.message : 'Failed to send message');
       return null;
     } finally {
+      console.log('[useChat] finally block: setIsStreaming(false)');
       setIsStreaming(false);
-      setImageStatus(null);
+      // Note: intentionally NOT clearing imageStatus here so 'complete' badge remains visible
     }
   }, [sessionId, pendingFiles, queryClient, businessContext]);
 
