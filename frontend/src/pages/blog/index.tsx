@@ -35,9 +35,9 @@ export default function BlogIndex() {
   filteredPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // APPLY LIMIT CONSTRAINT
-  // "remove all blogs keeps only one" -> If we are in standard blog view (not Product Updates), limit to 1.
+  // Show more posts in standard blog view (not Product Updates), limit to 10 posts
   if (activeCategory !== 'Product Updates') {
-    filteredPosts = filteredPosts.slice(0, 1);
+    filteredPosts = filteredPosts.slice(0, 10);
   }
 
   return (

@@ -5,7 +5,7 @@ import UsageBreakdown from './components/UsageBreakdown';
 import BillingHistory from './components/BillingHistory';
 import PaymentMethod from './components/PaymentMethod';
 import UpsellCard from './components/UpsellCard';
-import { CheckCircle2, XCircle, Loader2, Star, Clock, PhoneCall, ChevronRight, PartyPopper, Sparkles, ArrowRight, X } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, Star, Clock, PhoneCall, ChevronRight } from 'lucide-react';
 import { billingApi } from '../../../api/billing';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 
@@ -36,7 +36,6 @@ const Billing: React.FC = () => {
   const [subscribed, setSubscribed] = useState(false);
   const success = searchParams.get('success');
   const canceled = searchParams.get('canceled');
-  const [dismissed, setDismissed] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Mobile Tab State
@@ -199,7 +198,7 @@ const Billing: React.FC = () => {
         <div className={`w-full bg-white px-8 py-5 rounded-3xl border border-slate-100 shadow-sm shrink-0 overflow-x-auto no-scrollbar ${activeTab === 'overview' ? 'flex' : 'hidden md:flex'} items-center gap-8`}>
           {/* Plan Info */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ring-1 ${hasSubscription ? 'bg-emerald-50 text-emerald-600 ring-emerald-500/10' : 'bg-blue-50 text-blue-600 ring-blue-500/10'}`}>
+            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 ring-1 ring-blue-500/10">
               <Star size={16} />
             </div>
             <div className="flex flex-col">
@@ -209,7 +208,18 @@ const Billing: React.FC = () => {
                   <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">Active</span>
                 )}
               </div>
-              <span className="text-sm font-black text-slate-900">{planName}</span>
+
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-black text-slate-900">{planName}</span>
+                {!isProfessional && (
+                  <Link
+                    to="/dashboard/billing/plans"
+                    className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95 flex items-center gap-2 no-underline"
+                  >
+                    Upgrade <ChevronRight size={10} strokeWidth={3} />
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
 
@@ -272,189 +282,37 @@ const Billing: React.FC = () => {
             </>
           )}
 
-          {/* Upgrade Button — pushed to far right */}
-          {!isProfessional && (
-            <>
-              <div className="flex-1" />
-              <Link
-                to="/dashboard/billing/plans"
-                className={`px-5 py-2 text-[10px] font-black rounded-xl uppercase tracking-wider transition-all active:scale-95 flex items-center gap-2 no-underline shrink-0 ${
-                  isNoPlan
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/25'
-                    : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/15'
-                }`}
-              >
-                {isNoPlan ? 'Get Started' : 'Upgrade Plan'} <ChevronRight size={10} strokeWidth={3} />
-              </Link>
-            </>
-          )}
-
         </div>
 
         {/* Main Content Area */}
         <div className="w-full space-y-8 pb-10">
 
-          {/* Payment Status Cards */}
-          {success && !dismissed && (
-            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
-              {/* Subscription Activated — Celebration Card */}
-              {subscribed && (
-                <div className="relative bg-white rounded-2xl border border-emerald-100 shadow-lg shadow-emerald-500/5 overflow-hidden mb-6">
-                  {/* Dismiss Button */}
-                  <button
-                    onClick={() => { setDismissed(true); setSearchParams({}); }}
-                    className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-300 hover:text-slate-500 hover:bg-slate-50 transition-all z-10"
-                  >
-                    <X size={16} />
-                  </button>
-
-                  {/* Success Accent Bar */}
-                  <div className="h-1 w-full bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500" />
-
-                  <div className="px-8 py-8 flex flex-col md:flex-row items-center gap-6 md:gap-8">
-                    {/* Icon */}
-                    <div className="relative shrink-0">
-                      <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center ring-1 ring-emerald-500/10">
-                        <PartyPopper size={28} className="text-emerald-600" />
-                      </div>
-                      <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                        <CheckCircle2 size={14} className="text-white" />
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 text-center md:text-left">
-                      <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                        <Sparkles size={14} className="text-emerald-500" />
-                        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Welcome Aboard</p>
-                      </div>
-                      <h3 className="text-xl font-black text-slate-900 tracking-tight mb-1">
-                        You're all set! {planName} plan is now active.
-                      </h3>
-                      <p className="text-sm text-slate-500 font-medium">
-                        Your subscription is confirmed and all features are ready to use. Start making calls and let AI handle the rest.
-                      </p>
-                    </div>
-
-                    {/* Action */}
-                    <div className="shrink-0 flex flex-col items-center gap-2">
-                      <Link
-                        to="/dashboard"
-                        className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-600/20 transition-all active:scale-95 flex items-center gap-2 no-underline"
-                      >
-                        Go to Dashboard <ArrowRight size={12} strokeWidth={3} />
-                      </Link>
-                      <button
-                        onClick={() => { setDismissed(true); setSearchParams({}); }}
-                        className="text-[10px] font-bold text-slate-400 hover:text-slate-600 transition-colors"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
+          {/* Notifications */}
+          {(success || canceled) && (
+            <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+              {success && (
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-xl flex items-center justify-between gap-3 shadow-sm mb-6">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 size={20} className="text-emerald-500" />
+                    <span className="text-sm font-bold">
+                      {isPolling
+                        ? `Payment received! Checking subscription status (attempt ${pollCount + 1}/10)...`
+                        : subscribed
+                          ? "Subscription activated successfully!"
+                          : "Payment received. Please check back in a few minutes."
+                      }
+                    </span>
                   </div>
+                  {isPolling && <Loader2 size={18} className="text-emerald-500 animate-spin" />}
                 </div>
               )}
 
-              {/* Polling — Verifying Payment */}
-              {isPolling && !subscribed && (
-                <div className="relative bg-white rounded-2xl border border-blue-100 shadow-lg shadow-blue-500/5 overflow-hidden mb-6">
-                  {/* Loading Accent Bar */}
-                  <div className="h-1 w-full bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500 overflow-hidden">
-                    <div className="h-full w-1/3 bg-white/30 animate-pulse rounded-full" />
-                  </div>
-
-                  <div className="px-8 py-6 flex flex-col md:flex-row items-center gap-6">
-                    {/* Icon */}
-                    <div className="relative shrink-0">
-                      <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center ring-1 ring-blue-500/10">
-                        <Loader2 size={24} className="text-blue-600 animate-spin" />
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 text-center md:text-left">
-                      <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Activating Your Plan</p>
-                      <h3 className="text-lg font-black text-slate-900 tracking-tight mb-0.5">
-                        Payment received! Setting up your subscription...
-                      </h3>
-                      <p className="text-sm text-slate-500 font-medium">
-                        This usually takes a few seconds. Verifying with our payment provider ({pollCount + 1}/10)
-                      </p>
-                    </div>
-
-                    {/* Progress Dots */}
-                    <div className="shrink-0 flex items-center gap-1.5">
-                      {Array.from({ length: 10 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                            i <= pollCount
-                              ? 'bg-blue-500 scale-100'
-                              : 'bg-slate-200 scale-75'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
+              {canceled && (
+                <div className="bg-amber-50 border border-amber-200 text-amber-700 px-6 py-4 rounded-xl flex items-center gap-3 shadow-sm mb-6">
+                  <XCircle size={20} className="text-amber-500" />
+                  <span className="text-sm font-bold">Payment canceled. No changes were made to your plan.</span>
                 </div>
               )}
-
-              {/* Fallback — Payment received but not yet confirmed */}
-              {!isPolling && !subscribed && (
-                <div className="relative bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
-                  <div className="h-1 w-full bg-gradient-to-r from-slate-300 via-slate-400 to-slate-300" />
-
-                  <div className="px-8 py-6 flex flex-col md:flex-row items-center gap-6">
-                    <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center ring-1 ring-slate-200 shrink-0">
-                      <Clock size={24} className="text-slate-500" />
-                    </div>
-                    <div className="flex-1 text-center md:text-left">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Processing</p>
-                      <h3 className="text-lg font-black text-slate-900 tracking-tight mb-0.5">
-                        Payment received successfully
-                      </h3>
-                      <p className="text-sm text-slate-500 font-medium">
-                        Your subscription is being set up. This page will update automatically, or check back in a few minutes.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => window.location.reload()}
-                      className="shrink-0 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg shadow-slate-900/10 transition-all active:scale-95"
-                    >
-                      Refresh
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Payment Canceled Notice */}
-          {canceled && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="relative bg-white rounded-2xl border border-amber-100 shadow-sm overflow-hidden mb-6">
-                <div className="h-1 w-full bg-gradient-to-r from-amber-300 via-amber-400 to-orange-400" />
-                <div className="px-8 py-6 flex flex-col md:flex-row items-center gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center ring-1 ring-amber-500/10 shrink-0">
-                    <XCircle size={24} className="text-amber-500" />
-                  </div>
-                  <div className="flex-1 text-center md:text-left">
-                    <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Payment Canceled</p>
-                    <h3 className="text-lg font-black text-slate-900 tracking-tight mb-0.5">
-                      No changes were made to your plan
-                    </h3>
-                    <p className="text-sm text-slate-500 font-medium">
-                      Your checkout was canceled. You can try again anytime from the plans page.
-                    </p>
-                  </div>
-                  <Link
-                    to="/dashboard/billing/plans"
-                    className="shrink-0 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg shadow-slate-900/10 transition-all active:scale-95 flex items-center gap-2 no-underline"
-                  >
-                    View Plans <ArrowRight size={12} strokeWidth={3} />
-                  </Link>
-                </div>
-              </div>
             </div>
           )}
 

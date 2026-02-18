@@ -58,7 +58,7 @@ const Privacy = () => {
                             Your privacy matters to us. This policy explains how we collect, use, and protect your data.
                         </p>
                         <div className="mt-4 text-sm text-slate-500 font-medium uppercase tracking-wider">
-                            Last Updated: February 17, 2026
+                            Last Updated: January 26, 2026
                         </div>
                     </div>
 
@@ -74,13 +74,10 @@ const Privacy = () => {
                                         { id: 'introduction', label: 'Introduction' },
                                         { id: 'information-we-collect', label: 'Information We Collect' },
                                         { id: 'how-we-use', label: 'How We Use Your Data' },
-                                        { id: 'google-api', label: 'Google API & OAuth' },
                                         { id: 'data-sharing', label: 'Data Sharing' },
                                         { id: 'voice-data', label: 'Voice & Audio Data' },
                                         { id: 'data-security', label: 'Data Security' },
                                         { id: 'your-rights', label: 'Your Privacy Rights' },
-                                        { id: 'data-retention', label: 'Data Retention' },
-                                        { id: 'data-deletion', label: 'Data Deletion' },
                                         { id: 'cookies', label: 'Cookies & Tracking' },
                                         { id: 'international', label: 'International Transfers' },
                                         { id: 'children', label: "Children's Privacy" },
@@ -238,79 +235,9 @@ const Privacy = () => {
                                 </InfoBox>
                             </section>
 
-                            {/* Section 4: Google API & OAuth */}
-                            <section id="google-api" className="scroll-mt-32">
-                                <SectionHeader number="4" title="Google API & OAuth Data Usage" />
-                                <p className="text-slate-600 mb-6">
-                                    VocalScale uses Google OAuth 2.0 for user authentication and, where you grant permission, access to certain Google services such as Google Calendar for appointment scheduling. This section explains exactly what Google data we access, how we use it, and how we protect it.
-                                </p>
-
-                                <h3 className="text-xl font-bold text-slate-900 mb-4">4.1 Google OAuth Scopes We Request</h3>
-                                <div className="overflow-x-auto mb-8 rounded-xl border border-slate-200 shadow-sm">
-                                    <table className="w-full text-left border-collapse bg-white">
-                                        <thead>
-                                            <tr className="border-b border-slate-200 bg-slate-50">
-                                                <th className="p-4 text-slate-900 font-bold">Scope</th>
-                                                <th className="p-4 text-slate-900 font-bold">Data Accessed</th>
-                                                <th className="p-4 text-slate-900 font-bold">Why We Need It</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100 text-slate-600">
-                                            <tr>
-                                                <td className="p-4 font-mono text-xs text-blue-700">openid</td>
-                                                <td className="p-4">Your unique Google user ID</td>
-                                                <td className="p-4">To identify and authenticate your account securely</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-4 font-mono text-xs text-blue-700">profile</td>
-                                                <td className="p-4">Your name and profile picture</td>
-                                                <td className="p-4">To personalise your dashboard and account display</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-4 font-mono text-xs text-blue-700">email</td>
-                                                <td className="p-4">Your Google email address</td>
-                                                <td className="p-4">To create your account, send service notifications, and for account recovery</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-4 font-mono text-xs text-blue-700">calendar.events</td>
-                                                <td className="p-4">Read and write access to your calendar events</td>
-                                                <td className="p-4">To book, modify, and cancel appointments on your behalf via your AI receptionist (only when you enable Calendar Integration)</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <h3 className="text-xl font-bold text-slate-900 mb-4">4.2 How We Use Google Data</h3>
-                                <ul className="list-disc list-inside space-y-2 text-slate-600 mb-6 ml-4">
-                                    <li>Google account data (name, email, photo) is used <strong className="text-slate-900">only</strong> to create and manage your VocalScale account.</li>
-                                    <li>Google Calendar data is accessed <strong className="text-slate-900">only</strong> when you explicitly enable Calendar Integration in your dashboard settings.</li>
-                                    <li>We read calendar events to check availability and write events only to book confirmed appointments through your AI receptionist.</li>
-                                    <li>We <strong className="text-slate-900">never</strong> use your Google data to serve advertising or for any purpose unrelated to providing the VocalScale service.</li>
-                                    <li>We <strong className="text-slate-900">never</strong> share your Google account data with third parties except the sub-processors listed in Section 5, solely for the purpose of operating the service.</li>
-                                </ul>
-
-                                <InfoBox title="Google API Services User Data Policy" icon="🔐">
-                                    VocalScale's use and transfer of information received from Google APIs adheres to the{' '}
-                                    <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline font-semibold">
-                                        Google API Services User Data Policy
-                                    </a>
-                                    , including the Limited Use requirements. We only use Google user data for the specific purposes described in this policy, and we do not transfer, use, or sell Google user data for any other purpose.
-                                </InfoBox>
-
-                                <h3 className="text-xl font-bold text-slate-900 mb-4 mt-8">4.3 Revoking Google Access</h3>
-                                <p className="text-slate-600 mb-4">
-                                    You can revoke VocalScale's access to your Google account at any time:
-                                </p>
-                                <ul className="list-disc list-inside space-y-2 text-slate-600 ml-4 mb-4">
-                                    <li>Visit <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">myaccount.google.com/permissions</a> and remove VocalScale.</li>
-                                    <li>Or go to your VocalScale Dashboard → Settings → Integrations → Disconnect Google.</li>
-                                    <li>Upon revocation, we will immediately stop accessing your Google data. Existing calendar events created by VocalScale will remain on your calendar but we will no longer be able to read or modify them.</li>
-                                </ul>
-                            </section>
-
-                            {/* Section 5: Data Sharing */}
+                            {/* Section 4: Data Sharing */}
                             <section id="data-sharing" className="scroll-mt-32">
-                                <SectionHeader number="5" title="Data Sharing and Disclosure" />
+                                <SectionHeader number="4" title="Data Sharing and Disclosure" />
                                 <p className="text-slate-600 mb-6">We do not sell your personal information. However, we may share your information with the following categories of third parties:</p>
 
                                 <h3 className="text-xl font-bold text-slate-900 mb-4">4.1 Service Providers</h3>
@@ -353,9 +280,9 @@ const Privacy = () => {
                                 </SuccessBox>
                             </section>
 
-                            {/* Section 6: Voice Data */}
+                            {/* Section 5: Voice Data */}
                             <section id="voice-data" className="scroll-mt-32">
-                                <SectionHeader number="6" title="Voice and Audio Data (Biometric)" />
+                                <SectionHeader number="5" title="Voice and Audio Data (Biometric)" />
                                 <p className="text-slate-600 mb-6">As a voice AI platform, we process voice and audio data, which may be considered biometric information under certain privacy laws. We take special care to protect this sensitive data.</p>
 
                                 <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -382,9 +309,9 @@ const Privacy = () => {
                                 </WarningBox>
                             </section>
 
-                            {/* Section 7: Security */}
+                            {/* Section 6: Security */}
                             <section id="data-security" className="scroll-mt-32">
-                                <SectionHeader number="7" title="Data Security" />
+                                <SectionHeader number="6" title="Data Security" />
                                 <p className="text-slate-600 mb-6">We implement industry-standard security measures to protect your personal information.</p>
                                 <ul className="grid md:grid-cols-2 gap-4 text-slate-600">
                                     <li className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm"><strong className="text-blue-600 block mb-1">Encryption</strong> All data transmitted is protected using TLS/HTTPS encryption.</li>
@@ -394,9 +321,9 @@ const Privacy = () => {
                                 </ul>
                             </section>
 
-                            {/* Section 8: Rights */}
+                            {/* Section 7: Rights */}
                             <section id="your-rights" className="scroll-mt-32">
-                                <SectionHeader number="8" title="Your Privacy Rights" />
+                                <SectionHeader number="7" title="Your Privacy Rights" />
                                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-blue-400 transition-colors">
                                         <div className="text-2xl mb-4">⚙️</div>
@@ -416,117 +343,9 @@ const Privacy = () => {
                                 </div>
                             </section>
 
-                            {/* Section 9: Data Retention */}
-                            <section id="data-retention" className="scroll-mt-32">
-                                <SectionHeader number="9" title="Data Retention" />
-                                <p className="text-slate-600 mb-6">
-                                    We retain your personal information only for as long as necessary to provide our Services, comply with legal obligations, resolve disputes, and enforce our agreements. The following table outlines our standard retention periods:
-                                </p>
-                                <div className="overflow-x-auto mb-8 rounded-xl border border-slate-200 shadow-sm">
-                                    <table className="w-full text-left border-collapse bg-white">
-                                        <thead>
-                                            <tr className="border-b border-slate-200 bg-slate-50">
-                                                <th className="p-4 text-slate-900 font-bold">Data Type</th>
-                                                <th className="p-4 text-slate-900 font-bold">Retention Period</th>
-                                                <th className="p-4 text-slate-900 font-bold">Reason</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100 text-slate-600">
-                                            <tr>
-                                                <td className="p-4 font-semibold text-slate-900">Account & Profile Data</td>
-                                                <td className="p-4">Duration of account + 30 days after deletion request</td>
-                                                <td className="p-4">Service provision; grace period for accidental deletions</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-4 font-semibold text-slate-900">Call Recordings & Transcripts</td>
-                                                <td className="p-4">90 days by default (configurable in settings)</td>
-                                                <td className="p-4">Business review and quality assurance</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-4 font-semibold text-slate-900">Voice Model / Samples</td>
-                                                <td className="p-4">Until you delete your voice model or account</td>
-                                                <td className="p-4">Required to operate your AI receptionist</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-4 font-semibold text-slate-900">Google OAuth Tokens</td>
-                                                <td className="p-4">Until you revoke access or delete your account</td>
-                                                <td className="p-4">Required for Calendar Integration</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-4 font-semibold text-slate-900">Billing & Payment Records</td>
-                                                <td className="p-4">7 years</td>
-                                                <td className="p-4">Legal and tax compliance requirements</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-4 font-semibold text-slate-900">Usage & Analytics Logs</td>
-                                                <td className="p-4">24 months</td>
-                                                <td className="p-4">Service improvement and security monitoring</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-4 font-semibold text-slate-900">Support Tickets & Chat</td>
-                                                <td className="p-4">3 years</td>
-                                                <td className="p-4">Dispute resolution and service continuity</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <InfoBox title="Shorter Retention Available" icon="⏱️">
-                                    You can reduce call recording retention to as low as 7 days in your Dashboard → Settings → Data & Privacy. You can also manually delete individual recordings at any time from your Call Logs.
-                                </InfoBox>
-                            </section>
-
-                            {/* Section 10: Data Deletion */}
-                            <section id="data-deletion" className="scroll-mt-32">
-                                <SectionHeader number="10" title="Data Deletion" />
-                                <p className="text-slate-600 mb-6">
-                                    You have the right to request deletion of your personal data at any time. We offer multiple ways to delete your data:
-                                </p>
-
-                                <div className="grid md:grid-cols-2 gap-6 mb-8">
-                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                                        <div className="text-2xl mb-3">🗑️</div>
-                                        <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Your Account</h3>
-                                        <p className="text-slate-600 text-sm mb-3">
-                                            Go to Dashboard → Settings → Account → Delete Account. This permanently removes your profile, voice model, call logs, and all associated data within 30 days.
-                                        </p>
-                                    </div>
-                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                                        <div className="text-2xl mb-3">🎙️</div>
-                                        <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Your Voice Model</h3>
-                                        <p className="text-slate-600 text-sm mb-3">
-                                            Go to Dashboard → Voice Setup → Delete Voice Model to remove all voice samples and your cloned voice without deleting your account.
-                                        </p>
-                                    </div>
-                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                                        <div className="text-2xl mb-3">📞</div>
-                                        <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Call Recordings</h3>
-                                        <p className="text-slate-600 text-sm mb-3">
-                                            Delete individual or all call recordings from Dashboard → Call Logs. Deletions are processed immediately.
-                                        </p>
-                                    </div>
-                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                                        <div className="text-2xl mb-3">📧</div>
-                                        <h3 className="text-lg font-bold text-slate-900 mb-2">Submit a Data Deletion Request</h3>
-                                        <p className="text-slate-600 text-sm mb-3">
-                                            Email <a href="mailto:privacy@vocalscale.com" className="text-blue-600 underline">privacy@vocalscale.com</a> with subject "Data Deletion Request". We will process your request within 30 days and confirm by email.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <WarningBox title="What Happens When You Delete Your Account" icon="⚠️">
-                                    <ul className="list-disc list-inside space-y-1">
-                                        <li>Your profile, voice model, call logs, and appointments are permanently deleted within 30 days.</li>
-                                        <li>Your Google OAuth tokens are immediately revoked and removed.</li>
-                                        <li>Billing records are retained for 7 years as required by tax law (payment details are held by Stripe, not VocalScale).</li>
-                                        <li>Anonymised, aggregated analytics data that cannot be linked back to you may be retained.</li>
-                                        <li>Deletion is <strong>irreversible</strong> — we cannot recover data after the 30-day grace period.</li>
-                                    </ul>
-                                </WarningBox>
-                            </section>
-
-                            {/* Section 11: Cookies */}
+                            {/* Remaining Sections Simplified for brevity but keeping structure */}
                             <section id="cookies" className="scroll-mt-32">
-                                <SectionHeader number="11" title="Cookies & Tracking" />
+                                <SectionHeader number="8" title="Cookies & Tracking" />
                                 <p className="text-slate-600 mb-4">We use cookies and similar technologies to enhance your experience, analyze usage, and improve our Services.</p>
                                 <InfoBox title="First-Party Analytics" icon="📊">
                                     Unlike many services, we do NOT use third-party analytics platforms like Google Analytics. We operate our own privacy-focused first-party analytics system.
@@ -534,66 +353,18 @@ const Privacy = () => {
                             </section>
 
                             <section id="international" className="scroll-mt-32">
-                                <SectionHeader number="12" title="International Transfers" />
-                                <p className="text-slate-600 mb-4">VocalScale is headquartered in the United States. If you access our Services from outside the United States, your data may be transferred to, stored, and processed in the United States and other countries where our service providers operate.</p>
-                                <p className="text-slate-600">We ensure appropriate safeguards are in place for international transfers, including Standard Contractual Clauses (SCCs) approved by the European Commission, and we only work with sub-processors that provide adequate data protection guarantees.</p>
-                            </section>
-
-                            <section id="children" className="scroll-mt-32">
-                                <SectionHeader number="13" title="Children's Privacy" />
-                                <p className="text-slate-600 mb-4">
-                                    VocalScale's Services are intended for use by businesses and individuals who are at least <strong className="text-slate-900">18 years of age</strong>. Our Services are not directed to, and we do not knowingly collect personal information from, children under the age of 13 (or 16 in the European Economic Area).
-                                </p>
-                                <WarningBox title="If You Believe a Child Has Provided Us Data" icon="⚠️">
-                                    If you are a parent or guardian and believe your child under 13 has provided us with personal information without your consent, please contact us immediately at <a href="mailto:privacy@vocalscale.com" className="text-amber-800 underline font-semibold">privacy@vocalscale.com</a>. We will take steps to delete such information promptly.
-                                </WarningBox>
-                            </section>
-
-                            <section id="changes" className="scroll-mt-32">
-                                <SectionHeader number="14" title="Changes to This Privacy Policy" />
-                                <p className="text-slate-600 mb-4">
-                                    We may update this Privacy Policy from time to time to reflect changes in our practices, technologies, legal requirements, or for other operational reasons. When we make material changes, we will:
-                                </p>
-                                <ul className="list-disc list-inside space-y-2 text-slate-600 mb-6 ml-4">
-                                    <li>Update the "Last Updated" date at the top of this page.</li>
-                                    <li>Send an email notification to your registered email address.</li>
-                                    <li>Display a prominent notice in your dashboard for 30 days after the change.</li>
-                                </ul>
-                                <p className="text-slate-600">
-                                    Your continued use of our Services after the effective date of any changes constitutes your acceptance of the revised Privacy Policy. If you do not agree to the changes, please stop using the Services and contact us to delete your account.
-                                </p>
+                                <SectionHeader number="9" title="International Transfers" />
+                                <p className="text-slate-600">VocalScale operates globally. Data may be processed in the United States and other countries with appropriate safeguards like Standard Contractual Clauses (SCCs).</p>
                             </section>
 
                             <section id="contact" className="scroll-mt-32">
-                                <SectionHeader number="15" title="Contact Us" />
-                                <p className="text-slate-600 mb-6">
-                                    If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices — including requests to access, correct, or delete your personal data — please contact us using the details below.
-                                </p>
-                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl border border-slate-200 shadow-sm mb-6">
-                                    <h3 className="text-xl font-bold text-slate-900 mb-6">VocalScale Privacy Team</h3>
-                                    <div className="grid md:grid-cols-2 gap-6 text-slate-700 text-sm">
-                                        <div>
-                                            <p className="font-bold text-slate-900 mb-1">General Privacy Inquiries</p>
-                                            <a href="mailto:privacy@vocalscale.com" className="text-blue-600 underline font-semibold">privacy@vocalscale.com</a>
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-slate-900 mb-1">Data Deletion Requests</p>
-                                            <a href="mailto:privacy@vocalscale.com" className="text-blue-600 underline font-semibold">privacy@vocalscale.com</a>
-                                            <p className="text-slate-500 text-xs mt-1">Subject: "Data Deletion Request"</p>
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-slate-900 mb-1">Google OAuth / API Issues</p>
-                                            <a href="mailto:privacy@vocalscale.com" className="text-blue-600 underline font-semibold">privacy@vocalscale.com</a>
-                                            <p className="text-slate-500 text-xs mt-1">Subject: "Google OAuth Data Request"</p>
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-slate-900 mb-1">Response Time</p>
-                                            <p className="text-slate-600">We respond to all privacy requests within <strong>30 days</strong>.</p>
-                                        </div>
-                                    </div>
-                                    <div className="mt-6 pt-6 border-t border-slate-200 flex flex-wrap gap-4 justify-center">
-                                        <a href="mailto:privacy@vocalscale.com" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20 text-sm">
-                                            Email Us
+                                <SectionHeader number="13" title="Contact Us" />
+                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl border border-slate-200 text-center shadow-sm">
+                                    <h3 className="text-2xl font-bold text-slate-900 mb-4">Have questions?</h3>
+                                    <p className="text-slate-600 mb-8">If you have questions about this Privacy Policy, please contact us.</p>
+                                    <div className="flex flex-wrap justify-center gap-4">
+                                        <a href="mailto:privacy@vocalscale.com" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20">
+                                            privacy@vocalscale.com
                                         </a>
                                     </div>
                                 </div>

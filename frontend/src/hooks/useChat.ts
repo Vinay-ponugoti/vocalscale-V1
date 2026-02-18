@@ -6,7 +6,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatApi } from '../api/chat';
-import type { ChatMessage, FileAttachment, BusinessContext, GeneratedImage, DoneEvent, SocialContent } from '../types/chat';
+import type { ChatMessage, FileAttachment, BusinessContext } from '../types/chat';
 import { useAuth } from '../context/AuthContext';
 import { useBusinessSetup } from '../context/BusinessSetupContext';
 
@@ -22,8 +22,6 @@ export function useChat(sessionId: string | null) {
   const [isStreaming, setIsStreaming] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<FileAttachment[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [imageStatus, setImageStatus] = useState<string | null>(null);
-  const [pendingImages, setPendingImages] = useState<GeneratedImage[]>([]);
 
   // Track the actual session ID (may be updated when new session is created)
   const currentSessionIdRef = useRef<string | null>(sessionId);
@@ -84,20 +82,10 @@ export function useChat(sessionId: string | null) {
     }
   }, [sessionId]);
 
-  // Sync fetched messages when they arrive from Supabase.
-  // Map image_data (persisted JSON) back to the images/generation_id fields
-  // so images survive page reload.
-  // While streaming, skip the sync — we don't want to overwrite the live
-  // assistant message that already has images attached in memory.
+  // Sync fetched messages when they arrive from Supabase
   useEffect(() => {
     if (fetchedMessages && !isStreaming) {
-      const mapped = fetchedMessages.map((msg) => {
-        if (msg.image_data && msg.image_data.length > 0) {
-          return { ...msg, images: msg.image_data };
-        }
-        return msg;
-      });
-      setMessages(mapped);
+      setMessages(fetchedMessages);
     }
   }, [fetchedMessages, isStreaming]);
 
@@ -106,7 +94,6 @@ export function useChat(sessionId: string | null) {
   /**
    * Send a message and handle streaming response
    * Note: User authentication is handled by the backend via JWT token
-   * Returns the session_id (new or existing) so the parent can track it
    */
   const sendMessage = useCallback(async (content: string): Promise<string | null> => {
     if (!content.trim()) return null;
@@ -131,17 +118,8 @@ export function useChat(sessionId: string | null) {
       // Check if we have attachments
       const attachmentIds = pendingFiles.length > 0 ? pendingFiles.map(f => f.id) : [];
 
-      // Send to API — capture session_id from SSE done event
+      // Send to API
       let fullResponse = '';
-      let returnedSessionId: string | null = null;
-      let receivedImages: GeneratedImage[] = [];
-      let receivedGenerationId: string | undefined;
-      let receivedPresets: Record<string, string> = {};
-      let receivedSocialContent: SocialContent | null = null;
-
-      console.log('[useChat] Starting message send...');
-      setImageStatus(null);
-      setPendingImages([]);
 
       await chatApi.sendMessageStream(
         {
@@ -149,79 +127,41 @@ export function useChat(sessionId: string | null) {
           session_id: sessionId || undefined,
           attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
           business_context: businessContext,
+          // Remove business_id and user_id as they aren't in ChatRequest interface
         },
-        // onChunk
         (chunk) => {
           fullResponse += chunk;
           setStreamingContent(fullResponse);
         },
-        // onDone — capture the full done event data
-        (doneData: DoneEvent) => {
-          returnedSessionId = doneData.session_id;
-          // Capture images from done event if present
-          if (doneData.images && doneData.images.length > 0) {
-            receivedImages = doneData.images;
-          }
-          if (doneData.generation_id) {
-            receivedGenerationId = doneData.generation_id;
-          }
-          console.log(`[useChat] SSE done: session_id=${doneData.session_id}, sources=${doneData.sources?.length || 0}, images=${doneData.images?.length || 0}`);
+        // onDone
+        () => {
+          // We handle completion manually below
         },
         // onError
         (err) => {
           throw err;
-        },
-        // onImageStatus
-        (status) => {
-          setImageStatus(status);
-          console.log(`[useChat] Image status: ${status}`);
-        },
-        // onImageReady
-        (images, generationId, _enhancedPrompt, availablePresets, socialContent) => {
-          receivedImages = images;
-          receivedGenerationId = generationId;
-          receivedPresets = availablePresets;
-          receivedSocialContent = socialContent ?? null;
-          setPendingImages(images);
-          setImageStatus('complete');
-          console.log(`[useChat] Images ready: ${images.length} images, generation_id=${generationId}`);
-          console.log(`[useChat] Image URLs:`, images.map((img: GeneratedImage) => img.url));
         }
       );
 
       // Once complete, add assistant message and clear streaming
-      const resolvedSessionId = returnedSessionId || sessionId || 'temp';
       const assistantMessage: ChatMessage = {
         id: `resp-${Date.now()}`,
-        session_id: resolvedSessionId,
+        session_id: sessionId || 'temp',
         role: 'assistant',
         content: fullResponse,
-        timestamp: new Date().toISOString(),
-        images: receivedImages.length > 0 ? receivedImages : undefined,
-        generation_id: receivedGenerationId,
-        available_presets: Object.keys(receivedPresets).length > 0 ? receivedPresets : undefined,
-        social_content: receivedSocialContent,
+        timestamp: new Date().toISOString()
       };
 
       setMessages(prev => [...prev, assistantMessage]);
       setStreamingContent('');
       setPendingFiles([]); // Clear attachments
-      setImageStatus(null);
-      setPendingImages([]);
 
-      // Update the ref so subsequent messages use the correct session
-      if (returnedSessionId) {
-        currentSessionIdRef.current = returnedSessionId;
-      }
-
-      // Refetch messages and sessions list to show the new conversation
+      // Refetch to get canonical IDs
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ['chat-messages'] });
-        queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
       }, 500);
 
-      // Return the session_id (not the response text) so parent can update state
-      return returnedSessionId;
+      return fullResponse;
 
     } catch (err) {
       console.error('Failed to send message:', err);
@@ -301,8 +241,6 @@ export function useChat(sessionId: string | null) {
     isLoading,
     pendingFiles,
     error,
-    imageStatus,
-    pendingImages,
     sendMessage,
     uploadFile,
     removeFile,

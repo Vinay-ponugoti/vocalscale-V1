@@ -1,194 +1,98 @@
 export interface BlogPost {
-    id: string;
-    title: string;
-    excerpt: string;
-    content: string; // HTML content
-    author: {
-        name: string;
-        role: string;
-        avatar: string; // URL or placeholder
-    };
-    date: string; // ISO format YYYY-MM-DD
-    readTime: string;
-    tags: string[];
-    slug: string;
-    image: string; // Featured image URL
-    featured?: boolean;
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author: {
+    name: string;
+    role: string;
+    avatar: string;
+  };
+  date: string;
+  readTime: string;
+  tags: string[];
+  slug: string;
+  image: string;
+  featured?: boolean;
 }
 
 export const blogPosts: BlogPost[] = [
-    {
-        id: "1",
-        title: "How AI Receptionists Are Transforming Healthcare Practices in 2024",
-        excerpt: "Discover how medical practices are reducing missed calls by 85% and saving $50,000+ annually with AI receptionist technology.",
-        content: `
-      <p>In the rapidly evolving landscape of healthcare technology, medical practices face an unprecedented challenge: managing patient communications efficiently while maintaining the personal touch that defines quality healthcare. Traditional receptionist models are struggling to keep up with increasing call volumes, after-hours inquiries, and the administrative burden that comes with modern medical practice management.</p>
-      
-      <p>Enter AI receptionists – sophisticated voice AI technology that's revolutionizing how healthcare practices handle patient interactions. This comprehensive analysis explores how medical practices across the United States are leveraging AI receptionist technology to transform their operations, improve patient satisfaction, and achieve remarkable cost savings while maintaining HIPAA compliance.</p>
-      
-      <h2>The Healthcare Communication Crisis</h2>
-      <p>Statistics highlight a critical gap in healthcare communication that directly impacts patient retention, practice revenue, and overall healthcare quality. Traditional solutions like hiring additional staff or using basic answering services have proven insufficient in addressing the complex needs of modern medical practices.</p>
-      
-      <ul>
-        <li><strong>62%</strong> of medical calls go unanswered during peak hours</li>
-        <li><strong>$180k</strong> avg annual cost of traditional staffing</li>
-        <li><strong>23%</strong> patient churn due to poor phone experiences</li>
-      </ul>
-
-      <h2>Case Study: Wellness Medical Center's Transformation</h2>
-      <p>Wellness Medical Center was experiencing significant communication challenges that were directly impacting patient satisfaction and practice revenue. With a small team of receptionists handling over 2,800 calls monthly, the practice was missing approximately 40% of incoming calls during peak hours, resulting in frustrated patients and lost revenue opportunities.</p>
-      
-      <blockquote>
-        "We were in a constant state of catch-up. Our receptionists were overwhelmed, patients were waiting on hold for 15-20 minutes, and we were missing calls from potential new patients. The situation was unsustainable."
-        <br>— Dr. Sarah Johnson
-      </blockquote>
-
-      <h3>The Solution Implementation</h3>
-      <p>After extensive research and consultation with healthcare technology experts, Wellness Medical Center decided to implement an AI receptionist system specifically designed for medical practices. The implementation process took approximately 30 days and involved system configuration, staff training, and gradual rollout.</p>
-
-      <h2>Remarkable Results: The Numbers Speak</h2>
-      <p>The financial impact was immediate and substantial. By eliminating the need for additional receptionist staff and reducing missed calls, the practice saved over $50,000 annually while simultaneously increasing revenue by $18,500 per month through improved call capture and appointment scheduling efficiency.</p>
-      
-      <ul>
-        <li>85% reduction in missed calls</li>
-        <li>Average wait time reduced from 18 to 2 minutes</li>
-        <li>24/7 call handling capability implemented</li>
-        <li>96% patient satisfaction rate with AI interactions</li>
-      </ul>
-
-      <h2>Key Features That Made the Difference</h2>
-      <p><strong>HIPAA-Compliant:</strong> Designed to meet healthcare privacy requirements, ensuring all patient information is handled securely with encrypted recordings and audit trails.</p>
-      <p><strong>Intelligent Scheduling:</strong> Seamlessly integrates with existing scheduling systems allowing 24/7 booking. Understands provider availability and appointment types.</p>
-      <p><strong>Medical Terminology:</strong> Understands medical terminology, insurance processes, and common patient inquiries for natural, contextually appropriate conversations.</p>
-      <p><strong>Emergency Routing:</strong> Sophisticated triage capabilities identify potential medical emergencies and immediately route calls to appropriate personnel.</p>
-
-      <h2>Conclusion: A Prescription for Success</h2>
-      <p>The transformation of Wellness Medical Center from a practice struggling with communication challenges to a thriving, efficiently-run healthcare facility demonstrates the profound impact that AI receptionist technology can have on medical practices. The combination of improved patient satisfaction, significant cost savings, and increased revenue creates a compelling case for implementation.</p>
-      <p>The future of healthcare communication is here, and it's powered by AI. For practices ready to take the next step, the opportunity to transform patient communications and practice efficiency is just a phone call away.</p>
-    `,
-        author: {
-            name: "Dr. Sarah Johnson",
-            role: "Medical Director",
-            avatar: "/api/placeholder/100/100"
-        },
-        date: "2024-01-15",
-        readTime: "8 min read",
-        tags: ["Healthcare", "AI", "Medical Practice"],
-        slug: "ai-receptionists-healthcare-2024",
-        image: "/api/placeholder/800/400",
-        featured: true
-    },
-    {
-        id: "2",
-        title: "The ROI of AI Receptionists: A Complete Cost-Benefit Analysis",
-        excerpt: "Comprehensive analysis showing how businesses save 70% on reception costs while improving customer satisfaction scores.",
-        content: "<p>Full article content for ROI analysis...</p>",
-        author: {
-            name: "Michael Chen",
-            role: "Financial Analyst",
-            avatar: "/api/placeholder/100/100"
-        },
-        date: "2024-01-10",
-        readTime: "12 min read",
-        tags: ["ROI", "Cost Analysis", "Business"],
-        slug: "roi-ai-receptionists-complete-analysis",
-        image: "/api/placeholder/800/400"
-    },
-    {
-        id: "3",
-        title: "Legal Firms: Never Miss a Potential Client Call Again",
-        excerpt: "How law firms are using AI receptionists to capture 40% more leads and provide 24/7 client intake without hiring additional staff.",
-        content: "<p>Full article content for Legal Firms...</p>",
-        author: {
-            name: "Jennifer Martinez",
-            role: "Legal Tech Consultant",
-            avatar: "/api/placeholder/100/100"
-        },
-        date: "2024-01-08",
-        readTime: "10 min read",
-        tags: ["Legal", "Lead Generation", "Client Intake"],
-        slug: "legal-firms-never-miss-calls",
-        image: "/api/placeholder/800/400"
-    },
-    {
-        id: "4",
-        title: "Small Business Guide: Implementing AI Receptionists in 30 Days",
-        excerpt: "Step-by-step guide for small businesses to deploy AI receptionist technology quickly and effectively.",
-        content: "<p>Full article content for Small Business Guide...</p>",
-        author: {
-            name: "David Thompson",
-            role: "SME Advisor",
-            avatar: "/api/placeholder/100/100"
-        },
-        date: "2024-01-05",
-        readTime: "15 min read",
-        tags: ["Small Business", "Implementation", "Guide"],
-        slug: "small-business-ai-receptionist-guide",
-        image: "/api/placeholder/800/400"
-    },
-    {
-        id: "5",
-        title: "Customer Service Revolution: AI vs Human Receptionists Performance Study",
-        excerpt: "Data-driven comparison of AI receptionists vs human staff across 500+ businesses showing surprising results.",
-        content: "<p>Full article content for Performance Study...</p>",
-        author: {
-            name: "Lisa Anderson",
-            role: "CX Researcher",
-            avatar: "/api/placeholder/100/100"
-        },
-        date: "2024-01-03",
-        readTime: "11 min read",
-        tags: ["Customer Service", "Performance", "Study"],
-        slug: "ai-vs-human-receptionists-performance",
-        image: "/api/placeholder/800/400"
-    },
-    {
-        id: "6",
-        title: "Product Improvements",
-        excerpt: "New filters, Twilio call-to-action templates, and screen capture support.",
-        content: `
-      <p>The new filters are available on paid plans, on both Cloud and self-hosted deployments.</p>
-      
-      <h3>Other Improvements</h3>
-      <ul>
-        <li>Added call-to-action template support for Twilio. You can now send WhatsApp templates with CTA buttons through Twilio.</li>
-        <li>Added support for pasting screenshots and files directly in the new conversation modal, similar to the reply editor.</li>
-        <li>Fixed the SDK to correctly respect the enableFileUpload flag when explicitly set, instead of overriding it with inbox defaults.</li>
-        <li>Fixed contact form buttons being cut off on mobile web.</li>
-        <li>Fixed an issue where invalid attachments in the clipboard could block normal text paste.</li>
-        <li>Fixed orphaned inbox members causing errors in the widget API.</li>
-        <li>Improved handling of empty custom attributes in settings.</li>
-      </ul>
-      <p>Thanks to everyone reporting issues and sharing feedback.</p>
-    `,
-        author: {
-            name: "VocalScale Team",
-            role: "Product",
-            avatar: "/api/placeholder/100/100"
-        },
-        date: "2026-02-02",
-        readTime: "3 min read",
-        tags: ["Product Updates"],
-        slug: "product-improvements-feb-2026",
-        image: "/api/placeholder/800/400"
-    },
-    {
-        id: "7",
-        title: "Captain AI Credits and Billing",
-        excerpt: "Clearer billing controls for Captain AI usage.",
-        content: `
-      <p>This release introduces clearer billing controls for Captain. The goal is simple: make AI usage easier to understand and easier to manage as teams scale.</p>
-      <p>Captain uses AI credits to measure usage. Credits are consumed only when Captain helps you resolve conversations or generate content.</p>
-    `,
-        author: {
-            name: "Pranav Raj S",
-            role: "Founder",
-            avatar: "/api/placeholder/100/100"
-        },
-        date: "2025-12-19",
-        readTime: "2 min read",
-        tags: ["Product Updates"],
-        slug: "captain-ai-credits-billing",
-        image: "/api/placeholder/800/400"
-    }
+  {
+    id: "1740161600000",
+    title: "5 AI Receptionist Trends Transforming Small Business in 2025",
+    slug: "ai-receptionist-trends-2025-small-business",
+    excerpt: "Discover the 5 game-changing AI receptionist trends for 2025. Learn how small businesses are cutting costs by 70% while improving customer satisfaction with 24/7 automated call handling.",
+    content: `<p>In 2025, <strong>85% of customer service leaders are actively exploring or piloting conversational AI</strong> according to recent Gartner research. For small business owners, this represents more than a technological shift—it's a fundamental transformation in how customer communications are handled.</p>
+<p>Traditional receptionist models are becoming unsustainable. With average staffing costs exceeding $180,000 annually and missed calls representing lost revenue, businesses need smarter solutions. Enter AI receptionists: voice technology that's now faster, more affordable, and more integrated than ever before.</p>
+<p>Here are the five trends defining AI receptionist technology in 2025, and what they mean for your business.</p>
+<h2>Trend 1: Sub-300ms Response Times Are Now Standard</h2>
+<p>The most significant technical leap in 2025 has been latency reduction. Modern AI receptionists now achieve <strong>sub-300ms total response times</strong>—making conversations feel natural and immediate.</p>
+<p>Why does this matter? Customers still hang up on robotic-sounding systems. But when AI responds as quickly as a human, satisfaction scores improve dramatically. For small businesses competing with larger enterprises, this levels the playing field.</p>
+<p><strong>The takeaway:</strong> If your AI receptionist takes longer than half a second to respond, you're using outdated technology.</p>
+<h2>Trend 2: Plug-and-Play AI Receptionists for Solo Businesses</h2>
+<p>Perhaps the most democratizing trend: AI receptionists are now truly plug-and-play. Solo practitioners—therapists, consultants, contractors—can deploy sophisticated call handling in under an hour.</p>
+<p>Pricing has stabilized around the <strong>$99/month benchmark</strong>, making AI receptionists accessible to businesses that previously couldn't afford any reception support. Compare this to $3,000+ monthly salaries for human receptionists, and the value proposition is clear.</p>
+<p>Best suited for: Individual professionals who need reliable call coverage without the overhead of hiring.</p>
+<h2>Trend 3: AI-Human Hybrid Models Are Winning</h2>
+<p>The smartest implementations aren't replacing humans entirely—they're creating intelligent handoffs. AI handles routine inquiries (80% of calls), while complex situations escalate to human team members seamlessly.</p>
+<p>For healthcare practices, this includes HIPAA-compliant call routing that identifies urgent situations and connects them immediately. For legal firms, it means qualifying leads before attorney time is spent.</p>
+<p><strong>Key insight:</strong> The goal isn't replacement—it's amplification. AI scales your human team's capacity.</p>
+<h2>Trend 4: 5,000+ Integration Ecosystems</h2>
+<p>Modern AI receptionists don't operate in isolation. With <strong>5,000+ available integrations</strong>, they connect to your existing small business stack:</p>
+<ul>
+<li>Calendar systems for instant appointment booking</li>
+<li>CRM platforms for lead tracking</li>
+<li>Payment processors for over-the-phone transactions</li>
+<li>Industry-specific software (EHRs for healthcare, practice management for legal)</li>
+</ul>
+<p>This means the AI receptionist becomes a true team member—updating records, scheduling appointments, and tracking interactions automatically.</p>
+<h2>Trend 5: 18.66% Market CAGR = Early Advantage Opportunity</h2>
+<p>The conversational AI market in intelligent contact centers is growing at <strong>18.66% CAGR from 2025 to 2030</strong>. For small businesses, this presents a window of competitive advantage.</p>
+<p>Early adopters are capturing market share through superior customer experience. While competitors struggle with missed calls and long hold times, AI-enabled businesses provide 24/7 responsiveness that converts prospects and retains customers.</p>
+<p><strong>Strategic implication:</strong> By 2026, AI receptionists won't be a differentiator—they'll be table stakes. The competitive advantage is in adopting now.</p>
+<h2>The Bottom Line for Small Businesses</h2>
+<p>These five trends converge on a simple truth: AI receptionist technology has matured beyond experimentation into essential infrastructure.</p>
+<p>The businesses winning in 2025 aren't necessarily the biggest—they're the ones leveraging AI to be the most responsive, the most available, and the most cost-efficient.</p>
+<p>With 85% of customer service leaders exploring this technology, the question isn't whether AI receptionists will transform small business communications. The question is whether you'll lead or follow.</p>
+<h2>Ready to Join the 85%?</h2>
+<p>VocalScale provides AI receptionist technology designed specifically for small businesses. From solo practitioners to growing teams, our platform delivers the trends outlined above—with sub-300ms latency, plug-and-play deployment, and seamless integrations.</p>
+<p><strong>Start your free trial today</strong> and discover how 24/7 AI call handling can transform your customer experience while reducing costs by up to 70%.</p>`,
+    author: { name: "VocalScale Research Team", role: "Industry Analysis", avatar: "/api/placeholder/100/100" },
+    date: "2026-02-17",
+    readTime: "7 min read",
+    tags: ["AI", "Small Business", "Trends", "Customer Service", "2025"],
+    image: "/api/placeholder/800/400",
+    featured: true
+  },
+  {
+    id: "1740161600001",
+    title: "Why I Stopped Answering My Own Business Phone",
+    slug: "why-i-stopped-answering-my-own-business-phone",
+    excerpt: "I used to think answering every call meant I cared more. Turns out, I was just burning out faster. Here's what I learned about boundaries.",
+    content: `<p>I'm putting my daughter to bed. The phone rings. It's a potential customer.</p>
+<p>I know I should answer. But she's finally stopped crying. I let it go to voicemail.</p>
+<p>Next morning, I call back. They went with a competitor. I lost a $4,000 project because I was being a dad.</p>
+<p>This isn't a sob story. It's Tuesday.</p>
+<h2>The Dignity Tax of Doing Everything Yourself</h2>
+<p>Small business owners are told to be "always on." But the math doesn't work. You can't be present for your customers and present for your life simultaneously. Something breaks.</p>
+<p>We talk about missed revenue. We don't talk about missed dinners. The apology texts to your spouse. The creeping resentment toward customers who called at 8:45 PM.</p>
+<h2>What I Tried Before Giving Up</h2>
+<p><strong>The Spreadsheet:</strong> I tracked every missed call for one month. 47% happened outside business hours. Another 23% during meetings I couldn't step out of. That's 70% of opportunities I couldn't physically capture.</p>
+<p><strong>The Virtual Assistant:</strong> Hired one. $1,200/month. Lovely person. But they occasionally missed calls, needed training, and added management overhead. The stress just shifted categories.</p>
+<p><strong>Just Working More:</strong> Tried answering until 9 PM. Lasted six weeks before I caught myself being short with a customer because I was exhausted. The solution can't be "work harder."</p>
+<h2>The Realization</h2>
+<p>Customers don't want me personally. They want help. They want their question answered, their appointment booked, their problem taken seriously.</p>
+<p>I tested something: what if a machine answered—but sounded like me? The first week felt wrong. Then a customer told me they appreciated not having to leave a message. That they'd already booked their appointment at 11 PM.</p>
+<p>I wasn't replacing human connection. I was extending availability.</p>
+<h2>The Bottom Line</h2>
+<p>I still check voicemails occasionally. Old reflex. But now there aren't any.</p>
+<p>Not because I'm working harder. Because I'm finally not.</p>
+<p><strong>What would you do with an extra 10 hours a week?</strong></p>`,
+    author: { name: "VocalScale Founder", role: "Builder", avatar: "/api/placeholder/100/100" },
+    date: "2026-02-17",
+    readTime: "4 min read",
+    tags: ["Personal", "Small Business", "Workflow", "Founder"],
+    image: "/api/placeholder/800/400",
+    featured: false
+  }
 ];

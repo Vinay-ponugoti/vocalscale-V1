@@ -9,8 +9,6 @@ import type {
   SessionsResponse,
   MessagesResponse,
   FileUploadResponse,
-  GeneratedImage,
-  DoneEvent,
 } from '../types/chat';
 
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
@@ -45,10 +43,8 @@ class ChatAPI {
   async sendMessageStream(
     request: ChatRequest,
     onChunk: (text: string) => void,
-    onDone: (data: DoneEvent) => void,
-    onError: (error: Error) => void,
-    onImageStatus?: (status: string) => void,
-    onImageReady?: (images: GeneratedImage[], generationId: string, enhancedPrompt: string, availablePresets: Record<string, string>, socialContent?: import('../types/chat').SocialContent | null) => void
+    onDone: (sessionId: string, sources: any[]) => void,
+    onError: (error: Error) => void
   ): Promise<void> {
     const userId = this.getUserId();
     const headers = await getAuthHeader(userId);
@@ -62,6 +58,7 @@ class ChatAPI {
         },
         body: JSON.stringify(request),
       });
+      // ... (rest of the content)
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
@@ -75,7 +72,6 @@ class ChatAPI {
 
       const decoder = new TextDecoder();
       let buffer = '';
-      let currentEvent = 'message'; // default SSE event type
 
       while (true) {
         const { done, value } = await reader.read();
@@ -91,9 +87,8 @@ class ChatAPI {
         buffer = lines.pop() || '';
 
         for (const line of lines) {
-          // Track the event type for the next data line
           if (line.startsWith('event: ')) {
-            currentEvent = line.slice(7).trim();
+            // SSE event type line - we'll use it to parse the next data line
             continue;
           }
 
@@ -101,71 +96,17 @@ class ChatAPI {
             try {
               const data = JSON.parse(line.slice(6));
 
-              switch (currentEvent) {
-                case 'chunk':
-                  if (data.text) {
-                    onChunk(data.text);
-                  }
-                  break;
-
-                case 'image_status':
-                  if (data.status && onImageStatus) {
-                    onImageStatus(data.status);
-                  }
-                  break;
-
-                case 'image_ready':
-                  if (data.images && onImageReady) {
-                    onImageReady(
-                      data.images,
-                      data.generation_id || '',
-                      data.enhanced_prompt || '',
-                      data.available_presets || {},
-                      data.social_content || null
-                    );
-                  }
-                  break;
-
-                case 'done':
-                  onDone({
-                    session_id: data.session_id,
-                    sources: data.sources || [],
-                    intent: data.intent,
-                    skill_used: data.skill_used,
-                    tokens_used: data.tokens_used,
-                    prompt_tokens: data.prompt_tokens,
-                    completion_tokens: data.completion_tokens,
-                    cost_cents: data.cost_cents,
-                    images: data.images,
-                    generation_id: data.generation_id,
-                  });
-                  break;
-
-                case 'error':
-                  if (data.error) {
-                    onError(new Error(data.error));
-                  }
-                  break;
-
-                default:
-                  // Fallback: handle data without event type (backwards compat)
-                  if (data.text) {
-                    onChunk(data.text);
-                  }
-                  if (data.session_id !== undefined && data.sources !== undefined) {
-                    onDone({
-                      session_id: data.session_id,
-                      sources: data.sources || [],
-                    });
-                  }
-                  if (data.error) {
-                    onError(new Error(data.error));
-                  }
-                  break;
+              if (data.text) {
+                onChunk(data.text);
               }
 
-              // Reset event type after processing data
-              currentEvent = 'message';
+              if (data.session_id !== undefined && data.sources !== undefined) {
+                onDone(data.session_id, data.sources || []);
+              }
+
+              if (data.error) {
+                onError(new Error(data.error));
+              }
             } catch {
               console.warn('Failed to parse SSE data:', line);
             }
@@ -178,12 +119,7 @@ class ChatAPI {
         try {
           const data = JSON.parse(buffer.slice(6));
           if (data.text) onChunk(data.text);
-          if (data.session_id !== undefined) {
-            onDone({
-              session_id: data.session_id,
-              sources: data.sources || [],
-            });
-          }
+          if (data.session_id !== undefined) onDone(data.session_id, data.sources || []);
         } catch {
           // Ignore parse errors for final buffer
         }
@@ -191,40 +127,6 @@ class ChatAPI {
     } catch (error) {
       onError(error instanceof Error ? error : new Error(String(error)));
     }
-  }
-
-  /**
-   * Regenerate images with different presets
-   */
-  async regenerateImage(
-    generationId: string,
-    sessionId: string,
-    presetNames: string[],
-    enhancedPrompt?: string
-  ): Promise<{ images: GeneratedImage[]; generation_id: string; cost_cents: number }> {
-    const userId = this.getUserId();
-    const headers = await getAuthHeader(userId);
-
-    const response = await fetch(`${KNOWLEDGE_URL}/chat/images/regenerate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...headers,
-      },
-      body: JSON.stringify({
-        generation_id: generationId,
-        session_id: sessionId,
-        preset_names: presetNames,
-        enhanced_prompt: enhancedPrompt,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ detail: 'Image regeneration failed' }));
-      throw new Error(errorData.detail || `HTTP ${response.status}`);
-    }
-
-    return response.json();
   }
 
   /**

@@ -8,7 +8,6 @@ import { User, Sparkles, Copy, Check, ThumbsUp, ThumbsDown, Share, RotateCcw, Pe
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { ChatMessage as ChatMessageType, Source } from '../../../../types/chat';
-import ImageCard from './ImageCard';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '../../../../lib/utils';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -66,9 +65,25 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
   return (
     <div className={cn(
       'group flex gap-4 md:gap-6 py-6 md:py-8 first:pt-0',
-      'flex-row'
+      isUser ? 'flex-row-reverse' : 'flex-row'
     )}>
-
+      {/* Avatar */}
+      <div
+        className={cn(
+          'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm border',
+          isUser
+            ? 'bg-white border-gray-200 text-gray-600'
+            : 'bg-white border-gray-200 text-blue-600'
+        )}
+      >
+        {isUser ? (
+          <User size={16} strokeWidth={2} />
+        ) : assistantIcon ? (
+          <span className="text-lg leading-none">{assistantIcon}</span>
+        ) : (
+          <Sparkles size={16} strokeWidth={2} className={isStreaming ? "animate-pulse" : ""} />
+        )}
+      </div>
 
       {/* Content Container */}
       <div className={cn('flex-1 min-w-0 max-w-3xl', isUser && 'text-right')}>
@@ -88,8 +103,8 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
           className={cn(
             'relative',
             isUser
-              ? 'inline-block bg-gray-50 text-slate-900 px-5 py-3.5 rounded-2xl rounded-tr-sm text-left border border-gray-100'
-              : 'text-slate-900 leading-7 text-[15px]'
+              ? 'inline-block bg-blue-50/50 text-gray-800 px-5 py-3.5 rounded-2xl rounded-tr-sm text-left border border-blue-100/50'
+              : 'text-gray-800 leading-7 text-[15px]'
           )}
         >
           {/* Streaming Indicator */}
@@ -101,11 +116,11 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
             </div>
           )}
 
-          <div className={cn("markdown-content prose prose-slate prose-sm max-w-none break-words [&_p]:text-slate-900 [&_li]:text-slate-900 [&_strong]:text-slate-900 [&_h1]:text-slate-900 [&_h2]:text-slate-900 [&_h3]:text-slate-900", isUser && "prose-p:m-0")}>
+          <div className={cn("markdown-content prose prose-slate prose-sm max-w-none break-words", isUser && "prose-p:m-0")}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                p: ({ children }) => <p className="mb-4 last:mb-0 leading-relaxed text-slate-900">{children}</p>,
+                p: ({ children }) => <p className="mb-4 last:mb-0 leading-relaxed">{children}</p>,
                 ul: ({ children }) => <ul className="my-4 list-disc pl-6 space-y-1">{children}</ul>,
                 ol: ({ children }) => <ol className="my-4 list-decimal pl-6 space-y-1">{children}</ol>,
                 li: ({ children }) => <li className="pl-1">{children}</li>,
@@ -144,7 +159,7 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
                 table: ({ children }) => <div className="overflow-x-auto my-4 border rounded-lg"><table className="w-full text-sm">{children}</table></div>,
                 th: ({ children }) => <th className="bg-gray-50 px-4 py-2 text-left font-semibold border-b">{children}</th>,
                 td: ({ children }) => <td className="px-4 py-2 border-b last:border-0">{children}</td>,
-                blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-200 pl-4 py-1 my-4 text-slate-700 italic">{children}</blockquote>
+                blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-200 pl-4 py-1 my-4 text-gray-500 italic">{children}</blockquote>
               }}
             >
               {message.content}
@@ -156,17 +171,6 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
           </div>
 
         </div>
-
-        {/* Generated Images */}
-        {message.images && message.images.length > 0 && (
-          <ImageCard
-            images={message.images}
-            generationId={message.generation_id}
-            availablePresets={message.available_presets}
-            sessionId={message.session_id}
-            socialContent={message.social_content}
-          />
-        )}
 
         {/* Sources */}
         {message.sources && message.sources.length > 0 && (

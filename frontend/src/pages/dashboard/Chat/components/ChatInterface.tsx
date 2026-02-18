@@ -9,7 +9,7 @@ import { PromptInput } from './PromptInput';
 import EmptyState from './EmptyState';
 import { useChat } from '../../../../hooks/useChat';
 import { useAuth } from '../../../../context/AuthContext';
-import { ChevronDown, AlertCircle, X, Loader2 } from 'lucide-react';
+import { ChevronDown, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 
 interface ChatInterfaceProps {
@@ -29,7 +29,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
     removeFile,
     error,
     clearError,
-    imageStatus,
   } = useChat(sessionId || null);
 
   const isAppLoading = authLoading || !user;
@@ -110,27 +109,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         {showEmptyState ? (
           <EmptyState onSuggestionClick={handleSendMessage} />
         ) : (
-          <>
-            <MessageList
-              messages={messages}
-              isStreaming={isStreaming}
-              streamingContent={streamingContent}
-            />
-
-            {/* Image Generation Status Indicator */}
-            {imageStatus && imageStatus !== 'complete' && (
-              <div className="flex justify-center px-4 py-3">
-                <div className="flex items-center gap-2.5 px-4 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
-                  <Loader2 size={16} className="text-blue-600 animate-spin" />
-                  <span className="text-sm font-medium text-blue-700">
-                    {imageStatus === 'enhancing_prompt' && 'Crafting your image prompt...'}
-                    {imageStatus === 'generating' && 'Generating your image...'}
-                    {imageStatus === 'uploading' && 'Saving your image...'}
-                  </span>
-                </div>
-              </div>
-            )}
-          </>
+          <MessageList
+            messages={messages}
+            isStreaming={isStreaming}
+            streamingContent={streamingContent}
+          />
         )}
       </div>
 
@@ -155,7 +138,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
       {/* Input area - ChatGPT style fixed at bottom on mobile */}
       <div
         className={cn(
-          "bg-white",
+          "bg-white border-t border-gray-200",
           "px-4 py-4",
           // Mobile: fixed positioning
           "fixed bottom-0 left-0 right-0 md:relative",

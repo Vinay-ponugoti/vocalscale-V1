@@ -40,7 +40,6 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
   fullWidth?: boolean;
   secondaryNav?: React.ReactNode;
-  hideTopNav?: boolean;
 }
 
 // --- UI COMPONENTS ---
@@ -101,8 +100,7 @@ const NavItem = ({
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
   fullWidth = false,
-  secondaryNav,
-  hideTopNav = false
+  secondaryNav
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -395,9 +393,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* MAIN CONTENT WRAPPER */}
         <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
 
-          {/* TOP NAVIGATION BAR — hidden on chat page */}
-          {!hideTopNav && (
-          <header className="h-20 bg-white border-b border-[hsl(var(--ds-border))] shrink-0 z-50 px-2 md:px-10 flex items-center justify-between transition-all duration-300">
+          {/* TOP NAVIGATION BAR */}
+          <header className="h-20 backdrop-blur-xl border-b border-[hsl(var(--ds-border))] shrink-0 z-50 px-2 md:px-10 flex items-center justify-between transition-all duration-300" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)' }}>
 
             {/* Mobile Menu Toggle - Always visible on mobile, positioned at start */}
             <button
@@ -540,13 +537,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </div>
             </div>
           </header>
-          )}
 
           {/* PAGE CONTENT */}
           <main
             className={cn(
-              "flex-1",
-              hideTopNav ? 'bg-white' : 'bg-[hsl(var(--ds-off-white))]',
+              "flex-1 bg-[hsl(var(--ds-off-white))]",
               fullWidth ? 'p-0 overflow-hidden' : cn(PAGE_PADDING, "overflow-y-auto")
             )}
             onDoubleClick={() => {
@@ -673,8 +668,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
         )}
-        {/* Support chat widget — only visible on Help page */}
-        {location.pathname.startsWith('/dashboard/help') && <SupportWidget />}
+        <SupportWidget />
       </div>
     </>
   );

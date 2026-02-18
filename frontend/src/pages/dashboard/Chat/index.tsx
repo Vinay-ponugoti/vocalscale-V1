@@ -6,15 +6,14 @@ import { useChatSessions } from '../../../hooks/useChat';
 import ChatSidebar from './components/ChatSidebar';
 import ChatInterface from './components/ChatInterface';
 import ChatAnalytics from './components/ChatAnalytics';
-import { Menu, MessageSquare, BarChart3, PanelLeftOpen } from 'lucide-react';
+import { Menu, SquarePen, MessageSquare, BarChart3 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
 type ActiveTab = 'chat' | 'analytics';
 
 const Chat = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar state
-  const [isDesktopOpen, setIsDesktopOpen] = useState(true); // Desktop sidebar state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>('chat');
 
   const { sessions, isLoading: loadingSessions, deleteSession } = useChatSessions();
@@ -35,12 +34,8 @@ const Chat = () => {
     setSessionId(newSessionId);
   };
 
-  const onToggleDesktopSidebar = () => {
-    setIsDesktopOpen((prev) => !prev);
-  };
-
   return (
-    <DashboardLayout fullWidth hideTopNav>
+    <DashboardLayout fullWidth>
       <div className="h-full flex bg-white">
         {/* Sidebar */}
         <ChatSidebar
@@ -55,14 +50,12 @@ const Chat = () => {
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           loading={loadingSessions}
-          isDesktopOpen={isDesktopOpen}
-          onToggleDesktopSidebar={onToggleDesktopSidebar}
         />
 
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col min-w-0 h-full">
           {/* Header */}
-          <header className="flex items-center justify-between px-4 pt-4 pb-2 bg-white sticky top-0 z-30 border-b border-gray-200">
+          <header className="flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur-sm sticky top-0 z-30 border-b border-gray-100">
             <div className="flex items-center gap-3">
               {/* Mobile menu button */}
               <button
@@ -72,18 +65,6 @@ const Chat = () => {
               >
                 <Menu size={24} className="text-gray-700" />
               </button>
-
-              {/* Desktop open sidebar button */}
-              {!isDesktopOpen && (
-                <button
-                  onClick={onToggleDesktopSidebar}
-                  className="hidden lg:block p-1 -ml-1 hover:bg-gray-100 rounded-lg transition-colors"
-                  aria-label="Open sidebar"
-                  title="Open sidebar"
-                >
-                  <PanelLeftOpen size={24} className="text-gray-700" />
-                </button>
-              )}
 
               {/* Title */}
               <span className="font-semibold text-lg text-gray-900">VocalScale AI</span>
@@ -117,8 +98,19 @@ const Chat = () => {
               </button>
             </div>
 
-            {/* Spacer to balance header layout */}
-            <div className="w-10" />
+            {/* Right side actions */}
+            <div className="flex items-center gap-1">
+              {activeTab === 'chat' && (
+                <button
+                  onClick={handleNewChat}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  aria-label="New chat"
+                  title="New chat"
+                >
+                  <SquarePen size={22} className="text-gray-600" />
+                </button>
+              )}
+            </div>
           </header>
 
           {/* Content Area */}

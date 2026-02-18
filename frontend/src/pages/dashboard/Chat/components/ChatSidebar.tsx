@@ -3,14 +3,9 @@
  * ChatGPT-style mobile-friendly drawer with conversation list
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Trash2, X, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { MessageSquare, Trash2, X } from 'lucide-react';
 import type { ChatSession } from '../../../../types/chat';
 import { cn } from '../../../../lib/utils';
-
-const MIN_SIDEBAR_WIDTH = 200;
-const MAX_SIDEBAR_WIDTH = 500;
-const DEFAULT_SIDEBAR_WIDTH = 280;
 
 interface ChatSidebarProps {
   sessions: ChatSession[];
@@ -18,11 +13,9 @@ interface ChatSidebarProps {
   onSelect: (id: string) => void;
   onNewChat: () => void;
   onDelete: (id: string) => void;
-  isOpen: boolean; // Mobile sidebar open state
-  onClose?: () => void; // Mobile sidebar close handler
+  isOpen: boolean;
+  onClose?: () => void;
   loading: boolean;
-  isDesktopOpen: boolean; // Desktop sidebar open state
-  onToggleDesktopSidebar: () => void; // Desktop sidebar toggle handler
 }
 
 const ChatSidebar = ({
@@ -34,43 +27,7 @@ const ChatSidebar = ({
   isOpen,
   onClose,
   loading,
-  isDesktopOpen,
-  onToggleDesktopSidebar,
 }: ChatSidebarProps) => {
-  const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_WIDTH);
-  const [isResizing, setIsResizing] = useState(false);
-  const sidebarRef = useRef<HTMLElement>(null);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsResizing(true);
-    e.preventDefault();
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isResizing) return;
-    const newWidth = e.clientX - (sidebarRef.current?.offsetLeft || 0);
-    if (newWidth > MIN_SIDEBAR_WIDTH && newWidth < MAX_SIDEBAR_WIDTH) {
-      setSidebarWidth(newWidth);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsResizing(false);
-  };
-
-  useEffect(() => {
-    if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    } else {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isResizing]);
   const handleSelectSession = (id: string) => {
     onSelect(id);
     onClose?.();
@@ -81,52 +38,32 @@ const ChatSidebar = ({
       {/* Mobile overlay */}
       <div
         className={cn(
-          "sidebar-overlay fixed inset-0 bg-black/50 z-[100] transition-all duration-300 lg:hidden",
+          "sidebar-overlay fixed inset-0 bg-black/50 z-[100] transition-all duration-300",
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         )}
         onClick={onClose}
       />
 
-      {/* Sidebar — always visible on desktop, drawer on mobile */}
+      {/* Sidebar */}
       <aside
-        ref={sidebarRef}
         className={cn(
           "mobile-sidebar fixed lg:relative left-0 top-0 bottom-0 z-[101] lg:z-auto",
-          "bg-white",
+          "w-[280px] bg-white",
           "flex flex-col overflow-y-auto",
           "transition-transform duration-300 ease-out",
-          // Desktop: always visible with border
-          "lg:border-r lg:border-gray-200",
-          // Mobile: slide in/out
-          isOpen ? "translate-x-0" : "-translate-x-full",
-          // Desktop: open/closed
-          isDesktopOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full lg:w-0'
+          "lg:translate-x-0 lg:border-r lg:border-gray-200",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:w-0 lg:border-0 lg:overflow-hidden"
         )}
-        style={{ width: isDesktopOpen ? sidebarWidth : 0 }}
       >
         {/* Header */}
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           <span className="font-semibold text-gray-900">Chats</span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg lg:hidden transition-colors"
-            >
-              <X size={20} className="text-gray-500" />
-            </button>
-            {/* Desktop toggle button */}
-            <button
-              onClick={onToggleDesktopSidebar}
-              className="p-2 hover:bg-gray-100 rounded-lg hidden lg:block transition-colors"
-              title={isDesktopOpen ? "Close sidebar" : "Open sidebar"}
-            >
-              {isDesktopOpen ? (
-                <PanelLeftClose size={20} className="text-gray-500" />
-              ) : (
-                <PanelLeftOpen size={20} className="text-gray-500" />
-              )}
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg lg:hidden transition-colors"
+          >
+            <X size={20} className="text-gray-500" />
+          </button>
         </div>
 
         {/* New Chat Button */}
@@ -180,14 +117,6 @@ const ChatSidebar = ({
         </div>
 
       </aside>
-
-      {/* Resizer */}
-      {isDesktopOpen && (
-        <div
-          className="hidden lg:block w-2 bg-transparent cursor-ew-resize absolute right-0 top-0 bottom-0 z-[102]"
-          onMouseDown={handleMouseDown}
-        />
-      )}
     </>
   );
 };

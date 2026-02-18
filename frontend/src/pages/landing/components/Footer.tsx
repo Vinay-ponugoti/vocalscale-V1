@@ -9,7 +9,7 @@ export function Footer() {
       { label: 'Use Cases', href: '#' }
     ],
     Company: [
-      { label: 'About Us', href: '/about' },
+      { label: 'About Us', href: '/terms' },
       { label: 'Blog', href: '/blog' },
     ],
     Support: [

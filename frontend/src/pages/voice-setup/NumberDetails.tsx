@@ -98,8 +98,10 @@ const NumberDetails = () => {
 
     return (
         <DashboardLayout fullWidth>
-            <div className="w-full overflow-y-auto h-full space-y-8 md:space-y-10 p-4 md:p-8 2xl:p-12 animate-in fade-in slide-in-from-bottom-4 duration-500 custom-scrollbar">
-                <div className="max-w-6xl mx-auto w-full space-y-8 md:space-y-10">
+            <main className="flex-1 flex flex-col overflow-y-auto bg-background dark:bg-slate-950 h-full scrollbar-premium">
+
+
+                <div className="px-4 py-8 md:px-8 md:py-12 max-w-6xl mx-auto w-full space-y-8 md:space-y-10">
                     {/* Breadcrumbs */}
                     <nav className="flex items-center gap-2 text-xs font-black uppercase tracking-widest pt-4">
                         <Link to="/dashboard/voice-setup" className="text-muted-foreground hover:text-slate-900 dark:hover:text-white transition-colors">Phone Numbers</Link>
@@ -136,7 +138,7 @@ const NumberDetails = () => {
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                             <button
                                 onClick={() => navigate('/dashboard/voice-setup')}
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-xs md:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm group"
+                                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-border bg-card text-xs md:text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-muted transition-all shadow-sm group"
                             >
                                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                                 Return
@@ -152,7 +154,7 @@ const NumberDetails = () => {
                     </div>
 
                     <div className="space-y-6 md:space-y-8">
-                        <div className="bg-white rounded-3xl border border-slate-100 p-6 md:p-10 shadow-sm relative overflow-hidden group">
+                        <div className="bg-card rounded-3xl border border-border p-6 md:p-10 shadow-premium-sm relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-slate-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-slate-500/10 transition-all duration-1000" />
 
                             <h3 className="text-lg md:text-xl font-black mb-8 md:mb-10 text-foreground flex items-center gap-3">
@@ -203,7 +205,7 @@ const NumberDetails = () => {
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm">
+                        <div className="bg-card rounded-3xl border border-border p-6 md:p-8 shadow-premium-sm">
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="p-2 bg-warning/10 rounded-xl">
                                     <ShieldAlert className="w-5 h-5 text-warning" />
@@ -217,7 +219,7 @@ const NumberDetails = () => {
                     </div>
 
                     {/* Activity Table */}
-                    <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+                    <div className="bg-card rounded-3xl border border-border overflow-hidden shadow-premium-sm">
                         <div className="px-6 py-6 md:px-10 md:py-8 border-b border-border flex flex-col sm:flex-row justify-between items-center gap-6">
                             <div className="flex flex-col gap-1 text-center sm:text-left">
                                 <h3 className="text-xl font-black text-foreground tracking-tight">Communication Logs</h3>
@@ -335,7 +337,7 @@ const NumberDetails = () => {
                         </p>
                     </footer>
                 </div>
-            </div>
+            </main>
         </DashboardLayout>
     );
 };
@@ -348,8 +350,8 @@ interface CapabilityCardProps {
 
 const CapabilityCard = ({ icon: Icon, label, active }: CapabilityCardProps) => (
     <div className={`flex flex-col items-center gap-4 p-6 rounded-2xl border transition-all duration-300 ${active
-        ? 'bg-white border-slate-100 shadow-sm hover:border-slate-200'
-        : 'bg-slate-50/50 border-slate-100 opacity-40 grayscale'
+        ? 'bg-card border-slate-900/10 dark:border-white/10 shadow-premium-sm hover:border-slate-900/20 dark:hover:border-white/20'
+        : 'bg-muted/20 border-border opacity-40 grayscale'
         }`}>
         <div className={`p-3 rounded-2xl ${active ? 'bg-slate-900/5 dark:bg-white/5 text-slate-900 dark:text-white' : 'bg-muted text-muted-foreground'}`}>
             <Icon className="w-6 h-6" />

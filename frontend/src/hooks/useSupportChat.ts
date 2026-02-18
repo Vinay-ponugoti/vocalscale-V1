@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { supportApi } from '../api/support';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,9 +13,6 @@ export function useSupportChat() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    // Persist ticket ID across the chat session so all messages are grouped
-    const ticketIdRef = useRef<string>(crypto.randomUUID());
-
     // Initial greeting
     useEffect(() => {
         if (isOpen && messages.length === 0) {
@@ -57,8 +54,7 @@ export function useSupportChat() {
                 {
                     name: user?.full_name,
                     email: user?.email
-                },
-                ticketIdRef.current
+                }
             );
 
             const botMsg: ChatMessage = {
@@ -81,18 +77,12 @@ export function useSupportChat() {
         }
     };
 
-    // Reset ticket ID when chat is cleared
-    const clearChat = () => {
-        setMessages([]);
-        ticketIdRef.current = crypto.randomUUID();
-    };
-
     return {
         messages,
         isLoading,
         sendMessage,
         isOpen,
         setIsOpen,
-        setMessages: clearChat // exposed for clearing chat — also resets ticket ID
+        setMessages // exposed for clearing chat
     };
 }
