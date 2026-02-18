@@ -180,8 +180,14 @@ export function useChat(sessionId: string | null) {
       setPendingFiles([]);
 
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['chat-messages'] });
+        // Always refresh the sessions list (sidebar titles)
         if (returnedSessionId) queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
+        // Only refetch messages when NO images were received — if images came through the
+        // stream they are already in local state and a refetch would overwrite them before
+        // the backend has persisted image_data (race condition).
+        if (receivedImages.length === 0) {
+          queryClient.invalidateQueries({ queryKey: ['chat-messages'] });
+        }
       }, 800);
 
       return returnedSessionId || sessionId;

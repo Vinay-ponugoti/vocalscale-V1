@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import {
-  User, Sparkles, Copy, Check,
+  Copy, Check,
   ThumbsUp, ThumbsDown, Share, RotateCcw, Pencil, FileText,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -20,7 +20,6 @@ import ImageCard from './ImageCard';
 interface ChatMessageProps {
   message: ChatMessageType;
   isStreaming?: boolean;
-  assistantIcon?: string;
 }
 
 // ── Inline copy button used inside code blocks ──────────────────────────────
@@ -60,7 +59,7 @@ const SourceChip = ({ source }: { source: Source }) => (
 );
 
 // ── Main component ───────────────────────────────────────────────────────────
-const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) => {
+const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
   const isUser = message.role === 'user';
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null);
   const [copied, setCopied] = useState(false);
@@ -76,39 +75,12 @@ const ChatMessage = ({ message, isStreaming, assistantIcon }: ChatMessageProps) 
   return (
     <div
       className={cn(
-        'group flex gap-3 md:gap-4 py-5 md:py-6 first:pt-2',
-        isUser ? 'flex-row-reverse' : 'flex-row'
+        'group py-4 md:py-5 first:pt-2',
+        isUser ? 'flex justify-end' : 'flex justify-start'
       )}
     >
-      {/* ── Avatar ── */}
-      {isUser ? (
-        // User: plain circle
-        <div className="w-8 h-8 rounded-full bg-gray-200 border border-gray-300 flex items-center justify-center flex-shrink-0 text-gray-600">
-          <User size={15} strokeWidth={2} />
-        </div>
-      ) : (
-        // Assistant: gradient circle with brand colors
-        <div
-          className={cn(
-            'w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0',
-            'bg-gradient-to-br from-blue-500 to-indigo-600',
-            'shadow-[0_2px_8px_rgba(59,130,246,0.35)]',
-          )}
-        >
-          {assistantIcon ? (
-            <span className="text-sm leading-none">{assistantIcon}</span>
-          ) : (
-            <Sparkles
-              size={15}
-              className={cn('text-white', isStreaming && 'animate-pulse')}
-              strokeWidth={2}
-            />
-          )}
-        </div>
-      )}
-
       {/* ── Content ── */}
-      <div className={cn('flex-1 min-w-0 max-w-3xl', isUser && 'flex flex-col items-end')}>
+      <div className={cn('min-w-0 max-w-3xl w-full', isUser && 'flex flex-col items-end')}>
 
         {/* Assistant name + timestamp */}
         {!isUser && (
