@@ -7,6 +7,7 @@ import ChatSidebar from './components/ChatSidebar';
 import ChatInterface from './components/ChatInterface';
 import ChatAnalytics from './components/ChatAnalytics';
 import { Menu, SquarePen, MessageSquare, BarChart3 } from 'lucide-react';
+
 import { cn } from '../../../lib/utils';
 
 type ActiveTab = 'chat' | 'analytics';
@@ -53,65 +54,56 @@ const Chat = () => {
         />
 
         {/* Main Chat Area */}
-        <div className="flex-1 flex flex-col min-w-0 h-full">
-          {/* Header */}
-          <header className="flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur-sm sticky top-0 z-30 border-b border-gray-100">
-            <div className="flex items-center gap-3">
-              {/* Mobile menu button */}
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-1 -ml-1 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="Menu"
-              >
-                <Menu size={24} className="text-gray-700" />
-              </button>
+        <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
 
-              {/* Title */}
-              <span className="font-semibold text-lg text-gray-900">VocalScale AI</span>
-            </div>
+          {/* Slim toolbar — mobile hamburger + tabs + new-chat (no duplicate title/nav) */}
+          <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-white shrink-0">
+            {/* Mobile: open sidebar drawer */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="Open sidebar"
+            >
+              <Menu size={20} className="text-gray-600" />
+            </button>
 
-            {/* Tab Buttons */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+            {/* Tab switcher */}
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5 mx-auto lg:mx-0">
               <button
                 onClick={() => setActiveTab('chat')}
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all",
-                  activeTab === 'chat'
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
+                  activeTab === 'chat' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
                 )}
               >
-                <MessageSquare size={15} />
+                <MessageSquare size={14} />
                 <span className="hidden sm:inline">Chat</span>
               </button>
               <button
                 onClick={() => setActiveTab('analytics')}
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all",
-                  activeTab === 'analytics'
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
+                  activeTab === 'analytics' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
                 )}
               >
-                <BarChart3 size={15} />
+                <BarChart3 size={14} />
                 <span className="hidden sm:inline">Analytics</span>
               </button>
             </div>
 
-            {/* Right side actions */}
-            <div className="flex items-center gap-1">
-              {activeTab === 'chat' && (
-                <button
-                  onClick={handleNewChat}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  aria-label="New chat"
-                  title="New chat"
-                >
-                  <SquarePen size={22} className="text-gray-600" />
-                </button>
-              )}
-            </div>
-          </header>
+            {/* New chat button */}
+            {activeTab === 'chat' && (
+              <button
+                onClick={handleNewChat}
+                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="New chat"
+                title="New chat"
+              >
+                <SquarePen size={20} className="text-gray-600" />
+              </button>
+            )}
+            {activeTab !== 'chat' && <div className="w-8" />}
+          </div>
 
           {/* Content Area */}
           <div className="flex-1 min-h-0">

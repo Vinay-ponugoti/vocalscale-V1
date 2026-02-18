@@ -77,7 +77,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
   const showEmptyState = !sessionId && messages.length === 0;
 
   return (
-    <div className="flex flex-col h-full relative bg-white">
+    <div className="flex flex-col h-full relative bg-white overflow-hidden">
 
       {/* Messages area */}
       <div
@@ -85,11 +85,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         onScroll={handleScroll}
         className={cn(
           "flex-1 overflow-y-auto w-full",
-          // Hide scrollbar like ChatGPT
           "[&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar]:h-0",
-          "scrollbar-none",
-          // Mobile padding for fixed input
-          "pb-[140px] md:pb-0"
+          "scrollbar-none"
         )}
       >
         {/* Error Banner */}
@@ -119,12 +116,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         )}
       </div>
 
-      {/* Scroll to bottom button */}
+      {/* Scroll to bottom button — absolute within the chat column */}
       <button
         onClick={scrollToBottom}
         className={cn(
-          "fixed left-1/2 -translate-x-1/2 z-40",
-          "bottom-[120px] md:bottom-[100px]",
+          "absolute left-1/2 -translate-x-1/2 z-40",
+          "bottom-[80px]",
           "w-9 h-9 bg-white border border-gray-200 rounded-full",
           "flex items-center justify-center shadow-md",
           "transition-all duration-200 hover:bg-gray-50",
@@ -137,15 +134,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         <ChevronDown size={20} className="text-gray-600" />
       </button>
 
-      {/* Input area - ChatGPT style fixed at bottom on mobile */}
+      {/* Input area — sticky within the chat column, never covers sidebar */}
       <div
-        className={cn(
-          "bg-white border-t border-gray-200",
-          "px-4 py-4",
-          // Mobile: fixed positioning
-          "fixed bottom-0 left-0 right-0 md:relative",
-          "z-50"
-        )}
+        className="bg-white border-t border-gray-200 px-4 py-4 shrink-0 z-20"
         style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
       >
         <div className="max-w-3xl mx-auto">

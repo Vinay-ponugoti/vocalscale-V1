@@ -47,12 +47,15 @@ const ChatSidebar = ({
       {/* Sidebar */}
       <aside
         className={cn(
-          "mobile-sidebar fixed lg:relative left-0 top-0 bottom-0 z-[101] lg:z-auto",
-          "w-[280px] bg-white",
+          // Mobile: fixed drawer, toggled by isOpen
+          // Desktop (lg+): always visible as a fixed-width column
+          "fixed lg:relative left-0 top-0 bottom-0 z-[101] lg:z-auto",
+          "w-[260px] flex-shrink-0 bg-white",
           "flex flex-col overflow-y-auto",
           "transition-transform duration-300 ease-out",
           "lg:translate-x-0 lg:border-r lg:border-gray-200",
-          isOpen ? "translate-x-0" : "-translate-x-full lg:w-0 lg:border-0 lg:overflow-hidden"
+          // Mobile: slide in/out; Desktop: always shown
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         {/* Header */}
