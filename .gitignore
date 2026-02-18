@@ -41,3 +41,6 @@ dist-ssr
 # Scripts (maintenance)
 archive-old.sh
 daily-template.sh
+
+
+scripts
