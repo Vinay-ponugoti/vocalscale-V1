@@ -17,6 +17,7 @@ dist-ssr
 
 # Agent workspace
 .agent/
+.vsfront/
 
 # Editor directories and files
 .vscode/*
