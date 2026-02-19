@@ -43,11 +43,14 @@ export const Header = () => {
             <div className="absolute top-0 left-0 right-0 z-[105]">
                 <PromoBanner />
             </div>
-            <nav className="fixed z-[100] w-full px-2 group mt-10 md:mt-12">
+            <nav className={cn(
+                "fixed z-[100] w-full px-2 group transition-all duration-500",
+                isScrolled || menuState ? "mt-2 md:mt-3" : "mt-10 md:mt-12"
+            )}>
                 <div className={cn(
                     'mx-auto mt-4 transition-all duration-500 relative z-[101]',
                     isScrolled || menuState
-                        ? 'bg-slate-900/80 max-w-4xl rounded-full border border-white/5 backdrop-blur-xl px-4 md:px-5 py-2.5 shadow-2xl shadow-black/20'
+                        ? 'bg-slate-900/90 max-w-4xl rounded-full border border-white/5 backdrop-blur-xl px-4 md:px-5 py-2.5 shadow-2xl shadow-black/20'
                         : 'max-w-7xl px-6 md:px-8 py-4'
                 )}>
                     <div className="relative flex items-center justify-between gap-6 lg:gap-0">
