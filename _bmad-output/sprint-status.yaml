@@ -11,8 +11,8 @@ epics: []
 
 stories: {}  # Format: "X-Y-name": { status: "backlog", epic: "X" }
 
-last_updated: "2026-02-19T13:05:00Z"
+last_updated: "2026-02-19T13:10:00Z"
 active_agents:
-  - label: "bmad-product-owner-vocalscale-enhancement"
+  - label: "bmad-business-analyst-vocalscale-prd"
     status: "running"
-    started_at: "2026-02-19T13:05:00Z"
+    started_at: "2026-02-19T13:10:00Z"
