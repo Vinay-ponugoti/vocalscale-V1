@@ -4,15 +4,15 @@
 
 import { env } from '../config/env';
 import { getAuthHeader } from '../lib/api';
-import { getStoredSession } from '../utils/sessionUtils';
+import { getStoredSessionSync } from '../utils/sessionUtils';
 import type { ChatAnalytics } from '../types/analytics';
 
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
 
 class AnalyticsAPI {
-  private async getUserId(): Promise<string | undefined> {
+  private getUserId(): string | undefined {
     try {
-      const session = await getStoredSession();
+      const session = getStoredSessionSync();
       return session?.user?.id;
     } catch {
       return undefined;
@@ -23,7 +23,7 @@ class AnalyticsAPI {
    * Get chat analytics for the dashboard
    */
   async getChatAnalytics(days: number = 7): Promise<ChatAnalytics> {
-    const userId = await this.getUserId();
+    const userId = this.getUserId();
     const headers = await getAuthHeader(userId);
 
     const response = await fetch(

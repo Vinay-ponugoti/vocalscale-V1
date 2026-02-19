@@ -1,0 +1,32 @@
+[
+  {
+    "id": "INC-20260218201639",
+    "service": "Authentication",
+    "type": "performance",
+    "status": "active",
+    "started_at": "2026-02-18T20:16:39.220406",
+    "ended_at": null,
+    "message": "Authentication required (expected for some endpoints)",
+    "updates": []
+  },
+  {
+    "id": "INC-20260218201639",
+    "service": "Payment Service",
+    "type": "outage",
+    "status": "active",
+    "started_at": "2026-02-18T20:16:39.220425",
+    "ended_at": null,
+    "message": "Health endpoint not found",
+    "updates": []
+  },
+  {
+    "id": "INC-20260218201639",
+    "service": "Knowledge Engine",
+    "type": "outage",
+    "status": "active",
+    "started_at": "2026-02-18T20:16:39.220432",
+    "ended_at": null,
+    "message": "Error: HTTPSConnectionPool(host='api.vocalscale.com', port=443): Read timed out. (read timeout=5)",
+    "updates": []
+  }
+]

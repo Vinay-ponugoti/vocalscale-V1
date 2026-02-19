@@ -6,7 +6,8 @@ import { Pricing } from './components/Pricing';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
 import { ROILiveTicker } from './components/ROILiveTicker';
-import SchemaMarkup, { webPageSchema, organizationSchema, productSchema } from '@/components/SchemaMarkup';
+import SchemaMarkup from '@/components/SchemaMarkup';
+import { webPageSchema, organizationSchema, productSchema } from '@/constants/schemas';
 
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';

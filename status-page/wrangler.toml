@@ -1,0 +1,9 @@
+name = "vocalscale-status"
+compatibility_date = "2024-02-01"
+
+# Cloudflare Pages configuration for VocalScale Status Page
+
+# Deploy command
+[ builds ]
+  command = ""
+  publish = "."
