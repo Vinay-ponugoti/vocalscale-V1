@@ -170,9 +170,18 @@ export default function BlogIndex() {
                       {/* Image - Smaller */}
                       <div className="w-full md:w-4/12 aspect-[3/2] bg-slate-100 rounded-xl overflow-hidden relative shadow-sm border border-slate-100/50">
                         <Link to={`/blog/${post.slug}`} className="block h-full w-full">
-                          <div className="absolute inset-0 flex items-center justify-center text-slate-300 bg-slate-50">
-                            <Filter className="w-8 h-8 opacity-20" />
-                          </div>
+                          {post.image && (
+                            <img
+                              src={post.image}
+                              alt={post.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          )}
+                          {!post.image && (
+                            <div className="absolute inset-0 flex items-center justify-center text-slate-300 bg-slate-50">
+                              <Filter className="w-8 h-8 opacity-20" />
+                            </div>
+                          )}
                         </Link>
                       </div>
 

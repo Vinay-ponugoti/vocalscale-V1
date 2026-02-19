@@ -1,0 +1,143 @@
+[
+  {
+    "timestamp": "2026-02-18T20:16:39.220836",
+    "overall_status": "outage",
+    "services": [
+      {
+        "name": "API Gateway",
+        "status": "operational",
+        "response_time": 440.6,
+        "status_code": 200,
+        "timestamp": "2026-02-18T20:16:32.552388",
+        "message": ""
+      },
+      {
+        "name": "Authentication",
+        "status": "degraded",
+        "response_time": 285.77,
+        "status_code": 401,
+        "timestamp": "2026-02-18T20:16:32.993612",
+        "message": "Authentication required (expected for some endpoints)"
+      },
+      {
+        "name": "Payment Service",
+        "status": "down",
+        "response_time": 296.53,
+        "status_code": 404,
+        "timestamp": "2026-02-18T20:16:33.279945",
+        "message": "Health endpoint not found"
+      },
+      {
+        "name": "Knowledge Engine",
+        "status": "down",
+        "response_time": 0,
+        "status_code": 0,
+        "timestamp": "2026-02-18T20:16:33.577029",
+        "message": "Error: HTTPSConnectionPool(host='api.vocalscale.com', port=443): Read timed out. (read timeout=5)"
+      },
+      {
+        "name": "Website",
+        "status": "operational",
+        "response_time": 473.92,
+        "status_code": 200,
+        "timestamp": "2026-02-18T20:16:38.745607",
+        "message": ""
+      }
+    ],
+    "active_incidents_count": 3
+  },
+  {
+    "timestamp": "2026-02-18T20:18:05.184099",
+    "overall_status": "outage",
+    "services": [
+      {
+        "name": "API Gateway",
+        "status": "operational",
+        "response_time": 744.77,
+        "status_code": 200,
+        "timestamp": "2026-02-18T20:17:58.377132",
+        "message": ""
+      },
+      {
+        "name": "Authentication",
+        "status": "degraded",
+        "response_time": 204.56,
+        "status_code": 401,
+        "timestamp": "2026-02-18T20:17:59.122518",
+        "message": "Authentication required (expected for some endpoints)"
+      },
+      {
+        "name": "Payment Service",
+        "status": "down",
+        "response_time": 235.86,
+        "status_code": 404,
+        "timestamp": "2026-02-18T20:17:59.327717",
+        "message": "Health endpoint not found"
+      },
+      {
+        "name": "Knowledge Engine",
+        "status": "down",
+        "response_time": 0,
+        "status_code": 0,
+        "timestamp": "2026-02-18T20:17:59.564334",
+        "message": "Error: HTTPSConnectionPool(host='api.vocalscale.com', port=443): Read timed out. (read timeout=5)"
+      },
+      {
+        "name": "Website",
+        "status": "operational",
+        "response_time": 358.37,
+        "status_code": 200,
+        "timestamp": "2026-02-18T20:18:04.824581",
+        "message": ""
+      }
+    ],
+    "active_incidents_count": 0
+  },
+  {
+    "timestamp": "2026-02-18T20:20:10.551472",
+    "overall_status": "outage",
+    "services": [
+      {
+        "name": "API Gateway",
+        "status": "operational",
+        "response_time": 304.33,
+        "status_code": 200,
+        "timestamp": "2026-02-18T20:20:04.318498",
+        "message": ""
+      },
+      {
+        "name": "Authentication",
+        "status": "degraded",
+        "response_time": 187.79,
+        "status_code": 401,
+        "timestamp": "2026-02-18T20:20:04.623456",
+        "message": "Authentication required (expected for some endpoints)"
+      },
+      {
+        "name": "Payment Service",
+        "status": "down",
+        "response_time": 289.49,
+        "status_code": 404,
+        "timestamp": "2026-02-18T20:20:04.811811",
+        "message": "Health endpoint not found"
+      },
+      {
+        "name": "Knowledge Engine",
+        "status": "down",
+        "response_time": 0,
+        "status_code": 0,
+        "timestamp": "2026-02-18T20:20:05.102163",
+        "message": "Error: HTTPSConnectionPool(host='api.vocalscale.com', port=443): Read timed out. (read timeout=5)"
+      },
+      {
+        "name": "Website",
+        "status": "operational",
+        "response_time": 336.41,
+        "status_code": 200,
+        "timestamp": "2026-02-18T20:20:10.213552",
+        "message": ""
+      }
+    ],
+    "active_incidents_count": 0
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "check_interval_seconds": 60,
+  "timeout_seconds": 5,
+  "error_threshold": 3,
+  "degraded_threshold_time_ms": 3000,
+  "auto_deploy_on_change": true,
+  "send_telegram_alerts": true,
+  "telegram_bot_token": "8592432107:AAH43D90LhaSoZYCJAChVxASYRqnFx6eOz8",
+  "telegram_chat_id": "7127690178",
+  "log_incidents": true,
+  "maintain_90_day_history": true
+}

@@ -44,6 +44,21 @@ export default function BlogPost() {
                         </Link>
                     </div>
 
+                    {/* Featured Image */}
+                    {post.image && post.image !== "/api/placeholder/800/400" && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="mb-12 -mx-6 md:-mx-8"
+                        >
+                            <img
+                                src={post.image}
+                                alt={post.title}
+                                className="w-full h-auto object-cover rounded-2xl shadow-lg"
+                            />
+                        </motion.div>
+                    )}
+
                     {/* Article Header */}
                     <motion.header
                         initial={{ opacity: 0, y: 20 }}
@@ -119,10 +134,17 @@ export default function BlogPost() {
                                 {relatedPosts.map((related) => (
                                     <Link key={related.id} to={`/blog/${related.slug}`} className="group block">
                                         <div className="aspect-[3/2] bg-white rounded-2xl overflow-hidden mb-4 relative shadow-sm group-hover:shadow-md transition-shadow">
-                                            <div className="absolute inset-0 flex items-center justify-center text-slate-200">
-                                                <Tag className="w-8 h-8" />
-                                            </div>
-                                            {/* <img src={related.image} alt={related.title} className="w-full h-full object-cover" /> */}
+                                            {related.image && related.image !== "/api/placeholder/800/400" ? (
+                                                <img
+                                                    src={related.image}
+                                                    alt={related.title}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 flex items-center justify-center text-slate-200 bg-slate-50">
+                                                    <Tag className="w-8 h-8" />
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="space-y-2">
                                             <div className="text-xs font-bold text-blue-600 uppercase tracking-wider">{related.tags[0]}</div>

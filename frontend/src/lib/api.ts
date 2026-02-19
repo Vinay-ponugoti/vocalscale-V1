@@ -1180,6 +1180,7 @@ export const api = {
       throw createUserFriendlyError(error, 'Failed to update booking requirements');
     }
   }
+};
 
 // ============================================================================
 // EXPORTS FOR TESTING AND MONITORING
