@@ -53,17 +53,6 @@ const EmptyState = ({ onSuggestionClick }: EmptyStateProps) => {
     <div
       className="h-full flex flex-col items-center justify-center px-6 py-10 overflow-y-auto [&::-webkit-scrollbar]:w-0 scrollbar-none bg-white"
     >
-      {/* ── Hero Icon ── */}
-      <div className="relative mb-7 flex items-center justify-center">
-        <div
-          className="absolute w-20 h-20 rounded-full bg-blue-400/10 animate-ping"
-          style={{ animationDuration: '3s' }}
-        />
-        <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-[0_8px_24px_rgba(59,130,246,0.4)]">
-          <Sparkles size={26} className="text-white" strokeWidth={1.5} />
-        </div>
-      </div>
-
       {/* ── Headline ── */}
       <h2 className="text-2xl font-bold text-gray-900 tracking-tight text-center mb-2">
         How can I help your business today?
