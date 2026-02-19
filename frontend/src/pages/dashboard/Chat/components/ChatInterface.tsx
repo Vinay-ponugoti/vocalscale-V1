@@ -77,7 +77,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
   const showEmptyState = !sessionId && messages.length === 0;
 
   return (
-    <div className="flex flex-col h-full relative bg-[#fafafa] overflow-hidden">
+    <div className="flex flex-col h-full relative bg-white overflow-hidden">
 
       {/* Messages area */}
       <div
@@ -140,7 +140,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
       {/* Input area */}
       <div
-        className="bg-white/80 backdrop-blur-sm border-t border-gray-100 px-4 pt-3 pb-3 shrink-0 z-20"
+        className="bg-white border-t border-gray-200 px-4 pt-3 pb-3 shrink-0 z-20"
         style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
       >
         <div className="max-w-3xl mx-auto">

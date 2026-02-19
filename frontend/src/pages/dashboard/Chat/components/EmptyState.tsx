@@ -51,11 +51,7 @@ const suggestions = [
 const EmptyState = ({ onSuggestionClick }: EmptyStateProps) => {
   return (
     <div
-      className="h-full flex flex-col items-center justify-center px-6 py-10 overflow-y-auto [&::-webkit-scrollbar]:w-0 scrollbar-none"
-      style={{
-        background:
-          'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(59,130,246,0.07) 0%, transparent 70%)',
-      }}
+      className="h-full flex flex-col items-center justify-center px-6 py-10 overflow-y-auto [&::-webkit-scrollbar]:w-0 scrollbar-none bg-white"
     >
       {/* ── Hero Icon ── */}
       <div className="relative mb-7 flex items-center justify-center">
