@@ -61,7 +61,7 @@ export function HeroSection() {
             <Header />
             <main className="overflow-hidden">
                 <section>
-                    <div className="relative pt-20 md:pt-40 z-10">
+                    <div className="relative pt-32 md:pt-40 z-10">
                         <div className="mx-auto max-w-7xl px-6 md:px-8">
                             <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                                 <AnimatedGroup variants={transitionVariants}>

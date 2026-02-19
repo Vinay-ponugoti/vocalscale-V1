@@ -32,7 +32,7 @@ export default function BlogPost() {
             <Header />
 
             <div className="flex-grow">
-                <article className="max-w-3xl mx-auto px-6 md:px-8 py-24 md:py-32">
+                <article className="max-w-3xl mx-auto px-6 md:px-8 pt-40 md:pt-48 pb-24 md:pb-32">
                     {/* Back Link */}
                     <div className="mb-10">
                         <Link
