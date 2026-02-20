@@ -56,62 +56,68 @@ function getDeviceFingerprint(): string {
 
 /**
  * Encrypt sensitive session data before storage
- * SECURITY: Encrypts access_token and refresh_token individually
+ *
+ * DISABLED: Token encryption was causing 401 errors because the encryption
+ * key is derived from browser-specific values (userAgent, screen size, etc.)
+ * that can change between tabs, browser updates, or window resizes — causing
+ * decryption to silently fail and send encrypted gibberish as the Bearer token.
+ *
+ * The Supabase JWT is already cryptographically signed. LocalStorage encryption
+ * adds minimal security (XSS that reads localStorage can also read key material)
+ * but causes real auth failures. Keeping functions for backward compatibility
+ * with any sessions that were previously encrypted.
  */
 async function encryptSensitiveSession(session: Session): Promise<Session> {
-  try {
-    const encrypted: Session = { ...session };
-    
-    // Encrypt access token
-    if (encrypted.access_token) {
-      encrypted.access_token = await safeEncrypt(encrypted.access_token);
-    }
-    
-    // Encrypt refresh token
-    if (encrypted.refresh_token) {
-      encrypted.refresh_token = await safeEncrypt(encrypted.refresh_token);
-    }
-    
-    // Mark as encrypted
-    (encrypted as any)._encrypted = true;
-    
-    return encrypted;
-  } catch (e) {
-    console.error('Failed to encrypt session data:', e);
-    // Fall back to unencrypted if encryption fails
-    return session;
-  }
+  // No longer encrypting — return session as-is
+  return session;
 }
 
 /**
  * Decrypt sensitive session data after retrieval
+ * Still handles previously-encrypted sessions for backward compatibility
  */
 async function decryptSensitiveSession(session: Session): Promise<Session> {
   try {
-    // Check if data is already encrypted
-    if (!(session as any)._encrypted) {
-      return session; // Already decrypted
+    // If session was encrypted by old code, try to decrypt it
+    if ((session as any)._encrypted) {
+      const decrypted: Session = { ...session };
+
+      if (decrypted.access_token) {
+        try {
+          decrypted.access_token = await safeDecrypt(decrypted.access_token);
+        } catch {
+          // Decryption failed — token is corrupted. Clear session so user re-logs.
+          console.error('Failed to decrypt access_token from old encrypted session. Clearing session.');
+          await storeSession(null);
+          return { ...session, access_token: '' };
+        }
+      }
+
+      if (decrypted.refresh_token) {
+        try {
+          decrypted.refresh_token = await safeDecrypt(decrypted.refresh_token);
+        } catch {
+          // Non-critical — access_token is more important
+          console.warn('Failed to decrypt refresh_token, continuing with access_token only');
+        }
+      }
+
+      delete (decrypted as any)._encrypted;
+
+      // Re-store without encryption so future reads work cleanly
+      const isInLocal = !!localStorage.getItem(SESSION_KEY);
+      await storeSession(decrypted, isInLocal);
+
+      return decrypted;
     }
-    
-    const decrypted: Session = { ...session };
-    
-    // Decrypt access token
-    if (decrypted.access_token) {
-      decrypted.access_token = await safeDecrypt(decrypted.access_token);
-    }
-    
-    // Decrypt refresh token
-    if (decrypted.refresh_token) {
-      decrypted.refresh_token = await safeDecrypt(decrypted.refresh_token);
-    }
-    
-    delete (decrypted as any)._encrypted;
-    
-    return decrypted;
-  } catch (e) {
-    console.error('Failed to decrypt session data:', e);
-    // Return session as-is if decryption fails
+
+    // Not encrypted — return as-is
     return session;
+  } catch (e) {
+    console.error('Failed to process session data:', e);
+    // Clear corrupted session so user gets redirected to login
+    await storeSession(null);
+    return { ...session, access_token: '' };
   }
 }
 
