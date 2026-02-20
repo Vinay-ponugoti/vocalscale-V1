@@ -186,15 +186,12 @@ export const getStoredSession = async (): Promise<Session | null> => {
     // Extract and validate metadata
     const metadata = sessionData._metadata;
     if (metadata) {
-      // Verify device fingerprint on persistent sessions
-      const currentFingerprint = getDeviceFingerprint();
-      if (metadata.deviceFingerprint && metadata.deviceFingerprint !== currentFingerprint) {
-        console.warn('Session device fingerprint mismatch - possible theft attempt');
-        // Clear the suspicious session
-        await storeSession(null);
-        return null;
-      }
-      
+      // DISABLED fingerprint check — it was causing false "theft" detections
+      // and logging users out on browser updates, window resizes, and tab switches.
+      // The fingerprint uses navigator.userAgent + screen.colorDepth + timezoneOffset
+      // which all change frequently. The JWT itself is signed and validated server-side,
+      // making client-side fingerprint checks redundant and harmful.
+
       // Check if session is too old (stale)
       const age = Date.now() - metadata.createdAt;
       const maxAge = 90 * 24 * 60 * 60 * 1000; // 90 days
@@ -203,7 +200,7 @@ export const getStoredSession = async (): Promise<Session | null> => {
         await storeSession(null);
         return null;
       }
-      
+
       delete sessionData._metadata;
     }
     
