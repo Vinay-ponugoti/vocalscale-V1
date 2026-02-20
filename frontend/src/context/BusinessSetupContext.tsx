@@ -181,6 +181,8 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
       showToast?.(errorMessage, 'error');
       return false;
 
+    } finally {
+      // Always clear saving state — was missing, causing permanent loading UI
       dispatch({ type: 'SET_SAVING', payload: false });
     }
   }, [refreshProfile, updateProfile]);
