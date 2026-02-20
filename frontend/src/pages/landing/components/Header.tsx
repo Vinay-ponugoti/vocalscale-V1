@@ -8,9 +8,7 @@ import { cn } from '@/lib/utils'
 const menuItems = [
     { name: 'Features', href: '/features' },
     { name: 'Process', href: '/process' },
-
     { name: 'Pricing', href: '/pricing' },
-
 ]
 
 import { PromoBanner } from './PromoBanner'
@@ -96,7 +94,7 @@ export const Header = () => {
 
                         {/* Desktop Menu */}
                         <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-                            <ul className="flex gap-10">
+                            <ul className="flex gap-8 items-center">
                                 {menuItems.map((item, index) => (
                                     <li key={index}>
                                         <a
@@ -149,7 +147,7 @@ export const Header = () => {
 
                             <div className="relative z-10">
                                 <nav className="flex flex-col gap-6">
-                                    <div className="flex flex-col gap-8">
+                                    <div className="flex flex-col gap-6">
                                         {menuItems.map((item, index) => (
                                             <a
                                                 key={index}
