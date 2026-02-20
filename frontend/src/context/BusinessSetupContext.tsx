@@ -17,6 +17,7 @@ import type {
 interface BusinessSetupState {
   data: BusinessSetupData;
   loading: boolean;
+  initialLoaded: boolean;
   error: string | null;
   isDirty: boolean;
   saving: boolean;
@@ -50,6 +51,7 @@ const initialState: BusinessSetupState = {
     booking_requirements: []
   },
   loading: false,
+  initialLoaded: false,
   error: null,
   isDirty: false,
   saving: false
@@ -60,12 +62,13 @@ function businessSetupReducer(state: BusinessSetupState, action: BusinessSetupAc
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     case 'SET_ERROR':
-      return { ...state, error: action.payload, loading: false };
+      return { ...state, error: action.payload, loading: false, initialLoaded: true };
     case 'SET_DATA':
       return {
         ...state,
         data: action.payload,
         loading: false,
+        initialLoaded: true,
         error: null,
         isDirty: false
       };
@@ -178,6 +181,8 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
       showToast?.(errorMessage, 'error');
       return false;
 
+    } finally {
+      // Always clear saving state — was missing, causing permanent loading UI
       dispatch({ type: 'SET_SAVING', payload: false });
     }
   }, [refreshProfile, updateProfile]);

@@ -208,18 +208,7 @@ const Billing: React.FC = () => {
                   <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">Active</span>
                 )}
               </div>
-
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-black text-slate-900">{planName}</span>
-                {!isProfessional && (
-                  <Link
-                    to="/dashboard/billing/plans"
-                    className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95 flex items-center gap-2 no-underline"
-                  >
-                    Upgrade <ChevronRight size={10} strokeWidth={3} />
-                  </Link>
-                )}
-              </div>
+              <span className="text-sm font-black text-slate-900">{planName}</span>
             </div>
           </div>
 
@@ -280,6 +269,18 @@ const Billing: React.FC = () => {
                 </div>
               </div>
             </>
+          )}
+
+          {/* Upgrade Button - pushed to right */}
+          {!isProfessional && (
+            <div className="ml-auto shrink-0">
+              <Link
+                to="/dashboard/billing/plans"
+                className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95 flex items-center gap-2 no-underline"
+              >
+                Upgrade <ChevronRight size={10} strokeWidth={3} />
+              </Link>
+            </div>
           )}
 
         </div>

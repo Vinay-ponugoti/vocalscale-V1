@@ -518,34 +518,7 @@ const FullScreenAppointments: React.FC = () => {
     <DashboardLayout fullWidth>
       <div className="w-full h-full flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-        {/* ============ HEADER ============ */}
-        <div className={`flex flex-col md:flex-row md:items-center justify-between gap-3 ${isMobile ? 'px-4 py-2' : 'px-6 py-4'} border-b bg-white`} style={{ borderColor: DS.border }}>
-          <div className="flex items-center justify-between w-full md:w-auto gap-4">
-            <div className="flex items-center gap-3">
-              <div className={`${isMobile ? 'p-2' : 'p-2.5'} rounded-xl bg-white border border-slate-200 shadow-sm`}>
-                <CalendarIcon className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-indigo-600`} />
-              </div>
-              <div>
-                <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-black text-slate-900 tracking-tight`}>
-                  Appointments
-                  {isPlaceholderData && (
-                    <div className="inline-flex items-center gap-1.5 ml-2 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 animate-pulse">
-                      <Clock size={isMobile ? 8 : 10} className="animate-spin-slow" />
-                      <span className="text-[8px] font-bold uppercase tracking-wider">Syncing...</span>
-                    </div>
-                  )}
-                </h1>
-                {!isMobile && (
-                  <p className="text-slate-500 text-[10px] md:text-xs font-medium">
-                    {viewMode === 'day' ? format(currentDate, 'EEEE, MMMM d, yyyy') : format(currentDate, 'MMMM yyyy')}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Removed top New Appointment button as requested */}
-        </div>
+        {/* Header removed — content moves up */}
 
         {/* Controls Wrapper */}
         <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 ${isMobile ? 'px-4 py-2' : 'px-6 py-3'} bg-slate-50/50 border-b`} style={{ borderColor: DS.border }}>
