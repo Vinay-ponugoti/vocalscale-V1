@@ -167,7 +167,10 @@ const SearchResultCard = ({ business, onSelect }: SearchResultProps) => (
 
 export const BusinessDetails: React.FC = () => {
   const { state, actions } = useBusinessSetup();
-  const { data } = state;
+  const { data, initialLoaded, loading } = state;
+
+  // Business is already set up via AI — lock the setup section permanently
+  const isAlreadySetup = initialLoaded && data.business.auto_setup === true;
 
   // Search States
   const [searchQuery, setSearchQuery] = useState('');
@@ -454,84 +457,79 @@ export const BusinessDetails: React.FC = () => {
 
       <div className="space-y-10">
 
-        {/* AI Smart Connect Section - Simple Design */}
-        {/* AI Smart Connect Section - Premium Design */}
-        {!data.business.auto_setup || (data.business.auto_setup && showSuccessMessage) ? (
-          !data.business.auto_setup ? (
-            <div className="relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 rounded-2xl" />
-              <div className="relative bg-white/50 backdrop-blur-sm rounded-2xl p-8 border border-indigo-100 shadow-xl shadow-indigo-100/50 transition-all duration-300 hover:shadow-indigo-100/80 hover:border-indigo-200">
+        {/* AI Smart Connect Section — guarded by initialLoaded to prevent race condition on refresh */}
+        {!initialLoaded || loading ? (
+          /* Still loading from API — show skeleton placeholder, NOT the setup form */
+          <div className="relative overflow-hidden rounded-2xl p-8 border border-slate-100 bg-slate-50/50 animate-pulse">
+            <div className="flex items-start gap-4 mb-8">
+              <div className="w-12 h-12 rounded-2xl bg-slate-200" />
+              <div className="space-y-2 flex-1">
+                <div className="h-5 w-40 bg-slate-200 rounded" />
+                <div className="h-4 w-64 bg-slate-200 rounded" />
+              </div>
+            </div>
+            <div className="h-12 w-full max-w-2xl bg-slate-200 rounded-xl" />
+          </div>
+        ) : isAlreadySetup ? (
+          /* Business already set up — never show the search form again */
+          null
+        ) : (
+          /* First-time setup — show AI Smart Connect search */
+          <div className="relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 rounded-2xl" />
+            <div className="relative bg-white/50 backdrop-blur-sm rounded-2xl p-8 border border-indigo-100 shadow-xl shadow-indigo-100/50 transition-all duration-300 hover:shadow-indigo-100/80 hover:border-indigo-200">
 
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-white rounded-2xl border border-indigo-100 shadow-md shadow-indigo-100/50 text-indigo-600 shrink-0">
-                      <Sparkles className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h4 className="scroll-m-20 text-lg font-semibold tracking-tight text-slate-900">AI Smart Connect</h4>
-                      <p className="text-sm text-slate-500 mt-1">
-                        Instantly populate your business profile by syncing directly with Google Places.
-                      </p>
-                    </div>
+              {/* Header */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-white rounded-2xl border border-indigo-100 shadow-md shadow-indigo-100/50 text-indigo-600 shrink-0">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="scroll-m-20 text-lg font-semibold tracking-tight text-slate-900">AI Smart Connect</h4>
+                    <p className="text-sm text-slate-500 mt-1">
+                      Instantly populate your business profile by syncing directly with Google Places.
+                    </p>
                   </div>
                 </div>
+              </div>
 
-                {/* Search input */}
-                <div className="relative max-w-2xl">
-                  <div className="relative group/search">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within/search:text-indigo-500 transition-colors" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                      placeholder="Search for your business (e.g. 'Coffee Shop New York')"
-                      className="w-full pl-12 pr-32 py-4 bg-white border border-slate-200 rounded-xl text-base text-slate-900 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder:text-slate-400"
-                    />
-                    <div className="absolute right-2 top-2 bottom-2">
-                      <button
-                        onClick={handleSearch}
-                        disabled={isSearching || !searchQuery.trim()}
-                        className="h-full px-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white rounded-lg font-bold text-sm transition-all flex items-center gap-2 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300 disabled:shadow-none translate-y-0 active:translate-y-0.5"
-                      >
-                        {isSearching ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            <span className="hidden sm:inline">Searching...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Connect</span>
-                            <Sparkles className="w-4 h-4 opacity-70" />
-                          </>
-                        )}
-                      </button>
-                    </div>
+              {/* Search input */}
+              <div className="relative max-w-2xl">
+                <div className="relative group/search">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within/search:text-indigo-500 transition-colors" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    placeholder="Search for your business (e.g. 'Coffee Shop New York')"
+                    className="w-full pl-12 pr-32 py-4 bg-white border border-slate-200 rounded-xl text-base text-slate-900 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder:text-slate-400"
+                  />
+                  <div className="absolute right-2 top-2 bottom-2">
+                    <button
+                      onClick={handleSearch}
+                      disabled={isSearching || !searchQuery.trim()}
+                      className="h-full px-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white rounded-lg font-bold text-sm transition-all flex items-center gap-2 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300 disabled:shadow-none translate-y-0 active:translate-y-0.5"
+                    >
+                      {isSearching ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span className="hidden sm:inline">Searching...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Connect</span>
+                          <Sparkles className="w-4 h-4 opacity-70" />
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-          ) : (
-            /* Success State - Show when setup is complete */
-            <div className="bg-emerald-50/50 rounded-2xl p-6 border border-emerald-100 flex items-center gap-5 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-              <div className="w-12 h-12 rounded-full bg-white border border-emerald-100 flex items-center justify-center text-emerald-500 shadow-sm shrink-0 z-10">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <div className="flex-1 z-10">
-                <h4 className="scroll-m-20 text-lg font-semibold tracking-tight text-slate-900">Setup Complete!</h4>
-                <p className="text-sm text-slate-600 mt-1">Your business profile successfully connected to Google Places.</p>
-              </div>
-              <div className="px-4 py-2 bg-white rounded-xl border border-emerald-100 shadow-sm z-10">
-                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Synced
-                </span>
-              </div>
-            </div>
-          )
-        ) : null}
+          </div>
+        )}
 
         <div className="space-y-8">
           {/* Business Name Section */}
