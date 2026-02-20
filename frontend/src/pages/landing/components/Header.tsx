@@ -142,8 +142,8 @@ export const Header = () => {
                             transition={{ duration: 0.2, ease: "easeOut" }}
                             className="fixed inset-0 bg-[#020617]/98 backdrop-blur-2xl z-[90] lg:hidden pt-32 pb-12 px-8 flex flex-col justify-between h-screen">
 
-                            {/* Animated Grid Background for Menu */}
-                            <div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]" />
+                            {/* Animated Grid Background for Menu - Removed for cleaner look */}
+                            {/* <div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]" /> */}
 
                             <div className="relative z-10">
                                 <nav className="flex flex-col gap-6">

@@ -107,8 +107,7 @@ const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
                 widgetIdRef.current = null;
             }
         };
-    // Only re-run if siteKey or theme changes — never on callback changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // Only re-run if siteKey or theme changes — never on callback changes
     }, [siteKey, theme]);
 
     return <div ref={containerRef} className="w-full flex justify-center my-4" />;

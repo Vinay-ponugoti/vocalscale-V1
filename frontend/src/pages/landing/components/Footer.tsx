@@ -20,12 +20,7 @@ export function Footer() {
 
   return (
     <footer className="relative bg-white pt-16 md:pt-24 pb-10 md:pb-12 px-6 md:px-8 overflow-hidden">
-      {/* Top gradient blend from page bg */}
-      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-slate-50 to-white pointer-events-none" />
-
-      {/* Decorative background blobs */}
-      <div className="absolute bottom-0 left-0 w-[40%] h-[50%] bg-blue-50/60 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[30%] h-[40%] bg-indigo-50/60 blur-[100px] rounded-full pointer-events-none" />
+      {/* Footer Content */}
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Top section: brand + links */}
@@ -81,7 +76,7 @@ export function Footer() {
             &copy; {new Date().getFullYear()} VocalScale. All rights reserved.
           </div>
           <div className="flex items-center gap-6 lg:gap-8">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-200 text-[11px] font-black uppercase tracking-[0.2em]">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 text-slate-700 rounded-full border border-slate-200 text-[11px] font-black uppercase tracking-[0.2em]">
               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
               Systems Online
             </div>

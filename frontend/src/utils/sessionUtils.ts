@@ -1,7 +1,7 @@
 import type { Session } from '../types/auth';
 import { env } from '../config/env';
 import { safeLocalStorage, safeSessionStorage } from './storageUtils';
-import { safeEncrypt, safeDecrypt } from './cryptoUtils';
+import { safeDecrypt } from './cryptoUtils';
 import { getDevelopmentHeaders } from '../lib/devHeaders';
 
 const SESSION_KEY = 'voice_ai_session';
@@ -49,7 +49,7 @@ function getDeviceFingerprint(): string {
       a = ((a << 5) - a) + b.charCodeAt(0);
       return a & a;
     }, 0).toString(36);
-  } catch (e) {
+  } catch {
     return 'unknown';
   }
 }
@@ -79,7 +79,7 @@ async function encryptSensitiveSession(session: Session): Promise<Session> {
 async function decryptSensitiveSession(session: Session): Promise<Session> {
   try {
     // If session was encrypted by old code, try to decrypt it
-    if ((session as any)._encrypted) {
+    if ((session as Session & { _encrypted?: boolean })._encrypted) {
       const decrypted: Session = { ...session };
 
       if (decrypted.access_token) {
@@ -102,7 +102,7 @@ async function decryptSensitiveSession(session: Session): Promise<Session> {
         }
       }
 
-      delete (decrypted as any)._encrypted;
+      delete (decrypted as Session & { _encrypted?: boolean })._encrypted;
 
       // Re-store without encryption so future reads work cleanly
       const isInLocal = !!localStorage.getItem(SESSION_KEY);
@@ -129,22 +129,22 @@ export const storeSession = async (session: Session | null, remember: boolean = 
     try {
       // Encrypt sensitive data
       const encryptedSession = await encryptSensitiveSession(session);
-      
+
       // Add metadata
       const metadata: SessionMetadata = {
         lastTokenRotation: Date.now(),
         createdAt: Date.now(),
         deviceFingerprint: getDeviceFingerprint(),
       };
-      
+
       // Combine session with metadata
       const sessionWithMeta = {
         ...encryptedSession,
         _metadata: metadata
       };
-      
+
       const sessionJson = JSON.stringify(sessionWithMeta);
-      
+
       if (remember) {
         safeLocalStorage.setItem(SESSION_KEY, sessionJson);
         safeSessionStorage.removeItem(SESSION_KEY);
@@ -152,7 +152,7 @@ export const storeSession = async (session: Session | null, remember: boolean = 
         safeSessionStorage.setItem(SESSION_KEY, sessionJson);
         safeLocalStorage.removeItem(SESSION_KEY);
       }
-      
+
       // Update last activity timestamp
       updateLastActivity();
     } catch (e) {
@@ -182,7 +182,7 @@ export const getStoredSession = async (): Promise<Session | null> => {
 
   try {
     const sessionData = JSON.parse(stored);
-    
+
     // Extract and validate metadata
     const metadata = sessionData._metadata;
     if (metadata) {
@@ -203,10 +203,10 @@ export const getStoredSession = async (): Promise<Session | null> => {
 
       delete sessionData._metadata;
     }
-    
+
     // Decrypt sensitive data
     const decryptedSession = await decryptSensitiveSession(sessionData);
-    
+
     return decryptedSession;
   } catch (e) {
     console.error('Failed to parse stored session:', e);
@@ -232,7 +232,7 @@ export const getStoredSessionSync = (): Session | null => {
   if (!stored) return null;
   try {
     return JSON.parse(stored);
-  } catch (e) {
+  } catch {
     return null;
   }
 };
@@ -309,7 +309,7 @@ export const fetchUserProfile = async (accessToken: string): Promise<UserProfile
 export const updateLastActivity = () => {
   const timestamp = Date.now();
   safeSessionStorage.setItem(LAST_ACTIVITY_KEY, timestamp.toString());
-  
+
   // Also update in localStorage if using persistent session
   const stored = safeLocalStorage.getItem(SESSION_KEY);
   if (stored) {
@@ -323,13 +323,13 @@ export const updateLastActivity = () => {
 export const getIdleTime = (): number => {
   const sessionTime = safeSessionStorage.getItem(LAST_ACTIVITY_KEY);
   const localTime = safeLocalStorage.getItem(LAST_ACTIVITY_KEY);
-  
+
   const latestTime = sessionTime || localTime;
   if (!latestTime) return 0;
-  
+
   try {
     return Date.now() - parseInt(latestTime, 10);
-  } catch (e) {
+  } catch {
     return 0;
   }
 };
@@ -346,15 +346,15 @@ export const isSessionIdle = (timeoutMs: number = IDLE_TIMEOUT_MS): boolean => {
  */
 export const getSessionWarning = async (): Promise<SessionWarning | null> => {
   const session = await getStoredSession();
-  
+
   if (!session) {
     return null;
   }
-  
+
   // Check idle timeout
   const idleTime = getIdleTime();
   const idleWarningThreshold = IDLE_TIMEOUT_MS - (5 * 60 * 1000); // 5 minutes before timeout
-  
+
   if (idleTime > idleWarningThreshold) {
     const remainingMinutes = Math.max(0, Math.ceil((IDLE_TIMEOUT_MS - idleTime) / 60000));
     return {
@@ -363,7 +363,7 @@ export const getSessionWarning = async (): Promise<SessionWarning | null> => {
       timeRemaining: IDLE_TIMEOUT_MS - idleTime
     };
   }
-  
+
   // Check session expiry warning
   const remainingSeconds = getSessionTimeRemaining(session);
   if (remainingSeconds > 0 && remainingSeconds < SESSION_WARNING_THRESHOLD) {
@@ -374,7 +374,7 @@ export const getSessionWarning = async (): Promise<SessionWarning | null> => {
       timeRemaining: remainingSeconds * 1000
     };
   }
-  
+
   return null;
 };
 
@@ -403,7 +403,7 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
       backendReachable: true
     };
   }
-  
+
   // Update activity timestamp on validation
   updateLastActivity();
 
@@ -465,14 +465,14 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
         full_name: validationData.user_metadata?.full_name || session.user?.full_name || '',
         avatar_url: validationData.user_metadata?.avatar_url || validationData.user_metadata?.picture || '',
       };
-      
+
       // Check if token needs rotation
-      const shouldRotate = shouldRotateToken(session);
+      const shouldRotate = shouldRotateToken();
       if (shouldRotate) {
         console.log('Token rotation advised (backend support required)');
         // Note: Actual rotation requires backend endpoint support
       }
-      
+
       await storeSession(session, safeLocalStorage.getItem(SESSION_KEY) === JSON.stringify(session));
     }
 
@@ -498,23 +498,23 @@ export const validateSession = async (): Promise<SessionValidationResult> => {
 /**
  * Check if token should be rotated
  */
-function shouldRotateToken(session: Session): boolean {
+function shouldRotateToken(): boolean {
   // Try to get metadata from stored data
   const stored = safeSessionStorage.getItem(SESSION_KEY) || safeLocalStorage.getItem(SESSION_KEY);
   if (!stored) return false;
-  
+
   try {
     const sessionData = JSON.parse(stored);
     const metadata = sessionData._metadata as SessionMetadata | undefined;
-    
+
     if (metadata?.lastTokenRotation) {
       const age = Date.now() - metadata.lastTokenRotation;
       return age > TOKEN_ROTATION_THRESHOLD * 1000;
     }
-  } catch (e) {
+  } catch {
     // Ignore parse errors
   }
-  
+
   return false;
 }
 
@@ -525,15 +525,15 @@ function shouldRotateToken(session: Session): boolean {
 export const rotateAccessToken = async (newToken: string, newRefreshToken?: string): Promise<void> => {
   const session = await getStoredSession();
   if (!session) return;
-  
+
   const now = Date.now();
   const stored = safeSessionStorage.getItem(SESSION_KEY) || safeLocalStorage.getItem(SESSION_KEY);
   const remember = !!safeLocalStorage.getItem(SESSION_KEY);
-  
+
   try {
-    const sessionData = JSON.parse(stored || '{}') as any;
+    const sessionData = JSON.parse(stored || '{}') as Record<string, unknown>;
     const metadata = sessionData._metadata as SessionMetadata | undefined;
-    
+
     const updatedSession = {
       ...session,
       access_token: newToken,
@@ -544,7 +544,7 @@ export const rotateAccessToken = async (newToken: string, newRefreshToken?: stri
         deviceFingerprint: metadata?.deviceFingerprint || getDeviceFingerprint()
       }
     };
-    
+
     await storeSession(updatedSession, remember);
     console.log('Access token rotated successfully');
   } catch (e) {
@@ -581,20 +581,20 @@ export const setupActivityTracking = (onIdle?: () => void, checkInterval: number
   const activityEvents = [
     'mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'
   ];
-  
+
   const handler = () => updateLastActivity();
-  
+
   activityEvents.forEach(event => {
     document.addEventListener(event, handler, { passive: true });
   });
-  
+
   // Periodic idle check
   const intervalId = setInterval(() => {
     if (isSessionIdle() && onIdle) {
       onIdle();
     }
   }, checkInterval);
-  
+
   // Return cleanup function
   return () => {
     activityEvents.forEach(event => {

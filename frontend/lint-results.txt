@@ -1,0 +1,57 @@
+
+> web@0.0.0 lint
+> eslint .
+
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/components/SchemaMarkup.tsx
+  43:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  53:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  62:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/components/ui/TurnstileWidget.tsx
+  111:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/lib/api.ts
+  306:33  error  Unexpected control character(s) in regular expression: \x00, \x1f  no-control-regex
+  415:19  error  Unexpected any. Specify a different type                           @typescript-eslint/no-explicit-any
+  416:19  error  Unexpected any. Specify a different type                           @typescript-eslint/no-explicit-any
+  566:17  error  Unexpected any. Specify a different type                           @typescript-eslint/no-explicit-any
+  567:17  error  Unexpected any. Specify a different type                           @typescript-eslint/no-explicit-any
+  635:9   error  'uploadProgress' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  658:82  error  Unexpected any. Specify a different type                           @typescript-eslint/no-explicit-any
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/lib/sanitize.ts
+  16:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/pages/business-setup/components/BusinessDetails.tsx
+  6:26  error  'CheckCircle2' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/pages/dashboard/Appointments/index.tsx
+  14:15  error  'CalendarIcon' is defined but never used  @typescript-eslint/no-unused-vars
+  20:10  error  'escapeHtml' is defined but never used    @typescript-eslint/no-unused-vars
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/pages/dashboard/Chat/components/ImageCard.tsx
+  224:44  error  'availablePresets' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/utils/cryptoUtils.ts
+   60:12  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  104:12  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  210:14  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/utils/sessionUtils.ts
+    4:10  error  'safeEncrypt' is defined but never used   @typescript-eslint/no-unused-vars
+   52:12  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+   82:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  105:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  235:12  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  332:12  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  501:28  error  'session' is defined but never used       @typescript-eslint/no-unused-vars
+  514:12  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  534:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/vinay/Desktop/my projects/vocalscale prod/frontend-V1/frontend/src/utils/storageUtils.ts
+  86:12  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 29 problems (28 errors, 1 warning)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

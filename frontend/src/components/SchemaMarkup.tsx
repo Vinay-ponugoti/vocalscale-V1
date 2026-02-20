@@ -38,34 +38,3 @@ export function SchemaMarkup({ schema, type }: SchemaMarkupProps) {
 
 export default SchemaMarkup;
 
-// ─── Schema factory functions and data objects ─────────────────────────────
-
-export function webPageSchema(name: string, description: string, path: string) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name,
-    description,
-    url: `https://www.vocalscale.com${path}`,
-  };
-}
-
-export const organizationSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'VocalScale',
-  url: 'https://www.vocalscale.com',
-  logo: 'https://www.vocalscale.com/logo.png',
-  sameAs: [],
-};
-
-export const productSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Product',
-  name: 'VocalScale AI Voice Agent',
-  description: 'AI voice agents that handle customer calls, book appointments, and answer inquiries 24/7.',
-  brand: {
-    '@type': 'Brand',
-    name: 'VocalScale',
-  },
-};

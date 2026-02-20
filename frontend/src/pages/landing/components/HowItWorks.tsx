@@ -76,7 +76,7 @@ export function HowItWorks() {
 
           <h2 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]">
             Your voice, <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 italic tracking-tight">supercharged by AI.</span>
+            <span className="text-slate-900 italic tracking-tight">supercharged by AI.</span>
           </h2>
 
           <p className="text-base md:text-xl text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
@@ -98,7 +98,7 @@ export function HowItWorks() {
             >
               {/* Active indicator */}
               <div className={cn(
-                "absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500",
+                "absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-slate-800 rounded-full transition-all duration-500",
                 activeStep === index ? "opacity-100" : "opacity-0"
               )} />
 
@@ -148,12 +148,12 @@ export function HowItWorks() {
         </div>
 
         {/* Live Demo Section - Voice AI Showcase */}
-        <div className="relative p-1 md:p-2 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-[3rem] shadow-2xl overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-indigo-600/5 animate-pulse" />
+        <div className="relative p-1 md:p-2 bg-slate-100 border border-slate-200 rounded-[3rem] shadow-sm overflow-hidden">
+          <div className="absolute inset-0 bg-slate-50/50 animate-pulse" />
 
-          <div className="relative bg-white/90 backdrop-blur-xl rounded-[2.8rem] p-8 md:p-16 overflow-hidden border border-white">
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-50 to-transparent pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-1/3 h-full bg-gradient-to-r from-indigo-50 to-transparent pointer-events-none" />
+          <div className="relative bg-white rounded-[2.8rem] p-8 md:p-16 overflow-hidden border border-slate-100">
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-slate-50 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-1/3 h-full bg-gradient-to-r from-slate-50 to-transparent pointer-events-none" />
 
             <div className="relative z-10 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
               <div>
@@ -248,11 +248,11 @@ export function HowItWorks() {
                 </div>
 
                 <div className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-[10px] font-black shrink-0 text-white shadow-lg">
+                  <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-[10px] font-black shrink-0 text-white shadow-lg">
                     AI
                   </div>
-                  <div className="bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-[2rem] rounded-tl-none p-5 text-sm font-bold leading-relaxed flex items-center gap-3">
-                    <Calendar className="h-4 w-4 text-indigo-500" />
+                  <div className="bg-slate-50 border border-slate-100 text-slate-800 rounded-[2rem] rounded-tl-none p-5 text-sm font-bold leading-relaxed flex items-center gap-3">
+                    <Calendar className="h-4 w-4 text-slate-500" />
                     <span>"Perfect! I have Tuesday at 9:00 AM with Dr. Chen. I'll send a confirmation text now."</span>
                   </div>
                 </div>

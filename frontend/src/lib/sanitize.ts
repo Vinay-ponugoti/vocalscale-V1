@@ -13,7 +13,7 @@ DOMPurify.addHook('uponSanitizeAttribute', (node, data) => {
 
     // Allow only specific protocols in href
     const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
-    if (!allowedProtocols.includes((node as any).protocol || '')) {
+    if (!allowedProtocols.includes((node as HTMLAnchorElement).protocol || '')) {
       // Remove invalid href
       data.attrValue = '';
     }

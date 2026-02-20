@@ -79,7 +79,7 @@ export function Pricing() {
             className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
           >
             Simple plans for <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 italic tracking-tight">growing teams.</span>
+            <span className="text-slate-900 italic tracking-tight">growing teams.</span>
           </motion.h2>
 
           <p className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed mb-12">
@@ -126,15 +126,15 @@ export function Pricing() {
               whileHover={{ y: -8, transition: { duration: 0.3 } }}
               className={cn(
                 "group relative p-1 rounded-[2.5rem] transition-all duration-500",
-                plan.popular ? "bg-gradient-to-b from-blue-200 to-indigo-200 shadow-2xl shadow-blue-200/50" : "bg-transparent border border-transparent"
+                plan.popular ? "bg-slate-200 shadow-xl shadow-slate-200" : "bg-transparent border border-transparent"
               )}
             >
               <div className={cn(
-                "relative bg-white/80 backdrop-blur-xl rounded-[2.4rem] p-8 md:p-12 h-full flex flex-col border",
-                plan.popular ? "border-white/50" : "border-slate-200"
+                "relative bg-white rounded-[2.4rem] p-8 md:p-12 h-full flex flex-col border",
+                plan.popular ? "border-slate-300" : "border-slate-200"
               )}>
                 {plan.popular && (
-                  <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg shadow-blue-500/30">
+                  <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-slate-800 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg shadow-slate-500/30">
                     <Star className="w-3 h-3 fill-current" />
                     Most Popular
                   </div>
@@ -184,7 +184,7 @@ export function Pricing() {
                     <div key={feature} className="flex items-start gap-3">
                       <div className={cn(
                         "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                        plan.popular ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-400"
+                        plan.popular ? "bg-slate-100 text-slate-800 border border-slate-200" : "bg-slate-100 text-slate-400"
                       )}>
                         <Check className="w-3 h-3 stroke-[3px]" />
                       </div>
@@ -217,7 +217,7 @@ export function Pricing() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="max-w-6xl mx-auto mt-16 space-y-8"
         >
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/60">
+          <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
             <h3 className="text-2xl font-bold text-slate-900 mb-4">Scalable Solutions for Enterprise Organizations</h3>
             <p className="text-slate-600 leading-relaxed mb-6">
               Beyond our Professional plan, VocalScale offers enterprise-grade solutions designed for organizations managing high-volume customer interactions across multiple locations, departments, and service lines. Our enterprise pricing includes dedicated account management, custom AI model training, advanced security protocols, and white-label deployment options.
@@ -227,19 +227,19 @@ export function Pricing() {
                 <h4 className="font-bold text-slate-900 mb-3">Enterprise Customization Options</h4>
                 <ul className="space-y-2 text-sm text-slate-600">
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />
                     <span><strong>Custom AI Voice Models:</strong> Train AI on your brand voice, terminology, and industry-specific language</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />
                     <span><strong>Advanced Integration:</strong> Connect with enterprise CRM, ERP, and business intelligence systems</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />
                     <span><strong>Multi-Location Support:</strong> Manage reception across multiple offices with centralized reporting</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />
                     <span><strong>Compliance & Security:</strong> HIPAA, SOC 2, and industry-specific compliance certifications</span>
                   </li>
                 </ul>
@@ -249,8 +249,8 @@ export function Pricing() {
                 <p className="text-slate-600 leading-relaxed mb-4">
                   Organizations processing over 5,000 monthly calls benefit from our volume pricing structure, with per-minute rates decreasing as usage increases. Enterprise clients also receive priority support, dedicated infrastructure, and guaranteed uptime SLAs of 99.9%.
                 </p>
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <p className="text-sm text-blue-800 font-medium">
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                  <p className="text-sm text-slate-800 font-medium">
                     Contact our enterprise sales team for custom pricing tailored to your organization's specific requirements and usage patterns.
                   </p>
                 </div>
@@ -259,23 +259,23 @@ export function Pricing() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 text-center">
-              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-6 h-6 text-emerald-600" />
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 text-center shadow-sm">
+              <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-6 h-6 text-slate-800" />
               </div>
               <h4 className="font-bold text-slate-900 mb-2">No Hidden Fees</h4>
               <p className="text-sm text-slate-600">Transparent pricing with no setup costs, cancellation fees, or surprise charges</p>
             </div>
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-6 h-6 text-blue-600" />
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 text-center shadow-sm">
+              <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-slate-800" />
               </div>
               <h4 className="font-bold text-slate-900 mb-2">Instant Activation</h4>
               <p className="text-sm text-slate-600">Start receiving calls within minutes of signup with our streamlined onboarding process</p>
             </div>
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="w-6 h-6 text-purple-600" />
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 text-center shadow-sm">
+              <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-6 h-6 text-slate-800" />
               </div>
               <h4 className="font-bold text-slate-900 mb-2">15-Day Guarantee</h4>
               <p className="text-sm text-slate-600">Full satisfaction guarantee with prorated refunds available anytime</p>

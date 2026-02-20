@@ -28,27 +28,27 @@ import type { GeneratedImage, SocialContent } from '../../../../types/chat';
 
 // ─── Preset labels ────────────────────────────────────────────────────────────
 const PRESET_LABELS: Record<string, string> = {
-  instagram_square:    'Instagram Post',
-  instagram_story:     'Instagram Story',
+  instagram_square: 'Instagram Post',
+  instagram_story: 'Instagram Story',
   instagram_landscape: 'Instagram Landscape',
-  facebook_post:       'Facebook Post',
-  facebook_cover:      'Facebook Cover',
-  twitter_post:        'Twitter/X Post',
-  linkedin_post:       'LinkedIn Post',
-  youtube_thumbnail:   'YouTube Thumbnail',
-  tiktok_cover:        'TikTok/Reels',
-  square:              'Square (1:1)',
-  landscape:           'Landscape (16:9)',
-  portrait:            'Portrait (9:16)',
+  facebook_post: 'Facebook Post',
+  facebook_cover: 'Facebook Cover',
+  twitter_post: 'Twitter/X Post',
+  linkedin_post: 'LinkedIn Post',
+  youtube_thumbnail: 'YouTube Thumbnail',
+  tiktok_cover: 'TikTok/Reels',
+  square: 'Square (1:1)',
+  landscape: 'Landscape (16:9)',
+  portrait: 'Portrait (9:16)',
 };
 
 const PRESET_CATEGORIES = {
   social: {
     label: 'Social Media',
-    presets: ['instagram_square','instagram_story','instagram_landscape','facebook_post','facebook_cover','twitter_post','linkedin_post','tiktok_cover'],
+    presets: ['instagram_square', 'instagram_story', 'instagram_landscape', 'facebook_post', 'facebook_cover', 'twitter_post', 'linkedin_post', 'tiktok_cover'],
   },
   video: { label: 'Video', presets: ['youtube_thumbnail'] },
-  general: { label: 'General', presets: ['square','landscape','portrait'] },
+  general: { label: 'General', presets: ['square', 'landscape', 'portrait'] },
 };
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -91,9 +91,9 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
   const [activeTab, setActiveTab] = useState<'caption' | 'hashtags' | 'ideas'>('caption');
 
   const tabs = [
-    { key: 'caption'  as const, label: 'Caption',  icon: <FileText  size={13} />, available: !!content.caption },
-    { key: 'hashtags' as const, label: 'Hashtags', icon: <Hash      size={13} />, available: !!content.hashtags },
-    { key: 'ideas'    as const, label: 'Ideas',    icon: <Lightbulb size={13} />, available: !!content.ideas },
+    { key: 'caption' as const, label: 'Caption', icon: <FileText size={13} />, available: !!content.caption },
+    { key: 'hashtags' as const, label: 'Hashtags', icon: <Hash size={13} />, available: !!content.hashtags },
+    { key: 'ideas' as const, label: 'Ideas', icon: <Lightbulb size={13} />, available: !!content.ideas },
   ];
 
   // Full "post package" = caption + hashtags for one-click copy to Instagram
@@ -206,9 +206,9 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
 // ─── Image status badge ───────────────────────────────────────────────────────
 const ImageStatusBadge = ({ status }: { status: string }) => {
   const config: Record<string, { label: string; class: string }> = {
-    analyzing:  { label: '🔍 Analyzing your request...', class: 'bg-blue-50 text-blue-700 border-blue-200' },
+    analyzing: { label: '🔍 Analyzing your request...', class: 'bg-blue-50 text-blue-700 border-blue-200' },
     generating: { label: '🎨 Generating your image...', class: 'bg-purple-50 text-purple-700 border-purple-200' },
-    complete:   { label: '✅ Image ready!',             class: 'bg-green-50 text-green-700 border-green-200' },
+    complete: { label: '✅ Image ready!', class: 'bg-green-50 text-green-700 border-green-200' },
   };
   const c = config[status];
   if (!c) return null;
@@ -221,7 +221,7 @@ const ImageStatusBadge = ({ status }: { status: string }) => {
 };
 
 // ─── Main ImageCard ───────────────────────────────────────────────────────────
-const ImageCard = ({ images, generationId, availablePresets, sessionId, socialContent }: ImageCardProps) => {
+const ImageCard = ({ images, generationId, sessionId, socialContent }: ImageCardProps) => {
   const [lightboxImage, setLightboxImage] = useState<GeneratedImage | null>(null);
   const [showSizeSelector, setShowSizeSelector] = useState(false);
   const [regenerating, setRegenerating] = useState<string | null>(null);
@@ -353,8 +353,8 @@ const ImageCard = ({ images, generationId, availablePresets, sessionId, socialCo
                           isGenerated
                             ? 'bg-green-50 border-green-200 text-green-700 cursor-default'
                             : isRegenerating
-                            ? 'bg-blue-50 border-blue-200 text-blue-600 cursor-wait'
-                            : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
+                              ? 'bg-blue-50 border-blue-200 text-blue-600 cursor-wait'
+                              : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
                         )}
                       >
                         {isGenerated && <Check size={12} className="text-green-600" />}

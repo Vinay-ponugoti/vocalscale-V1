@@ -10,14 +10,13 @@ import {
 } from 'date-fns';
 import {
   ChevronLeft, ChevronRight, Plus, Clock, Moon, Sun,
-  X, Layers, FileText, GripVertical, MapPin, Phone,
-  Calendar as CalendarIcon
+  X, Layers, FileText, GripVertical, MapPin, Phone
 } from 'lucide-react';
 
 import {
   toZonedTime
 } from 'date-fns-tz';
-import { escapeHtml } from '../../../lib/sanitize';
+
 
 // --- DESIGN SYSTEM COLORS (Consistent with DashboardLayout) ---
 const DS = {
@@ -530,8 +529,8 @@ const FullScreenAppointments: React.FC = () => {
                   key={mode}
                   onClick={() => setViewMode(mode)}
                   className={`px-3 sm:px-5 py-1 text-[10px] sm:text-xs font-bold rounded-lg transition-all capitalize ${viewMode === mode
-                      ? 'bg-white shadow-sm'
-                      : 'hover:bg-gray-100'
+                    ? 'bg-white shadow-sm'
+                    : 'hover:bg-gray-100'
                     }`}
                   style={{ color: viewMode === mode ? DS.electric : DS.stone }}
                 >
@@ -657,8 +656,8 @@ const FullScreenAppointments: React.FC = () => {
                   )}
                   <div className="flex items-center gap-2 mt-1 md:mt-2">
                     <span className={`font-bold transition-all duration-300 ${isToday
-                        ? 'text-white bg-blue-600 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full text-sm md:text-lg shadow-lg shadow-blue-200 ring-2 ring-blue-100'
-                        : `${DS.ink} text-sm md:text-lg hover:text-blue-600`
+                      ? 'text-white bg-blue-600 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full text-sm md:text-lg shadow-lg shadow-blue-200 ring-2 ring-blue-100'
+                      : `${DS.ink} text-sm md:text-lg hover:text-blue-600`
                       }`}>
                       {format(day, 'd')}
                     </span>

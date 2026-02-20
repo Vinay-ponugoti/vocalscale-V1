@@ -303,6 +303,7 @@ function sanitizeFilename(filename: string): string {
   let sanitized = filename.replace(/^.*[\\/]/, '');
 
   // Remove null bytes and control characters
+  // eslint-disable-next-line no-control-regex
   sanitized = sanitized.replace(/[\x00-\x1f\x80-\x9f]/g, '');
 
   // Limit length
@@ -411,9 +412,9 @@ async function uploadFileWithProgress(
         }
         const error = new Error(
           `Upload rate limited. Please wait ${retryAfter} seconds before trying again.`
-        );
-        (error as any).code = 'RATE_LIMITED';
-        (error as any).retryAfter = retryAfter;
+        ) as unknown as ApiError & { retryAfter: number };
+        error.code = 'RATE_LIMITED';
+        error.retryAfter = retryAfter;
         reject(error);
       } else {
         reject(new Error(xhr.responseText || 'Upload failed'));
@@ -562,9 +563,9 @@ async function fetchWithTimeout(
       clearTimeout(timeoutId);
       const error = new Error(
         `Rate limit exceeded. Please wait ${rateLimitResult.retryAfter} seconds before trying again.`
-      );
-      (error as any).code = 'RATE_LIMITED';
-      (error as any).retryAfter = rateLimitResult.retryAfter;
+      ) as unknown as ApiError & { retryAfter: number };
+      error.code = 'RATE_LIMITED';
+      error.retryAfter = rateLimitResult.retryAfter;
       throw error;
     }
 
@@ -631,9 +632,6 @@ export const api = {
       allowedTypes: ['audio/*'],
       ...options,
     };
-
-    let uploadProgress = 0;
-
     try {
       const headers = await getAuthHeader();
       const response = await uploadFileWithProgress(
@@ -643,7 +641,6 @@ export const api = {
         {
           ...uploadOptions,
           onProgress: (percent) => {
-            uploadProgress = percent;
             if (options.onProgress) {
               options.onProgress(percent);
             }
@@ -655,7 +652,7 @@ export const api = {
     } catch (error) {
       const userError = createUserFriendlyError(error, 'Voice upload failed');
       if (userError.code === 'RATE_LIMITED') {
-        userError.message = `Upload rate limit exceeded. Please wait ${(error as any).retryAfter} seconds.`;
+        userError.message = `Voice generation rate limit exceeded. Please wait ${(error as unknown as ApiError & { retryAfter: number }).retryAfter} seconds.`;
       }
       throw userError;
     }

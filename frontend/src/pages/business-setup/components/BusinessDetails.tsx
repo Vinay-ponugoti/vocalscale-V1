@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import {
   Building2, Mail, Phone, MapPin, Zap, Globe,
-  Search, Loader2, Star, CheckCircle2,
+  Search, Loader2, Star,
   Sparkles, X, ChevronDown
 } from 'lucide-react';
 import { businessSetupAPI } from '../../../api/businessSetup';

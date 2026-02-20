@@ -25,8 +25,8 @@ export const ROILiveTicker = () => {
 
     return (
         <section className="relative py-24 md:py-32 overflow-hidden bg-transparent">
-            {/* Subtle Gradient Background */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_70%)]" />
+            {/* Subtle Gradient Background - Removed for pure white theme */}
+            {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_70%)]" /> */}
 
 
             <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8">
@@ -77,7 +77,8 @@ export const ROILiveTicker = () => {
                         whileInView={{ opacity: 1, scale: 1 }}
                         className="max-w-2xl bg-white border border-slate-200 p-8 rounded-3xl relative group shadow-xl shadow-slate-200/40"
                     >
-                        <div className="absolute inset-0 bg-blue-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                        {/* Background Blur Effect - Removed for clean theme */}
+                        {/* <div className="absolute inset-0 bg-blue-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" /> */}
 
                         <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed relative z-10">
                             Every missed call is a missed appointment, a lost sale, and a frustrated client.

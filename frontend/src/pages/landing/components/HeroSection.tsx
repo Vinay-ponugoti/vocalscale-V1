@@ -85,7 +85,7 @@ export function HeroSection() {
 
                                     <h1
                                         className="mt-6 md:mt-10 max-w-4xl mx-auto text-balance text-5xl sm:text-6xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 leading-[1.1]">
-                                        The First AI Voice Agent That Transforms <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 italic pb-2 tracking-tight">Customer Experience</span>
+                                        The First AI Voice Agent That Transforms <span className="text-slate-900 italic pb-2 tracking-tight">Customer Experience</span>
                                     </h1>
                                     <p
                                         className="mx-auto mt-6 max-w-3xl text-balance text-lg md:text-xl text-slate-600 leading-relaxed font-medium">
@@ -110,7 +110,7 @@ export function HeroSection() {
                                     className="mt-10 md:mt-12 flex flex-col md:flex-row items-center justify-center gap-4">
                                     <div
                                         key={1}
-                                        className="rounded-2xl p-0.5 bg-gradient-to-b from-blue-100 to-transparent w-full md:w-auto">
+                                        className="rounded-2xl p-0.5 w-full md:w-auto">
                                         <Button
                                             asChild
                                             size="lg"
@@ -184,23 +184,23 @@ export function HeroSection() {
 
                         {/* Key Benefits Grid */}
                         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto px-6 md:px-8">
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 shadow-sm">
-                                <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center mb-4">
-                                    <Phone className="w-6 h-6 text-blue-600" />
+                            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-4 border border-slate-100">
+                                    <Phone className="w-6 h-6 text-slate-800" />
                                 </div>
                                 <h3 className="font-bold text-slate-900 mb-2">24/7 Availability</h3>
                                 <p className="text-sm text-slate-600">Never miss a customer call with AI that works around the clock</p>
                             </div>
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 shadow-sm">
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center mb-4">
-                                    <TrendingUp className="w-6 h-6 text-emerald-600" />
+                            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-4 border border-slate-100">
+                                    <TrendingUp className="w-6 h-6 text-slate-800" />
                                 </div>
                                 <h3 className="font-bold text-slate-900 mb-2">70% Cost Reduction</h3>
                                 <p className="text-sm text-slate-600">Slash operational costs while improving service quality</p>
                             </div>
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 shadow-sm">
-                                <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center mb-4">
-                                    <Globe className="w-6 h-6 text-violet-600" />
+                            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-4 border border-slate-100">
+                                    <Globe className="w-6 h-6 text-slate-800" />
                                 </div>
                                 <h3 className="font-bold text-slate-900 mb-2">50+ Languages</h3>
                                 <p className="text-sm text-slate-600">Serve global customers in their native language</p>
@@ -228,8 +228,8 @@ export function HeroSection() {
                                     </p>
                                     <div className="space-y-4">
                                         <div className="flex items-start gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center mt-1">
-                                                <Check className="w-3 h-3 text-emerald-600" />
+                                            <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center mt-1 border border-slate-200">
+                                                <Check className="w-3 h-3 text-slate-800" />
                                             </div>
                                             <div>
                                                 <h4 className="font-semibold text-slate-900">Scalable Customer Support</h4>
@@ -237,8 +237,8 @@ export function HeroSection() {
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mt-1">
-                                                <Check className="w-3 h-3 text-blue-600" />
+                                            <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center mt-1 border border-slate-200">
+                                                <Check className="w-3 h-3 text-slate-800" />
                                             </div>
                                             <div>
                                                 <h4 className="font-semibold text-slate-900">Consistent Quality</h4>
@@ -246,8 +246,8 @@ export function HeroSection() {
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center mt-1">
-                                                <Check className="w-3 h-3 text-violet-600" />
+                                            <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center mt-1 border border-slate-200">
+                                                <Check className="w-3 h-3 text-slate-800" />
                                             </div>
                                             <div>
                                                 <h4 className="font-semibold text-slate-900">Instant Response</h4>
@@ -256,28 +256,28 @@ export function HeroSection() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 rounded-3xl p-8 border border-slate-200/60">
+                                <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
                                     <h3 className="text-xl font-bold text-slate-900 mb-6">Industry Applications</h3>
                                     <div className="space-y-6">
                                         <div>
                                             <h4 className="font-semibold text-slate-900 mb-2">Healthcare Practices</h4>
                                             <p className="text-sm text-slate-600 mb-3">Automate appointment scheduling, prescription refills, and patient inquiries while maintaining HIPAA compliance.</p>
-                                            <div className="text-xs text-blue-600 font-medium">Reduced administrative overhead by 65%</div>
+                                            <div className="text-xs text-slate-700 font-bold">Reduced administrative overhead by 65%</div>
                                         </div>
                                         <div>
                                             <h4 className="font-semibold text-slate-900 mb-2">Legal Services</h4>
                                             <p className="text-sm text-slate-600 mb-3">Handle client intake, schedule consultations, and provide case status updates with professional accuracy.</p>
-                                            <div className="text-xs text-emerald-600 font-medium">Improved client response time by 85%</div>
+                                            <div className="text-xs text-slate-700 font-bold">Improved client response time by 85%</div>
                                         </div>
                                         <div>
                                             <h4 className="font-semibold text-slate-900 mb-2">Real Estate</h4>
                                             <p className="text-sm text-slate-600 mb-3">Qualify leads, schedule property viewings, and provide listing information around the clock.</p>
-                                            <div className="text-xs text-violet-600 font-medium">Increased lead conversion by 40%</div>
+                                            <div className="text-xs text-slate-700 font-bold">Increased lead conversion by 40%</div>
                                         </div>
                                         <div>
                                             <h4 className="font-semibold text-slate-900 mb-2">E-commerce</h4>
                                             <p className="text-sm text-slate-600 mb-3">Process orders, handle returns, and provide product support in multiple languages.</p>
-                                            <div className="text-xs text-amber-600 font-medium">Enhanced customer satisfaction scores by 92%</div>
+                                            <div className="text-xs text-slate-700 font-bold">Enhanced customer satisfaction scores by 92%</div>
                                         </div>
                                     </div>
                                 </div>

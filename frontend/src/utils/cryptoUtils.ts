@@ -49,7 +49,7 @@ async function deriveKey(baseKey: string, salt: Uint8Array<ArrayBuffer>): Promis
 function getBaseSecret(): string {
   // Combine multiple browser-specific values for uniqueness
   const parts: string[] = [];
-  
+
   try {
     parts.push(navigator.userAgent);
     parts.push(navigator.language);
@@ -57,11 +57,11 @@ function getBaseSecret(): string {
     parts.push(screen.height.toString());
     // Add timezone for additional uniqueness
     parts.push(Intl.DateTimeFormat().resolvedOptions().timeZone);
-  } catch (e) {
+  } catch {
     // Fallback if any API is restricted
     console.warn('Some browser APIs not available for key derivation');
   }
-  
+
   return parts.join('|');
 }
 
@@ -101,7 +101,7 @@ function base64ToBytes(base64: string): Uint8Array<ArrayBuffer> {
   try {
     const binary = atob(base64);
     return new Uint8Array(Array.from(binary).map(c => c.charCodeAt(0))) as Uint8Array<ArrayBuffer>;
-  } catch (e) {
+  } catch {
     throw new Error('Invalid base64 string');
   }
 }
@@ -113,20 +113,20 @@ function base64ToBytes(base64: string): Uint8Array<ArrayBuffer> {
  */
 export async function encrypt(plaintext: string): Promise<string> {
   if (!plaintext) return '';
-  
+
   try {
     const salt = getRandomBytes(SALT_LENGTH);
     const iv = getRandomBytes(IV_LENGTH);
     const key = await deriveKey(getBaseSecret(), salt);
     const encoder = new TextEncoder();
     const data = encoder.encode(plaintext);
-    
+
     const ciphertext = await crypto.subtle.encrypt(
       { name: ALGORITHM, iv: iv as BufferSource },
       key,
       data
     );
-    
+
     const combined = combineBytes(salt, iv, new Uint8Array(ciphertext) as Uint8Array<ArrayBuffer>);
     return bytesToBase64(combined);
   } catch (e) {
@@ -142,22 +142,22 @@ export async function encrypt(plaintext: string): Promise<string> {
  */
 export async function decrypt(encrypted: string): Promise<string> {
   if (!encrypted) return '';
-  
+
   try {
     const combined = base64ToBytes(encrypted);
     const { salt, iv, ciphertext } = extractBytes(combined);
-    
+
     if (iv.length !== IV_LENGTH || salt.length !== SALT_LENGTH) {
       throw new Error('Invalid encrypted data format');
     }
-    
+
     const key = await deriveKey(getBaseSecret(), salt);
     const decrypted = await crypto.subtle.decrypt(
       { name: ALGORITHM, iv: iv as BufferSource },
       key,
       ciphertext as BufferSource
     );
-    
+
     const decoder = new TextDecoder();
     return decoder.decode(decrypted);
   } catch (e) {
@@ -183,8 +183,8 @@ export async function hash(data: string): Promise<string> {
  */
 export function isEncryptionAvailable(): boolean {
   return typeof crypto !== 'undefined' &&
-         typeof crypto.subtle !== 'undefined' &&
-         typeof crypto.getRandomValues !== 'undefined';
+    typeof crypto.subtle !== 'undefined' &&
+    typeof crypto.getRandomValues !== 'undefined';
 }
 
 // For backward compatibility: fall back to base64 encoding if crypto unavailable
@@ -203,15 +203,15 @@ export async function safeEncrypt(plaintext: string): Promise<string> {
 
 export async function safeDecrypt(encrypted: string): Promise<string> {
   if (!encrypted) return '';
-  
+
   if (!isEncryptionAvailable()) {
     try {
       return atob(encrypted);
-    } catch (e) {
+    } catch {
       throw new Error('Failed to decode base64');
     }
   }
-  
+
   try {
     return await decrypt(encrypted);
   } catch (e) {

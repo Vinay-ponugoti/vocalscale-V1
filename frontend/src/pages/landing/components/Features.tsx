@@ -47,87 +47,76 @@ function AiReceptionistVisual() {
 
   return (
     <div className="relative w-full py-8 md:py-12 flex flex-col items-center">
-      {/* Central AI Core */}
-      <div className="relative mb-10 md:mb-14">
-        <div className={cn(
-          "w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center transition-all duration-1000 bg-white border border-slate-200 shadow-xl",
-          playingId && "animate-glow-pulse"
-        )}>
-          <div className={cn(
-            "w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-all duration-700",
-            playingId
-              ? "bg-blue-600 text-white shadow-2xl shadow-blue-500/40"
-              : "bg-gradient-to-br from-blue-50 to-white text-blue-600 shadow-inner"
-          )}>
-            <BrainCircuit className={cn("w-10 h-10 md:w-12 md:h-12 transition-transform duration-700", playingId && "scale-110")} strokeWidth={1.5} />
-          </div>
-        </div>
 
-        {/* Orbiting Elements */}
-        {playingId && (
-          <>
-            <div className="absolute inset-0 -m-4 border border-blue-200/50 rounded-full animate-spin [animation-duration:8s] opacity-60" />
-            <div className="absolute inset-0 -m-8 border border-blue-100/30 rounded-full animate-spin [animation-duration:12s] [animation-direction:reverse] opacity-40" />
-          </>
-        )}
-      </div>
+      {/* Sleek Inline List of Voices */}
+      <div className="w-full max-w-lg space-y-3">
+        {VOICES.map((voice) => {
+          const isPlaying = playingId === voice.id;
+          return (
+            <button
+              key={voice.id}
+              onClick={() => handleTogglePlay(voice)}
+              className={cn(
+                "w-full relative px-5 py-4 rounded-2xl border transition-all duration-300 flex items-center justify-between group overflow-hidden text-left",
+                isPlaying
+                  ? "bg-slate-50 border-slate-300 shadow-sm"
+                  : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 hover:shadow-sm"
+              )}
+            >
+              <div className="flex items-center gap-4 relative z-10">
+                {/* Play/Pause Button */}
+                <div className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shrink-0 border",
+                  isPlaying
+                    ? "bg-slate-900 text-white border-slate-900 shadow-md"
+                    : "bg-white border-slate-200 text-slate-700 group-hover:border-slate-300 group-hover:text-slate-900"
+                )}>
+                  {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} className="ml-1" fill="currentColor" />}
+                </div>
 
-      {/* Premium Visualizer */}
-      <div className="h-20 flex items-center justify-center gap-[3px] mb-12 px-6 w-full max-w-[380px]">
-        {BAR_DURATIONS.map((timing, i) => (
-          <div
-            key={i}
-            className={cn(
-              "w-1 rounded-full transition-all duration-300",
-              playingId
-                ? "bg-blue-600 animate-sound-bar-alt"
-                : "h-1.5 bg-slate-200 opacity-50"
-            )}
-            style={{
-              animationDelay: timing.delay,
-              animationDuration: timing.duration
-            }}
-          />
-        ))}
-      </div>
+                {/* Voice Info */}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-slate-900 text-base">{voice.name}</span>
 
-      {/* Premium Voice Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-2xl">
-        {VOICES.map((voice) => (
-          <button
-            key={voice.id}
-            onClick={() => handleTogglePlay(voice)}
-            className={cn(
-              "relative px-4 py-4 rounded-3xl border transition-all duration-500 flex flex-col items-start gap-1 text-left group overflow-hidden",
-              playingId === voice.id
-                ? "bg-blue-600 border-blue-500 text-white shadow-2xl shadow-blue-500/30 -translate-y-1 scale-[1.02]"
-                : "bg-white/80 backdrop-blur-sm border-slate-200 text-slate-900 hover:border-blue-400 hover:bg-white hover:shadow-xl hover:-translate-y-1 active:scale-95 shadow-sm"
-            )}
-          >
-            <div className="flex items-center gap-2.5 w-full relative z-10">
-              <div className={cn(
-                "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300",
-                playingId === voice.id
-                  ? "bg-white text-blue-600"
-                  : "bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white"
-              )}>
-                {playingId === voice.id ? <Pause size={12} fill="currentColor" /> : <Play size={12} className="ml-0.5" fill="currentColor" />}
+                    {/* Inline Waveform when playing */}
+                    {isPlaying && (
+                      <div className="flex items-end h-4 gap-[2px] ml-1">
+                        {BAR_DURATIONS.slice(0, 5).map((timing, i) => (
+                          <div
+                            key={i}
+                            className="w-[3px] rounded-full bg-slate-900 animate-sound-bar-alt"
+                            style={{
+                              animationDelay: timing.delay,
+                              animationDuration: timing.duration,
+                              height: '100%',
+                              transformOrigin: 'bottom'
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-xs font-semibold uppercase tracking-widest text-slate-500 mt-0.5">
+                    {voice.accent}
+                  </span>
+                </div>
               </div>
-              <span className="font-bold text-sm leading-none">{voice.name}</span>
-            </div>
-            <span className={cn(
-              "text-[10px] font-black uppercase tracking-[0.15em] relative z-10",
-              playingId === voice.id ? "text-blue-100" : "text-slate-500 group-hover:text-blue-600"
-            )}>
-              {voice.accent}
-            </span>
 
-            {/* Hover visual effects */}
-            <div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-[0.03] transition-opacity" />
-            <div className="absolute inset-x-0 bottom-0 h-1 bg-blue-600 opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0 duration-500" />
-            <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-0 group-hover:opacity-100" />
-          </button>
-        ))}
+              {/* Status Indicator */}
+              <div className="relative z-10 flex items-center">
+                <span className={cn(
+                  "text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border transition-colors duration-300",
+                  isPlaying
+                    ? "bg-white border-slate-200 text-slate-900 shadow-sm"
+                    : "bg-transparent border-transparent text-slate-400 group-hover:text-slate-600"
+                )}>
+                  {isPlaying ? "Playing" : "Preview"}
+                </span>
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -139,50 +128,50 @@ export function Features() {
       icon: BrainCircuit,
       title: 'Advanced AI Receptionist',
       description: 'Our AI receptionist utilizes Deepgram Aura-2 technology to provide human-like conversations with 40+ high-fidelity voices. It handles calls with ultra-low latency, ensuring a natural flow that mimics human interaction perfectly. The system is capable of understanding complex queries, managing interruptions, and maintaining context throughout the conversation.',
-      className: 'md:col-span-8 md:row-span-2 bg-gradient-to-br from-blue-50/50 via-white/50 to-white/50',
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      className: 'md:col-span-8 md:row-span-2 bg-white',
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800',
       content: <AiReceptionistVisual />
     },
     {
       icon: Timer,
       title: 'Smart Scheduling & Calendar Sync',
       description: 'Automate your entire booking process with intelligent calendar integration. Our system syncs in real-time with Google Calendar, Outlook, and other major platforms to prevent double bookings. It can negotiate times, handle rescheduling requests, and send automated confirmations to both parties.',
-      className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-indigo-50/50 via-white/50 to-white/50',
-      iconBg: 'bg-indigo-100',
-      iconColor: 'text-indigo-600',
+      className: 'md:col-span-4 md:row-span-1 bg-white',
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800',
     },
     {
       icon: Activity,
       title: 'Deep Analytics & Insights',
       description: 'Gain valuable business intelligence from every call. Our analytics engine tracks call volume, duration, peak times, and customer sentiment. Get detailed reports on common customer queries, resolution rates, and agent performance metrics to optimize your operations.',
-      className: 'md:col-span-4 md:row-span-1 bg-gradient-to-br from-violet-50/50 via-white/50 to-white/50',
-      iconBg: 'bg-violet-100',
-      iconColor: 'text-violet-600',
+      className: 'md:col-span-4 md:row-span-1 bg-white',
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800',
     },
     {
       icon: Languages,
       title: 'Global Language Support',
       description: 'Break down language barriers with support for over 50 languages and dialects. Our AI automatically detects the caller\'s language and switches instantly to provide a native-like experience. Perfect for businesses serving diverse communities or operating internationally.',
-      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-tr from-cyan-50/50 via-white/50 to-white/50',
-      iconBg: 'bg-cyan-100',
-      iconColor: 'text-cyan-600',
+      className: 'md:col-span-4 md:row-span-2 bg-white',
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800',
     },
     {
       icon: ShieldCheck,
       title: 'Enterprise-Grade Security',
       description: 'Rest easy knowing your data is protected by bank-level security. We are fully PCI DSS compliant and utilize end-to-end encryption for all calls and data storage. Our infrastructure includes automated backups, role-based access control, and comprehensive audit logs.',
-      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-bl from-emerald-50/50 via-white/50 to-white/50',
-      iconBg: 'bg-emerald-100',
-      iconColor: 'text-emerald-600',
+      className: 'md:col-span-4 md:row-span-2 bg-white',
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800',
     },
     {
       icon: Smartphone,
       title: 'Mobile Control Center',
       description: 'Take full control of your AI agent from anywhere. Our mobile-responsive dashboard allows you to monitor live calls, review transcripts, update scripts, and manage settings on the go. Receive instant notifications for urgent matters or missed opportunities.',
-      className: 'md:col-span-4 md:row-span-2 bg-gradient-to-br from-amber-50/50 via-white/50 to-white/50',
-      iconBg: 'bg-amber-100',
-      iconColor: 'text-amber-600',
+      className: 'md:col-span-4 md:row-span-2 bg-white',
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800',
     }
   ];
 
@@ -191,29 +180,29 @@ export function Features() {
       icon: Bot,
       title: 'Custom Knowledge Base',
       description: 'Train your AI on your specific business data. Upload FAQs, pricing sheets, and policy documents to create a knowledgeable agent that represents your brand accurately.',
-      iconBg: 'bg-rose-100',
-      iconColor: 'text-rose-600'
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800'
     },
     {
       icon: PhoneCall,
       title: 'Call Transfer & Routing',
       description: 'Intelligent routing ensures calls reach the right department. The AI can warm transfer calls to human agents when complex issues arise or specific expertise is needed.',
-      iconBg: 'bg-orange-100',
-      iconColor: 'text-orange-600'
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800'
     },
     {
       icon: MessageSquare,
       title: 'SMS Follow-up',
       description: 'Automatically send text messages after calls with booking confirmations, links to resources, or satisfaction surveys to keep customers engaged.',
-      iconBg: 'bg-teal-100',
-      iconColor: 'text-teal-600'
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800'
     },
     {
       icon: Headphones,
       title: 'Call Recording & Transcription',
       description: 'Every call is recorded and transcribed in real-time with speaker diarization. Searchable transcripts make it easy to review conversations and extract key information.',
-      iconBg: 'bg-purple-100',
-      iconColor: 'text-purple-600'
+      iconBg: 'bg-slate-50 border border-slate-100',
+      iconColor: 'text-slate-800'
     }
   ];
 
@@ -235,7 +224,7 @@ export function Features() {
             className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
           >
             Everything you need <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 italic tracking-tight">to scale.</span>
+            <span className="text-slate-900 italic tracking-tight">to scale.</span>
           </h2>
 
           <p
@@ -251,7 +240,7 @@ export function Features() {
             <div
               key={index}
               className={cn(
-                "group relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white/60 backdrop-blur-md p-6 md:p-8 lg:p-10 transition-all duration-500 hover:border-blue-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:bg-white",
+                "group relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-6 md:p-8 lg:p-10 transition-all duration-500 hover:border-slate-300 hover:shadow-2xl hover:shadow-slate-200/50",
                 feature.className
               )}
             >
@@ -290,7 +279,7 @@ export function Features() {
           {additionalFeatures.map((feature, index) => (
             <div
               key={index}
-              className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300"
+              className="bg-white rounded-2xl p-6 border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-300 shadow-sm"
             >
               <div className={cn(
                 "w-10 h-10 rounded-xl flex items-center justify-center mb-4",
