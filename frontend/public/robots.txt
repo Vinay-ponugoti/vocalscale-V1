@@ -1,32 +1,25 @@
-# robots.txt for VocalScale
-# Documentation: https://www.robotstxt.org/
+# VocalScale Robots.txt
+# Updated: 2026-02-20
 
 User-agent: *
 Allow: /
-Disallow: /dashboard/
-Disallow: /setup/
-Disallow: /login
-Disallow: /signup
-Disallow: /api/
-Disallow: /admin/
-Disallow: /private/
 
-Crawl-delay: 1
-
-# AI Crawlers
-User-agent: GPTBot
-Allow: /
-Disallow: /dashboard/
-
-User-agent: ChatGPT-User
-Allow: /
-Disallow: /dashboard/
-
-User-agent: Google-Extended
-Allow: /
-Disallow: /dashboard/
-
-User-agent: CCBot
-Disallow: /
-
+# Sitemap location
 Sitemap: https://vocalscale.com/sitemap.xml
+
+# Disallow admin and internal paths
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/admin/
+
+# Allow important paths
+Allow: /blog/
+Allow: /demo/
+Allow: /roi-calculator/
+Allow: /integrations/
+Allow: /resources/
+
+# Crawl rate (be nice to servers)
+User-agent: *
+Crawl-delay: 1

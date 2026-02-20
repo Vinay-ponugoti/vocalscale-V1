@@ -24,6 +24,11 @@ dist-ssr
 .workspace/
 .temp/  # Changed from temp/ to avoid conflict with workspace temp/
 
+# BMAD files (not needed for production)
+BMAD_Openclaw/
+BMAD_*
+_bmad-output/
+
 # Configuration
 .config/
 
