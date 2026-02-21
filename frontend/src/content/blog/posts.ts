@@ -218,4 +218,25 @@ export const blogPosts: BlogPost[] = [
     "image": "/api/placeholder/800/400",
     "featured": false
   } 
+  ,
+    {
+    "id": "1771693589411",
+    "title": "After Hours Answering Service: Complete Guide",
+    "slug": "after-hours-answering-service",
+    "excerpt": "Learn how 24/7 phone answering can transform your small business and capture opportunities after 5 PM.",
+    "content": "\n    <p>Write your content here...</p>\n    <h2>Section Title</h2>\n    <p>More content...</p>\n  ",
+    "author": {
+      "name": "VocalScale Founder",
+      "role": "Contributor",
+      "avatar": "/api/placeholder/100/100"
+    },
+    "date": "2026-02-21",
+    "readTime": "5 min read",
+    "tags": [
+      "New",
+      "Update"
+    ],
+    "image": "/api/placeholder/800/400",
+    "featured": false
+  } 
 ];
