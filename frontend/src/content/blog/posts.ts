@@ -223,7 +223,7 @@ export const blogPosts: BlogPost[] = [
     date: "2026-02-22",
     readTime: "5 min read",
     tags: ["New", "Update"],
-    image: "/api/placeholder/800/400",
+    image: "images/blog/small-business-ai-receptionist-signs.jpg ",
     featured: false
   }
 ];
