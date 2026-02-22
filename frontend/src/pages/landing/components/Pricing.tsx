@@ -22,7 +22,9 @@ export function Pricing() {
         'Standard AI voice models',
         'Email support',
         'Call history & transcripts',
-        '1 Local phone number'
+        '1 Local phone number',
+        'AI Image Generation',
+        'AI Text Generation'
       ],
       cta: 'Get Started Now',
       popular: false,
@@ -44,7 +46,9 @@ export function Pricing() {
         'Custom knowledge base',
         'Up to 5 phone numbers',
         'Sentiment analysis',
-        'CRM integrations'
+        'CRM integrations',
+        'AI Image Generation',
+        'AI Text Generation'
       ],
       cta: 'Get Started Now',
       popular: true,
