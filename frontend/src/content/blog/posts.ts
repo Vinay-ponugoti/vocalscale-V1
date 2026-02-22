@@ -1,6 +1,7 @@
 export interface BlogPost {
   id: string;
   title: string;
+  slug: string;
   excerpt: string;
   content: string;
   author: {
@@ -10,29 +11,7 @@ export interface BlogPost {
   };
   date: string;
   readTime: string;
-  tags: string[  ,
-    {
-    "id": "1771765201639",
-    "title": "After Hours Answering Service: Complete Guide",
-    "slug": "after-hours-answering-service",
-    "excerpt": "Learn how 24/7 phone answering can transform your small business and capture opportunities after 5 PM.",
-    "content": "\n    <p>Write your content here...</p>\n    <h2>Section Title</h2>\n    <p>More content...</p>\n  ",
-    "author": {
-      "name": "VocalScale Founder",
-      "role": "Contributor",
-      "avatar": "/api/placeholder/100/100"
-    },
-    "date": "2026-02-22",
-    "readTime": "5 min read",
-    "tags": [
-      "New",
-      "Update"
-    ],
-    "image": "/api/placeholder/800/400",
-    "featured": false
-  } 
-];
-  slug: string;
+  tags: string[];
   image: string;
   featured?: boolean;
 }
@@ -141,3 +120,110 @@ export const blogPosts: BlogPost[] = [
 
 <p><strong>Just Working More:</strong> Tried answering until 9 PM. Lasted six weeks before I caught myself being short with a customer because I was exhausted. The solution can't be "work harder."</p>
 
+<h2>The AI Receptionist Experiment</h2>
+
+<p>Six months ago, I deployed an AI receptionist. Let me tell you what happened.</p>
+
+<p>First week: I hovered. Watched every call come in. Intervened when I didn't need to. The AI was handling things fine, but old habits die hard.</p>
+
+<p>Second week: I stopped watching. Started trusting.</p>
+
+<p>Month two: I took a dinner without checking my phone. First time in three years.</p>
+
+<p>Month three: I closed a $12,000 deal while at my daughter's soccer game. The AI booked the discovery call, qualified the lead, and sent me a notification when it was time to hop on.</p>
+
+<h2>What I Learned About Boundaries</h2>
+
+<p>The AI didn't just handle calls—it handled my guilt. When I wasn't available, I didn't feel like I was failing. The system was working, even when I wasn't.</p>
+
+<p>There's a psychological weight to "always on." We carry it like a physical burden. Delegating to AI isn't lazy—it's strategic. It's recognizing that your time has compound value, and constant interruptions compound against you.</p>
+
+<p>The phone still rings. I just don't let it rule my life anymore.</p>`,
+    author: { name: "VocalScale Founder", role: "Founder", avatar: "/api/placeholder/100/100" },
+    date: "2026-02-16",
+    readTime: "5 min read",
+    tags: ["Entrepreneurship", "Small Business", "Work-Life Balance", "AI"],
+    image: "/images/blog/why-i-stopped-answering-phone.jpg",
+    featured: false
+  },
+  {
+    id: "1740161600002",
+    title: "How AI Phone Receptionists Save Small Businesses $60B Per Year",
+    slug: "ai-phone-receptionists-save-small-businesses-60b",
+    excerpt: "The missed call problem costs small businesses billions annually. Here's how AI receptionists are solving it—one call at a time.",
+    content: `<p>Here's a number that should stop every small business owner in their tracks: <strong>$60 billion</strong>.</p>
+
+<p>That's the estimated annual cost of missed calls for small businesses in the US alone. Not lost leads—missed calls. Conversations that never happened because no one was available to answer.</p>
+
+<h2>The Math Behind Missed Calls</h2>
+
+<p>Let's do some quick math. The average small business:</p>
+
+<ul>
+<li>Misses 20-30% of incoming calls</li>
+<li>Has an average customer value of $1,000</li>
+<li>Sees 20% of missed call leads convert to customers</li>
+</ul>
+
+<p>For a business receiving 100 calls per month, that's 20-30 missed opportunities. At a 20% conversion rate, that's 4-6 lost customers. At $1,000 average value, that's $4,000-$6,000 in lost revenue every month. $48,000-$72,000 per year.</p>
+
+<p>And that's conservative. For service businesses with higher average transaction values, the numbers are worse.</p>
+
+<h2>Traditional Solutions Don't Scale</h2>
+
+<p>Business owners have tried:</p>
+
+<p><strong>Extended hours:</strong> Working later catches some calls, but burns you out and violates the whole point of being in business for yourself.</p>
+
+<p><strong>Virtual receptionists:</strong> Better, but expensive ($1,000-$3,000/month), and still subject to human error, sick days, and turnover.</p>
+
+<p><strong>Staffing up:</strong> The "real" solution, but unaffordable for businesses just starting out or in growth mode.</p>
+
+<p>None of these solve the fundamental problem: calls come in 24/7, but humans need sleep.</p>
+
+<h2>Enter AI Receptionists</h2>
+
+<p>Modern AI phone receptionists solve the problem differently:</p>
+
+<p><strong>24/7 availability:</strong> Never miss a call, regardless of time zone, holiday, or sick day.</p>
+
+<p><strong>Instant responses:</strong> Answer in under 1 second, capturing leads while they're hot.</p>
+
+<p><strong>Consistent quality:</strong> Every call gets the same high-quality experience. No bad days, no training gaps.</p>
+
+<p><strong>Cost effective:</strong> Starting at $99/month, a fraction of hiring human support.</p>
+
+<h2>The $60B Opportunity</h2>
+
+<p>Here's the exciting part: we're still early. Most small businesses haven't adopted AI receptionists yet. That means there's massive first-mover advantage for businesses that do.</p>
+
+<p>While competitors struggle with missed calls and voicemail purgatory, AI-enabled businesses capture every opportunity. The compounding effect: better customer experience, more conversions, faster growth.</p>
+
+<p>The businesses winning today aren't the biggest—they're the most available. AI receptionists make 24/7 availability possible for businesses of any size.</p>
+
+<p>The question isn't whether to adopt AI phone receptionists. It's whether you can afford not to.</p>`,
+    author: { name: "VocalScale Research Team", role: "Industry Analysis", avatar: "/api/placeholder/100/100" },
+    date: "2026-02-15",
+    readTime: "5 min read",
+    tags: ["AI Receptionist", "Small Business", "ROI", "Cost Savings"],
+    image: "/images/blog/ai-phone-receptionists-save-money.jpg",
+    featured: true
+  },
+  {
+    id: "1771765201639",
+    title: "After Hours Answering Service: Complete Guide",
+    slug: "after-hours-answering-service",
+    excerpt: "Learn how 24/7 phone answering can transform your small business and capture opportunities after 5 PM.",
+    content: `<p>Write your content here...</p>
+
+<h2>Section Title</h2>
+
+<p>More content...</p>`,
+    author: { name: "VocalScale Founder", role: "Contributor", avatar: "/api/placeholder/100/100" },
+    date: "2026-02-22",
+    readTime: "5 min read",
+    tags: ["New", "Update"],
+    image: "/api/placeholder/800/400",
+    featured: false
+  }
+];
