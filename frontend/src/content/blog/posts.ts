@@ -143,7 +143,7 @@ export const blogPosts: BlogPost[] = [
     date: "2026-02-16",
     readTime: "5 min read",
     tags: ["Entrepreneurship", "Small Business", "Work-Life Balance", "AI"],
-    image: "/images/blog/why-i-stopped-answering-phone.jpg",
+    image: "/images/blog/founder-workflow-2025.jpg",
     featured: false
   },
   {
@@ -206,7 +206,7 @@ export const blogPosts: BlogPost[] = [
     date: "2026-02-15",
     readTime: "5 min read",
     tags: ["AI Receptionist", "Small Business", "ROI", "Cost Savings"],
-    image: "/images/blog/ai-phone-receptionists-save-money.jpg",
+    image: "/images/blog/ai-receptionist-roi-2026.png",
     featured: true
   },
   {
