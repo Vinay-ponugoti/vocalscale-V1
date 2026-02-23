@@ -135,16 +135,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
         )}
         aria-label="Scroll to bottom"
       >
-        <ChevronDown size={14} />
-        <span>Latest</span>
+        <span className="font-medium">Recent Messages</span>
       </button>
 
       {/* Input area */}
       <div
-        className="bg-white border-t border-gray-200 px-4 pt-3 pb-3 shrink-0 z-20"
-        style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+        className="w-full flex justify-center shrink-0 z-20 px-4 pt-2 pb-6 bg-gradient-to-t from-white via-white to-transparent"
       >
-        <div className="max-w-3xl mx-auto">
+        <div className="w-full max-w-3xl mx-auto relative">
           {/* Image generation status badge */}
           {imageStatus && imageStatus !== 'complete' && (
             <div className="mb-2 flex justify-center">
@@ -159,7 +157,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
             onRemoveFile={removeFile}
             placeholder={isAppLoading ? "Authenticating..." : "Ask anything — try: 'Create a 20% off Instagram post'"}
           />
-          <p className="text-center text-[11px] text-gray-400 mt-1.5 select-none">
+          <p className="text-center text-[10px] text-gray-400 mt-2 select-none tracking-wide">
             VocalScale AI can make mistakes. Verify important information.
           </p>
         </div>

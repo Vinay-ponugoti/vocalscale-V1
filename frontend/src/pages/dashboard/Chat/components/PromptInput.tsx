@@ -118,7 +118,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
         )}
 
         {/* ── Main input row ── */}
-        <div className="flex items-end gap-2 px-3 py-3">
+        <div className="flex items-end gap-3 px-3.5 py-3">
 
           {/* Attach button */}
           <button
@@ -127,7 +127,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             disabled={disabled || isUploading}
             title="Attach file"
             className={cn(
-              'flex-shrink-0 p-2 rounded-xl transition-all mb-0.5',
+              'flex-shrink-0 p-2.5 rounded-xl transition-all mb-0.5',
               'text-gray-400 hover:text-gray-600 hover:bg-gray-100',
               (disabled || isUploading) && 'opacity-40 cursor-not-allowed',
             )}
@@ -160,7 +160,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               'flex-1 resize-none bg-transparent ring-0',
               'text-[15px] text-gray-900 placeholder:text-gray-400',
               'font-sans leading-relaxed',
-              'min-h-[26px] max-h-[120px] py-0.5',
+              'min-h-[24px] max-h-[150px] py-1.5',
               disabled && 'opacity-50 cursor-not-allowed',
             )}
             style={{ border: 'none', boxShadow: 'none', outline: 'none' }}
@@ -178,18 +178,25 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             </button>
 
             {/* Model selector */}
-            <div className="relative">
+            <div className="relative mb-0.5">
               <button
                 type="button"
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center gap-1 p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+                className={cn(
+                  "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all border",
+                  showDropdown
+                    ? "bg-blue-50 border-blue-200 text-blue-700"
+                    : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300"
+                )}
                 title="Select model"
               >
-                <span className="text-xs font-medium">{selectedModel}</span>
-                <ChevronDown size={14} />
+                {MODEL_ICONS[selectedModel]}
+                <span className="text-[11px] font-semibold tracking-wide uppercase hidden sm:block">
+                  {selectedModel === 'auto' ? 'Auto' : selectedModel.replace(/-/g, ' ')}
+                </span>
               </button>
               {showDropdown && (
-                <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-xl shadow-lg border border-gray-200">
+                <div className="absolute right-0 bottom-[calc(100%+12px)] w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-1 overflow-hidden z-50">
                   {Object.entries(MODEL_ICONS).map(([model, icon]) => (
                     <button
                       key={model}
@@ -198,12 +205,12 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                         setShowDropdown(false);
                       }}
                       className={cn(
-                        'w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors',
-                        selectedModel === model && 'bg-blue-50 text-blue-600'
+                        'w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50 transition-colors',
+                        selectedModel === model && 'bg-blue-50/50 text-blue-700 font-medium'
                       )}
                     >
                       {icon}
-                      <span className="text-sm font-medium">{model}</span>
+                      <span className="text-xs uppercase tracking-wider">{model === 'auto' ? 'Auto' : model.replace(/-/g, ' ')}</span>
                     </button>
                   ))}
                 </div>
@@ -216,7 +223,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               disabled={disabled || !hasContent}
               title="Send message"
               className={cn(
-                'w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150',
+                'w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200',
                 hasContent && !disabled
                   ? [
                     'bg-blue-600 hover:bg-blue-700 text-white',
