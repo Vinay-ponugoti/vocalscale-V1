@@ -1,14 +1,16 @@
 /**
- * PromptInput — flagship input bar (Claude / Perplexity inspired)
- * Rounded rectangle, glow focus ring, blue send button, file chips
+ * PromptInput — Premium search / chat input bar
+ * Claude × Perplexity × Vercel-AI inspired
+ * Uses shadcn/ui patterns with glass-morphism and animated glow
  */
 
-import React, { useRef, useState, useEffect } from 'react';
-import { X, Plus, Mic, ArrowUp, ChevronDown, Frame, Palette } from 'lucide-react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import {
+  X, Plus, Mic, ArrowUp, ChevronDown, Frame, Palette,
+  Sparkles, Zap, ImageIcon, Bot,
+} from 'lucide-react';
 import { cn } from '../../../../lib/utils';
-import type { FileAttachment } from '../../../../types/chat';
-
-import type { ModelOption } from '../../../../types/chat';
+import type { FileAttachment, ModelOption } from '../../../../types/chat';
 
 interface PromptInputProps {
   onSend: (content: string, model: ModelOption, aspectRatio?: string, imageStyle?: string) => void;
@@ -19,6 +21,49 @@ interface PromptInputProps {
   placeholder?: string;
 }
 
+// ─── Model metadata ──────────────────────────────────────────────────────────
+const MODELS: { value: ModelOption; label: string; short: string; color: string; icon: React.ReactNode }[] = [
+  {
+    value: 'auto',
+    label: 'Auto',
+    short: 'Auto',
+    color: 'bg-blue-500',
+    icon: <Sparkles size={13} />,
+  },
+  {
+    value: 'gemini-2.0-flash',
+    label: 'Gemini 2.0 Flash',
+    short: 'Flash',
+    color: 'bg-emerald-500',
+    icon: <Zap size={13} />,
+  },
+  {
+    value: 'gemini-2.5-pro',
+    label: 'Gemini 2.5 Pro',
+    short: '2.5 Pro',
+    color: 'bg-purple-500',
+    icon: <Bot size={13} />,
+  },
+  {
+    value: 'imagen-4',
+    label: 'Imagen 4',
+    short: 'Imagen',
+    color: 'bg-orange-500',
+    icon: <ImageIcon size={13} />,
+  },
+];
+
+const SLASH_COMMANDS = [
+  { command: '/image', description: 'Generate an image', model: 'imagen-4' as ModelOption, icon: <ImageIcon size={14} className="text-orange-500" />, prefix: 'Create an image of ' },
+  { command: '/social', description: 'Write a social media post', model: 'gemini-2.5-pro' as ModelOption, icon: <Sparkles size={14} className="text-purple-500" />, prefix: 'Write a social media post about ' },
+  { command: '/email', description: 'Draft an email', model: 'gemini-2.5-pro' as ModelOption, icon: <Bot size={14} className="text-purple-500" />, prefix: 'Draft an email regarding ' },
+  { command: '/fast', description: 'Quick answer', model: 'gemini-2.0-flash' as ModelOption, icon: <Zap size={14} className="text-emerald-500" />, prefix: '' },
+];
+
+const ASPECT_RATIOS = ['1:1', '16:9', '9:16', '4:3', '3:4'];
+const IMAGE_STYLES = ['cinematic', 'photorealistic', 'anime', '3d-render', 'sketch'];
+
+// ─── Component ────────────────────────────────────────────────────────────────
 export const PromptInput: React.FC<PromptInputProps> = ({
   onSend,
   onFileUpload,
@@ -28,46 +73,53 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   placeholder,
 }) => {
   const [input, setInput] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedModel, setSelectedModel] = useState<ModelOption>('auto');
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSlashCommands, setShowSlashCommands] = useState(false);
   const [slashSearch, setSlashSearch] = useState('');
-
-  const [aspectRatio, setAspectRatio] = useState<string>('1:1');
-  const [imageStyle, setImageStyle] = useState<string>('cinematic');
+  const [aspectRatio, setAspectRatio] = useState('1:1');
+  const [imageStyle, setImageStyle] = useState('cinematic');
   const [showAspectDropdown, setShowAspectDropdown] = useState(false);
   const [showStyleDropdown, setShowStyleDropdown] = useState(false);
 
-  const MODEL_ICONS: Record<ModelOption, React.ReactNode> = {
-    'auto': <div className="w-4 h-4 bg-blue-500 rounded-full" />,
-    'gemini-2.0-flash': <div className="w-4 h-4 bg-green-500 rounded-full" />,
-    'gemini-2.5-pro': <div className="w-4 h-4 bg-purple-500 rounded-full" />,
-    'imagen-4': <div className="w-4 h-4 bg-orange-500 rounded-full" />,
-  };
-
-  const SLASH_COMMANDS = [
-    { command: '/image', description: 'Generate an image', model: 'imagen-4', icon: <Frame size={14} className="text-orange-600" /> },
-    { command: '/social', description: 'Write a social media post', model: 'gemini-2.5-pro', icon: <div className="w-3.5 h-3.5 bg-purple-500 rounded-full" /> },
-    { command: '/email', description: 'Draft an email', model: 'gemini-2.5-pro', icon: <div className="w-3.5 h-3.5 bg-purple-500 rounded-full" /> },
-    { command: '/fast', description: 'Quick answer', model: 'gemini-2.0-flash', icon: <div className="w-3.5 h-3.5 bg-green-500 rounded-full" /> },
-  ];
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Auto-resize textarea (max 5 rows ≈ 120px)
+  const currentModel = MODELS.find(m => m.value === selectedModel) ?? MODELS[0];
+  const hasContent = input.trim().length > 0;
+  const isImageMode = selectedModel === 'imagen-4';
+
+  // Auto-resize textarea
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
-    }
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   }, [input]);
+
+  // Focus on mount
+  useEffect(() => { textareaRef.current?.focus(); }, []);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!dropdownRef.current?.contains(e.target as Node)) {
+        setShowDropdown(false);
+        setShowAspectDropdown(false);
+        setShowStyleDropdown(false);
+        setShowSlashCommands(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setInput(val);
-
-    // Check if we should show slash commands
     if (val.startsWith('/')) {
       setShowSlashCommands(true);
       setSlashSearch(val.substring(1).toLowerCase());
@@ -76,76 +128,76 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     }
   };
 
-  // Focus on mount
-  useEffect(() => {
-    textareaRef.current?.focus();
-  }, []);
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (showSlashCommands) {
-      if (e.key === 'Escape') {
-        setShowSlashCommands(false);
-        return;
-      }
-      // Extremely basic keyboard support could go here, but omitted for brevity
+    if (showSlashCommands && e.key === 'Escape') {
+      setShowSlashCommands(false);
+      return;
     }
-
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (disabled || !input.trim()) return;
     onSend(input.trim(), selectedModel, aspectRatio, imageStyle);
     setInput('');
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-    }
-  };
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+  }, [disabled, input, selectedModel, aspectRatio, imageStyle, onSend]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       setIsUploading(true);
-      try {
-        await onFileUpload(e.target.files[0]);
-      } finally {
+      try { await onFileUpload(e.target.files[0]); }
+      finally {
         setIsUploading(false);
         if (fileInputRef.current) fileInputRef.current.value = '';
       }
     }
   };
 
-  const hasContent = input.trim().length > 0;
+  const closeAllDropdowns = () => {
+    setShowDropdown(false);
+    setShowAspectDropdown(false);
+    setShowStyleDropdown(false);
+  };
 
   return (
-    <div className="w-full">
-      {/* ── Outer glow wrapper ── */}
+    <div className="w-full" ref={dropdownRef}>
       <div
         className={cn(
+          // Base
           'relative bg-white rounded-2xl',
-          'border border-gray-200',
-          'shadow-[0_2px_12px_rgba(0,0,0,0.06)]',
-          'transition-all duration-200',
-          'focus-within:border-blue-300',
-          'focus-within:shadow-[0_0_0_3px_rgba(59,130,246,0.10),_0_2px_12px_rgba(0,0,0,0.06)]',
+          'border transition-all duration-300',
+          // Shadow layers
+          'shadow-[0_1px_3px_rgba(0,0,0,0.05),_0_4px_16px_rgba(0,0,0,0.06)]',
+          // Idle border
+          !isFocused && 'border-gray-200',
+          // Focus state — blue glow
+          isFocused && [
+            'border-blue-400/70',
+            'shadow-[0_0_0_3px_rgba(59,130,246,0.12),_0_1px_3px_rgba(0,0,0,0.05),_0_4px_16px_rgba(0,0,0,0.06)]',
+          ],
         )}
       >
+        {/* ── Subtle inner gradient top edge (glass feel) ── */}
+        <div className="absolute inset-x-0 top-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
+
         {/* ── Pending file chips ── */}
         {pendingFiles.length > 0 && (
-          <div className="flex flex-wrap gap-2 px-4 pt-3 pb-1.5 border-b border-gray-100">
+          <div className="flex flex-wrap gap-2 px-4 pt-3 pb-2 border-b border-gray-100/80">
             {pendingFiles.map((file) => (
               <div
                 key={file.id}
-                className="flex items-center gap-1.5 bg-blue-50 border border-blue-100 text-blue-700 rounded-lg px-2.5 py-1 text-xs font-medium"
+                className="flex items-center gap-1.5 bg-blue-50 border border-blue-100 text-blue-700 rounded-lg px-2.5 py-1 text-xs font-medium max-w-[160px]"
               >
-                <span className="truncate max-w-[120px]">{file.name}</span>
+                <span className="truncate">{file.name}</span>
                 <button
                   onClick={() => onRemoveFile?.(file.id)}
-                  className="p-0.5 hover:bg-blue-100 rounded-full text-blue-400 hover:text-blue-600 transition-colors"
+                  className="p-0.5 hover:bg-blue-100 rounded-full text-blue-400 hover:text-blue-600 transition-colors flex-shrink-0"
                 >
-                  <X size={11} />
+                  <X size={10} />
                 </button>
               </div>
             ))}
@@ -154,60 +206,57 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 
         {/* ── Slash Commands Dropdown ── */}
         {showSlashCommands && (
-          <div className="absolute left-4 bottom-[calc(100%+8px)] w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-1.5 overflow-hidden z-[60]">
-            <div className="px-3 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100 mb-1">
-              Actions
-            </div>
-            {SLASH_COMMANDS.filter(cmd => cmd.command.includes(slashSearch)).map((cmd) => (
+          <div className="absolute left-3 bottom-[calc(100%+10px)] w-72 bg-white rounded-xl shadow-2xl border border-gray-200/80 py-2 overflow-hidden z-[60]">
+            <p className="px-3 pb-1.5 pt-0.5 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+              Quick Actions
+            </p>
+            <div className="h-px bg-gray-100 mb-1.5" />
+            {SLASH_COMMANDS.filter(c => c.command.includes(slashSearch)).map((cmd) => (
               <button
                 key={cmd.command}
                 type="button"
                 onClick={() => {
-                  setSelectedModel(cmd.model as ModelOption);
-                  const prefix = cmd.command === '/image' ? 'Create an image of ' :
-                    cmd.command === '/social' ? 'Write a social media post about ' :
-                      cmd.command === '/email' ? 'Draft an email regarding ' : '';
-                  setInput(prefix);
+                  setSelectedModel(cmd.model);
+                  setInput(cmd.prefix);
                   setShowSlashCommands(false);
                   textareaRef.current?.focus();
                 }}
-                className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-gray-50 transition-colors"
               >
-                <div className="p-1.5 bg-gray-100 rounded-lg flex-shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                   {cmd.icon}
                 </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-900">{cmd.command}</div>
-                  <div className="text-xs text-gray-500">{cmd.description}</div>
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-gray-900">{cmd.command}</div>
+                  <div className="text-xs text-gray-500 truncate">{cmd.description}</div>
                 </div>
               </button>
             ))}
-            {SLASH_COMMANDS.filter(cmd => cmd.command.includes(slashSearch)).length === 0 && (
-              <div className="px-3 py-3 text-xs text-gray-500 text-center">No matching commands</div>
+            {SLASH_COMMANDS.filter(c => c.command.includes(slashSearch)).length === 0 && (
+              <div className="px-3 py-4 text-xs text-gray-400 text-center">No matching commands</div>
             )}
           </div>
         )}
 
-        {/* ── Main input row ── */}
-        <div className="flex items-end gap-3 px-3.5 py-3">
+        {/* ── Main textarea row ── */}
+        <div className="flex items-end gap-2 px-3 py-3">
 
-          {/* Attach button */}
+          {/* Attach */}
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isUploading}
             title="Attach file"
             className={cn(
-              'flex-shrink-0 p-2.5 rounded-xl transition-all mb-0.5',
-              'text-gray-400 hover:text-gray-600 hover:bg-gray-100',
+              'flex-shrink-0 mb-0.5 w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-150',
+              'text-gray-400 hover:text-gray-600 hover:bg-gray-100 active:scale-95',
               (disabled || isUploading) && 'opacity-40 cursor-not-allowed',
             )}
           >
-            {isUploading ? (
-              <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-            ) : (
-              <Plus size={19} strokeWidth={2} />
-            )}
+            {isUploading
+              ? <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+              : <Plus size={18} strokeWidth={2} />
+            }
           </button>
 
           <input
@@ -225,84 +274,95 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             disabled={disabled}
-            placeholder={placeholder || 'Ask anything'}
+            placeholder={placeholder || (isImageMode ? 'Describe an image to generate…' : 'Ask anything… or type / for commands')}
             className={cn(
-              'flex-1 resize-none bg-transparent ring-0',
-              'text-[15px] text-gray-900 placeholder:text-gray-400',
-              'font-sans leading-relaxed',
-              'min-h-[24px] max-h-[150px] py-1.5',
+              'flex-1 resize-none bg-transparent outline-none ring-0 border-none',
+              'text-[15px] text-gray-900 placeholder:text-gray-400/90',
+              'font-sans leading-relaxed tracking-[0.01em]',
+              'min-h-[26px] max-h-[160px] py-1.5',
               disabled && 'opacity-50 cursor-not-allowed',
             )}
-            style={{ border: 'none', boxShadow: 'none', outline: 'none' }}
+            style={{ boxShadow: 'none' }}
           />
 
-          {/* Right actions */}
-          <div className="flex items-center gap-1 flex-shrink-0 mb-0.5">
-            {/* Mic */}
+          {/* Right actions cluster */}
+          <div className="flex items-center gap-1.5 flex-shrink-0 mb-0.5">
+
+            {/* Mic button */}
             <button
               type="button"
               title="Voice input"
-              className="hidden sm:flex p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+              className="hidden sm:flex w-8 h-8 items-center justify-center rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all active:scale-95"
             >
-              <Mic size={18} />
+              <Mic size={16} />
             </button>
 
-            {/* Settings for Imagen */}
-            {selectedModel === 'imagen-4' && (
+            {/* Imagen options */}
+            {isImageMode && (
               <>
-                {/* Aspect Ratio selector */}
-                <div className="relative mb-0.5 hidden md:block z-40">
+                {/* Aspect ratio pill */}
+                <div className="relative hidden md:block z-40">
                   <button
                     type="button"
-                    onClick={() => { setShowAspectDropdown(!showAspectDropdown); setShowStyleDropdown(false); setShowDropdown(false); }}
+                    onClick={() => { setShowAspectDropdown(v => !v); setShowStyleDropdown(false); setShowDropdown(false); }}
                     className={cn(
-                      "flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all border",
-                      showAspectDropdown ? "bg-orange-50 border-orange-200 text-orange-700" : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300"
+                      'flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold uppercase tracking-wide transition-all duration-150',
+                      showAspectDropdown
+                        ? 'bg-orange-50 border-orange-200 text-orange-700'
+                        : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:border-gray-300 hover:text-gray-700',
                     )}
-                    title="Aspect Ratio"
                   >
-                    <Frame size={13} />
-                    <span className="text-[11px] font-semibold tracking-wide uppercase">{aspectRatio}</span>
+                    <Frame size={12} />
+                    {aspectRatio}
                   </button>
                   {showAspectDropdown && (
-                    <div className="absolute right-0 bottom-[calc(100%+12px)] w-32 bg-white rounded-xl shadow-xl border border-gray-200 py-1 overflow-hidden">
-                      {['1:1', '16:9', '9:16', '4:3', '3:4'].map((ratio) => (
+                    <div className="absolute right-0 bottom-[calc(100%+8px)] w-28 bg-white rounded-xl shadow-xl border border-gray-200 py-1 z-50">
+                      {ASPECT_RATIOS.map((r) => (
                         <button
-                          key={ratio}
-                          onClick={() => { setAspectRatio(ratio); setShowAspectDropdown(false); }}
-                          className={cn('w-full flex items-center px-4 py-2.5 text-left hover:bg-gray-50 transition-colors', aspectRatio === ratio && 'bg-orange-50 text-orange-700 font-medium')}
+                          key={r}
+                          onClick={() => { setAspectRatio(r); setShowAspectDropdown(false); }}
+                          className={cn(
+                            'w-full text-left px-3 py-2 text-xs uppercase tracking-wider transition-colors',
+                            r === aspectRatio ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-gray-600 hover:bg-gray-50',
+                          )}
                         >
-                          <span className="text-xs uppercase tracking-wider">{ratio}</span>
+                          {r}
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
 
-                {/* Style selector */}
-                <div className="relative mb-0.5 hidden md:block z-40">
+                {/* Style pill */}
+                <div className="relative hidden md:block z-40">
                   <button
                     type="button"
-                    onClick={() => { setShowStyleDropdown(!showStyleDropdown); setShowAspectDropdown(false); setShowDropdown(false); }}
+                    onClick={() => { setShowStyleDropdown(v => !v); setShowAspectDropdown(false); setShowDropdown(false); }}
                     className={cn(
-                      "flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all border",
-                      showStyleDropdown ? "bg-orange-50 border-orange-200 text-orange-700" : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300"
+                      'flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold uppercase tracking-wide transition-all duration-150 max-w-[90px]',
+                      showStyleDropdown
+                        ? 'bg-orange-50 border-orange-200 text-orange-700'
+                        : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:border-gray-300 hover:text-gray-700',
                     )}
-                    title="Image Style"
                   >
-                    <Palette size={13} />
-                    <span className="text-[11px] font-semibold tracking-wide uppercase max-w-[80px] truncate">{imageStyle}</span>
+                    <Palette size={12} />
+                    <span className="truncate">{imageStyle}</span>
                   </button>
                   {showStyleDropdown && (
-                    <div className="absolute right-0 bottom-[calc(100%+12px)] w-44 bg-white rounded-xl shadow-xl border border-gray-200 py-1 overflow-hidden">
-                      {['cinematic', 'photorealistic', 'anime', '3d-render', 'sketch'].map((style) => (
+                    <div className="absolute right-0 bottom-[calc(100%+8px)] w-40 bg-white rounded-xl shadow-xl border border-gray-200 py-1 z-50">
+                      {IMAGE_STYLES.map((s) => (
                         <button
-                          key={style}
-                          onClick={() => { setImageStyle(style); setShowStyleDropdown(false); }}
-                          className={cn('w-full flex items-center px-4 py-2.5 text-left hover:bg-gray-50 transition-colors', imageStyle === style && 'bg-orange-50 text-orange-700 font-medium')}
+                          key={s}
+                          onClick={() => { setImageStyle(s); setShowStyleDropdown(false); }}
+                          className={cn(
+                            'w-full text-left px-3 py-2 text-xs uppercase tracking-wider transition-colors',
+                            s === imageStyle ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-gray-600 hover:bg-gray-50',
+                          )}
                         >
-                          <span className="text-xs uppercase tracking-wider">{style.replace('-', ' ')}</span>
+                          {s.replace('-', ' ')}
                         </button>
                       ))}
                     </div>
@@ -311,68 +371,106 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               </>
             )}
 
-            {/* Model selector */}
-            <div className="relative mb-0.5 z-40">
+            {/* Model selector pill */}
+            <div className="relative z-40">
               <button
                 type="button"
-                onClick={() => { setShowDropdown(!showDropdown); setShowAspectDropdown(false); setShowStyleDropdown(false); }}
+                onClick={() => { setShowDropdown(v => !v); closeAllDropdowns(); setShowDropdown(v => !v); }}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all border",
+                  'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all duration-150',
                   showDropdown
-                    ? "bg-blue-50 border-blue-200 text-blue-700"
-                    : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300"
+                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:border-gray-300 hover:text-gray-700',
                 )}
-                title="Select model"
               >
-                {MODEL_ICONS[selectedModel]}
-                <span className="text-[11px] font-semibold tracking-wide uppercase hidden sm:block">
-                  {selectedModel === 'auto' ? 'Auto' : selectedModel.replace(/-/g, ' ')}
-                </span>
+                {/* Colored dot indicator */}
+                <span className={cn('w-2 h-2 rounded-full flex-shrink-0', currentModel.color)} />
+                <span className="hidden sm:block">{currentModel.short}</span>
+                <ChevronDown size={11} className={cn('transition-transform duration-200 flex-shrink-0', showDropdown && 'rotate-180')} />
               </button>
+
               {showDropdown && (
-                <div className="absolute right-0 bottom-[calc(100%+12px)] w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-1 overflow-hidden z-50">
-                  {Object.entries(MODEL_ICONS).map(([model, icon]) => (
+                <div className="absolute right-0 bottom-[calc(100%+8px)] w-52 bg-white rounded-xl shadow-2xl border border-gray-200/80 py-1.5 z-50 overflow-hidden">
+                  <div className="px-3 pb-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                    Model
+                  </div>
+                  <div className="h-px bg-gray-100 mb-1" />
+                  {MODELS.map((m) => (
                     <button
-                      key={model}
-                      onClick={() => {
-                        setSelectedModel(model as ModelOption);
-                        setShowDropdown(false);
-                      }}
+                      key={m.value}
+                      onClick={() => { setSelectedModel(m.value); setShowDropdown(false); }}
                       className={cn(
-                        'w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50 transition-colors',
-                        selectedModel === model && 'bg-blue-50/50 text-blue-700 font-medium'
+                        'w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors',
+                        selectedModel === m.value
+                          ? 'bg-blue-50/70 text-blue-700'
+                          : 'text-gray-700 hover:bg-gray-50',
                       )}
                     >
-                      {icon}
-                      <span className="text-xs uppercase tracking-wider">{model === 'auto' ? 'Auto' : model.replace(/-/g, ' ')}</span>
+                      <span className={cn('w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-white', m.color)}>
+                        {m.icon}
+                      </span>
+                      <div>
+                        <div className={cn('text-xs font-semibold', selectedModel === m.value ? 'text-blue-700' : 'text-gray-800')}>
+                          {m.label}
+                        </div>
+                      </div>
+                      {selectedModel === m.value && (
+                        <span className="ml-auto text-[10px] font-semibold text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-md">
+                          ON
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Send */}
+            {/* Send button */}
             <button
               onClick={handleSubmit}
               disabled={disabled || !hasContent}
-              title="Send message"
+              title="Send  (Enter)"
               className={cn(
-                'w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200',
+                'relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0',
                 hasContent && !disabled
                   ? [
-                    'bg-blue-600 hover:bg-blue-700 text-white',
-                    'shadow-[0_2px_8px_rgba(59,130,246,0.4)]',
-                    'active:scale-[0.93]',
+                    'bg-blue-600 text-white',
+                    'shadow-[0_2px_12px_rgba(59,130,246,0.45)]',
+                    'hover:bg-blue-700 hover:shadow-[0_4px_18px_rgba(59,130,246,0.5)]',
+                    'active:scale-[0.91] active:shadow-none',
                   ]
                   : 'bg-gray-100 text-gray-300 cursor-not-allowed',
               )}
             >
-              <ArrowUp size={18} strokeWidth={2.5} />
+              <ArrowUp size={17} strokeWidth={2.5} />
+              {/* Pulse ring when active */}
+              {hasContent && !disabled && (
+                <span className="absolute inset-0 rounded-xl animate-ping bg-blue-400/20 pointer-events-none" />
+              )}
             </button>
           </div>
         </div>
-      </div>
 
+        {/* ── Footer hint bar ── */}
+        <div className={cn(
+          'flex items-center justify-between px-4 pb-2.5 transition-all duration-300',
+          isFocused || hasContent ? 'opacity-100' : 'opacity-0',
+        )}>
+          <span className="text-[10px] text-gray-400 select-none">
+            <kbd className="px-1 py-0.5 rounded bg-gray-100 text-[10px] font-mono text-gray-500">Enter</kbd>
+            {' '}to send  ·
+            <kbd className="px-1 py-0.5 rounded bg-gray-100 text-[10px] font-mono text-gray-500 mx-1">Shift+Enter</kbd>
+            for newline  ·  type
+            <kbd className="px-1 py-0.5 rounded bg-gray-100 text-[10px] font-mono text-gray-500 mx-1">/</kbd>
+            for commands
+          </span>
+          {input.length > 200 && (
+            <span className={cn('text-[10px] tabular-nums', input.length > 4000 ? 'text-red-400' : 'text-gray-300')}>
+              {input.length} / 4000
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
