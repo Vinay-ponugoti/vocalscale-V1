@@ -254,8 +254,6 @@ export const PromptInput: React.FC<PromptInputProps> = ({
           'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl',
           'shadow-[0_2px_20px_rgba(0,0,0,0.06)]',
           'transition-all duration-200',
-          'focus-within:border-zinc-300 dark:focus-within:border-zinc-600',
-          'focus-within:shadow-[0_2px_24px_rgba(0,0,0,0.10)]',
         )}
         onClick={() => textareaRef.current?.focus()}
       >
