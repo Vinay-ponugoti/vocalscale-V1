@@ -112,9 +112,6 @@ HIPAA requires notification within 60 days, though state laws often require fast
   {
     id: "1740161600000",
     title: "5 AI Receptionist Trends Transforming Small Business in 2025",
-  {
-    id: "1740161600000",
-    title: "5 AI Receptionist Trends Transforming Small Business in 2025",
     slug: "ai-receptionist-trends-2025-small-business",
     excerpt: "Discover the 5 game-changing AI receptionist trends for 2025. Learn how small businesses are cutting costs by 70% while improving customer satisfaction with 24/7 automated call handling.",
     content: `<p>In 2025, <strong>85% of customer service leaders are actively exploring or piloting conversational AI</strong> according to recent Gartner research. For small business owners, this represents more than a technological shift—it's a fundamental transformation in how customer communications are handled.</p>
@@ -318,7 +315,7 @@ HIPAA requires notification within 60 days, though state laws often require fast
     date: "2026-02-22",
     readTime: "5 min read",
     tags: ["New", "Update"],
-    image: "images/blog/small-business-ai-receptionist-signs.jpg ",
+    image: "images/blog/small-business-ai-receptionist-signs.jpg",
     featured: false
   }
 ];
