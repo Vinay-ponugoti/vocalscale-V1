@@ -112,7 +112,7 @@ export function useChat(sessionId: string | null) {
   /**
    * Send a message and handle full streaming response including images + captions
    */
-  const sendMessage = useCallback(async (content: string, model: ModelOption = 'auto'): Promise<string | null> => {
+  const sendMessage = useCallback(async (content: string, model: ModelOption = 'auto', aspectRatio?: string, imageStyle?: string): Promise<string | null> => {
     if (!content.trim()) return null;
 
     try {
@@ -137,9 +137,10 @@ export function useChat(sessionId: string | null) {
       let fullResponse = '';
       let returnedSessionId: string | null = null;
       let receivedImages: GeneratedImage[] = [];
-      let receivedGenerationId: string | undefined;
+      let receivedGenerationId: string | undefined = undefined;
       let receivedPresets: Record<string, string> = {};
       let receivedSocialContent: SocialContent | null = null;
+      let receivedSuggestedQuestions: string[] | undefined = undefined;
 
       await chatApi.sendMessageStream(
         {
@@ -148,6 +149,8 @@ export function useChat(sessionId: string | null) {
           attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
           business_context: businessContext,
           model: model,
+          aspect_ratio: aspectRatio,
+          image_style: imageStyle,
         },
         // onChunk
         (chunk) => {
@@ -157,6 +160,7 @@ export function useChat(sessionId: string | null) {
         // onDone
         (data) => {
           returnedSessionId = data.session_id || null;
+          receivedSuggestedQuestions = data.suggested_questions;
         },
         // onError
         (err) => { throw err; },
@@ -191,6 +195,7 @@ export function useChat(sessionId: string | null) {
         generation_id: receivedGenerationId,
         available_presets: Object.keys(receivedPresets).length > 0 ? receivedPresets : undefined,
         social_content: receivedSocialContent,
+        suggested_questions: receivedSuggestedQuestions,
       };
 
       console.log(`[useChat] assistantMessage built. id: ${assistantMessage.id}, has images: ${!!assistantMessage.images}, count: ${assistantMessage.images?.length ?? 0}`);

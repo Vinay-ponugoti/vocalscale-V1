@@ -67,9 +67,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
     }
   };
 
-  const handleSendMessage = async (content: string, model?: ModelOption) => {
+  const handleSendMessage = async (content: string, model?: ModelOption, aspectRatio?: string, imageStyle?: string) => {
     if (isAppLoading) return;
-    const newId = await activeSendMessage(content, model || 'auto');
+    const newId = await activeSendMessage(content, model || 'auto', aspectRatio, imageStyle);
     if (newId && onSessionCreate) {
       onSessionCreate(newId);
     }
@@ -113,6 +113,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
             messages={messages}
             isStreaming={isStreaming}
             streamingContent={streamingContent}
+            onSuggestionClick={handleSendMessage}
           />
         )}
       </div>

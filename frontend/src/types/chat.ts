@@ -39,6 +39,9 @@ export interface ChatMessage {
 
   // Persisted from Supabase — mapped back to `images` + `social_content` on load
   image_data?: GeneratedImage[];
+
+  // Suggestions for next turn
+  suggested_questions?: string[];
 }
 
 // ─── Supporting Types ─────────────────────────────────────────────────────────
@@ -91,6 +94,8 @@ export interface ChatRequest {
   skill_id?: string | null;
   business_context?: BusinessContext;
   model?: ModelOption;
+  aspect_ratio?: string;
+  image_style?: string;
 }
 
 export type ModelOption = 'auto' | 'gemini-2.0-flash' | 'gemini-2.5-pro' | 'imagen-4';
@@ -120,6 +125,7 @@ export interface DoneEvent {
   sources: Source[];
   intent?: string;
   skill_used?: string;
+  suggested_questions?: string[];
 }
 
 export interface ErrorEvent {
@@ -132,4 +138,5 @@ export interface ImageReadyEvent {
   enhanced_prompt: string;
   available_presets: Record<string, string>;
   social_content?: SocialContent | null;
+  suggested_questions?: string[];
 }
