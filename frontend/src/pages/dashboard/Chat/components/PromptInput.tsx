@@ -254,7 +254,8 @@ export const PromptInput: React.FC<PromptInputProps> = ({
           'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl',
           'shadow-[0_2px_20px_rgba(0,0,0,0.06)]',
           'transition-all duration-200',
-          '!focus-within:ring-0 !focus-within:outline-none !focus:outline-none',
+          'focus-within:ring-0 focus-within:outline-none',
+          'focus:outline-none focus:ring-0',
         )}
         onClick={() => textareaRef.current?.focus()}
       >
@@ -292,15 +293,15 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             || (isImageMode ? 'Describe an image…' : 'Ask anything… or type / for commands')
           }
           className={cn(
-            'w-full resize-none bg-transparent border-none outline-none ring-0',
-            '!focus:outline-none !focus:ring-0 !focus-visible:outline-none !focus-visible:ring-0',
+            'w-full resize-none bg-transparent',
+            '!outline-none !ring-0 !border-none focus:!outline-none focus:!ring-0 focus:!border-none focus-visible:!outline-none focus-visible:!ring-0',
             'min-h-[44px] max-h-[200px]',
             'px-4 pt-3 pb-2',
             'text-[15px] leading-[1.5] text-zinc-900 dark:text-zinc-100',
             'placeholder:text-zinc-400 dark:placeholder:text-zinc-500',
             disabled && 'opacity-50 cursor-not-allowed',
           )}
-          style={{ boxShadow: 'none' }}
+          style={{ boxShadow: 'none', outline: 'none', border: 'none' }}
         />
 
         <input
