@@ -8,7 +8,7 @@ import { X, Plus, Mic, ArrowUp, ChevronDown } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import type { FileAttachment } from '../../../../types/chat';
 
-type ModelOption = 'auto' | 'gemini-2.0-flash' | 'gemini-2.5-pro' | 'imagen-4';
+import type { ModelOption } from '../../../../types/chat';
 
 interface PromptInputProps {
   onSend: (content: string, model: ModelOption) => void;
@@ -32,7 +32,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   const [selectedModel, setSelectedModel] = useState<ModelOption>('auto');
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const MODEL_ICONS: Record<ModelOption, JSX.Element> = {
+  const MODEL_ICONS: Record<ModelOption, React.ReactNode> = {
     'auto': <div className="w-4 h-4 bg-blue-500 rounded-full" />,
     'gemini-2.0-flash': <div className="w-4 h-4 bg-green-500 rounded-full" />,
     'gemini-2.5-pro': <div className="w-4 h-4 bg-purple-500 rounded-full" />,
@@ -219,10 +219,10 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                 'w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150',
                 hasContent && !disabled
                   ? [
-                      'bg-blue-600 hover:bg-blue-700 text-white',
-                      'shadow-[0_2px_8px_rgba(59,130,246,0.4)]',
-                      'active:scale-[0.93]',
-                    ]
+                    'bg-blue-600 hover:bg-blue-700 text-white',
+                    'shadow-[0_2px_8px_rgba(59,130,246,0.4)]',
+                    'active:scale-[0.93]',
+                  ]
                   : 'bg-gray-100 text-gray-300 cursor-not-allowed',
               )}
             >

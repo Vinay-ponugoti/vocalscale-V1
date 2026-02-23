@@ -12,6 +12,7 @@ import type {
   BusinessContext,
   GeneratedImage,
   SocialContent,
+  ModelOption,
 } from '../types/chat';
 import { useAuth } from '../context/AuthContext';
 import { useBusinessSetup } from '../context/BusinessSetupContext';
@@ -111,7 +112,7 @@ export function useChat(sessionId: string | null) {
   /**
    * Send a message and handle full streaming response including images + captions
    */
-  const sendMessage = useCallback(async (content: string): Promise<string | null> => {
+  const sendMessage = useCallback(async (content: string, model: ModelOption = 'auto'): Promise<string | null> => {
     if (!content.trim()) return null;
 
     try {
@@ -146,7 +147,7 @@ export function useChat(sessionId: string | null) {
           session_id: sessionId || undefined,
           attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
           business_context: businessContext,
-          model: selectedModel,
+          model: model,
         },
         // onChunk
         (chunk) => {
