@@ -4,12 +4,14 @@
  */
 
 import React, { useRef, useState, useEffect } from 'react';
-import { X, Plus, Mic, ArrowUp } from 'lucide-react';
+import { X, Plus, Mic, ArrowUp, ChevronDown } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import type { FileAttachment } from '../../../../types/chat';
 
+type ModelOption = 'auto' | 'gemini-2.0-flash' | 'gemini-2.5-pro' | 'imagen-4';
+
 interface PromptInputProps {
-  onSend: (content: string) => void;
+  onSend: (content: string, model: ModelOption) => void;
   onFileUpload: (file: File) => Promise<FileAttachment | null>;
   disabled?: boolean;
   pendingFiles?: FileAttachment[];
@@ -27,6 +29,15 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 }) => {
   const [input, setInput] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<ModelOption>('auto');
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const MODEL_ICONS: Record<ModelOption, JSX.Element> = {
+    'auto': <div className="w-4 h-4 bg-blue-500 rounded-full" />,
+    'gemini-2.0-flash': <div className="w-4 h-4 bg-green-500 rounded-full" />,
+    'gemini-2.5-pro': <div className="w-4 h-4 bg-purple-500 rounded-full" />,
+    'imagen-4': <div className="w-4 h-4 bg-orange-500 rounded-full" />,
+  };
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,7 +63,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 
   const handleSubmit = () => {
     if (disabled || !input.trim()) return;
-    onSend(input.trim());
+    onSend(input.trim(), selectedModel);
     setInput('');
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -165,6 +176,39 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             >
               <Mic size={18} />
             </button>
+
+            {/* Model selector */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center gap-1 p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+                title="Select model"
+              >
+                <span className="text-xs font-medium">{selectedModel}</span>
+                <ChevronDown size={14} />
+              </button>
+              {showDropdown && (
+                <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-xl shadow-lg border border-gray-200">
+                  {Object.entries(MODEL_ICONS).map(([model, icon]) => (
+                    <button
+                      key={model}
+                      onClick={() => {
+                        setSelectedModel(model as ModelOption);
+                        setShowDropdown(false);
+                      }}
+                      className={cn(
+                        'w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors',
+                        selectedModel === model && 'bg-blue-50 text-blue-600'
+                      )}
+                    >
+                      {icon}
+                      <span className="text-sm font-medium">{model}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Send */}
             <button

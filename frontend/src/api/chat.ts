@@ -12,6 +12,7 @@ import type {
   GeneratedImage,
   DoneEvent,
   SocialContent,
+  ModelOption,
 } from '../types/chat';
 
 const KNOWLEDGE_URL = env.KNOWLEDGE_API_URL;
@@ -45,7 +46,7 @@ class ChatAPI {
    * Handles text chunks, done events, image status, and image ready events.
    */
   async sendMessageStream(
-    request: ChatRequest,
+    request: ChatRequest & { model?: ModelOption },
     onChunk: (text: string) => void,
     onDone: (data: DoneEvent) => void,
     onError: (error: Error) => void,
