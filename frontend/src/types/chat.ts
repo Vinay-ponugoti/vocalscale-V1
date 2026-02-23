@@ -90,7 +90,10 @@ export interface ChatRequest {
   attachments?: string[];
   skill_id?: string | null;
   business_context?: BusinessContext;
+  model?: ModelOption;
 }
+
+export type ModelOption = 'auto' | 'gemini-2.0-flash' | 'gemini-2.5-pro' | 'imagen-4';
 
 export interface SessionsResponse {
   sessions: ChatSession[];

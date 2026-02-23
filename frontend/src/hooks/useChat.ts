@@ -146,6 +146,7 @@ export function useChat(sessionId: string | null) {
           session_id: sessionId || undefined,
           attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
           business_context: businessContext,
+          model: selectedModel,
         },
         // onChunk
         (chunk) => {

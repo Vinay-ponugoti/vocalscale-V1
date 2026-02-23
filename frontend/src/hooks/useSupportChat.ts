@@ -64,6 +64,18 @@ export function useSupportChat(): UseSupportChatReturn {
   // Refs
   const initialized = useRef(false);
   const restoringSession = useRef(false);
+  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
+  const messagesRef = useRef<TicketMessage[]>([]);
+  const ticketRef = useRef<Ticket | null>(null);
+
+  // Keep refs in sync
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+  
+  useEffect(() => {
+    ticketRef.current = ticket;
+  }, [ticket]);
 
   /**
    * Initialize: Load quick actions and restore session if exists
@@ -79,6 +91,54 @@ export function useSupportChat(): UseSupportChatReturn {
       restoreSession();
     }
   }, [isOpen]);
+
+  /**
+   * Start/stop polling based on widget open state and ticket
+   */
+  useEffect(() => {
+    if (isOpen && ticketRef.current?.id) {
+      startPolling();
+    } else {
+      stopPolling();
+    }
+    
+    return () => {
+      stopPolling();
+    };
+  }, [isOpen, ticket?.id]);
+
+  /**
+   * Start polling for new messages (to catch admin replies)
+   */
+  const startPolling = useCallback(() => {
+    if (pollingInterval.current) return;
+    
+    pollingInterval.current = setInterval(async () => {
+      const currentTicket = ticketRef.current;
+      if (!currentTicket?.id) return;
+      
+      try {
+        const result = await supportApi.getTicketMessages(currentTicket.id);
+        // Check if there are new messages using ref
+        if (result.messages.length > messagesRef.current.length) {
+          setMessages(result.messages);
+          setTicket(result.ticket);
+        }
+      } catch (err) {
+        console.error('Polling error:', err);
+      }
+    }, 3000); // Poll every 3 seconds for faster admin replies
+  }, []);
+
+  /**
+   * Stop polling
+   */
+  const stopPolling = useCallback(() => {
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+      pollingInterval.current = null;
+    }
+  }, []);
 
   /**
    * Show quick actions only for new conversations

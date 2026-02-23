@@ -6,6 +6,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { MessageList } from './MessageList';
 import { PromptInput } from './PromptInput';
+import type { ModelOption } from './PromptInput';
 import EmptyState from './EmptyState';
 import { useChat } from '../../../../hooks/useChat';
 import { useAuth } from '../../../../context/AuthContext';
@@ -37,6 +38,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<ModelOption>('auto');
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -68,7 +70,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
 
   const handleSendMessage = async (content: string) => {
     if (isAppLoading) return;
-    const newId = await activeSendMessage(content);
+    const newId = await activeSendMessage(content, selectedModel);
     if (newId && onSessionCreate) {
       onSessionCreate(newId);
     }
@@ -152,6 +154,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
           )}
           <PromptInput
             onSend={handleSendMessage}
+            selectedModel={selectedModel}
             onFileUpload={uploadFile}
             disabled={isStreaming || isAppLoading}
             pendingFiles={pendingFiles}
