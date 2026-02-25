@@ -32,12 +32,14 @@ const Settings = () => {
 
   const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
     voice_id: '',
+    model_name: '',
     speaking_speed: 1.0,
     conversation_tone: 'friendly',
     custom_greeting: '',
     after_hours_greeting: '',
     language: 'en-US',
-    is_active: true
+    is_active: true,
+    sync_google_calendar: true
   });
 
   const [availableVoices, setAvailableVoices] = useState<Voice[]>([]);
@@ -85,12 +87,14 @@ const Settings = () => {
         setVoiceSettings({
           id: voiceSettingsResp.id,
           voice_id: voiceSettingsResp.voice_id || '',
+          model_name: voiceSettingsResp.model_name || '',
           speaking_speed: voiceSettingsResp.speaking_speed || 1.0,
           conversation_tone: voiceSettingsResp.conversation_tone || 'friendly',
           custom_greeting: voiceSettingsResp.custom_greeting || '',
           after_hours_greeting: voiceSettingsResp.after_hours_greeting || '',
           language: voiceSettingsResp.language || 'en-US',
-          is_active: voiceSettingsResp.is_active !== undefined ? voiceSettingsResp.is_active : true
+          is_active: voiceSettingsResp.is_active !== undefined ? voiceSettingsResp.is_active : true,
+          sync_google_calendar: voiceSettingsResp.sync_google_calendar !== undefined ? voiceSettingsResp.sync_google_calendar : true
         });
       }
 
@@ -173,12 +177,14 @@ const Settings = () => {
       if (unsavedChangesRef.current.voiceSettings) {
         const voiceUpdates = {
           voice_id: voiceSettings.voice_id,
+          model_name: voiceSettings.model_name,
           speaking_speed: voiceSettings.speaking_speed,
           conversation_tone: voiceSettings.conversation_tone,
           custom_greeting: voiceSettings.custom_greeting,
           after_hours_greeting: voiceSettings.after_hours_greeting,
           language: voiceSettings.language,
-          is_active: voiceSettings.is_active
+          is_active: voiceSettings.is_active,
+          sync_google_calendar: voiceSettings.sync_google_calendar
         };
         await api.updateVoiceSettings(voiceUpdates);
       }

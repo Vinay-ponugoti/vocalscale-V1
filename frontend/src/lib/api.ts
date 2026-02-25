@@ -935,20 +935,28 @@ export const api = {
   async updateVoiceSettings(updates: Record<string, unknown>) {
     // Sanitize updates (basic validation)
     const sanitized: Record<string, unknown> = {};
-    const allowedFields = ['pitch', 'speed', 'volume', 'default_voice_id'];
+    const allowedFields = [
+      'voice_id', 'model_name', 'speaking_speed', 'conversation_tone',
+      'custom_greeting', 'after_hours_greeting', 'language', 'is_active',
+      'sync_google_calendar'
+    ];
 
     for (const [key, value] of Object.entries(updates)) {
       if (!allowedFields.includes(key)) continue;
 
       if (typeof value === 'number') {
-        // Clamp numeric values
-        if (key === 'pitch' || key === 'speed' || key === 'volume') {
-          sanitized[key] = Math.max(0, Math.min(2, value));
+        // Clamp speaking_speed to reasonable range
+        if (key === 'speaking_speed') {
+          sanitized[key] = Math.max(0.5, Math.min(2, value));
         } else {
           sanitized[key] = value;
         }
       } else if (typeof value === 'string') {
-        sanitized[key] = sanitizeString(value, 100);
+        // Allow longer content for greetings
+        const maxLen = (key === 'custom_greeting' || key === 'after_hours_greeting') ? 500 : 100;
+        sanitized[key] = sanitizeString(value, maxLen);
+      } else if (typeof value === 'boolean') {
+        sanitized[key] = value;
       }
     }
 

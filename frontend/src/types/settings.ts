@@ -21,6 +21,7 @@ export interface VoiceSettings {
   after_hours_greeting: string;
   language: string;
   is_active: boolean;
+  sync_google_calendar?: boolean;
 }
 
 export interface NotificationSettings {
