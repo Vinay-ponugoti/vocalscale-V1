@@ -45,14 +45,20 @@ export const OrdersTable = ({
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {loading ? (
-                            <tr>
-                                <td colSpan={7} className="px-6 py-16 text-center">
-                                    <div className="flex items-center justify-center gap-2">
-                                        <RefreshCw size={16} className="animate-spin text-slate-300" />
-                                        <span className="text-sm text-slate-400">Loading orders...</span>
-                                    </div>
-                                </td>
-                            </tr>
+                            [...Array(6)].map((_, i) => (
+                                <tr key={i}>
+                                    <td className="px-6 py-4"><div className="w-16 h-4 bg-slate-100 rounded animate-pulse" /></td>
+                                    <td className="px-6 py-4">
+                                        <div className="w-24 h-4 bg-slate-100 rounded animate-pulse mb-1" />
+                                        <div className="w-20 h-3 bg-slate-50 rounded animate-pulse" />
+                                    </td>
+                                    <td className="px-6 py-4"><div className="w-28 h-4 bg-slate-100 rounded animate-pulse" /></td>
+                                    <td className="px-6 py-4 text-right"><div className="w-14 h-4 bg-slate-100 rounded animate-pulse ml-auto" /></td>
+                                    <td className="px-6 py-4 hidden md:table-cell"><div className="w-20 h-4 bg-slate-100 rounded animate-pulse" /></td>
+                                    <td className="px-6 py-4"><div className="w-16 h-5 bg-slate-100 rounded-full animate-pulse" /></td>
+                                    <td className="px-6 py-4"><div className="w-6 h-6 bg-slate-50 rounded animate-pulse" /></td>
+                                </tr>
+                            ))
                         ) : orders.length === 0 ? (
                             <tr>
                                 <td colSpan={7} className="px-6 py-16 text-center">

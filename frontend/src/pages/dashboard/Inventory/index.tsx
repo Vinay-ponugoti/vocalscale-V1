@@ -36,31 +36,17 @@ import {
     RefreshCw,
     Brain,
 } from 'lucide-react';
-import { businessSetupAPI } from '../../../api/businessSetup';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
+import { useInventory, type InventoryItem } from '../../../hooks/useInventory';
 import { m, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
-
-interface InventoryItem {
-    id: string;
-    name: string;
-    brand: string;
-    category: string;
-    sub_category: string;
-    price: number;
-    stock_status: string;
-    sku: string;
-    size: string;
-    details: Record<string, unknown>;
-}
 
 type SortField = 'name' | 'price' | 'stock_status' | 'sub_category';
 type SortDirection = 'asc' | 'desc';
 
 const Inventory = () => {
-    const [items, setItems] = useState<InventoryItem[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [showUpload, setShowUpload] = useState(false);
 
     // Sort state
@@ -70,7 +56,6 @@ const Inventory = () => {
     // Edit state
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<Partial<InventoryItem>>({});
-    const [saving, setSaving] = useState(false);
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -78,58 +63,29 @@ const Inventory = () => {
 
     // Delete state
     const [deletingId, setDeletingId] = useState<string | null>(null);
-    const [deleting, setDeleting] = useState(false);
 
-    // Knowledge files state
-    const [knowledgeFiles, setKnowledgeFiles] = useState<Array<{
-        id: string;
-        filename: string;
-        status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-        upload_timestamp: string;
-        size_bytes?: number;
-        error?: string;
-    }>>([]);
-    const [knowledgeLoading, setKnowledgeLoading] = useState(false);
+    // Knowledge file delete confirm state
     const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
 
-    const fetchInventory = async () => {
-        setLoading(true);
-        try {
-            const res = await businessSetupAPI.getInventory();
-            setItems(res.items || []);
-        } catch (error) {
-            console.error("Failed to load inventory", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // React Query hook — cached data, instant on revisit
+    const {
+        items,
+        inventoryLoading: loading,
+        knowledgeFiles,
+        knowledgeLoading,
+        updateItem,
+        updatingItem: saving,
+        deleteItem,
+        deletingItem: deleting,
+        deleteKnowledgeFile,
+        refetchInventory,
+    } = useInventory();
 
-    const fetchKnowledgeFiles = async () => {
-        setKnowledgeLoading(true);
-        try {
-            const files = await businessSetupAPI.getKnowledgeFiles();
-            setKnowledgeFiles(files);
-        } catch (error) {
-            console.error("Failed to load knowledge files", error);
-        } finally {
-            setKnowledgeLoading(false);
-        }
-    };
-
-    const deleteKnowledgeFile = async (fileId: string) => {
-        try {
-            await businessSetupAPI.deleteKnowledgeFile(fileId);
-            setKnowledgeFiles(prev => prev.filter(f => f.id !== fileId));
-            setDeletingFileId(null);
-        } catch (error) {
-            console.error("Failed to delete knowledge file", error);
-        }
-    };
-
+    // Debounced search — 300ms delay
     useEffect(() => {
-        fetchInventory();
-        fetchKnowledgeFiles();
-    }, []);
+        const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     const { state } = useBusinessSetup();
     const businessCategory = state.data.business.category || 'other';
@@ -164,30 +120,31 @@ const Inventory = () => {
 
     const saveEdit = async () => {
         if (!editingId) return;
-        setSaving(true);
         try {
-            const res = await businessSetupAPI.updateInventoryItem(editingId, editForm);
-            setItems(prev => prev.map(i => i.id === editingId ? { ...i, ...res.item } : i));
+            await updateItem(editingId, editForm);
             setEditingId(null);
             setEditForm({});
         } catch (error) {
             console.error('Failed to update item', error);
-        } finally {
-            setSaving(false);
         }
     };
 
     // ---------- Delete handlers ----------
-    const deleteItem = async (id: string) => {
-        setDeleting(true);
+    const handleDeleteItem = async (id: string) => {
         try {
-            await businessSetupAPI.deleteInventoryItem(id);
-            setItems(prev => prev.filter(i => i.id !== id));
+            await deleteItem(id);
             setDeletingId(null);
         } catch (error) {
             console.error('Failed to delete item', error);
-        } finally {
-            setDeleting(false);
+        }
+    };
+
+    const handleDeleteKnowledgeFile = async (fileId: string) => {
+        try {
+            await deleteKnowledgeFile(fileId);
+            setDeletingFileId(null);
+        } catch (error) {
+            console.error('Failed to delete knowledge file', error);
         }
     };
 
@@ -211,9 +168,9 @@ const Inventory = () => {
     // ---------- Computed data ----------
     const filteredItems = useMemo(() => {
         const result = items.filter(item =>
-            item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.sub_category?.toLowerCase().includes(searchQuery.toLowerCase())
+            item.name?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            item.brand?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            item.sub_category?.toLowerCase().includes(debouncedSearch.toLowerCase())
         );
 
         result.sort((a, b) => {
@@ -233,12 +190,12 @@ const Inventory = () => {
         });
 
         return result;
-    }, [items, searchQuery, sortField, sortDirection]);
+    }, [items, debouncedSearch, sortField, sortDirection]);
 
     // Reset to page 1 when search or sort changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchQuery, sortField, sortDirection]);
+    }, [debouncedSearch, sortField, sortDirection]);
 
     // Paginated items
     const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage));
@@ -293,15 +250,24 @@ const Inventory = () => {
                             <p className="text-xs text-slate-500 mb-4">Upload spreadsheets for inventory, or PDFs/docs/images to train your AI agent.</p>
                             <InventoryUpload onUploadSuccess={() => {
                                 setShowUpload(false);
-                                fetchInventory();
-                                fetchKnowledgeFiles();
+                                refetchInventory();
                             }} />
                         </m.div>
                     )}
                 </AnimatePresence>
 
-                {/* Stats Cards */}
-                {items.length > 0 && (
+                {/* Stats Cards — skeleton while loading */}
+                {loading && items.length === 0 ? (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {[...Array(4)].map((_, i) => (
+                            <div key={i} className="bg-white border border-slate-200 rounded-xl p-4">
+                                <div className="w-8 h-8 rounded-lg bg-slate-100 animate-pulse mb-2" />
+                                <div className="w-16 h-7 bg-slate-100 rounded animate-pulse mb-1" />
+                                <div className="w-20 h-3 bg-slate-100 rounded animate-pulse" />
+                            </div>
+                        ))}
+                    </div>
+                ) : items.length > 0 ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="bg-white border border-slate-200 rounded-xl p-4">
                             <div className="flex items-center gap-2 mb-2">
@@ -340,7 +306,7 @@ const Inventory = () => {
                             <p className="text-xs text-slate-500 font-medium mt-0.5">Total Value</p>
                         </div>
                     </div>
-                )}
+                ) : null}
 
                 {/* Search */}
                 {items.length > 0 && (
@@ -366,10 +332,36 @@ const Inventory = () => {
 
                 {/* Inventory Table */}
                 <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-                    {loading ? (
-                        <div className="p-16 text-center">
-                            <div className="w-10 h-10 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-3" />
-                            <p className="text-slate-400 text-sm">Loading inventory...</p>
+                    {loading && items.length === 0 ? (
+                        /* Skeleton table rows */
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-slate-50/80 border-b border-slate-200">
+                                    <tr>
+                                        <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Product</th>
+                                        <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Category</th>
+                                        <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Price</th>
+                                        <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Stock</th>
+                                        <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Details</th>
+                                        <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {[...Array(8)].map((_, i) => (
+                                        <tr key={i}>
+                                            <td className="px-6 py-4">
+                                                <div className="w-32 h-4 bg-slate-100 rounded animate-pulse mb-1" />
+                                                <div className="w-20 h-3 bg-slate-50 rounded animate-pulse" />
+                                            </td>
+                                            <td className="px-6 py-4"><div className="w-20 h-4 bg-slate-100 rounded animate-pulse" /></td>
+                                            <td className="px-6 py-4"><div className="w-14 h-4 bg-slate-100 rounded animate-pulse" /></td>
+                                            <td className="px-6 py-4"><div className="w-16 h-5 bg-slate-100 rounded-full animate-pulse" /></td>
+                                            <td className="px-6 py-4"><div className="w-24 h-4 bg-slate-50 rounded animate-pulse" /></td>
+                                            <td className="px-6 py-4"><div className="w-12 h-4 bg-slate-50 rounded animate-pulse ml-auto" /></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     ) : items.length === 0 ? (
                         <div className="p-16 text-center">
@@ -485,7 +477,7 @@ const Inventory = () => {
                                                                 <option value="unknown">Unknown</option>
                                                             </select>
                                                         </td>
-                                                        <td className="px-6 py-3 text-xs text-slate-400">—</td>
+                                                        <td className="px-6 py-3 text-xs text-slate-400">&mdash;</td>
                                                         <td className="px-6 py-3 text-right">
                                                             <div className="flex items-center justify-end gap-1">
                                                                 <button onClick={saveEdit} disabled={saving} className="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 disabled:opacity-50 transition-colors" title="Save">
@@ -502,13 +494,13 @@ const Inventory = () => {
                                                         <td colSpan={5} className="px-6 py-3">
                                                             <div className="flex items-center gap-2">
                                                                 <AlertTriangle size={14} className="text-red-500 shrink-0" />
-                                                                <span className="text-sm text-red-700 font-medium">Delete "{item.name}"?</span>
+                                                                <span className="text-sm text-red-700 font-medium">Delete &quot;{item.name}&quot;?</span>
                                                             </div>
                                                         </td>
                                                         <td className="px-6 py-3 text-right">
                                                             <div className="flex items-center justify-end gap-1.5">
                                                                 <button onClick={() => setDeletingId(null)} className="px-2.5 py-1 text-xs rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-medium">Cancel</button>
-                                                                <button onClick={() => deleteItem(item.id)} disabled={deleting} className="px-2.5 py-1 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 font-medium">
+                                                                <button onClick={() => handleDeleteItem(item.id)} disabled={deleting} className="px-2.5 py-1 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 font-medium">
                                                                     {deleting ? '...' : 'Delete'}
                                                                 </button>
                                                             </div>
@@ -578,7 +570,7 @@ const Inventory = () => {
                             <div className="px-6 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <p className="text-xs text-slate-400">
-                                        Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredItems.length)}–{Math.min(currentPage * itemsPerPage, filteredItems.length)} of {filteredItems.length}
+                                        Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredItems.length)}&ndash;{Math.min(currentPage * itemsPerPage, filteredItems.length)} of {filteredItems.length}
                                         {filteredItems.length !== items.length && ` (filtered from ${items.length})`}
                                     </p>
                                     <select
@@ -678,7 +670,7 @@ const Inventory = () => {
                             </div>
                         </div>
                         <button
-                            onClick={fetchKnowledgeFiles}
+                            onClick={refetchInventory}
                             disabled={knowledgeLoading}
                             className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
                             title="Refresh"
@@ -763,7 +755,7 @@ const Inventory = () => {
                                         {deletingFileId === file.id ? (
                                             <div className="flex items-center gap-1">
                                                 <button
-                                                    onClick={() => deleteKnowledgeFile(file.id)}
+                                                    onClick={() => handleDeleteKnowledgeFile(file.id)}
                                                     className="px-2 py-1 text-[10px] rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium"
                                                 >
                                                     Delete

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
-import { ordersApi, type Order, type OrderStats } from '../../../api/orders';
 import CalendarPicker from '../../../components/dashboard/CalendarPicker';
 import { OrderDetailPanel } from './OrderDetailPanel';
 import type { OrderWithMeta, OrderStatus } from '@/types/orders';
 import { OrderStatsGrid } from './OrderStatsGrid';
 import { OrdersTable } from './OrdersTable';
+import { useOrders } from '../../../hooks/useOrders';
 import {
   Search,
   RefreshCw,
@@ -23,85 +23,41 @@ import { startOfDay, endOfDay, isSameDay, addDays, subDays } from 'date-fns';
 const PAGE_SIZE = 20;
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<OrderStatus>('confirmed');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [stats, setStats] = useState<OrderStats | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<OrderWithMeta | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
-  const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [sortConfig, setSortConfig] = useState<{
     key: 'created_at' | 'total_price';
     direction: 'asc' | 'desc';
   }>({ key: 'created_at', direction: 'desc' });
 
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  // Fetch orders
-  const fetchOrders = React.useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      let ordersData: Order[] = [];
-      let totalCount = 0;
-
-      if (statusFilter === 'confirmed') {
-        // Fetch both pending and confirmed explicitly to ensure we get everything
-        // We increase page size to capture most active orders since we're merging client-side
-        const [pendingRes, confirmedRes] = await Promise.all([
-          ordersApi.getOrders(1, 100, 'pending'),
-          ordersApi.getOrders(1, 100, 'confirmed')
-        ]);
-
-        ordersData = [...(pendingRes.orders || []), ...(confirmedRes.orders || [])];
-        totalCount = (pendingRes.total || 0) + (confirmedRes.total || 0);
-
-        // Stats
-        const statsRes = await ordersApi.getOrderStats();
-
-        // Calculate revenue from loaded orders if backend returns 0
-        const calculatedRevenue = ordersData.reduce((sum, o) => {
-          return sum + (o.total_price || (o.unit_price || 0) * o.quantity);
-        }, 0);
-
-        if (!statsRes.revenue && calculatedRevenue > 0) {
-          statsRes.revenue = calculatedRevenue;
-        }
-
-        setStats(statsRes);
-      } else {
-        // Cancelled view
-        const [ordersRes, statsRes] = await Promise.all([
-          ordersApi.getOrders(page, PAGE_SIZE, 'cancelled'),
-          ordersApi.getOrderStats()
-        ]);
-        ordersData = ordersRes.orders || [];
-        totalCount = ordersRes.total || 0;
-        setStats(statsRes);
-      }
-
-      setOrders(ordersData);
-      setTotal(totalCount);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load orders');
-    } finally {
-      setLoading(false);
-    }
-  }, [page, statusFilter]);
-
+  // Debounced search — 300ms delay
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // React Query hook — cached, parallel stats+orders fetch
+  const {
+    orders,
+    total,
+    stats,
+    loading,
+    error,
+    updateStatus,
+    updatingId,
+    refetch,
+  } = useOrders(statusFilter, page);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   // Process orders with computed fields and normalize status
   const processedOrders = useMemo(() => {
     return orders.map(order => {
-      // Treat 'pending' as 'confirmed' for display
       const currentStatus = order.status as string;
       const normalizedStatus = (currentStatus === 'pending' || currentStatus === 'confirmed')
         ? 'confirmed' as OrderStatus
@@ -125,7 +81,6 @@ export default function OrdersPage() {
     const today = new Date();
     const isToday = isSameDay(selectedDate, today);
 
-    // Only filter by date if not today (show all for today by default like Home page)
     if (!isToday) {
       result = result.filter(o => {
         const orderDate = new Date(o.created_at);
@@ -133,9 +88,9 @@ export default function OrdersPage() {
       });
     }
 
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    // Search filter (uses debounced value)
+    if (debouncedSearch) {
+      const query = debouncedSearch.toLowerCase();
       result = result.filter(o =>
         o.customer_name.toLowerCase().includes(query) ||
         o.customer_phone.includes(query) ||
@@ -159,35 +114,16 @@ export default function OrdersPage() {
     });
 
     return result;
-  }, [processedOrders, searchQuery, sortConfig, selectedDate]);
+  }, [processedOrders, debouncedSearch, sortConfig, selectedDate]);
 
   const handleToggleStatus = async (orderId: string, newStatus: OrderStatus) => {
-    setUpdatingIds(prev => new Set(prev).add(orderId));
     try {
-      await ordersApi.updateOrderStatus(orderId, newStatus);
-
-      setOrders(prev => prev.map(o =>
-        o.id === orderId ? { ...o, status: newStatus } : o
-      ));
-
+      await updateStatus(orderId, newStatus);
       if (selectedOrder && selectedOrder.id === orderId) {
         setSelectedOrder({ ...selectedOrder, status: newStatus });
       }
-
-      // Refresh stats and potentially list if we want to move it out of the current view
-      const newStats = await ordersApi.getOrderStats();
-      setStats(newStats);
-
-      // Optional: Refresh list if we want to remove it from view immediately
-      fetchOrders();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update status');
-    } finally {
-      setUpdatingIds(prev => {
-        const next = new Set(prev);
-        next.delete(orderId);
-        return next;
-      });
+    } catch {
+      // Error handled by React Query
     }
   };
 
@@ -234,7 +170,7 @@ export default function OrdersPage() {
             <div className="w-px h-6 bg-slate-200 mx-1" />
 
             <button
-              onClick={fetchOrders}
+              onClick={refetch}
               disabled={loading}
               className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors border border-transparent hover:border-slate-100"
               title="Refresh"
@@ -248,8 +184,20 @@ export default function OrdersPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        {stats && <OrderStatsGrid stats={stats} />}
+        {/* Stats Cards — skeleton while loading */}
+        {stats ? (
+          <OrderStatsGrid stats={stats} />
+        ) : loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white border border-slate-200 rounded-xl p-4">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 animate-pulse mb-2" />
+                <div className="w-16 h-7 bg-slate-100 rounded animate-pulse mb-1" />
+                <div className="w-20 h-3 bg-slate-100 rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+        ) : null}
 
         {/* Search & Filters */}
         <div className="flex flex-col lg:flex-row gap-3">
@@ -326,7 +274,7 @@ export default function OrdersPage() {
             <h3 className="text-slate-900 font-bold text-base tracking-tight mb-1">Something went wrong</h3>
             <p className="text-slate-500 text-sm mb-4 max-w-md mx-auto">{error}. Please try again.</p>
             <button
-              onClick={fetchOrders}
+              onClick={refetch}
               className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors inline-flex items-center gap-2"
             >
               <RefreshCw size={14} />
@@ -356,7 +304,7 @@ export default function OrdersPage() {
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
         onStatusChange={handleToggleStatus}
-        updating={selectedOrder ? updatingIds.has(selectedOrder.id) : false}
+        updating={selectedOrder ? updatingId === selectedOrder.id : false}
       />
     </DashboardLayout>
   );
