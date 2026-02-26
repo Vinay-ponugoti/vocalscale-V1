@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Rocket, Receipt, ArrowRight, Ticket, X, CheckCircle2, Info, Phone } from 'lucide-react';
+import { Search, Rocket, Receipt, ArrowRight, Ticket, X, CheckCircle2, Info, Phone, Loader2, Mail, MessageSquare, ChevronDown } from 'lucide-react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';
+import { useToast } from '@/hooks/useToast';
 // FloatingChat removed
 
 const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/landing.mp4";
@@ -42,6 +43,82 @@ const VideoPlayer = ({ src }: { src: string }) => {
 
 const HelpCenter = () => {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const { showToast } = useToast();
+  
+  // Ticket form state
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [ticketData, setTicketData] = useState({
+    email: '',
+    ticketType: '',
+    subject: '',
+    message: ''
+  });
+
+  const ticketTypes = [
+    { value: 'refund', label: 'Refund Request' },
+    { value: 'complaint', label: 'Complaint' },
+    { value: 'bug', label: 'Bug Issue' },
+    { value: 'feature', label: 'Feature Request' },
+    { value: 'general', label: 'General Inquiry' }
+  ];
+
+  const handleTicketSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!ticketData.email || !ticketData.ticketType || !ticketData.message) {
+      showToast('Please fill in all required fields', 'warning');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const selectedType = ticketTypes.find(t => t.value === ticketData.ticketType);
+      
+      const response = await fetch("https://formsubmit.co/ajax/landing@vocalscale.com", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          email: ticketData.email,
+          _subject: `New Support Ticket: ${selectedType?.label || 'General'} - ${ticketData.subject || 'No Subject'}`,
+          _template: "table",
+          'Ticket Type': selectedType?.label || 'General',
+          'Subject': ticketData.subject || 'No Subject',
+          'Message': ticketData.message
+        })
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+        showToast('Ticket submitted successfully!', 'success');
+        
+        // Reset form after 2 seconds
+        setTimeout(() => {
+          setIsSuccess(false);
+          setIsFormOpen(false);
+          setTicketData({
+            email: '',
+            ticketType: '',
+            subject: '',
+            message: ''
+          });
+        }, 2000);
+      } else {
+        const data = await response.json();
+        throw new Error(data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      showToast('Failed to submit ticket. Please try again later.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
 
   const articles: Record<string, Article> = {
@@ -331,17 +408,127 @@ const HelpCenter = () => {
             </p>
           </div>
 
-          {/* Still Need Help Section */}
-          <div className="max-w-md mx-auto mb-20">
-            <div className="bg-white p-8 rounded-3xl border border-slate-100 text-center hover:shadow-xl hover:border-indigo-100 transition-all duration-500 group">
-              <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 group-hover:scale-110">
-                <Ticket size={32} />
+          {/* Ticket Form Section */}
+          <div className="max-w-lg mx-auto mb-20">
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 hover:shadow-xl hover:border-indigo-100 transition-all duration-500">
+              {/* Header - Always Visible */}
+              <div 
+                className={`text-center ${isFormOpen ? 'mb-8' : ''} transition-all duration-300`}
+              >
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-all duration-500 ${isSuccess ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                  {isSuccess ? (
+                    <CheckCircle2 size={32} />
+                  ) : (
+                    <Ticket size={32} />
+                  )}
+                </div>
+                <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">
+                  {isSuccess ? 'Ticket Submitted!' : 'Submit a Ticket'}
+                </h3>
+                <p className="text-slate-500 text-[13px] font-medium leading-relaxed px-4">
+                  {isSuccess 
+                    ? "We've received your request. Our team will get back to you within 24 hours."
+                    : "Describe your issue in detail. We typically respond in < 24h."
+                  }
+                </p>
               </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Submit a Ticket</h3>
-              <p className="text-slate-500 text-[13px] font-medium mb-8 leading-relaxed px-4">Describe your issue in detail.<br />We typically respond in <span className="text-indigo-600 font-bold">&lt; 24h</span>.</p>
-              <button className="w-full bg-white border border-slate-200 text-slate-700 py-4 rounded-xl font-black text-[13px] tracking-tight hover:border-indigo-500 hover:text-indigo-600 transition-all active:scale-[0.98]">
-                Create Ticket
-              </button>
+
+              {/* Form or Button */}
+              {isSuccess ? (
+                <div className="flex items-center justify-center gap-2 text-emerald-600 font-bold py-4">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Thanks for reaching out!</span>
+                </div>
+              ) : !isFormOpen ? (
+                <button 
+                  onClick={() => setIsFormOpen(true)}
+                  className="w-full bg-white border border-slate-200 text-slate-700 py-4 rounded-xl font-black text-[13px] tracking-tight hover:border-indigo-500 hover:text-indigo-600 transition-all active:scale-[0.98]"
+                >
+                  Create Ticket
+                </button>
+              ) : (
+                <form onSubmit={handleTicketSubmit} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                  {/* Email Field */}
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                    <input
+                      type="email"
+                      placeholder="Your email address *"
+                      value={ticketData.email}
+                      onChange={(e) => setTicketData({ ...ticketData, email: e.target.value })}
+                      className="w-full h-12 pl-11 pr-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium"
+                      required
+                    />
+                  </div>
+
+                  {/* Ticket Type Dropdown */}
+                  <div className="relative group">
+                    <Ticket className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                    <select
+                      value={ticketData.ticketType}
+                      onChange={(e) => setTicketData({ ...ticketData, ticketType: e.target.value })}
+                      className="w-full h-12 pl-11 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium appearance-none cursor-pointer"
+                      required
+                    >
+                      <option value="" disabled>Select ticket type *</option>
+                      {ticketTypes.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  </div>
+
+                  {/* Subject Field */}
+                  <div className="relative group">
+                    <input
+                      type="text"
+                      placeholder="Subject (optional)"
+                      value={ticketData.subject}
+                      onChange={(e) => setTicketData({ ...ticketData, subject: e.target.value })}
+                      className="w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium"
+                    />
+                  </div>
+
+                  {/* Message Textarea */}
+                  <div className="relative group">
+                    <MessageSquare className="absolute left-4 top-4 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                    <textarea
+                      placeholder="Describe your issue in detail... *"
+                      value={ticketData.message}
+                      onChange={(e) => setTicketData({ ...ticketData, message: e.target.value })}
+                      className="w-full min-h-[120px] pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium resize-none"
+                      required
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsFormOpen(false)}
+                      className="flex-1 h-12 bg-slate-100 text-slate-600 rounded-xl font-bold text-[13px] tracking-tight hover:bg-slate-200 transition-all active:scale-[0.98]"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex-1 h-12 bg-indigo-600 text-white rounded-xl font-black text-[13px] tracking-tight hover:bg-indigo-700 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        'Submit Ticket'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
 
