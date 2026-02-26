@@ -77,7 +77,7 @@ const HelpCenter = () => {
     try {
       const selectedType = ticketTypes.find(t => t.value === ticketData.ticketType);
       
-      const response = await fetch("https://formsubmit.co/ajax/landing@vocalscale.com", {
+      const response = await fetch("https://formsubmit.co/ajax/support@vocalscale.com", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',

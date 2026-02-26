@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
     csp += ` img-src 'self' data: blob: https://c.bing.com https://*.google-analytics.com https://*.supabase.co;`;
     csp += ` media-src 'self' data: https://*.r2.dev https://api.vocalscale.com;`;
     // Always include the known production API origins; extend with env-var for extras
-    const prodOrigins = `'self' https://api.vocalscale.com https://billing.vocalscale.com https://knowledge.vocalscale.com https://*.supabase.co https://static.cloudflareinsights.com https://challenges.cloudflare.com https://*.clarity.ms https://c.bing.com https://www.google-analytics.com`;
+    const prodOrigins = `'self' https://api.vocalscale.com https://billing.vocalscale.com https://knowledge.vocalscale.com https://*.supabase.co https://static.cloudflareinsights.com https://challenges.cloudflare.com https://*.clarity.ms https://c.bing.com https://www.google-analytics.com https://formsubmit.co`;
     const extraOrigins = allowedOrigins !== 'self' ? ` ${allowedOrigins}` : '';
     csp += ` connect-src ${prodOrigins}${extraOrigins} ${isDev || allowInternet ? 'https:' : ''} wss:;`;
     csp += ` font-src 'self' https://fonts.gstatic.com;`;
