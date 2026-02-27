@@ -10,7 +10,7 @@ import {
 } from 'date-fns';
 import {
   ChevronLeft, ChevronRight, Plus, Clock, Moon, Sun,
-  X, Layers, FileText, GripVertical, MapPin, Phone
+  X, Layers, FileText, GripVertical, MapPin, Phone, Trash2
 } from 'lucide-react';
 
 import {
@@ -74,7 +74,7 @@ const FullScreenAppointments: React.FC = () => {
   const isMobile = width < 768;
   const { state } = useBusinessSetup();
   const timezone = state.data.business.timezone || 'America/New_York';
-  const { appointments, loading, isPlaceholderData, error, updateAppointment, createAppointment } = useAppointments();
+  const { appointments, loading, isPlaceholderData, error, updateAppointment, createAppointment, deleteAppointment } = useAppointments();
   const { searchQuery } = useSearch();
 
   const isInitialLoading = loading && !isPlaceholderData;
@@ -1174,13 +1174,23 @@ const FullScreenAppointments: React.FC = () => {
                             Edit
                           </button>
                           <button
-                            onClick={handleCloseModal}
-                            className="flex-1 px-4 py-2.5 font-bold text-white rounded-xl active:scale-95 transition-all text-sm shadow-md"
-                            style={{ backgroundColor: DS.ink }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = DS.charcoal}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.ink}
+                            onClick={async () => {
+                              if (window.confirm('Are you sure you want to delete this appointment?')) {
+                                try {
+                                  await deleteAppointment(selectedAppointment!);
+                                  handleCloseModal();
+                                } catch (err) {
+                                  console.error('Failed to delete appointment:', err);
+                                }
+                              }
+                            }}
+                            className="flex-1 px-4 py-2.5 font-bold text-white rounded-xl active:scale-95 transition-all text-sm shadow-md flex items-center justify-center gap-2"
+                            style={{ backgroundColor: DS.danger }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#DC2626'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.danger}
                           >
-                            Close
+                            <Trash2 size={16} />
+                            Delete
                           </button>
                         </>
                       )}
