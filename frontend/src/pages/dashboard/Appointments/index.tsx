@@ -96,6 +96,7 @@ const FullScreenAppointments: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Appointment>>({});
   const [showWeekend, setShowWeekend] = useState(true);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   // New Appointment State
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
@@ -447,6 +448,7 @@ const FullScreenAppointments: React.FC = () => {
     setSelectedAppointment(null);
     setIsEditing(false);
     setEditForm({});
+    setConfirmingDelete(false);
   };
 
   const handleCreateAppointment = async (e: React.FormEvent) => {
@@ -1159,39 +1161,61 @@ const FullScreenAppointments: React.FC = () => {
                         </>
                       ) : (
                         <>
-                          <button
-                            onClick={handleStartEdit}
-                            className="flex-1 px-4 py-2.5 font-bold border-2 rounded-xl active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
-                            style={{ color: DS.electric, backgroundColor: DS.white, borderColor: DS.electric }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = DS.electricLight;
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = DS.white;
-                            }}
-                          >
-                            <Layers size={16} />
-                            Edit
-                          </button>
-                          <button
-                            onClick={async () => {
-                              if (window.confirm('Are you sure you want to delete this appointment?')) {
-                                try {
-                                  await deleteAppointment(selectedAppointment!);
-                                  handleCloseModal();
-                                } catch (err) {
-                                  console.error('Failed to delete appointment:', err);
-                                }
-                              }
-                            }}
-                            className="flex-1 px-4 py-2.5 font-bold text-white rounded-xl active:scale-95 transition-all text-sm shadow-md flex items-center justify-center gap-2"
-                            style={{ backgroundColor: DS.danger }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#DC2626'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.danger}
-                          >
-                            <Trash2 size={16} />
-                            Delete
-                          </button>
+                          {confirmingDelete ? (
+                            <div className="flex-1 flex flex-col gap-2">
+                              <p className="text-xs font-semibold text-center" style={{ color: DS.danger }}>
+                                Delete this appointment?
+                              </p>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => setConfirmingDelete(false)}
+                                  className="flex-1 px-4 py-2 font-bold border rounded-xl active:scale-95 transition-all text-sm"
+                                  style={{ color: DS.stone, borderColor: DS.border }}
+                                >
+                                  No
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      await deleteAppointment(selectedAppointment!);
+                                      handleCloseModal();
+                                    } catch (err) {
+                                      console.error('Failed to delete:', err);
+                                      setConfirmingDelete(false);
+                                    }
+                                  }}
+                                  className="flex-1 px-4 py-2 font-bold text-white rounded-xl active:scale-95 transition-all text-sm flex items-center justify-center gap-1"
+                                  style={{ backgroundColor: '#DC2626' }}
+                                >
+                                  <Trash2 size={14} />
+                                  Yes, Delete
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <button
+                                onClick={handleStartEdit}
+                                className="flex-1 px-4 py-2.5 font-bold border-2 rounded-xl active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+                                style={{ color: DS.electric, backgroundColor: DS.white, borderColor: DS.electric }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = DS.electricLight}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.white}
+                              >
+                                <Layers size={16} />
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => setConfirmingDelete(true)}
+                                className="flex-1 px-4 py-2.5 font-bold text-white rounded-xl active:scale-95 transition-all text-sm shadow-md flex items-center justify-center gap-2"
+                                style={{ backgroundColor: DS.danger }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#DC2626'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.danger}
+                              >
+                                <Trash2 size={16} />
+                                Delete
+                              </button>
+                            </>
+                          )}
                         </>
                       )}
                     </div>
