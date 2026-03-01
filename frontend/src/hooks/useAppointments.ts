@@ -53,7 +53,7 @@ export function useAppointments() {
           customer_name: appt.customer_name || 'Customer',
           start_time: scheduledTime,
           end_time: scheduledTime ? addHours(parseISO(scheduledTime), 1).toISOString() : new Date().toISOString(),
-          status: appt.status || 'Scheduled',
+          status: appt.status ? appt.status.charAt(0).toUpperCase() + appt.status.slice(1).toLowerCase() : 'Scheduled',
           type: appt.service_type || 'Appointment',
           notes: appt.notes
         };

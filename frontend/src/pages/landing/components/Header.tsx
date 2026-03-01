@@ -11,8 +11,6 @@ const menuItems = [
     { name: 'Pricing', href: '/pricing' },
 ]
 
-import { PromoBanner } from './PromoBanner'
-
 export const Header = () => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
@@ -38,9 +36,6 @@ export const Header = () => {
 
     return (
         <header>
-            <div className="absolute top-0 left-0 right-0 z-[105]">
-                <PromoBanner />
-            </div>
             <nav className={cn(
                 "fixed z-[100] w-full px-2 group transition-all duration-500",
                 isScrolled || menuState ? "mt-2 md:mt-3" : "mt-10 md:mt-12"

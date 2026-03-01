@@ -12,9 +12,9 @@ export function Pricing() {
     {
       name: 'Starter',
       description: 'Perfect for ambitious solo pros. Automated 24/7 AI Receptionist.',
-      monthlyPrice: 69, // 30% off $99
-      annualPrice: 59,  // 40% off $99
-      originalPrice: 99,
+      monthlyPrice: 99,
+      annualPrice: 79,
+      originalPrice: 0,
       features: [
         '300 AI minutes included',
         'Extra minutes: $0.094/min',
@@ -34,9 +34,9 @@ export function Pricing() {
     {
       name: 'Professional',
       description: 'Powerhouse for growing teams. Auto-schedule appointments & scale.',
-      monthlyPrice: 118, // 30% off $169
-      annualPrice: 101,  // 40% off $169
-      originalPrice: 169,
+      monthlyPrice: 169,
+      annualPrice: 135,
+      originalPrice: 0,
       features: [
         '1000 AI minutes included',
         'Extra minutes: $0.094/min',
@@ -113,7 +113,7 @@ export function Pricing() {
             <div className="flex items-center gap-2">
               <span className={cn("text-sm font-black transition-colors uppercase tracking-widest", isAnnual ? "text-slate-900" : "text-slate-400")}>Annual</span>
               <span className="px-2 py-0.5 bg-blue-100/50 text-blue-600 text-[10px] font-black uppercase tracking-tighter rounded-md border border-blue-200">
-                Save up to 40%
+                Save 20%
               </span>
             </div>
           </motion.div>
@@ -178,9 +178,7 @@ export function Pricing() {
                   {isAnnual && (
                     <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1">Billed annually</p>
                   )}
-                  <p className="text-[11px] font-bold text-emerald-600 mt-2 tracking-wide uppercase animate-pulse">
-                    Grab Early! First 3 months same price if you subscribe now.
-                  </p>
+
                 </div>
 
                 <div className="space-y-4 mb-10 flex-grow">
