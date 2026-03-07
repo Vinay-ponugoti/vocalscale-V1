@@ -89,7 +89,7 @@ export function HeroSection() {
                                     </h1>
                                     <p
                                         className="mx-auto mt-6 max-w-3xl text-balance text-lg md:text-xl text-slate-600 leading-relaxed font-medium">
-                                        Why settle for basic automation? Equip your business with an AI receptionist that sounds human, thinks intelligently, and works 24/7 to capture every opportunity.
+                                        VocalScale is an AI-powered virtual receptionist platform designed to handle your phone calls automatically. Our software acts as a 24/7 intelligent answering service that books appointments, answers customer inquiries, and routes calls—saving you time and reducing operational costs.
                                     </p>
 
 
