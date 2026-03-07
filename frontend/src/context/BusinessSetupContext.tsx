@@ -119,6 +119,7 @@ interface BusinessSetupContextType {
   actions: {
     loadData: () => Promise<void>;
     saveData: (showToast?: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void) => Promise<{ success: boolean; business_id?: string } | boolean>;
+    saveDataDirect: (data: BusinessSetupData, showToast?: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void) => Promise<{ success: boolean; business_id?: string } | boolean>;
     updateBusiness: (data: Partial<BusinessDetails>) => void;
     updateBusinessHours: (hours: BusinessHour[]) => void;
     updateServices: (services: Service[]) => void;
@@ -187,6 +188,37 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
     }
   }, [refreshProfile, updateProfile]);
 
+  // Save with explicit data override — avoids stale stateRef race condition
+  const saveDataDirect = useCallback(async (data: BusinessSetupData, showToast?: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void): Promise<{ success: boolean; business_id?: string } | boolean> => {
+    dispatch({ type: 'SET_SAVING', payload: true });
+
+    try {
+      const result = await businessSetupAPI.saveBusinessSetup(data);
+
+      dispatch({ type: 'SET_DATA', payload: data });
+      dispatch({ type: 'SET_DIRTY', payload: false });
+      dispatch({ type: 'SET_ERROR', payload: null });
+
+      // Refresh auth profile to update business name in header/sidebar
+      updateProfile({ business_name: data.business.business_name });
+      await refreshProfile();
+
+      showToast?.('Changes saved successfully!', 'success');
+      return result;
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save data';
+      console.error('Save failed:', error);
+
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
+      showToast?.(errorMessage, 'error');
+      return false;
+
+    } finally {
+      dispatch({ type: 'SET_SAVING', payload: false });
+    }
+  }, [refreshProfile, updateProfile]);
+
   const updateBusiness = useCallback((data: Partial<BusinessDetails>) => {
     dispatch({ type: 'UPDATE_BUSINESS', payload: data });
   }, []);
@@ -247,6 +279,7 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
   const actions = useMemo(() => ({
     loadData,
     saveData,
+    saveDataDirect,
     updateBusiness,
     updateBusinessHours,
     updateServices,
@@ -256,6 +289,7 @@ export const BusinessSetupProvider: React.FC<{ children: ReactNode }> = ({ child
   }), [
     loadData,
     saveData,
+    saveDataDirect,
     updateBusiness,
     updateBusinessHours,
     updateServices,

@@ -295,30 +295,45 @@ export const BusinessDetails: React.FC = () => {
       };
 
 
-      // Auto-populate business fields and mark setup as complete
-      actions.updateBusiness({
+      // Build the updated business data directly (avoids stale stateRef race condition)
+      const updatedBusiness = {
+        ...data.business,
         business_name: details.name,
         address: details.formatted_address,
-        phone: details.formatted_phone_number || details.international_phone_number,
+        phone: details.formatted_phone_number || details.international_phone_number || data.business.phone,
         website: cleanWebsiteUrl(details.website),
         category: mapCategory(details.types),
         place_id: details.place_id,
         rating: details.rating,
         user_ratings_total: details.user_ratings_total,
-        auto_setup: true,  // Mark AI setup as complete
-        image_url: searchResults.find(r => r.place_id === placeId)?.photo_url || '' // Use photo from search results
-      });
+        auto_setup: true,
+        image_url: searchResults.find(r => r.place_id === placeId)?.photo_url || ''
+      };
 
-      // Parse and update business hours if available
+      // Parse business hours from Google Places
+      let updatedHours = data.business_hours || [];
       if (details.opening_hours) {
-        const businessHours = parseGoogleHours(details.opening_hours);
-        if (businessHours.length > 0) {
-          actions.updateBusinessHours(businessHours);
+        const parsedHours = parseGoogleHours(details.opening_hours);
+        if (parsedHours.length > 0) {
+          updatedHours = parsedHours;
         }
       }
 
-      // Auto-save to backend
-      const result = await actions.saveData();
+      // Build the complete data payload to save directly
+      const dataToSave = {
+        ...data,
+        business: updatedBusiness,
+        business_hours: updatedHours,
+      };
+
+      // Also update React state for UI
+      actions.updateBusiness(updatedBusiness);
+      if (updatedHours.length > 0) {
+        actions.updateBusinessHours(updatedHours);
+      }
+
+      // Save directly with the explicit data (bypasses stale stateRef)
+      const result = await actions.saveDataDirect(dataToSave);
 
       // Save reviews if available
       if (details.reviews && Array.isArray(details.reviews)) {

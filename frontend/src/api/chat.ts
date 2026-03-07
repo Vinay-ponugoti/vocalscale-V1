@@ -74,7 +74,10 @@ class ChatAPI {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
-        throw new Error(errorData.detail || `HTTP ${response.status}`);
+        const errorMessage = typeof errorData.detail === 'string'
+          ? errorData.detail
+          : JSON.stringify(errorData.detail || errorData);
+        throw new Error(errorMessage || `HTTP ${response.status}`);
       }
 
       const reader = response.body?.getReader();
