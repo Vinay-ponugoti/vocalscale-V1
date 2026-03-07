@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RR0JE1XEQM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-RR0JE1XEQM');
+  </script>
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.ico" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -337,6 +346,13 @@
 
 <body style="background-color: #F8FAFC; margin: 0;" class="antialiased">
   <div id="root"></div>
+  <noscript>
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms of Service</a>
+  </noscript>
+  <div style="display: none;" aria-hidden="true">
+    <a href="/privacy">Privacy Policy</a>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

@@ -81,7 +81,7 @@ export function Footer() {
               Systems Online
             </div>
             <div className="flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-              <Link to="/privacy" className="hover:text-blue-600 transition-colors">Privacy</Link>
+              <Link to="/privacy" className="hover:text-blue-600 transition-colors">Privacy Policy</Link>
               <Link to="/terms" className="hover:text-blue-600 transition-colors">Terms</Link>
             </div>
           </div>
