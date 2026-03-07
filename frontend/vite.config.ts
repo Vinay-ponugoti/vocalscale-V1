@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
     let csp = `default-src 'self';`;
     csp += ` script-src 'self'${isDev ? ' \'unsafe-eval\'' : ''} 'nonce-%%VITE_CSP_NONCE%%' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://www.clarity.ms https://scripts.clarity.ms https://www.googletagmanager.com https://www.google-analytics.com;`;
     csp += ` style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;`;
-    csp += ` img-src 'self' data: blob: https://c.bing.com https://*.google-analytics.com https://*.supabase.co https://*.googleapis.com;`;
+    csp += ` img-src 'self' data: blob: https://c.bing.com https://*.google-analytics.com https://*.supabase.co https://*.googleapis.com https://*.googleusercontent.com;`;
     csp += ` media-src 'self' data: https://*.r2.dev https://api.vocalscale.com;`;
     // Always include the known production API origins; extend with env-var for extras
     const prodOrigins = `'self' https://api.vocalscale.com https://billing.vocalscale.com https://knowledge.vocalscale.com https://*.supabase.co https://static.cloudflareinsights.com https://challenges.cloudflare.com https://*.clarity.ms https://c.bing.com https://www.google-analytics.com https://formsubmit.co`;
