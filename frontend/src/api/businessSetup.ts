@@ -22,8 +22,19 @@ class BusinessSetupAPI {
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-      throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
+      let error: any;
+      try {
+        error = await response.json();
+      } catch {
+        error = { detail: 'Unknown error' };
+      }
+
+      let errorMessage = error.detail || error.error || error.message;
+      if (!errorMessage && typeof error === 'object') {
+        errorMessage = JSON.stringify(error);
+      }
+
+      throw new Error(errorMessage || `HTTP ${response.status}: ${response.statusText}`);
     }
 
     return response.json();
