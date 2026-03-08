@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
 
     // Common CSP directives
     let csp = `default-src 'self';`;
-    csp += ` script-src 'self'${isDev ? ' \'unsafe-eval\'' : ''} 'nonce-%%VITE_CSP_NONCE%%' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://www.clarity.ms https://scripts.clarity.ms https://www.googletagmanager.com https://www.google-analytics.com;`;
+    csp += ` script-src 'self' 'unsafe-inline'${isDev ? ' \'unsafe-eval\'' : ''} https://challenges.cloudflare.com https://static.cloudflareinsights.com https://www.clarity.ms https://scripts.clarity.ms https://www.googletagmanager.com https://www.google-analytics.com;`;
     csp += ` style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;`;
     csp += ` img-src 'self' data: blob: https://c.bing.com https://*.google-analytics.com https://*.supabase.co https://*.googleapis.com https://*.googleusercontent.com;`;
     csp += ` media-src 'self' data: https://*.r2.dev https://api.vocalscale.com;`;
@@ -33,12 +33,10 @@ export default defineConfig(({ mode }) => {
       {
         name: 'html-inject',
         transformIndexHtml: (html) => {
-          // Generate nonce for CSP
-          const nonce = Math.random().toString(36).substring(2, 10);
           // Get environment variables
           const gaId = process.env.VITE_GA_TRACKING_ID || '';
           const clarityId = process.env.VITE_CLARITY_PROJECT_ID || '';
-          const csp = buildCSP().replace('%%VITE_CSP_NONCE%%', nonce);
+          const csp = buildCSP();
 
           // Use global regex so ALL occurrences of the nonce placeholder are replaced
           // (Clarity script + GA script both use %%VITE_CSP_NONCE%%)
@@ -46,7 +44,7 @@ export default defineConfig(({ mode }) => {
             .replace('%%VITE_GA_TRACKING_ID%%', gaId)
             .replace('%%VITE_CLARITY_PROJECT_ID%%', clarityId)
             .replace('%%VITE_CSP%%', csp)
-            .replace(/%%VITE_CSP_NONCE%%/g, nonce);
+            .replace(/%%VITE_CSP_NONCE%%/g, '');
         },
       },
     ],
