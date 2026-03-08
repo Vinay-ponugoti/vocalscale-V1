@@ -1,3 +1,4 @@
+export const blogPosts = [
   {
     id: "1772600400000",
     title: "Multilingual AI Receptionists for Immigrant Markets",
@@ -254,7 +255,7 @@
     tags: ["Multilingual", "Immigrant Communities", "AI Receptionist", "Healthcare", "Legal", "ROI"],
     image: "/images/blog/multilingual-ai-receptionist-immigrant-markets.png",
     featured: true
-  }
+  },
   {
     id: "1772773200000",
     title: "Dental Practice Case Study: How One Office Reduced Missed Calls by 89%",
