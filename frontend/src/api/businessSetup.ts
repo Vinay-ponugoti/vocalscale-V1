@@ -108,16 +108,6 @@ class BusinessSetupAPI {
     return this.request(`/google-places/details?place_id=${placeId}`);
   }
 
-  // Save reviews
-  async saveReviews(reviews: any[], businessId: string): Promise<{ status: string; saved: number }> {
-    return this.request('/reviews', {
-      method: 'POST',
-      body: JSON.stringify({
-        business_id: businessId,
-        reviews: reviews
-      }),
-    });
-  }
 
   // Upload Knowledge Document for processing (calls Python knowledge processor directly)
   async uploadKnowledgeDocument(file: File): Promise<{ status: string; filename: string; user_id: string; processing_status: string; message: string }> {

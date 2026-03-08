@@ -195,10 +195,7 @@ export const BusinessDetails: React.FC = () => {
     if (!openingHours || !openingHours.periods) return defaultBusinessHours;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dayMap: { [key: number]: any } = {
-      0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday',
-      4: 'Thursday', 5: 'Friday', 6: 'Saturday'
-    };
+    const dayMap: { [key: number]: any } = {};
 
 
 
@@ -335,22 +332,7 @@ export const BusinessDetails: React.FC = () => {
       // Save directly with the explicit data (bypasses stale stateRef)
       const result = await actions.saveDataDirect(dataToSave);
 
-      // Save reviews if available
-      if (details.reviews && Array.isArray(details.reviews)) {
-        const businessId = (typeof result === 'object' && result?.business_id) ? result.business_id : data.business.id;
-
-        if (businessId) {
-          try {
-            // Take top 5 reviews
-            const topReviews = details.reviews.slice(0, 5);
-            await businessSetupAPI.saveReviews(topReviews, businessId);
-            console.log('✅ Reviews synced successfully');
-          } catch (reviewErr) {
-            console.error('Failed to sync reviews:', reviewErr);
-            // Don't block UI on review failure
-          }
-        }
-      }
+      // Reviews are handled directly by the backend cron/sync jobs instead of the UI
 
       // Clear search
       setShowSearch(false);
