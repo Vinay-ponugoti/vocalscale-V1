@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Monitor, Cloud, Server, RefreshCw, ArrowLeft } from 'lucide-react';
+import { Monitor, Cloud, Server, RefreshCw, ArrowLeft, Phone, CheckCircle2, Loader2 } from 'lucide-react';
 
 interface ServiceStatusPageProps {
     onRetry: () => void;
@@ -10,6 +10,11 @@ interface ServiceStatusPageProps {
 const ServiceStatusPage: React.FC<ServiceStatusPageProps> = ({ onRetry, onBack }) => {
     const [retrying, setRetrying] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date().toISOString().replace('T', ' ').split('.')[0] + ' UTC');
+    
+    // Limited access form state
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -22,6 +27,39 @@ const ServiceStatusPage: React.FC<ServiceStatusPageProps> = ({ onRetry, onBack }
         setRetrying(true);
         await onRetry();
         setTimeout(() => setRetrying(false), 2000);
+    };
+
+    const handleLimitedAccessSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!phoneNumber.trim()) return;
+
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch("https://formsubmit.co/ajax/landing@vocalscale.com", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    phone: phoneNumber,
+                    message: "Limited Access Request - User wants access while server is down",
+                    _subject: "Limited Access Request from Login Page",
+                    _template: "table"
+                })
+            });
+
+            if (response.ok) {
+                setIsSuccess(true);
+            } else {
+                throw new Error('Failed to submit');
+            }
+        } catch (error) {
+            console.error("Form submission error:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -138,11 +176,74 @@ const ServiceStatusPage: React.FC<ServiceStatusPageProps> = ({ onRetry, onBack }
                 </div>
             </motion.div>
 
-            {/* Action Buttons */}
+            {/* Limited Access Section - PROMINENT */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
+                className="w-full mb-8"
+            >
+                {!isSuccess ? (
+                    <div className="bg-gradient-to-b from-emerald-50 to-white rounded-2xl border border-emerald-200 p-8">
+                        <div className="text-center mb-6">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-2xl mb-4">
+                                <Phone className="w-8 h-8 text-emerald-600" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-900">Limited Access</h3>
+                            <p className="text-base text-slate-600 mt-2">Enter your phone number and we'll call you to give you access</p>
+                        </div>
+                        <form onSubmit={handleLimitedAccessSubmit} className="space-y-4">
+                            <div className="relative">
+                                <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400" />
+                                <input
+                                    type="tel"
+                                    placeholder="Enter your phone number"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    required
+                                    autoFocus
+                                    className="w-full h-16 pl-14 pr-5 bg-white border-2 border-slate-200 rounded-2xl text-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-all"
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting || !phoneNumber.trim()}
+                                className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-lg font-bold transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg shadow-emerald-600/20"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="w-6 h-6 animate-spin" />
+                                        Sending...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Phone className="w-5 h-5" />
+                                        Submit - We'll Call You
+                                    </>
+                                )}
+                            </button>
+                        </form>
+                    </div>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center"
+                    >
+                        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-emerald-800">We'll call you soon!</h3>
+                        <p className="text-base text-emerald-600 mt-2">Our team will reach out to give you access.</p>
+                    </motion.div>
+                )}
+            </motion.div>
+
+            {/* Action Buttons */}
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
                 className="flex items-center gap-3"
             >
                 <button
