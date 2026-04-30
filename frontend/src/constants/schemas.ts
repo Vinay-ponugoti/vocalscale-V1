@@ -2,34 +2,22 @@ export const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "VocalScale",
+    "alternateName": "VocalScale AI Receptionist",
     "url": "https://vocalscale.com",
     "logo": "https://vocalscale.com/logo.png",
-    "description": "VocalScale provides AI-powered voice agents for businesses, handling customer calls, appointments, and inquiries 24/7.",
+    "description": "VocalScale provides AI-powered voice agents and 24/7 AI receptionists for small businesses, handling customer calls, appointment scheduling, and inquiries in 50+ languages.",
     "sameAs": [
         "https://www.linkedin.com/company/vocalscale",
         "https://twitter.com/vocalscale"
     ],
     "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": "+1-800-555-0199",
         "email": "support@vocalscale.com",
         "contactType": "customer service",
-        "areaServed": "US",
-        "availableLanguage": ["English", "Spanish"]
+        "areaServed": ["US", "CA", "GB", "AU"],
+        "availableLanguage": ["English", "Spanish", "French", "German", "Portuguese"]
     },
-    "foundingDate": "2024",
-    "founder": {
-        "@type": "Person",
-        "name": "VocalScale Team"
-    },
-    "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "123 Business Ave",
-        "addressLocality": "San Francisco",
-        "addressRegion": "CA",
-        "postalCode": "94105",
-        "addressCountry": "US"
-    }
+    "foundingDate": "2024"
 };
 
 export const webPageSchema = (title: string, description: string, url: string) => ({
@@ -85,57 +73,65 @@ export const productSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "VocalScale AI Receptionist",
-    "description": "Advanced AI-powered voice agent service for businesses. Automate customer calls, appointment scheduling, and inquiries with natural-sounding AI receptionists available 24/7.",
+    "description": "AI receptionist and 24/7 AI voice agent for small businesses. Answers calls, books appointments, qualifies leads, and integrates with your CRM and calendar in 50+ languages.",
+    "url": "https://vocalscale.com/",
+    "image": "https://vocalscale.com/logo.png",
     "applicationCategory": "BusinessApplication",
+    "applicationSubCategory": "AI Receptionist & Virtual Answering Service",
     "operatingSystem": "Web-based",
+    "softwareVersion": "3.0",
+    "datePublished": "2024-01-01",
+    "dateModified": "2026-04-30",
     "offers": [
         {
             "@type": "Offer",
             "name": "Starter Plan",
-            "price": "69",
+            "price": "79",
             "priceCurrency": "USD",
             "priceSpecification": {
                 "@type": "UnitPriceSpecification",
-                "price": "69",
+                "price": "79",
                 "priceCurrency": "USD",
                 "billingDuration": "P1M",
                 "unitCode": "MON"
             },
-            "availability": "https://schema.org/InStock"
+            "availability": "https://schema.org/InStock",
+            "url": "https://vocalscale.com/pricing"
         },
         {
             "@type": "Offer",
             "name": "Professional Plan",
-            "price": "118",
+            "price": "135",
             "priceCurrency": "USD",
             "priceSpecification": {
                 "@type": "UnitPriceSpecification",
-                "price": "118",
+                "price": "135",
                 "priceCurrency": "USD",
                 "billingDuration": "P1M",
                 "unitCode": "MON"
             },
-            "availability": "https://schema.org/InStock"
+            "availability": "https://schema.org/InStock",
+            "url": "https://vocalscale.com/pricing"
         }
     ],
     "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.8",
-        "reviewCount": "1,247",
+        "reviewCount": "1247",
         "bestRating": "5",
         "worstRating": "1"
     },
     "featureList": [
-        "24/7 AI Receptionist",
-        "Appointment Scheduling",
-        "Call Routing and Transfer",
-        "Natural Language Processing",
-        "Multi-language Support",
-        "CRM Integration",
-        "Real-time Analytics",
-        "Custom Knowledge Base",
-        "Sentiment Analysis",
-        "Call Recording and Transcripts"
+        "24/7 AI Receptionist & Live Call Answering",
+        "AI Appointment Scheduling with Google Calendar & Outlook",
+        "Smart Call Routing and Warm Transfer",
+        "Natural Language Conversations (Deepgram Aura-2)",
+        "50+ Languages & Multi-Accent Support",
+        "CRM Integration (HubSpot, Salesforce, Pipedrive)",
+        "Real-time Analytics & Sentiment Analysis",
+        "Custom Knowledge Base Training",
+        "HIPAA-aware Configurations for Healthcare",
+        "Live Call Transcripts, Recordings & SMS Follow-up"
     ]
 };
 
