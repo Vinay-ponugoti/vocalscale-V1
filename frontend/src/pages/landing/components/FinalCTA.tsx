@@ -84,8 +84,8 @@ export function FinalCTA() {
                 <span className="text-emerald-400 italic tracking-tight">You're all set!</span>
               ) : (
                 <>
-                  Give your business <br className="hidden sm:block" />
-                  <span className="italic text-white tracking-tight">the voice it deserves.</span>
+                  Never miss another call. <br className="hidden sm:block" />
+                  <span className="italic text-white tracking-tight">Launch your AI receptionist today.</span>
                 </>
               )}
             </h2>
@@ -94,8 +94,8 @@ export function FinalCTA() {
               className="text-slate-400 text-lg md:text-xl mb-10 md:mb-14 max-w-xl mx-auto leading-relaxed font-medium"
             >
               {isSuccess
-                ? "We've received your request. Our team will reach out within 24 hours to schedule your personalized demo."
-                : "Join forward-thinking businesses scaling their front desk with VocalScale's AI."
+                ? "We've received your request. Our team will reach out within 24 hours to schedule your personalized AI receptionist demo."
+                : "Join thousands of small businesses replacing their answering service with VocalScale's 24/7 AI voice agent. Setup in under 15 minutes."
               }
             </p>
 

@@ -85,11 +85,11 @@ export function HeroSection() {
 
                                     <h1
                                         className="mt-6 md:mt-10 max-w-4xl mx-auto text-balance text-5xl sm:text-6xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 leading-[1.1]">
-                                        The First AI Voice Agent That Transforms <span className="text-slate-900 italic pb-2 tracking-tight">Customer Experience</span>
+                                        The 24/7 AI Receptionist That Answers Every <span className="text-slate-900 italic pb-2 tracking-tight">Business Call</span>
                                     </h1>
                                     <p
                                         className="mx-auto mt-6 max-w-3xl text-balance text-lg md:text-xl text-slate-600 leading-relaxed font-medium">
-                                        VocalScale is an AI-powered virtual receptionist platform designed to handle your phone calls automatically. Our software acts as a 24/7 intelligent answering service that books appointments, answers customer inquiries, and routes calls—saving you time and reducing operational costs.
+                                        VocalScale is an AI-powered virtual receptionist and AI phone answering service for small businesses. Our voice agent answers calls 24/7, books appointments into your calendar, qualifies leads into your CRM, and warm-transfers urgent calls — in 50+ languages, from $79/month.
                                     </p>
 
 
@@ -214,17 +214,17 @@ export function HeroSection() {
                             <div className="grid md:grid-cols-2 gap-12 items-center">
                                 <div>
                                     <h2 className="text-3xl font-black text-slate-900 mb-6 leading-tight">
-                                        Transform Your Customer Service Operations
+                                        Replace Your Answering Service with an AI Receptionist
                                     </h2>
                                     <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                                        Traditional customer service models are expensive, inconsistent, and limited by human constraints.
-                                        VocalScale revolutionizes this paradigm by providing AI-powered voice agents that deliver
-                                        consistent, professional, and intelligent customer interactions at a fraction of the cost.
+                                        Traditional answering services and live virtual receptionists are expensive, inconsistent, and capped by human availability.
+                                        VocalScale's AI voice agent delivers a consistent, on-brand front-desk experience for every caller — at a fraction of the cost
+                                        of a part-time receptionist or after-hours service.
                                     </p>
                                     <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                                        Our advanced AI technology understands context, remembers previous interactions, and adapts
-                                        responses based on customer history and preferences. This creates a personalized experience
-                                        that builds customer loyalty while reducing operational overhead by up to 70%.
+                                        Our conversational AI understands context, remembers previous calls, and adapts to each caller's intent.
+                                        That means real appointments booked, real leads captured into your CRM, and a measurable reduction in operational
+                                        overhead — typically 70-85% lower than a human answering service.
                                     </p>
                                     <div className="space-y-4">
                                         <div className="flex items-start gap-3">

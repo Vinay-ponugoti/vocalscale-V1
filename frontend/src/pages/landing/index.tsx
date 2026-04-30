@@ -35,27 +35,27 @@ const Landing = () => {
     }
   }, [location.pathname]);
 
-  // SEO Configuration Map
+  // SEO Configuration Map — keyword-aligned with high-intent search queries (2026)
   const seoConfig = {
     '/': {
-      title: "AI Voice Agent for Business | VocalScale",
-      description: "VocalScale's AI voice agents handle customer calls, book appointments, and answer inquiries 24/7. Automate your business phone line today.",
-      canonical: "https://www.vocalscale.com/"
+      title: "AI Receptionist & 24/7 Voice Agent for Small Business | VocalScale",
+      description: "VocalScale is the AI receptionist that answers every call 24/7, books appointments, and qualifies leads in 50+ languages. Replace your answering service from $79/mo. Start free.",
+      canonical: "https://vocalscale.com/"
     },
     '/features': {
-      title: "AI Receptionist Features | VocalScale",
-      description: "Explore VocalScale's powerful features: 24/7 availability, multi-language support, CRM integration, and smart appointment scheduling.",
-      canonical: "https://www.vocalscale.com/features"
+      title: "AI Receptionist Features: 24/7 Call Answering, AI Scheduling & CRM | VocalScale",
+      description: "Explore VocalScale's AI phone agent features — 24/7 call answering, smart appointment booking, 50+ languages, CRM and calendar integrations, and HIPAA-aware healthcare workflows.",
+      canonical: "https://vocalscale.com/features"
     },
     '/pricing': {
-      title: "Pricing & Plans | VocalScale AI Receptionist",
-      description: "Simple, transparent pricing for every business size. Start for free and scale as you grow. No hidden fees.",
-      canonical: "https://www.vocalscale.com/pricing"
+      title: "AI Receptionist Pricing: Plans from $79/mo | VocalScale",
+      description: "Transparent AI receptionist pricing starting at $79/month with 300 AI minutes. Save up to 85% vs. a live answering service. No hidden fees, cancel anytime.",
+      canonical: "https://vocalscale.com/pricing"
     },
     '/process': {
-      title: "How It Works | VocalScale AI Voice Agent",
-      description: "Get your AI receptionist up and running in minutes. Pick a number, customize your agent, and start handling calls automatically.",
-      canonical: "https://www.vocalscale.com/process"
+      title: "How VocalScale's AI Voice Agent Works | Setup in Minutes",
+      description: "Launch your 24/7 AI receptionist in under 15 minutes. Pick a phone number, train the AI on your FAQs and booking rules, and start answering every call automatically.",
+      canonical: "https://vocalscale.com/process"
     }
   };
 

@@ -1,128 +1,25 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, LogIn, ShieldAlert } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Mail, LogIn, CheckCircle2, Loader2, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AuthLayout from '../layouts/AuthLayout';
-import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
-import { useQueryClient } from '@tanstack/react-query';
-import { isSessionExpired } from '../../utils/sessionUtils';
 import Button from '../../components/ui/Button';
-import TurnstileWidget from '../../components/ui/TurnstileWidget';
-import ServiceStatusPage from '../../components/ui/ServiceStatusPage';
-import { getDevelopmentHeaders } from '../../lib/devHeaders';
+
+const ACCESS_REQUEST_ENDPOINT = 'https://formsubmit.co/ajax/ponugotivinay.v@gmail.com';
 
 const Login = () => {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { isConfigured, securityMessage, session, setAuthSession } = useAuth();
   const { showToast } = useToast();
 
-  useEffect(() => {
-    if (session && !isSessionExpired(session)) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [session, navigate]);
-
-  // Form state
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [serviceDown, setServiceDown] = useState(false);
-  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Rate limiting tracking
-  const [failedAttempts, setFailedAttempts] = useState(0);
-  const [lastFailedAttempt, setLastFailedAttempt] = useState<number>(0);
-  const [rateLimitCooldown, setRateLimitCooldown] = useState(0);
-
-  // Form submission prevention
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Password strength calculation
-  const passwordStrength = useMemo(() => {
-    const p = password;
-    if (!p) return { score: 0, label: 'Weak', color: 'bg-slate-200', textColor: 'text-slate-400' };
-    
-    let score = 0;
-    if (p.length >= 8) score++;
-    if (p.length >= 12) score++;
-    if (/[a-z]/.test(p)) score++;
-    if (/[A-Z]/.test(p)) score++;
-    if (/[0-9]/.test(p)) score++;
-    if (/[^a-zA-Z0-9]/.test(p)) score++;
-
-    // Max score is 4 for display
-    const displayScore = Math.min(4, Math.floor(score / 1.5));
-
-    const strengthMap = [
-      { score: 0, label: 'Very Weak', color: 'bg-red-500', textColor: 'text-red-500' },
-      { score: 1, label: 'Weak', color: 'bg-orange-500', textColor: 'text-orange-500' },
-      { score: 2, label: 'Fair', color: 'bg-yellow-500', textColor: 'text-yellow-500' },
-      { score: 3, label: 'Good', color: 'bg-emerald-500', textColor: 'text-emerald-500' },
-      { score: 4, label: 'Strong', color: 'bg-green-600', textColor: 'text-green-600' }
-    ];
-
-    return strengthMap[displayScore];
-  }, [password]);
-
-  // Rate limit cooldown effect
-  useEffect(() => {
-    if (rateLimitCooldown > 0) {
-      const timer = setInterval(() => {
-        setRateLimitCooldown(prev => Math.max(0, prev - 1));
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [rateLimitCooldown]);
-
-  // Check rate limit
-  const isRateLimited = useMemo(() => {
-    if (rateLimitCooldown > 0) return true;
-    
-    // Lock out after 5 failed attempts for 5 minutes
-    if (failedAttempts >= 5) {
-      const timeSinceLastFail = Date.now() - lastFailedAttempt;
-      if (timeSinceLastFail < 5 * 60 * 1000) {
-        setRateLimitCooldown(Math.ceil((5 * 60 * 1000 - timeSinceLastFail) / 1000));
-        return true;
-      } else {
-        // Reset after cooldown expires
-        setFailedAttempts(0);
-      }
-    }
-    return false;
-  }, [failedAttempts, lastFailedAttempt, rateLimitCooldown]);
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // Prevent form resubmission
-    if (isSubmitting || loading) {
-      console.warn('Form submission already in progress');
-      return;
-    }
-
-    // Check rate limit
-    if (isRateLimited) {
-      const msg = `Too many attempts. Please wait ${Math.ceil(rateLimitCooldown / 60)} minute${rateLimitCooldown > 60 ? 's' : ''}.`;
-      setError(msg);
-      showToast(msg, 'error');
-      return;
-    }
-
-    if (!isConfigured) {
-      const msg = 'Service unavailable.';
-      setError(msg);
-      showToast(msg, 'error');
-      return;
-    }
-
-    // Validate email
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       const msg = 'Please enter a valid email address.';
       setError(msg);
@@ -130,154 +27,32 @@ const Login = () => {
       return;
     }
 
-    // Validate password
-    if (!password || password.length < 6) {
-      const msg = 'Password must be at least 6 characters.';
-      setError(msg);
-      showToast(msg, 'error');
-      return;
-    }
-
-    if (turnstileSiteKey && !turnstileToken) {
-      const msg = 'Please complete the security verification.';
-      setError(msg);
-      showToast(msg, 'error');
-      return;
-    }
-
-    setIsSubmitting(true);
     setLoading(true);
-    setServiceDown(false);
-    
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+      const response = await fetch(ACCESS_REQUEST_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body: JSON.stringify({
           email: email.trim().toLowerCase(),
-          password: password,
-          cf_turnstile_response: turnstileToken,
+          source: 'Login page',
+          _subject: 'VocalScale — Login access request',
+          _template: 'table',
         }),
       });
 
       if (!response.ok) {
-        // Detect service unavailable (500 from backend = likely Supabase down)
-        if (response.status >= 500) {
-          setServiceDown(true);
-          return;
-        }
-        
-        // Track failed attempts for rate limiting
-        setFailedAttempts(prev => prev + 1);
-        setLastFailedAttempt(Date.now());
-        
-        let errorMsg = 'Invalid email or password.';
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData.detail || errorMsg;
-          
-          // Check for rate limit message from server
-          if (response.status === 429) {
-            errorMsg = errorData.detail || 'Too many login attempts. Please try again later.';
-          }
-        } catch { /* ignore parse errors */ }
-        
-        throw new Error(errorMsg);
+        throw new Error('Could not submit your request. Please try again.');
       }
 
-      const responseData = await response.json();
-      const { session } = responseData;
-
-      if (session && (session.access_token || session.refresh_token)) {
-        // Reset failed attempts on success
-        setFailedAttempts(0);
-        setLastFailedAttempt(0);
-        
-        setAuthSession(session, rememberMe);
-
-        // Prefetch critical dashboard data
-        const now = new Date();
-        const dateStr = now.toISOString().split('T')[0];
-        const authHeaders = {
-          'Authorization': `Bearer ${session.access_token}`,
-          ...getDevelopmentHeaders()
-        };
-
-        queryClient.prefetchQuery({
-          queryKey: ['dashboard', dateStr, 7],
-          queryFn: async () => {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/stats?date=${now.toISOString()}&days=7`, {
-              headers: authHeaders
-            });
-            return response.json();
-          }
-        });
-
-        showToast('Welcome back!', 'success');
-        navigate('/dashboard', { replace: true });
-      } else {
-        throw new Error('Session could not be established.');
-      }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to connect to authentication server.';
-      // Detect network errors that suggest service is down
-      if (message.includes('Failed to fetch') || message.includes('NetworkError') || message.includes('timed out')) {
-        setServiceDown(true);
-      } else {
-        setError(message);
-        showToast(message, 'error');
-      }
-    } finally {
-      setLoading(false);
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    if (isRateLimited) {
-      const msg = `Too many attempts. Please wait ${Math.ceil(rateLimitCooldown / 60)} minute${rateLimitCooldown > 60 ? 's' : ''}.`;
-      showToast(msg, 'error');
-      return;
-    }
-
-    if (!isConfigured) {
-      showToast('Service unavailable.', 'error');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const redirectUrl = `${window.location.origin}/auth/callback`;
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-url?redirect_to=${encodeURIComponent(redirectUrl)}`);
-      if (!response.ok) throw new Error('Failed to get auth URL');
-
-      const { url } = await response.json();
-
-      // Pre-flight check: verify Supabase auth is reachable before redirecting
-      try {
-        const supabaseOrigin = new URL(url).origin;
-        await Promise.race([
-          fetch(`${supabaseOrigin}/auth/v1/health`, { method: 'GET', mode: 'cors' }),
-          new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('timeout')), 8000)
-          )
-        ]);
-      } catch {
-        setServiceDown(true);
-        return;
-      }
-
-      window.location.href = url;
+      setSuccess(true);
+      showToast('Request sent! We\'ll be in touch.', 'success');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'An error occurred during Google login.';
-      if (message.includes('Failed to fetch') || message.includes('NetworkError') || message.includes('timed out')) {
-        setServiceDown(true);
-      } else {
-        setError(message);
-        showToast(message, 'error');
-      }
+      const message = err instanceof Error ? err.message : 'Something went wrong.';
+      setError(message);
+      showToast(message, 'error');
     } finally {
       setLoading(false);
     }
@@ -285,197 +60,93 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      {serviceDown ? (
-        <ServiceStatusPage
-          onRetry={async () => {
-            setServiceDown(false);
-            await handleGoogleLogin();
-          }}
-          onBack={() => {
-            setServiceDown(false);
-            setError(null);
-          }}
-        />
-      ) : (
-        <div className="flex flex-col w-full max-w-[440px] px-6 py-12 md:bg-white md:rounded-[2.5rem] md:shadow-[0_20px_50px_rgba(0,0,0,0.04)] md:border md:border-slate-100 items-center">
+      <div className="flex flex-col w-full max-w-[440px] px-6 py-12 md:bg-white md:rounded-[2.5rem] md:shadow-[0_20px_50px_rgba(0,0,0,0.04)] md:border md:border-slate-100 items-center">
 
-          {/* Design Match: Floating Icon at top */}
-          <div className="mb-8 p-6 bg-white rounded-[1.5rem] shadow-[0_10px_30px_rgba(0,0,0,0.05)] border border-slate-50">
+        <div className="mb-8 p-6 bg-white rounded-[1.5rem] shadow-[0_10px_30px_rgba(0,0,0,0.05)] border border-slate-50">
+          {success ? (
+            <CheckCircle2 className="w-8 h-8 text-emerald-600" strokeWidth={1.5} />
+          ) : (
             <LogIn className="w-8 h-8 text-slate-900" strokeWidth={1.5} />
+          )}
+        </div>
+
+        <div className="text-center mb-8 space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 text-[10px] font-black uppercase tracking-[0.2em] text-amber-700 mb-2">
+            <ShieldCheck className="w-3 h-3" />
+            Limited Access · Private Beta
           </div>
+          <h1 className="text-3xl font-bold text-slate-950 tracking-tight">
+            {success ? "You're on the list" : 'Request access'}
+          </h1>
+          <p className="text-slate-500 font-medium leading-relaxed max-w-[340px] mx-auto">
+            {success
+              ? "Thanks — we received your email. Our team will reach out within 24 hours with next steps."
+              : 'VocalScale is currently invite-only. Drop your email below and we\'ll get back to you with login access.'}
+          </p>
+        </div>
 
-          {/* Design Match: Centered Text */}
-          <div className="text-center mb-10 space-y-3">
-            <h1 className="text-3xl font-bold text-slate-950 tracking-tight">
-              Sign in with email
-            </h1>
-            <p className="text-slate-500 font-medium leading-relaxed max-w-[320px] mx-auto">
-              Step into your AI control center to bring your words, data, and teams together.
-            </p>
-          </div>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-6 w-full p-4 bg-red-50 text-red-600 text-xs font-bold rounded-2xl border border-red-100 flex items-center gap-3"
+          >
+            <div className="w-1.5 h-1.5 bg-red-600 rounded-full" />
+            {error}
+          </motion.div>
+        )}
 
-          {securityMessage && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-8 flex items-center gap-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-50 px-4 py-2 rounded-full border border-slate-100"
-            >
-              <div className="w-1.5 h-1.5 bg-slate-900 rounded-full animate-pulse" />
-              {securityMessage}
-            </motion.div>
-          )}
-
-          {/* Rate Limit Warning */}
-          {isRateLimited && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-6 w-full p-4 bg-amber-50 text-amber-700 text-xs font-bold rounded-2xl border border-amber-200 flex items-center gap-3"
-            >
-              <ShieldAlert className="w-4 h-4" />
-              <span>
-                {rateLimitCooldown > 60 
-                  ? `Too many attempts. Try again in ${Math.ceil(rateLimitCooldown / 60)} minutes.`
-                  : `Too many attempts. Try again in ${rateLimitCooldown} seconds.`}
-              </span>
-            </motion.div>
-          )}
-
-          {/* Error Callout */}
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-8 w-full p-4 bg-red-50 text-red-600 text-xs font-bold rounded-2xl border border-red-100 flex items-center gap-3"
-            >
-              <div className="w-1.5 h-1.5 bg-red-600 rounded-full" />
-              {error}
-            </motion.div>
-          )}
-
-          {/* Failed attempts indicator (when approaching rate limit) */}
-          {failedAttempts >= 3 && failedAttempts < 5 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mb-6 text-xs text-amber-600 font-medium flex items-center gap-2"
-            >
-              <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-              {5 - failedAttempts} attempt{5 - failedAttempts !== 1 ? 's' : ''} remaining before temporary lockout
-            </motion.div>
-          )}
-
-          {/* Design Match: Minimalist Form */}
-          <form className="w-full space-y-4" onSubmit={handleLogin}>
+        {!success && (
+          <form className="w-full space-y-4" onSubmit={handleSubmit}>
             <div className="relative group">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-slate-950 transition-colors" strokeWidth={1.5} />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder="you@business.com"
                 required
-                disabled={loading || isRateLimited}
+                disabled={loading}
                 autoComplete="email"
+                autoFocus
                 className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-100 focus:border-slate-300 focus:bg-white rounded-[1rem] text-[15px] text-slate-900 placeholder:text-slate-400 transition-all outline-none"
               />
-            </div>
-
-            <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-slate-950 transition-colors" strokeWidth={1.5} />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                disabled={loading || isRateLimited}
-                autoComplete="current-password"
-                className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-100 focus:border-slate-300 focus:bg-white rounded-[1rem] text-[15px] text-slate-900 placeholder:text-slate-400 transition-all outline-none"
-              />
-            </div>
-
-            {/* Password Strength Indicator */}
-            {password && (
-              <div className="px-1">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-slate-500">Password Strength</span>
-                  <span className={`text-xs font-bold ${passwordStrength.textColor}`}>
-                    {passwordStrength.label}
-                  </span>
-                </div>
-                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${passwordStrength.color} transition-all duration-300`}
-                    style={{ width: `${(passwordStrength.score + 1) * 25}%` }}
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center gap-2">
-                <input
-                  id="remember-me"
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  disabled={loading || isRateLimited}
-                  className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer accent-slate-900"
-                />
-                <label htmlFor="remember-me" className="text-sm font-medium text-slate-600 cursor-pointer select-none">
-                  Remember me
-                </label>
-              </div>
-              <Link to="/forgot-password" className="text-sm font-bold text-slate-900 hover:text-slate-600 transition-colors">
-                Forgot password?
-              </Link>
             </div>
 
             <Button
               type="submit"
               isLoading={loading}
-              disabled={isRateLimited || isSubmitting}
-              className="w-full h-14 bg-[#1e293b] hover:bg-[#020617] text-white rounded-[1rem] font-bold text-[16px] shadow-lg shadow-slate-950/20 active:scale-[0.98] transition-all mt-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1e293b]"
-            >
-              {isRateLimited ? 'Please Wait' : 'Get Started'}
-            </Button>
-
-            {turnstileSiteKey && (
-              <TurnstileWidget
-                siteKey={turnstileSiteKey}
-                onVerify={setTurnstileToken}
-              />
-            )}
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-500 font-medium mb-2">
-              No account yet?
-            </p>
-            <Link to="/signup" className="text-sm font-bold text-slate-900 hover:text-slate-600 transition-colors">
-              Create one
-            </Link>
-          </div>
-
-          {/* Social Providers */}
-          <div className="mt-8 w-full flex gap-3">
-            <button
-              type="button"
-              className="flex-1 px-4 py-3 bg-white border border-slate-100 rounded-[1rem] hover:bg-slate-50 transition-colors active:scale-[0.98]"
-              onClick={handleGoogleLogin}
               disabled={loading}
+              className="w-full h-14 bg-[#1e293b] hover:bg-[#020617] text-white rounded-[1rem] font-bold text-[16px] shadow-lg shadow-slate-950/20 active:scale-[0.98] transition-all mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg className="w-5 h-5 mx-auto" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-            </button>
-          </div>
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Sending…
+                </span>
+              ) : (
+                'Request Access'
+              )}
+            </Button>
+          </form>
+        )}
+
+        <div className="mt-8 text-center">
+          <p className="text-sm text-slate-500 font-medium">
+            New to VocalScale?{' '}
+            <Link to="/signup" className="text-slate-900 font-bold hover:underline underline-offset-4">
+              Join the waitlist
+            </Link>
+          </p>
         </div>
-      )}
+
+        <p className="mt-6 text-[11px] text-slate-400 font-medium text-center max-w-[320px] leading-relaxed">
+          By requesting access, you agree to our{' '}
+          <Link to="/terms" className="text-slate-700 font-bold hover:underline underline-offset-2">Terms</Link>{' '}
+          and{' '}
+          <Link to="/privacy" className="text-slate-700 font-bold hover:underline underline-offset-2">Privacy Policy</Link>.
+        </p>
+      </div>
     </AuthLayout>
   );
 };
