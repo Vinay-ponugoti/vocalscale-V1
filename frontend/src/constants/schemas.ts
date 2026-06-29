@@ -86,30 +86,14 @@ export const productSchema = {
         {
             "@type": "Offer",
             "name": "Starter Plan",
-            "price": "79",
-            "priceCurrency": "USD",
-            "priceSpecification": {
-                "@type": "UnitPriceSpecification",
-                "price": "79",
-                "priceCurrency": "USD",
-                "billingDuration": "P1M",
-                "unitCode": "MON"
-            },
+            "description": "Contact VocalScale for pricing tailored to your business needs.",
             "availability": "https://schema.org/InStock",
             "url": "https://vocalscale.com/pricing"
         },
         {
             "@type": "Offer",
             "name": "Professional Plan",
-            "price": "135",
-            "priceCurrency": "USD",
-            "priceSpecification": {
-                "@type": "UnitPriceSpecification",
-                "price": "135",
-                "priceCurrency": "USD",
-                "billingDuration": "P1M",
-                "unitCode": "MON"
-            },
+            "description": "Contact VocalScale for pricing tailored to your business needs.",
             "availability": "https://schema.org/InStock",
             "url": "https://vocalscale.com/pricing"
         }

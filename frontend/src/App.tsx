@@ -36,6 +36,7 @@ import Landing from './pages/landing/index';
 
 const Privacy = lazyImport(() => import('./pages/landing/Privacy'));
 const Terms = lazyImport(() => import('./pages/landing/Terms'));
+const Contact = lazyImport(() => import('./pages/landing/Contact'));
 
 // Blog Pages
 const BlogIndex = lazyImport(() => import('./pages/blog/index'));
@@ -73,6 +74,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/pricing" element={<Landing />} />
             <Route path="/features" element={<Landing />} />
             <Route path="/process" element={<Landing />} />

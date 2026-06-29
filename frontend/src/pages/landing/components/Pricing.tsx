@@ -1,23 +1,18 @@
-import { useState } from 'react';
 import { Check, Zap, Star, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { trackStartDemo } from '@/lib/analytics';
 
 export function Pricing() {
-  const [isAnnual, setIsAnnual] = useState(false);
-
   const plans = [
     {
       name: 'Starter',
       description: 'Perfect for ambitious solo pros. Automated 24/7 AI Receptionist.',
-      monthlyPrice: 99,
-      annualPrice: 79,
-      originalPrice: 0,
       features: [
         '300 AI minutes included',
-        'Extra minutes: $0.094/min',
+        'Additional usage available with custom plans',
         'In-app & Google Calendar scheduling',
         'Standard AI voice models',
         'Email support',
@@ -26,7 +21,7 @@ export function Pricing() {
         'AI Image Generation',
         'AI Text Generation'
       ],
-      cta: 'Get Started Now',
+      cta: 'Contact Us',
       popular: false,
       icon: Zap,
       color: 'blue'
@@ -34,12 +29,9 @@ export function Pricing() {
     {
       name: 'Professional',
       description: 'Powerhouse for growing teams. Auto-schedule appointments & scale.',
-      monthlyPrice: 169,
-      annualPrice: 135,
-      originalPrice: 0,
       features: [
         '1000 AI minutes included',
-        'Extra minutes: $0.094/min',
+        'Additional usage available with custom plans',
         'In-app & Google Calendar scheduling',
         'Premium HD voice models',
         'Priority 24/7 support',
@@ -50,7 +42,7 @@ export function Pricing() {
         'AI Image Generation',
         'AI Text Generation'
       ],
-      cta: 'Get Started Now',
+      cta: 'Contact Us',
       popular: true,
       icon: Star,
       color: 'indigo'
@@ -87,36 +79,8 @@ export function Pricing() {
           </motion.h2>
 
           <p className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed mb-12">
-            Transparent pricing with no hidden fees. Save up to 85% compared to traditional receptionist services while getting 24/7 availability.
+            Pricing is tailored to your call volume, workflows, and support needs. Contact us for a custom plan built around your business.
           </p>
-
-          {/* Pricing Toggle */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex items-center justify-center gap-4 mb-12"
-          >
-            <span className={cn("text-sm font-black transition-colors uppercase tracking-widest", !isAnnual ? "text-slate-900" : "text-slate-400")}>Monthly</span>
-            <button
-              onClick={() => setIsAnnual(!isAnnual)}
-              className="relative w-16 h-8 rounded-full bg-slate-100 border border-slate-200 p-1 transition-colors hover:border-blue-400"
-            >
-              <div
-                className={cn(
-                  "w-6 h-6 rounded-full bg-blue-600 shadow-sm transition-transform duration-300",
-                  isAnnual ? "translate-x-8" : "translate-x-0"
-                )}
-              />
-            </button>
-            <div className="flex items-center gap-2">
-              <span className={cn("text-sm font-black transition-colors uppercase tracking-widest", isAnnual ? "text-slate-900" : "text-slate-400")}>Annual</span>
-              <span className="px-2 py-0.5 bg-blue-100/50 text-blue-600 text-[10px] font-black uppercase tracking-tighter rounded-md border border-blue-200">
-                Save 20%
-              </span>
-            </div>
-          </motion.div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -157,27 +121,15 @@ export function Pricing() {
 
                 <div className="mb-8 md:mb-10">
                   <div className="flex flex-col gap-1">
-                    {!isAnnual && plan.originalPrice > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl md:text-2xl font-bold text-slate-400 line-through decoration-slate-400/50 decoration-2">
-                          ${plan.originalPrice}
-                        </span>
-                        <span className="px-2 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase rounded border border-emerald-200">
-                          30% OFF
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900">$</span>
-                      <span className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900">
-                        {isAnnual ? plan.annualPrice : plan.monthlyPrice}
+                    <div className="flex items-baseline">
+                      <span className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900">
+                        Contact Us
                       </span>
-                      <span className="text-slate-500 font-bold ml-1 text-base md:text-lg">/mo</span>
                     </div>
+                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1">
+                      For pricing
+                    </p>
                   </div>
-                  {isAnnual && (
-                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1">Billed annually</p>
-                  )}
 
                 </div>
 
@@ -204,7 +156,7 @@ export function Pricing() {
                     plan.popular ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-slate-900 hover:bg-slate-800 text-white"
                   )}
                 >
-                  <a href="/signup">{plan.cta}</a>
+                  <Link to="/contact">{plan.cta}</Link>
                 </Button>
               </div>
             </motion.div>
@@ -222,7 +174,7 @@ export function Pricing() {
           <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
             <h3 className="text-2xl font-bold text-slate-900 mb-4">Scalable Solutions for Enterprise Organizations</h3>
             <p className="text-slate-600 leading-relaxed mb-6">
-              Beyond our Professional plan, VocalScale offers enterprise-grade solutions designed for organizations managing high-volume customer interactions across multiple locations, departments, and service lines. Our enterprise pricing includes dedicated account management, custom AI model training, advanced security protocols, and white-label deployment options.
+              Beyond our Professional plan, VocalScale offers enterprise-grade solutions designed for organizations managing high-volume customer interactions across multiple locations, departments, and service lines. Our enterprise options include dedicated account management, custom AI model training, advanced security protocols, and white-label deployment options.
             </p>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
@@ -249,7 +201,7 @@ export function Pricing() {
               <div>
                 <h4 className="font-bold text-slate-900 mb-3">Volume Pricing Benefits</h4>
                 <p className="text-slate-600 leading-relaxed mb-4">
-                  Organizations processing over 5,000 monthly calls benefit from our volume pricing structure, with per-minute rates decreasing as usage increases. Enterprise clients also receive priority support, dedicated infrastructure, and guaranteed uptime SLAs of 99.9%.
+                  Organizations processing high monthly call volume can contact our team for a plan aligned with their usage patterns, support expectations, and rollout requirements. Enterprise clients also receive priority support, dedicated infrastructure, and guaranteed uptime SLAs of 99.9%.
                 </p>
                 <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                   <p className="text-sm text-slate-800 font-medium">
@@ -266,7 +218,7 @@ export function Pricing() {
                 <Check className="w-6 h-6 text-slate-800" />
               </div>
               <h4 className="font-bold text-slate-900 mb-2">No Hidden Fees</h4>
-              <p className="text-sm text-slate-600">Transparent pricing with no setup costs, cancellation fees, or surprise charges</p>
+              <p className="text-sm text-slate-600">Clear custom plans with no setup costs, cancellation fees, or surprise charges</p>
             </div>
             <div className="bg-white rounded-2xl p-6 border border-slate-200 text-center shadow-sm">
               <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
