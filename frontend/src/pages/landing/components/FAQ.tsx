@@ -18,7 +18,7 @@ export function FAQ() {
               </span>
             </summary>
             <p className="mt-4 leading-relaxed text-slate-600">
-              Pricing starts at $299/month for one agent. Additional agents are $199/month each.
+              Contact us for pricing. We tailor plans around your call volume, workflow needs, and support requirements.
             </p>
           </details>
 

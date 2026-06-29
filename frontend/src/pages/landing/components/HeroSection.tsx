@@ -89,7 +89,7 @@ export function HeroSection() {
                                     </h1>
                                     <p
                                         className="mx-auto mt-6 max-w-3xl text-balance text-lg md:text-xl text-slate-600 leading-relaxed font-medium">
-                                        VocalScale is an AI-powered virtual receptionist and AI phone answering service for small businesses. Our voice agent answers calls 24/7, books appointments into your calendar, qualifies leads into your CRM, and warm-transfers urgent calls — in 50+ languages, from $79/month.
+                                        VocalScale is an AI-powered virtual receptionist and AI phone answering service for small businesses. Our voice agent answers calls 24/7, books appointments into your calendar, qualifies leads into your CRM, and warm-transfers urgent calls in 50+ languages. Contact us for pricing.
                                     </p>
 
 
@@ -127,14 +127,14 @@ export function HeroSection() {
                                         size="lg"
                                         variant="ghost"
                                         className="h-12 rounded-xl px-8 text-lg font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-all w-full md:w-auto shadow-sm bg-white">
-                                        <a href="#book-demo" className="hover:no-underline">
+                                        <Link to="/contact" className="hover:no-underline">
                                             <span className="text-nowrap flex items-center justify-center gap-2">
                                                 Schedule Demo
                                                 <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
                                                     <ChevronRight size={14} className="text-blue-600 ml-0.5" />
                                                 </div>
                                             </span>
-                                        </a>
+                                        </Link>
                                     </Button>
                                 </AnimatedGroup>
                             </div>

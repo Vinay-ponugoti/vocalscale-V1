@@ -39,7 +39,7 @@ const Landing = () => {
   const seoConfig = {
     '/': {
       title: "AI Receptionist & 24/7 Voice Agent for Small Business | VocalScale",
-      description: "VocalScale is the AI receptionist that answers every call 24/7, books appointments, and qualifies leads in 50+ languages. Replace your answering service from $79/mo. Start free.",
+      description: "VocalScale is the AI receptionist that answers every call 24/7, books appointments, and qualifies leads in 50+ languages. Contact us for pricing.",
       canonical: "https://vocalscale.com/"
     },
     '/features': {
@@ -48,8 +48,8 @@ const Landing = () => {
       canonical: "https://vocalscale.com/features"
     },
     '/pricing': {
-      title: "AI Receptionist Pricing: Plans from $79/mo | VocalScale",
-      description: "Transparent AI receptionist pricing starting at $79/month with 300 AI minutes. Save up to 85% vs. a live answering service. No hidden fees, cancel anytime.",
+      title: "AI Receptionist Pricing: Contact Us | VocalScale",
+      description: "Contact VocalScale for AI receptionist pricing tailored to your call volume, workflows, and support needs.",
       canonical: "https://vocalscale.com/pricing"
     },
     '/process': {

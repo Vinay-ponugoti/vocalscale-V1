@@ -17,15 +17,10 @@ export function Footer() {
       { label: 'Real Estate', href: '/industries/real-estate' },
       { label: 'Chiropractic', href: '/industries/chiropractic' }
     ],
-    Compare: [
-      { label: 'VocalScale vs Retell AI', href: '/comparisons/vocalscale-vs-retell-ai' },
-      { label: 'VocalScale vs Bland AI', href: '/comparisons/vocalscale-vs-bland-ai' },
-      { label: 'AI vs Live Receptionist', href: '/comparisons/ai-receptionist-vs-live-receptionist' }
-    ],
     Company: [
       { label: 'About Us', href: '/about' },
       { label: 'Blog', href: '/blog' },
-      { label: 'Contact', href: '#book-demo' }
+      { label: 'Contact', href: '/contact' }
     ],
     Support: [
       { label: 'Privacy Policy', href: '/privacy' },
@@ -48,7 +43,7 @@ export function Footer() {
             </Link>
             <p className="text-slate-500 mb-4 text-sm leading-relaxed font-medium">
               The 24/7 AI receptionist for small businesses. VocalScale's AI voice agent answers every call,
-              books appointments, and qualifies leads in 50+ languages — replacing your answering service from $79/month.
+              books appointments, and qualifies leads in 50+ languages. Contact us for pricing.
             </p>
             <p className="text-slate-400 text-xs leading-relaxed font-medium mb-8">
               Trusted by medical practices, law firms, real estate teams, and home-service contractors across the US, Canada, UK, and Australia.

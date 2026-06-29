@@ -62,19 +62,19 @@ export function HowItWorks() {
   ];
 
   return (
-    <section ref={sectionRef} id="how-it-works" className="py-12 md:py-20 px-6 md:px-8 relative overflow-hidden bg-transparent">
+    <section ref={sectionRef} id="how-it-works" className="-mt-8 md:-mt-14 pt-4 md:pt-8 pb-12 md:pb-16 px-6 md:px-8 relative overflow-hidden bg-transparent">
       {/* Animated background */}
       <div className="absolute inset-0 z-0 bg-grid-slate-900/[0.03] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
 
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center mb-16 md:mb-32">
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8 shadow-sm hover:shadow-md transition-shadow">
+        <div className="text-center mb-8 md:mb-12">
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 backdrop-blur-sm mb-5 md:mb-6 shadow-sm hover:shadow-md transition-shadow">
             <Sparkles className="h-4 w-4 text-blue-600 fill-blue-600/20" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">How It Works</span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]">
+          <h2 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-4 md:mb-5 leading-[1.1] md:leading-[1.05]">
             Your voice, <br />
             <span className="text-slate-900 italic tracking-tight">supercharged by AI.</span>
           </h2>
@@ -84,7 +84,7 @@ export function HowItWorks() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-24 md:mb-40">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-14 md:mb-20">
           {steps.map((step, index) => (
             <div
               key={index}
