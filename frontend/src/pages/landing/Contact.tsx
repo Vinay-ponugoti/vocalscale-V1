@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Loader2, Sparkles } from 'lucide-react';
+import { CalendarCheck2, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { SEO } from '@/components/SEO';
@@ -24,10 +24,23 @@ const faqs = [
   }
 ];
 
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY as string | undefined;
+const DEFAULT_CALENDLY_URL = 'https://calendly.com/ponugotivinay-v/free-consultation';
+const CALENDLY_URL = (import.meta.env.VITE_CALENDLY_URL as string | undefined) || DEFAULT_CALENDLY_URL;
+
+type ContactFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  website: string;
+  problem: string;
+};
+
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [formData, setFormData] = useState({
+  const [submittedLead, setSubmittedLead] = useState<ContactFormData | null>(null);
+  const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
     phone: '',
@@ -35,6 +48,8 @@ export default function Contact() {
     problem: ''
   });
   const { showToast } = useToast();
+
+  const schedulingUrl = submittedLead ? buildCalendlyUrl(CALENDLY_URL, submittedLead) : CALENDLY_URL;
 
   const updateField = (field: keyof typeof formData) => (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -53,31 +68,44 @@ export default function Contact() {
       return;
     }
 
+    if (!WEB3FORMS_ACCESS_KEY) {
+      showToast('Web3Forms access key is missing. Add it to your environment settings.', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://formsubmit.co/ajax/landing@vocalscale.com', {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: 'New Pricing Call Request from VocalScale',
+          from_name: 'VocalScale Contact Form',
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
           website: formData.website || 'Not provided',
           message: formData.problem || 'No problem statement provided',
-          _subject: 'New Pricing Call Request from VocalScale',
-          _template: 'table'
+          botcheck: ''
         })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.message || 'Something went wrong');
       }
 
+      if (!data.success) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+
+      setSubmittedLead(formData);
       setIsSuccess(true);
       showToast('Request sent successfully!', 'success');
       setFormData({
@@ -134,8 +162,23 @@ export default function Contact() {
                     You're all set.
                   </h2>
                   <p className="mt-3 max-w-lg text-slate-600 text-base font-medium">
-                    We received your request. Our team will reach out to schedule your VocalScale pricing call.
+                    We received your request. Pick a time on Calendly and we will be ready for your VocalScale pricing call.
                   </p>
+                  {schedulingUrl ? (
+                    <a
+                      href={schedulingUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 text-sm font-black text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:no-underline active:scale-[0.99]"
+                    >
+                      <CalendarCheck2 className="h-5 w-5" />
+                      Schedule on Calendly
+                    </a>
+                  ) : (
+                    <p className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3 text-sm font-bold text-amber-900">
+                      Calendly link is not configured yet.
+                    </p>
+                  )}
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
@@ -218,4 +261,33 @@ export default function Contact() {
       <Footer />
     </div>
   );
+}
+
+function buildCalendlyUrl(baseUrl: string | undefined, lead: ContactFormData) {
+  if (!baseUrl) {
+    return undefined;
+  }
+
+  try {
+    const url = new URL(baseUrl);
+
+    url.searchParams.set('name', lead.name);
+    url.searchParams.set('email', lead.email);
+
+    if (lead.phone) {
+      url.searchParams.set('a1', lead.phone);
+    }
+
+    if (lead.website) {
+      url.searchParams.set('a2', lead.website);
+    }
+
+    if (lead.problem) {
+      url.searchParams.set('a3', lead.problem);
+    }
+
+    return url.toString();
+  } catch {
+    return baseUrl;
+  }
 }
