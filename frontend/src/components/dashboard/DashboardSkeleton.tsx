@@ -1,6 +1,6 @@
 const DashboardSkeleton = () => {
   return (
-    <div className="animate-pulse space-y-8">
+    <div className="animate-pulse space-y-6">
       {/* Overview Header Skeleton */}
       <div className="flex items-center justify-between opacity-50">
         <div className="space-y-2">
@@ -17,7 +17,7 @@ const DashboardSkeleton = () => {
       {/* Stats Grid Skeleton */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <div key={i} className="bg-white rounded-2xl p-6 shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 bg-gray-100 rounded-xl"></div>
               <div className="w-16 h-6 bg-gray-50 rounded-full"></div>
@@ -30,10 +30,10 @@ const DashboardSkeleton = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:gap-6 xl:grid-cols-3">
         {/* Left Column Skeleton (Chart & Large area) */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-8 rounded-2xl border border-gray-100 h-[400px] shadow-sm">
+        <div className="min-w-0 space-y-4 xl:col-span-2">
+          <div className="bg-white p-8 rounded-2xl h-[400px] shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
             <div className="flex justify-between items-center mb-10">
               <div className="h-6 w-48 bg-gray-100 rounded"></div>
               <div className="flex gap-2">
@@ -46,9 +46,9 @@ const DashboardSkeleton = () => {
         </div>
 
         {/* Right Column Skeleton (Transcripts/Feed) */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm min-h-[500px]">
-            <div className="flex items-center justify-between mb-8 border-b border-gray-50 pb-4">
+        <div className="min-w-0 space-y-6">
+          <div className="bg-white rounded-2xl p-6 shadow-[0_1px_3px_rgba(15,23,42,0.08)] min-h-[500px]">
+            <div className="flex items-center justify-between mb-8 pb-4">
               <div className="h-6 w-40 bg-gray-100 rounded"></div>
             </div>
             <div className="space-y-6">

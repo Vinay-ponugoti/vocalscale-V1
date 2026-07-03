@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { billingApi } from '../../../api/billing';
-import { Card } from '../../../components/ui/Card';
 
 import { useAuth } from '../../../context/AuthContext';
 
@@ -282,7 +281,7 @@ const Plans: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="max-w-6xl mx-auto space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
         {isFetching ? (
           <div className="flex-1 flex items-center justify-center min-h-[60vh]">
@@ -303,7 +302,7 @@ const Plans: React.FC = () => {
             )}
 
             {/* Header */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               <button
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-2 text-charcoal-light hover:text-charcoal transition-colors w-fit group"
@@ -343,19 +342,19 @@ const Plans: React.FC = () => {
             </div>
 
             {plans.length > 0 ? (
-              <div className="grid lg:grid-cols-3 gap-8 pt-4">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
                 {plans.map((plan) => (
                   <div
                     key={plan.name}
                     className={cn(
-                      "group relative p-1 rounded-[2.5rem] transition-all duration-500",
-                      plan.popular ? "bg-gradient-to-b from-blue-200 to-indigo-200 shadow-2xl shadow-blue-200/50" : "bg-transparent border border-transparent",
+                      "group relative p-1 rounded-[1.75rem] transition-all duration-500",
+                      plan.popular ? "bg-gradient-to-b from-blue-200 to-indigo-200 shadow-xl shadow-blue-200/50" : "bg-transparent border border-transparent",
                       plan.current && "opacity-75" // Lock UI simple
                     )}
                   >
                     <div className={cn(
-                      "relative bg-white rounded-[2.4rem] p-8 h-full flex flex-col border",
-                      plan.popular ? "border-white/50" : "border-slate-200 shadow-xl shadow-slate-200/50"
+                      "relative bg-white rounded-[1.6rem] p-6 h-full flex flex-col border",
+                      plan.popular ? "border-white/50" : "border-slate-200 shadow-lg shadow-slate-200/50"
                     )}>
                       {plan.current && (
                         <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg">
@@ -371,18 +370,18 @@ const Plans: React.FC = () => {
                         </div>
                       )}
 
-                      <div className="mb-6">
+                      <div className="mb-4">
                         <div className={cn(
-                          "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 bg-white border border-slate-100 shadow-sm",
+                          "w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-transform duration-500 bg-white border border-slate-100 shadow-sm",
                           plan.popular ? "text-blue-600" : "text-slate-400"
                         )}>
-                          <plan.icon className="w-6 h-6" strokeWidth={1.5} />
+                          <plan.icon className="w-5 h-5" strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-2xl font-black tracking-tight text-slate-900 mb-2">{plan.name}</h3>
+                        <h3 className="text-xl font-black tracking-tight text-slate-900 mb-1">{plan.name}</h3>
                         <p className="text-slate-600 font-medium text-xs leading-relaxed">{plan.description}</p>
                       </div>
 
-                      <div className="mb-8">
+                      <div className="mb-5">
                         <div className="flex flex-col gap-1">
                           {!isAnnual && (
                             <div className="flex items-center gap-2">
@@ -395,8 +394,8 @@ const Plans: React.FC = () => {
                             </div>
                           )}
                           <div className="flex items-baseline gap-1">
-                            <span className="text-4xl font-black text-charcoal tracking-tighter">$</span>
-                            <span className="text-5xl font-black text-charcoal tracking-tighter">
+                            <span className="text-2xl font-black text-charcoal tracking-tighter">$</span>
+                            <span className="text-4xl font-black text-charcoal tracking-tighter">
                               {Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
                             </span>
                             <span className="text-slate-500 font-bold ml-1 text-sm">/mo</span>
@@ -408,16 +407,16 @@ const Plans: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="space-y-4 mb-8 flex-grow">
+                      <div className="space-y-2.5 mb-5 flex-grow">
                         {plan.features.map((feature: string) => (
-                          <div key={feature} className="flex items-start gap-3">
+                          <div key={feature} className="flex items-start gap-2.5">
                             <div className={cn(
-                              "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+                              "w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5",
                               plan.popular ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-400"
                             )}>
-                              <Check className="w-3 h-3 stroke-[3px]" />
+                              <Check className="w-2.5 h-2.5 stroke-[3px]" />
                             </div>
-                            <span className="text-sm font-medium text-slate-600">{feature}</span>
+                            <span className="text-[13px] font-medium text-slate-600 leading-snug">{feature}</span>
                           </div>
                         ))}
                       </div>
@@ -432,7 +431,7 @@ const Plans: React.FC = () => {
                           }
                         }}
                         className={cn(
-                          "w-full rounded-2xl h-14 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-xl shadow-blue-500/10 flex items-center justify-center gap-2",
+                          "w-full rounded-xl h-12 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-blue-500/10 flex items-center justify-center gap-2",
                           plan.current
                             ? "bg-slate-50 text-slate-400 border border-slate-200 cursor-default"
                             : plan.popular
@@ -445,6 +444,44 @@ const Plans: React.FC = () => {
                     </div>
                   </div>
                 ))}
+
+                {/* Enterprise — sits beside the plans, custom/contact */}
+                <div className="group relative p-1 rounded-[1.75rem]">
+                  <div className="relative bg-gradient-to-br from-charcoal to-charcoal-dark text-white rounded-[1.6rem] p-6 h-full flex flex-col border border-charcoal-dark shadow-lg shadow-slate-900/20">
+                    <div className="mb-4">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-white/10 text-white border border-white/10">
+                        <Shield className="w-5 h-5" strokeWidth={1.5} />
+                      </div>
+                      <h3 className="text-xl font-black tracking-tight mb-1">Enterprise</h3>
+                      <p className="text-white/60 font-medium text-xs leading-relaxed">Maximum power for high-volume businesses and agencies.</p>
+                    </div>
+
+                    <div className="mb-5">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-4xl font-black tracking-tighter">Custom</span>
+                      </div>
+                      <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em] mt-1">Tailored to your volume</p>
+                    </div>
+
+                    <div className="space-y-2.5 mb-5 flex-grow">
+                      {getDefaultFeatures('Elite').map((feature: string) => (
+                        <div key={feature} className="flex items-start gap-2.5">
+                          <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-white/10 text-white">
+                            <Check className="w-2.5 h-2.5 stroke-[3px]" />
+                          </div>
+                          <span className="text-[13px] font-medium text-white/80 leading-snug">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => { window.location.href = 'mailto:sales@vocalscale.com'; }}
+                      className="w-full rounded-xl h-12 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 bg-white text-charcoal hover:bg-white/90 flex items-center justify-center gap-2"
+                    >
+                      Contact Sales
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : subscription?.status === 'active' ? (
               <div className="flex flex-col items-center justify-center py-20 px-8 bg-white border border-slate-200 rounded-[2.5rem] shadow-xl shadow-slate-200/50 text-center gap-6">
@@ -472,25 +509,6 @@ const Plans: React.FC = () => {
                 </div>
               </div>
             ) : null}
-
-            {/* Enterprise Section - Compact */}
-            <Card className="mt-8 border-none shadow-xl shadow-charcoal/5 bg-gradient-to-br from-charcoal to-charcoal-dark text-white">
-              <div className="p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                <div className="flex flex-col gap-3 text-center md:text-left">
-                  <div className="flex items-center justify-center md:justify-start gap-3">
-                    <Shield size={20} className="text-white/80" />
-                    <h4 className="text-lg font-black tracking-tight">Enterprise Scale</h4>
-                  </div>
-                  <p className="text-sm font-medium text-white/70 max-w-xl leading-relaxed">
-                    Need custom infrastructure, volume discounts, or white-glove onboarding? We built dedicated solutions for large agencies.
-                  </p>
-                </div>
-
-                <button className="px-8 py-3.5 rounded-xl bg-white text-charcoal font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg whitespace-nowrap">
-                  Contact Sales
-                </button>
-              </div>
-            </Card>
           </>
         )}
       </div>

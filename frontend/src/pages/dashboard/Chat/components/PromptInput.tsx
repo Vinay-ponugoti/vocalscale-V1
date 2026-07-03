@@ -6,8 +6,8 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
-  X, Paperclip, ArrowUp, ChevronDown,
-  Frame, Palette, Sparkles, Zap, Bot, ImageIcon,
+  X, Plus, ArrowUp, ChevronDown,
+  Frame, Palette, Sparkles, Zap, Bot, ImageIcon, FileText,
 } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import type { FileAttachment, ModelOption } from '../../../../types/chat';
@@ -56,6 +56,8 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 }) => {
   const [input, setInput] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  // Local image/file previews keyed by the uploaded attachment id (ChatGPT-style thumbnails).
+  const [previews, setPreviews] = useState<Record<string, { url: string; isImage: boolean }>>({});
   const [selectedModel, setSelectedModel] = useState<ModelOption>('auto');
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [showSlash, setShowSlash] = useState(false);
@@ -98,12 +100,6 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const closeAllMenus = () => {
-    setShowModelMenu(false);
-    setShowAspectMenu(false);
-    setShowStyleMenu(false);
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setInput(val);
@@ -131,15 +127,39 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   }, [disabled, input, selectedModel, aspectRatio, imageStyle, onSend]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
+    const file = e.target.files?.[0];
+    if (file) {
       setIsUploading(true);
-      try { await onFileUpload(e.target.files[0]); }
-      finally {
+      try {
+        const attachment = await onFileUpload(file);
+        if (attachment?.id) {
+          setPreviews((prev) => ({
+            ...prev,
+            [attachment.id]: { url: URL.createObjectURL(file), isImage: file.type.startsWith('image/') },
+          }));
+        }
+      } finally {
         setIsUploading(false);
         if (fileInputRef.current) fileInputRef.current.value = '';
       }
     }
   };
+
+  const handleRemoveFile = (id: string) => {
+    setPreviews((prev) => {
+      if (prev[id]) URL.revokeObjectURL(prev[id].url);
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    onRemoveFile?.(id);
+  };
+
+  // Revoke any object URLs on unmount.
+  useEffect(() => () => {
+    Object.values(previews).forEach((p) => URL.revokeObjectURL(p.url));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ─── Dropdown panels ──────────────────────────────────────────────────────
 
@@ -260,23 +280,45 @@ export const PromptInput: React.FC<PromptInputProps> = ({
         onClick={() => textareaRef.current?.focus()}
       >
 
-        {/* ── File chips ── */}
+        {/* ── Attachment previews (ChatGPT-style image thumbnails + file cards) ── */}
         {pendingFiles.length > 0 && (
-          <div className="flex flex-wrap gap-2 px-4 pt-3 pb-1">
-            {pendingFiles.map((file) => (
-              <div
-                key={file.id}
-                className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg px-2.5 py-1 text-xs font-medium max-w-[160px]"
-              >
-                <span className="truncate">{file.name}</span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onRemoveFile?.(file.id); }}
-                  className="p-0.5 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-full flex-shrink-0 text-zinc-400 hover:text-zinc-600"
-                >
-                  <X size={10} />
-                </button>
-              </div>
-            ))}
+          <div className="flex flex-wrap gap-2.5 px-3 pt-3 pb-1">
+            {pendingFiles.map((file) => {
+              const preview = previews[file.id];
+              const isImage = preview?.isImage;
+              return (
+                <div key={file.id} className="relative group/att">
+                  {/* Remove button (overlay top-right) */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleRemoveFile(file.id); }}
+                    className="absolute -top-1.5 -right-1.5 z-10 w-5 h-5 rounded-full bg-zinc-900 text-white flex items-center justify-center shadow-md hover:bg-zinc-700 transition-colors opacity-0 group-hover/att:opacity-100"
+                    title="Remove"
+                  >
+                    <X size={11} strokeWidth={2.5} />
+                  </button>
+
+                  {isImage ? (
+                    /* Image thumbnail */
+                    <div className="w-14 h-14 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-50">
+                      <img src={preview.url} alt={file.name} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    /* File card */
+                    <div className="flex items-center gap-2.5 h-14 pl-2.5 pr-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 max-w-[200px]">
+                      <div className="w-9 h-9 rounded-lg bg-blue-500 text-white flex items-center justify-center flex-shrink-0">
+                        <FileText size={18} strokeWidth={2} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{file.name}</p>
+                        <p className="text-[10px] text-zinc-400 uppercase tracking-wide">
+                          {file.name.split('.').pop() || 'file'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -309,7 +351,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
           type="file"
           onChange={handleFileChange}
           className="hidden"
-          accept=".pdf,.txt,.docx,.md,.csv"
+          accept="image/png,image/jpeg,image/webp,image/gif,.pdf,.txt,.docx,.md,.csv"
         />
 
         {/* ── Bottom action bar (Zola layout) ── */}
@@ -323,16 +365,16 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               type="button"
               onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
               disabled={disabled || isUploading}
-              title="Attach file"
+              title="Attach images or files"
               className={cn(
-                'h-8 w-8 flex items-center justify-center rounded-full transition-colors',
-                'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800',
+                'h-8 w-8 flex items-center justify-center rounded-full border transition-colors',
+                'border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800',
                 (disabled || isUploading) && 'opacity-40 cursor-not-allowed',
               )}
             >
               {isUploading
                 ? <div className="w-4 h-4 border-2 border-zinc-300 border-t-blue-500 rounded-full animate-spin" />
-                : <Paperclip size={16} strokeWidth={2} />
+                : <Plus size={17} strokeWidth={2.5} />
               }
             </button>
 

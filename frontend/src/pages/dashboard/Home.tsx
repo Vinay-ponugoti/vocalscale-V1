@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useDashboardData } from '../../hooks/useDashboardData';
 import { subDays, addDays } from 'date-fns';
@@ -11,11 +11,11 @@ import { useBusinessSetup } from '../../context/BusinessSetupContext';
 import StatsGrid from '../../components/dashboard/StatsGrid';
 import CallVolumeChart from '../../components/dashboard/CallVolumeChart';
 import RecentTranscripts from '../../components/dashboard/RecentTranscripts';
-import ReviewStats from '../../components/dashboard/ReviewStats';
 import DashboardSkeleton from '../../components/dashboard/DashboardSkeleton';
 import CalendarPicker from '../../components/dashboard/CalendarPicker';
 import { PAGE_PADDING } from '../../constants/layout';
 import { cn } from '../../lib/utils';
+import { reviewApi } from '../../api/reviewApi';
 
 const Home = () => {
   const { state } = useBusinessSetup();
@@ -26,6 +26,12 @@ const Home = () => {
 
   const [selectedDate, setSelectedDate] = useState(getBusinessToday());
   const [timeRange, setTimeRange] = useState('7d');
+  const [reviewSummary, setReviewSummary] = useState({
+    totalReviews: 0,
+    reviewsToday: 0,
+    rating: 0,
+    trend: { value: 0, isPositive: true }
+  });
 
   const businessTodayStr = getBusinessToday().toDateString();
   const isBusinessToday = selectedDate.toDateString() === businessTodayStr;
@@ -41,6 +47,45 @@ const Home = () => {
 
   const { loading, isPlaceholderData, stats, recentCalls, appointments, chartData } = useDashboardData(selectedDate, daysCount, timezone);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadReviewStats = async () => {
+      try {
+        const reviewStats = await reviewApi.getStats(daysCount);
+        if (!isMounted) return;
+
+        const trendValue = reviewStats.trends?.reviews || 0;
+        const todayVolume = reviewStats.reviewVolume?.[reviewStats.reviewVolume.length - 1];
+        setReviewSummary({
+          totalReviews: reviewStats.totalReviews || 0,
+          reviewsToday: todayVolume?.reviews || 0,
+          rating: reviewStats.overallRating || 0,
+          trend: {
+            value: Math.abs(trendValue),
+            isPositive: trendValue >= 0
+          }
+        });
+      } catch (error) {
+        console.error('Failed to load dashboard review stats:', error);
+        if (isMounted) {
+          setReviewSummary({
+            totalReviews: 0,
+            reviewsToday: 0,
+            rating: 0,
+            trend: { value: 0, isPositive: true }
+          });
+        }
+      }
+    };
+
+    loadReviewStats();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [daysCount]);
+
   const handlePrev = () => setSelectedDate(prev => subDays(prev, 1));
   const handleNext = () => {
     if (!isBusinessToday) setSelectedDate(prev => addDays(prev, 1));
@@ -50,10 +95,10 @@ const Home = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className={cn("w-full animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full space-y-8", PAGE_PADDING)}>
+      <div className={cn("w-full animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full space-y-6", PAGE_PADDING)}>
 
         {/* --- Header Section --- */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-3xl font-black text-charcoal tracking-tight">
@@ -106,13 +151,17 @@ const Home = () => {
               <StatsGrid
                 stats={stats}
                 appointmentsCount={appointments.length}
+                reviewsCount={reviewSummary.totalReviews}
+                reviewsToday={reviewSummary.reviewsToday}
+                reviewRating={reviewSummary.rating}
+                reviewsTrend={reviewSummary.trend}
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-6 2xl:gap-10">
+            <div className="grid min-w-0 grid-cols-1 gap-4 md:gap-6 lg:gap-8 xl:grid-cols-3 2xl:grid-cols-4">
 
               {/* --- LEFT: CHART & CALLS --- */}
-              <div className="lg:col-span-2 2xl:col-span-3 space-y-6 2xl:space-y-10">
+              <div className="min-w-0 space-y-4 md:space-y-6 lg:space-y-8 xl:col-span-2 2xl:col-span-3">
 
                 {/* Real Chart */}
                 <CallVolumeChart
@@ -124,18 +173,12 @@ const Home = () => {
               </div>
 
               {/* --- RIGHT: RECENT TRANSCRIPTS --- */}
-              <div className="lg:col-span-1 2xl:col-span-1 h-full">
+              <div className="min-w-0 xl:col-span-1 2xl:col-span-1 h-full">
                 <RecentTranscripts calls={recentCalls} />
               </div>
 
             </div>
 
-
-
-            {/* Review Insights - Moved to full width */}
-            <div className="w-full">
-              <ReviewStats />
-            </div>
           </>
         )}
       </div>

@@ -26,15 +26,23 @@ interface PhoneNumber {
   badge?: string;
 }
 
-interface TwilioNumber {
+interface ProviderNumber {
   phone_number: string;
   friendly_name: string;
   monthly_cost: number;
   item_badge?: string;
 }
 
+type TelephonyProvider = 'telnyx' | 'signalwire';
+const PROVIDER_STORAGE_KEY = 'voice_ai_telephony_provider';
+const SEARCH_PAGE_SIZE = 10;
+
 const GetNewNumber = () => {
   const navigate = useNavigate();
+  const [provider, setProvider] = useState<TelephonyProvider>(() => {
+    const saved = sessionStorage.getItem(PROVIDER_STORAGE_KEY);
+    return saved === 'telnyx' || saved === 'signalwire' ? saved : 'signalwire';
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter] = useState('local');
   const [selectedNumber, setSelectedNumber] = useState<PhoneNumber | null>(null);
@@ -42,11 +50,18 @@ const GetNewNumber = () => {
   const [searching, setSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [numbers, setNumbers] = useState<PhoneNumber[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMorePages, setHasMorePages] = useState(false);
+  const [pageCache, setPageCache] = useState<Record<number, PhoneNumber[]>>({});
   const [error, setError] = useState<string | null>(null);
   const [checkingSubaccount, setCheckingSubaccount] = useState(true);
   const [checkingLimits, setCheckingLimits] = useState(true);
   const [limitReached, setLimitReached] = useState(false);
   const [limitMessage, setLimitMessage] = useState('');
+  const [manualPhoneNumber, setManualPhoneNumber] = useState('');
+  const [manualFriendlyName, setManualFriendlyName] = useState('');
+  const [manualProviderSid, setManualProviderSid] = useState('');
+  const [importingExisting, setImportingExisting] = useState(false);
 
   const checkLimits = useCallback(async () => {
     try {
@@ -147,17 +162,14 @@ const GetNewNumber = () => {
   // Loading state
   if (checkingSubaccount) {
     return (
-      <DashboardLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
-          <div className="relative">
-            <div className="w-16 h-16 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center animate-pulse">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            </div>
-            <div className="absolute -bottom-1 -right-1 size-4 bg-success rounded-full border-2 border-background animate-bounce" />
+      <DashboardLayout fullWidth>
+        <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-[#f7f8fb] p-6">
+          <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50">
+            <Loader2 className="h-7 w-7 animate-spin text-cyan-700" />
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-black uppercase tracking-widest text-foreground mb-1">Authenticating</h3>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.2em] opacity-60">Verifying enterprise subaccount status</p>
+            <h3 className="mb-1 text-base font-black tracking-tight text-slate-950">Verifying account</h3>
+            <p className="text-sm font-medium text-slate-500">Checking provider setup before number search.</p>
           </div>
         </div>
       </DashboardLayout>
@@ -167,29 +179,28 @@ const GetNewNumber = () => {
   // Error state for business account
   if (error && error.includes('business account')) {
     return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[60vh] p-6">
-          <div className="max-w-md w-full bg-card rounded-[2.5rem] border border-border shadow-premium p-10 text-center relative overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-1.5 bg-destructive" />
-            <div className="w-20 h-20 rounded-3xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto mb-8 shadow-sm">
-              <AlertCircle className="w-10 h-10" />
+      <DashboardLayout fullWidth>
+        <div className="flex min-h-screen items-center justify-center bg-[#f7f8fb] p-6">
+          <div className="w-full max-w-md rounded-lg border border-rose-100 bg-white p-8 text-center shadow-sm">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+              <AlertCircle className="h-8 w-8" />
             </div>
-            <h2 className="text-3xl font-black text-foreground mb-3 tracking-tight leading-none">Status Mismatch</h2>
-            <p className="text-muted-foreground font-medium mb-10 leading-relaxed text-sm">{error}</p>
-            <div className="flex flex-col gap-4">
+            <h2 className="mb-3 text-2xl font-black tracking-tight text-slate-950">Status mismatch</h2>
+            <p className="mb-8 text-sm font-medium leading-6 text-slate-500">{error}</p>
+            <div className="flex flex-col gap-3">
               <button
                 onClick={() => {
                   setError(null);
                   setCheckingSubaccount(true);
                   checkSubaccountStatus();
                 }}
-                className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-glow-blue flex items-center justify-center gap-2"
+                className="flex h-11 w-full items-center justify-center rounded-md bg-slate-950 px-4 text-xs font-bold text-white transition-colors hover:bg-slate-800"
               >
                 Retry Verification
               </button>
               <button
                 onClick={() => navigate('/dashboard/voice-setup')}
-                className="w-full py-4 bg-muted text-muted-foreground font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-muted/80 transition-all border border-border"
+                className="flex h-11 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50"
               >
                 Return to Overview
               </button>
@@ -200,11 +211,25 @@ const GetNewNumber = () => {
     );
   }
 
-  const searchNumbers = async () => {
+  const searchNumbers = async (pageToLoad: unknown = 1, forceFetch = false) => {
+    const pageNumber = typeof pageToLoad === 'number' ? pageToLoad : 1;
+
     if (!searchQuery.trim()) {
       setError("Please enter a location");
       return;
     }
+
+    if (pageNumber < 1) return;
+
+    const cachedPage = pageCache[pageNumber];
+    if (!forceFetch && cachedPage) {
+      setNumbers(cachedPage);
+      setCurrentPage(pageNumber);
+      setSelectedNumber(cachedPage[0] || null);
+      setError(null);
+      return;
+    }
+
     setSearching(true);
     setHasSearched(true);
     setError(null);
@@ -221,7 +246,9 @@ const GetNewNumber = () => {
         body: JSON.stringify({
           location: searchQuery,
           type_filter: typeFilter === 'toll-free' ? 'tollfree' : typeFilter,
-          limit: 12
+          limit: SEARCH_PAGE_SIZE,
+          page: pageNumber,
+          provider
         }),
       });
 
@@ -232,7 +259,7 @@ const GetNewNumber = () => {
 
       const data = await response.json();
 
-      const mappedNumbers: PhoneNumber[] = (data.available || []).map((item: TwilioNumber) => ({
+      const mappedNumbers: PhoneNumber[] = (data.available || []).map((item: ProviderNumber) => ({
         phone_number: item.phone_number,
         number: item.friendly_name,
         location: data.location || searchQuery,
@@ -240,7 +267,16 @@ const GetNewNumber = () => {
         badge: item.item_badge
       }));
 
+      if (pageNumber > 1 && mappedNumbers.length === 0) {
+        setHasMorePages(false);
+        setError('No more numbers found for this search.');
+        return;
+      }
+
+      setPageCache((prev) => ({ ...prev, [pageNumber]: mappedNumbers }));
       setNumbers(mappedNumbers);
+      setCurrentPage(pageNumber);
+      setHasMorePages(Boolean(data.has_more) || mappedNumbers.length === SEARCH_PAGE_SIZE);
 
       if (mappedNumbers.length > 0) {
         setSelectedNumber(mappedNumbers[0]);
@@ -251,10 +287,23 @@ const GetNewNumber = () => {
       const errorMessage = err instanceof Error ? err.message : "Failed to find numbers. Please try a different location.";
       console.error(err);
       setError(errorMessage);
-      setNumbers([]);
+      if (pageNumber === 1) {
+        setNumbers([]);
+        setPageCache({});
+        setHasMorePages(false);
+      }
     } finally {
       setSearching(false);
     }
+  };
+
+  const startSearch = () => {
+    setNumbers([]);
+    setSelectedNumber(null);
+    setCurrentPage(1);
+    setHasMorePages(false);
+    setPageCache({});
+    searchNumbers(1, true);
   };
 
   const handleActivate = async () => {
@@ -282,20 +331,25 @@ const GetNewNumber = () => {
       const apiUrl = env.API_URL;
       const headers = await getAuthHeader();
 
-      const response = await fetch(`${apiUrl}/phone-numbers`, {
+      const response = await fetch(`${apiUrl}/phone-numbers/purchase`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...headers
         },
         body: JSON.stringify({
-          phone_number: selectedNumber.phone_number
+          phone_number: selectedNumber.phone_number,
+          friendly_name: selectedNumber.number || selectedNumber.phone_number,
+          provider
         }),
       });
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || errData.detail || 'Failed to purchase number');
+        if (errData.code === 'provider_number_limit_reached') {
+          throw new Error(errData.message || 'SignalWire has reached its phone number limit. Sync an existing number or switch providers.');
+        }
+        throw new Error(errData.details || errData.detail || errData.error || 'Failed to purchase number');
       }
 
       const result = await response.json();
@@ -316,71 +370,207 @@ const GetNewNumber = () => {
     }
   };
 
+  const normalizePhoneNumber = (value: string) => {
+    const trimmed = value.trim();
+    if (trimmed.startsWith('+')) return trimmed;
+    const digits = trimmed.replace(/\D/g, '');
+    if (digits.length === 10) return `+1${digits}`;
+    if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+    return trimmed;
+  };
+
+  const handleImportExistingNumber = async () => {
+    const phoneNumber = normalizePhoneNumber(manualPhoneNumber);
+    if (!phoneNumber || !phoneNumber.startsWith('+')) {
+      setError('Enter the number in E.164 format, like +12065550123.');
+      return;
+    }
+
+    setImportingExisting(true);
+    setError(null);
+    try {
+      const apiUrl = env.API_URL;
+      const headers = await getAuthHeader();
+      const response = await fetch(`${apiUrl}/phone-numbers/import`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers
+        },
+        body: JSON.stringify({
+          phone_number: phoneNumber,
+          friendly_name: manualFriendlyName.trim() || phoneNumber,
+          provider_sid: manualProviderSid.trim() || undefined,
+          provider
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.details || data.detail || data.error || 'Failed to use existing number');
+      }
+
+      navigate('/dashboard/voice-setup');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to use existing number.';
+      console.error(err);
+      setError(errorMessage);
+    } finally {
+      setImportingExisting(false);
+    }
+  };
+
   return (
     <DashboardLayout fullWidth>
-      <div className="flex-1 flex flex-col bg-background dark:bg-slate-950 h-full scrollbar-premium">
+      <div className="flex h-full min-h-screen flex-col overflow-hidden bg-[#f7f8fb] text-slate-950">
         {/* Progress Header */}
-        <header className="border-b border-border bg-card px-8 py-5 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-4 md:px-6 xl:px-8">
           <div className="flex items-center gap-6">
             <button
               onClick={() => navigate('/dashboard/voice-setup')}
-              className="p-2.5 rounded-xl hover:bg-muted transition-colors group"
+              className="group flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-950"
             >
-              <ArrowLeft className="w-5 h-5 text-muted-foreground group-hover:text-foreground group-active:-translate-x-1 transition-all" />
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
             </button>
             <div className="flex flex-col">
-              <h2 className="text-base font-black tracking-tight text-foreground uppercase">Provision Infrastructure</h2>
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest opacity-60">Step 2: Number Acquisition</p>
+              <h2 className="text-lg font-black tracking-tight text-slate-950">Get a Number</h2>
+              <p className="text-xs font-medium text-slate-500">Choose provider inventory and activate a line.</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 md:flex">
             {[1, 2, 3].map((step) => (
               <div
                 key={step}
-                className={`h-1.5 w-8 rounded-full transition-all duration-500 ${step <= 2 ? 'bg-primary shadow-glow-blue' : 'bg-muted'}`}
+                className={`h-1.5 w-8 rounded-full transition-all ${step <= 2 ? 'bg-cyan-700' : 'bg-slate-200'}`}
               />
             ))}
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto pb-40 md:pb-40">
-          <div className="max-w-5xl mx-auto px-4 py-8 md:px-6 md:py-12 w-full space-y-8 md:space-y-12">
+        <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto pb-36">
+          <div className="mx-auto w-full max-w-[1500px] space-y-5 px-4 py-5 md:px-6 md:py-8 xl:px-8">
 
-            <div className="space-y-4">
-              <h1 className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter leading-none mb-3">
-                Acquire Local <span className="text-primary italic">Presence.</span>
+            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <h1 className="mb-2 text-2xl font-black tracking-tight text-slate-950 md:text-3xl">
+                Choose a business number
               </h1>
-              <p className="text-muted-foreground text-sm font-medium max-w-2xl leading-relaxed text-balance">
-                Choose a local or toll-free identity for your AI. Search by region or area code to match your business footprint.
+              <p className="max-w-3xl text-sm font-medium leading-6 text-slate-500">
+                Search local or toll-free inventory from your selected provider. SignalWire offers a compatibility-first setup; Telnyx is better for lower call cost at scale.
               </p>
+
+              {/* Provider Selection */}
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {([
+                  { id: 'signalwire' as const, label: 'SignalWire', desc: 'Compatibility-first setup' },
+                  { id: 'telnyx' as const, label: 'Telnyx', desc: 'Lower usage cost' },
+                ]).map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => {
+                      setProvider(p.id);
+                      sessionStorage.setItem(PROVIDER_STORAGE_KEY, p.id);
+                      setNumbers([]);
+                      setSelectedNumber(null);
+                      setCurrentPage(1);
+                      setHasMorePages(false);
+                      setPageCache({});
+                      setHasSearched(false);
+                    }}
+                    className={`rounded-lg border p-4 text-left transition-colors ${
+                      provider === p.id
+                        ? 'border-cyan-100 bg-cyan-50 text-cyan-900'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-cyan-200 hover:bg-cyan-50/30'
+                    }`}
+                  >
+                    <span className="text-sm font-black tracking-tight">{p.label}</span>
+                    <span className="mt-1 block text-xs font-medium text-slate-500">{p.desc}</span>
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {!checkingLimits && (
+              <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="mb-4 flex flex-col gap-1">
+                  <h3 className="text-lg font-black tracking-tight text-slate-950">Use an existing provider number</h3>
+                  <p className="text-sm font-medium leading-6 text-slate-500">
+                    Type a number you already own with {provider === 'signalwire' ? 'SignalWire' : 'Telnyx'}. If it exists in the provider account, VocalScale will attach it with the real provider ID.
+                  </p>
+                </div>
+
+                {limitReached && (
+                  <div className="mb-4 rounded-lg border border-amber-100 bg-amber-50 p-3 text-sm font-semibold text-amber-700">
+                    {limitMessage}
+                  </div>
+                )}
+
+                <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_auto]">
+                  <div>
+                    <label className="mb-1 block text-xs font-bold text-slate-500">Phone Number</label>
+                    <input
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10"
+                      placeholder="+12065550123"
+                      value={manualPhoneNumber}
+                      onChange={(e) => setManualPhoneNumber(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-bold text-slate-500">Label</label>
+                    <input
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10"
+                      placeholder="Main line"
+                      value={manualFriendlyName}
+                      onChange={(e) => setManualFriendlyName(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-bold text-slate-500">Provider SID</label>
+                    <input
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10"
+                      placeholder="Optional"
+                      value={manualProviderSid}
+                      onChange={(e) => setManualProviderSid(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={handleImportExistingNumber}
+                      disabled={importingExisting || limitReached || !manualPhoneNumber.trim()}
+                      className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-cyan-700 px-5 text-xs font-bold text-white transition-colors hover:bg-cyan-800 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
+                    >
+                      {importingExisting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                      Use Number
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Limit Reached Warning */}
             {limitReached ? (
-              <div className="bg-amber-500/5 dark:bg-amber-500/5 rounded-[2.5rem] border border-amber-500/20 p-6 md:p-12 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-amber-500/10 transition-all duration-1000" />
-                <div className="flex flex-col items-center text-center gap-6 relative z-10">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-amber-500/20 flex items-center justify-center text-amber-600 shadow-sm border border-amber-500/10">
-                    <ShieldAlert size={32} className="md:w-10 md:h-10" />
+              <div className="rounded-lg border border-amber-100 bg-amber-50 p-6 md:p-8">
+                <div className="flex flex-col items-center gap-5 text-center">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-amber-100 bg-white text-amber-600">
+                    <ShieldAlert size={28} />
                   </div>
                   <div>
-                    <h3 className="text-xl md:text-2xl font-black text-foreground tracking-tight mb-3">
-                      Allocation Limit <span className="text-amber-500">Exceeded</span>
-                    </h3>
-                    <p className="text-muted-foreground font-medium max-w-lg mx-auto leading-relaxed text-sm md:text-base">
-                      {limitMessage} Upgrade your workspace capacity to provision additional telecommunication nodes.
+                    <h3 className="mb-2 text-xl font-black tracking-tight text-slate-950">Number limit reached</h3>
+                    <p className="mx-auto max-w-lg text-sm font-medium leading-6 text-slate-600">
+                      {limitMessage} Upgrade your plan to add more phone numbers.
                     </p>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
+                  <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                     <button
                       onClick={() => navigate('/dashboard/voice-setup')}
-                      className="px-8 py-3.5 rounded-2xl bg-muted text-muted-foreground font-black uppercase tracking-widest text-[10px] hover:bg-muted/80 transition-all border border-border w-full sm:w-auto"
+                      className="h-10 rounded-md border border-slate-200 bg-white px-5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50"
                     >
                       Dismiss
                     </button>
                     <Link
                       to="/dashboard/billing"
-                      className="px-8 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[10px] shadow-glow-amber transition-all hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center"
+                      className="flex h-10 items-center justify-center rounded-md bg-amber-500 px-5 text-xs font-bold text-white transition-colors hover:bg-amber-600"
                     >
                       Expand Plan
                     </Link>
@@ -388,42 +578,40 @@ const GetNewNumber = () => {
                 </div>
               </div>
             ) : checkingLimits ? (
-              <div className="bg-card rounded-[2.5rem] border border-border p-12 md:p-24 flex items-center justify-center">
+              <div className="flex items-center justify-center rounded-lg border border-slate-200 bg-white p-12 md:p-20">
                 <div className="flex flex-col items-center gap-4">
-                  <Loader2 className="w-10 h-10 text-primary animate-spin" />
-                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest animate-pulse">Checking quota...</span>
+                  <Loader2 className="h-9 w-9 animate-spin text-cyan-700" />
+                  <span className="text-xs font-bold text-slate-500">Checking quota...</span>
                 </div>
               </div>
             ) : (
               /* Search Card */
-              <div className="bg-card rounded-[2.5rem] border border-border shadow-premium-lg p-8 group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-2xl group-hover:bg-primary/10 transition-all duration-700" />
-
-                <div className="flex flex-col sm:flex-row gap-4 relative z-10">
+              <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                <div className="flex flex-col gap-3 sm:flex-row">
                   <div className="flex-grow relative group/input">
-                    <div className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-                      <MapPin className="w-5 h-5 text-muted-foreground group-focus-within/input:text-primary transition-colors" />
+                    <div className="pointer-events-none absolute left-4 top-1/2 flex -translate-y-1/2 items-center">
+                      <MapPin className="h-5 w-5 text-slate-400 transition-colors group-focus-within/input:text-cyan-700" />
                     </div>
                     <input
-                      className="w-full h-14 pl-12 pr-6 rounded-2xl border border-border bg-muted/30 text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-base font-bold"
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-11 pr-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10"
                       placeholder="Enter City, State, or area code (e.g. 212)"
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && searchNumbers()}
+                      onKeyDown={(e) => e.key === 'Enter' && startSearch()}
                     />
                   </div>
                   <button
-                    onClick={searchNumbers}
+                    onClick={startSearch}
                     disabled={searching}
-                    className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-[0.15em] text-[10px] rounded-2xl transition-all shadow-glow-blue flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5"
+                    className="flex h-11 items-center justify-center gap-2 rounded-md bg-slate-950 px-6 text-xs font-bold text-white transition-colors hover:bg-slate-800 disabled:opacity-50"
                   >
                     {searching ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <>
                         <Search className="w-4 h-4" />
-                        Execute Search
+                        Search Numbers
                       </>
                     )}
                   </button>
@@ -434,16 +622,16 @@ const GetNewNumber = () => {
             {/* Results Header */}
             {!limitReached && !checkingLimits && hasSearched && (
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
-                    <Smartphone className="w-5 h-5" />
+                <h3 className="flex items-center gap-3 text-lg font-black tracking-tight text-slate-950">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50 text-cyan-700">
+                    <Smartphone className="h-4 w-4" />
                   </div>
-                  Available Nodes
+                  Available Numbers
                 </h3>
-                <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-xl border border-border">
-                  <div className="size-1.5 rounded-full bg-success animate-pulse" />
-                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                    {numbers.length} Results Filtered
+                <div className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5">
+                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-bold text-slate-500">
+                    Page {currentPage} · {numbers.length} shown
                   </span>
                 </div>
               </div>
@@ -451,22 +639,22 @@ const GetNewNumber = () => {
 
             {/* Error Message */}
             {error && !error.includes('business account') && (
-              <div className="bg-destructive/5 border border-destructive/20 text-destructive p-6 rounded-2xl flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                <div className="p-2 bg-destructive/10 rounded-xl">
-                  <ShieldAlert className="w-5 h-5 shrink-0" />
+              <div className="flex items-center gap-4 rounded-lg border border-rose-100 bg-rose-50 p-4 text-rose-700 animate-in fade-in slide-in-from-top-4 duration-300">
+                <div className="rounded-md bg-rose-100 p-2">
+                  <ShieldAlert className="h-5 w-5 shrink-0" />
                 </div>
-                <p className="text-xs font-black uppercase tracking-widest">{error}</p>
+                <p className="text-sm font-semibold">{error}</p>
               </div>
             )}
 
             {/* Loading Grid Skeleton */}
             {searching && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="h-40 md:h-48 rounded-[2rem] bg-card border border-border animate-pulse flex flex-col p-6 md:p-8 gap-4">
-                    <div className="h-6 w-3/4 bg-muted rounded-full" />
-                    <div className="h-4 w-1/2 bg-muted rounded-full" />
-                    <div className="mt-auto h-8 w-full bg-muted rounded-xl" />
+                  <div key={i} className="flex h-40 animate-pulse flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5">
+                    <div className="h-5 w-3/4 rounded bg-slate-100" />
+                    <div className="h-4 w-1/2 rounded bg-slate-100" />
+                    <div className="mt-auto h-8 w-full rounded bg-slate-100" />
                   </div>
                 ))}
               </div>
@@ -474,79 +662,105 @@ const GetNewNumber = () => {
 
             {/* Results Grid */}
             {!searching && numbers.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-24 md:pb-0">
-                {numbers.map((item, index) => {
-                  const isSelected = selectedNumber?.phone_number === item.phone_number;
-                  return (
-                    <div
-                      key={item.phone_number}
-                      onClick={() => setSelectedNumber(item)}
-                      className={`group relative flex flex-col rounded-[2rem] p-6 md:p-8 cursor-pointer transition-all duration-500 border-2 overflow-hidden ${isSelected
-                        ? 'border-primary bg-primary/5 shadow-premium-lg translate-y-[-4px]'
-                        : 'border-border bg-card hover:border-primary/30 hover:bg-muted/50 hover:shadow-premium-sm hover:-translate-y-1'
-                        }`}
-                    >
-                      {/* Selection indicator */}
-                      <div className={`absolute top-6 right-6 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${isSelected
-                        ? 'bg-primary scale-110 shadow-glow-blue'
-                        : 'border-2 border-border group-hover:border-primary/50 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0'
-                        }`}>
-                        {isSelected && <Check className="w-4 h-4 text-primary-foreground" strokeWidth={3} />}
-                      </div>
+              <div className="space-y-4 pb-24 md:pb-0">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {numbers.map((item, index) => {
+                    const isSelected = selectedNumber?.phone_number === item.phone_number;
+                    return (
+                      <div
+                        key={item.phone_number}
+                        onClick={() => setSelectedNumber(item)}
+                        className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-lg border p-5 transition-colors ${isSelected
+                          ? 'border-cyan-200 bg-cyan-50/60 shadow-sm ring-1 ring-cyan-100'
+                          : 'border-slate-200 bg-white hover:border-cyan-200 hover:bg-cyan-50/30'
+                          }`}
+                      >
+                        {/* Selection indicator */}
+                        <div className={`absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full transition-all ${isSelected
+                          ? 'bg-cyan-700 text-white'
+                          : 'border border-slate-200 text-transparent group-hover:text-slate-300'
+                          }`}>
+                          {isSelected && <Check className="h-4 w-4" strokeWidth={3} />}
+                        </div>
 
-                      {/* Badge */}
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        {index === 0 && !item.badge && (
-                          <span className="px-3 py-1 text-[8px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 rounded-lg border border-primary/20">
-                            Optimal Match
+                        {/* Badge */}
+                        <div className="mb-5 flex flex-wrap gap-2 pr-10">
+                          {index === 0 && !item.badge && (
+                            <span className="rounded-md border border-cyan-100 bg-cyan-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-700">
+                              Optimal Match
+                            </span>
+                          )}
+                          {item.badge && (
+                            <span className="rounded-md border border-cyan-100 bg-cyan-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-700">
+                              {item.badge}
+                            </span>
+                          )}
+                          <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                            Local
                           </span>
-                        )}
-                        {item.badge && (
-                          <span className="px-3 py-1 text-[8px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 rounded-lg border border-primary/20">
-                            {item.badge}
-                          </span>
-                        )}
-                        <span className="px-3 py-1 text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground bg-muted rounded-lg border border-border/50">
-                          Local
-                        </span>
-                      </div>
+                        </div>
 
-                      {/* Number */}
-                      <h4 className={`text-2xl font-black tracking-tighter mb-2 ${isSelected ? 'text-primary' : 'text-foreground'
-                        }`}>
-                        {item.number}
-                      </h4>
+                        {/* Number */}
+                        <h4 className={`mb-2 text-2xl font-black tracking-tight ${isSelected ? 'text-cyan-800' : 'text-slate-950'
+                          }`}>
+                          {item.number}
+                        </h4>
 
-                      {/* Location */}
-                      <p className="text-xs text-muted-foreground font-black uppercase tracking-widest flex items-center gap-2 opacity-60">
-                        <MapPin className="w-3.5 h-3.5" />
-                        {item.location}
-                      </p>
+                        {/* Location */}
+                        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {item.location}
+                        </p>
 
-                      {/* Price */}
-                      <div className="mt-12 pt-6 border-t border-border/50 flex items-center justify-between">
-                        <span className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">Monthly Cycle</span>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-[10px] text-muted-foreground/50 font-black">$</span>
-                          <span className="text-2xl font-black text-foreground">{item.monthly_cost.toFixed(2)}</span>
+                        {/* Price */}
+                        <div className="mt-10 flex items-center justify-between border-t border-slate-200 pt-5">
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Monthly</span>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-xs font-bold text-slate-400">$</span>
+                            <span className="text-2xl font-black text-slate-950">{item.monthly_cost.toFixed(2)}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => searchNumbers(currentPage - 1)}
+                    disabled={searching || currentPage === 1}
+                    className="flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Previous
+                  </button>
+                  <span className="text-xs font-bold text-slate-500">
+                    {SEARCH_PAGE_SIZE} per call
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => searchNumbers(currentPage + 1)}
+                    disabled={searching || !hasMorePages}
+                    className="flex h-10 items-center gap-2 rounded-md bg-slate-950 px-4 text-xs font-bold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Next
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             )}
 
             {/* Empty State - No Results */}
             {!searching && numbers.length === 0 && hasSearched && !error && (
-              <div className="flex flex-col items-center justify-center py-24 bg-card rounded-[2.5rem] border-2 border-dashed border-border group">
-                <div className="w-24 h-24 rounded-[2rem] bg-muted border border-border flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-500">
-                  <Search className="w-10 h-10 text-muted-foreground/30" />
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white py-20">
+                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+                  <Search className="h-7 w-7 text-slate-300" />
                 </div>
                 <div className="text-center">
-                  <p className="text-xl font-black text-foreground tracking-tight mb-2">Zero Coverage Found</p>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest opacity-60 max-w-[240px] leading-relaxed mx-auto">
-                    Global inventory fluctuates daily. Try a neighboring area code or search by city name.
+                  <p className="mb-2 text-lg font-black tracking-tight text-slate-950">No numbers found</p>
+                  <p className="mx-auto max-w-[260px] text-sm font-medium leading-6 text-slate-500">
+                    Provider inventory changes often. Try a nearby area code or search by city name.
                   </p>
                 </div>
               </div>
@@ -554,15 +768,14 @@ const GetNewNumber = () => {
 
             {/* Empty State - Initial */}
             {!searching && numbers.length === 0 && !hasSearched && !limitReached && !checkingLimits && (
-              <div className="flex flex-col items-center justify-center py-16 md:py-32 bg-card rounded-[2.5rem] border-2 border-dashed border-border relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full -ml-32 -mt-32 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                <div className="w-20 h-20 md:w-24 md:h-24 rounded-[2rem] bg-muted/50 border border-border flex items-center justify-center mb-6 md:mb-8 shadow-sm group-hover:rotate-12 transition-transform duration-500">
-                  <MapPin className="w-8 h-8 md:w-10 md:h-10 text-muted-foreground/30" />
+              <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg border border-dashed border-slate-300 bg-white py-16 md:py-24">
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+                  <MapPin className="h-7 w-7 text-slate-300" />
                 </div>
-                <div className="text-center max-w-sm mx-auto space-y-3 md:space-y-4 px-4">
-                  <p className="text-xl md:text-2xl font-black text-foreground tracking-tight leading-none">Awaiting Location Logic</p>
-                  <p className="text-[10px] md:text-xs font-medium text-muted-foreground uppercase tracking-widest opacity-60 leading-relaxed">
-                    Input a geographic identifier above to fetch active telecom infrastructure available in your desired region.
+                <div className="mx-auto max-w-sm space-y-2 px-4 text-center">
+                  <p className="text-xl font-black tracking-tight text-slate-950">Search for a number</p>
+                  <p className="text-sm font-medium leading-6 text-slate-500">
+                    Enter a city, state, ZIP code, or area code to check provider inventory.
                   </p>
                 </div>
               </div>
@@ -572,54 +785,54 @@ const GetNewNumber = () => {
 
         {/* Dynamic Action Bar */}
         {!limitReached && !checkingLimits && (
-          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-4xl z-50 animate-in slide-in-from-bottom-8 duration-500">
-            <div className={`bg-slate-900 text-white rounded-[2.5rem] p-4 pl-8 shadow-premium-2xl border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 transition-all duration-500 ${selectedNumber ? 'opacity-100 scale-100' : 'opacity-40 scale-95 grayscale pointer-events-none'}`}>
+          <div className="fixed bottom-5 left-1/2 z-50 w-[calc(100%-2rem)] max-w-4xl -translate-x-1/2 animate-in slide-in-from-bottom-8 duration-500">
+            <div className={`flex flex-col items-center justify-between gap-4 rounded-lg border border-slate-800 bg-slate-950 p-4 text-white shadow-xl transition-all sm:flex-row ${selectedNumber ? 'opacity-100 scale-100' : 'pointer-events-none scale-95 opacity-40 grayscale'}`}>
 
               {/* Selected Number Info */}
-              <div className="flex items-center gap-6 w-full sm:w-auto">
+              <div className="flex w-full items-center gap-4 sm:w-auto">
                 {selectedNumber ? (
-                  <div className="flex items-center gap-6 w-full">
-                    <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10 shadow-inner group">
-                      <Smartphone className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+                  <div className="flex w-full items-center gap-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-md border border-white/10 bg-white/10">
+                      <Smartphone className="h-5 w-5 text-cyan-300" />
                     </div>
                     <div>
-                      <p className="text-[9px] text-white/40 uppercase font-black tracking-[0.3em] mb-1">Configuration Target</p>
-                      <h4 className="text-2xl font-black text-white tracking-tighter leading-none">{selectedNumber.number}</h4>
+                      <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-white/40">Selected Number</p>
+                      <h4 className="text-xl font-black leading-none tracking-tight text-white">{selectedNumber.number}</h4>
                     </div>
-                    <div className="h-10 w-px bg-white/10 hidden md:block" />
+                    <div className="hidden h-10 w-px bg-white/10 md:block" />
                     <div className="hidden md:block">
-                      <p className="text-[9px] text-white/40 uppercase font-black tracking-[0.3em] mb-1">Provision Cost</p>
+                      <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-white/40">Price</p>
                       <div className="flex items-baseline gap-1">
                         <span className="text-xl font-black text-white">${selectedNumber.monthly_cost.toFixed(2)}</span>
-                        <span className="text-[8px] text-white/30 font-black uppercase tracking-wider">/ MO</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/30">/ mo</span>
                       </div>
                     </div>
                   </div>
                 ) : (
                   <div className="flex items-center gap-4 text-white/40">
-                    <div className="size-10 rounded-full border border-white/10 flex items-center justify-center">
-                      <Info className="w-4 h-4" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-md border border-white/10">
+                      <Info className="h-4 w-4" />
                     </div>
-                    <p className="text-xs font-black uppercase tracking-widest">Select a Node to Provision</p>
+                    <p className="text-xs font-bold uppercase tracking-wider">Pick a number to continue</p>
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="flex w-full items-center gap-3 sm:w-auto">
                 <button
                   onClick={handleActivate}
                   disabled={!selectedNumber || loading}
-                  className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-[0.2em] text-[10px] shadow-glow-blue transition-all flex items-center justify-center gap-3 disabled:bg-white/5 disabled:text-white/20 disabled:shadow-none hover:-translate-y-1 active:scale-95"
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-cyan-600 px-6 text-xs font-bold text-white transition-colors hover:bg-cyan-700 disabled:bg-white/5 disabled:text-white/20 sm:w-auto"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Initializing...
+                      Purchasing...
                     </>
                   ) : (
                     <>
-                      Secure Number
+                      Buy Number
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Clock, ChevronLeft, ChevronRight, Zap, Headset, Search
+  Clock, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, Flame, PhoneCall, PhoneMissed, Search
 } from 'lucide-react';
 import type { CallLog } from '../types';
 import { parseISO, isToday, isYesterday } from 'date-fns';
@@ -13,20 +13,44 @@ interface LogListProps {
   logs: CallLog[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onPrefetch?: (id: string) => void;
   isLoading?: boolean;
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
 }
 
-const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading }) => {
+const getLeadBadge = (score?: number) => {
+  if (score === undefined || score === null) return null;
+  const meta = score >= 70
+    ? { label: `Hot ${score}`, className: 'bg-orange-50 text-orange-700 ring-orange-200' }
+    : score >= 40
+      ? { label: `Warm ${score}`, className: 'bg-amber-50 text-amber-700 ring-amber-200' }
+      : { label: `Cold ${score}`, className: 'bg-slate-50 text-slate-500 ring-slate-200' };
+  return (
+    <div className={`flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold ring-1 ${meta.className}`}>
+      <Flame size={10} />
+      {meta.label}
+    </div>
+  );
+};
+
+const LogList: React.FC<LogListProps> = ({
+  logs,
+  selectedId,
+  onSelect,
+  onPrefetch,
+  isLoading,
+  currentPage,
+  totalPages,
+  totalItems,
+  pageSize,
+  onPageChange
+}) => {
   const { state } = useBusinessSetup();
   const timezone = state.data.business.timezone || 'America/New_York';
-  const [currentPage, setCurrentPage] = useState(1);
-  const [prevLogs, setPrevLogs] = useState(logs);
-  const itemsPerPage = 8;
-
-  if (logs !== prevLogs) {
-    setPrevLogs(logs);
-    setCurrentPage(1);
-  }
 
   const formatDuration = (seconds: number) => {
     if (!seconds) return '0s';
@@ -45,66 +69,90 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'Booking':
-        return <Badge variant="default" className="bg-slate-100 text-slate-900 border-slate-200 hover:bg-slate-100 shadow-none font-black text-[11px] tracking-widest uppercase">Booking</Badge>;
+        return <Badge variant="default" className="border-cyan-100 bg-cyan-50 text-cyan-700 shadow-none hover:bg-cyan-50 text-[11px] font-semibold">Booking</Badge>;
       case 'Inquiry':
-        return <Badge variant="default" className="bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-50 shadow-none font-black text-[11px] tracking-widest uppercase">Inquiry</Badge>;
+        return <Badge variant="default" className="border-slate-200 bg-slate-50 text-slate-700 shadow-none hover:bg-slate-50 text-[11px] font-semibold">Inquiry</Badge>;
       case 'Urgent':
-        return <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-100 hover:bg-rose-50 shadow-none font-black text-[11px] tracking-widest uppercase">Urgent</Badge>;
+        return <Badge variant="destructive" className="border-rose-100 bg-rose-50 text-rose-700 shadow-none hover:bg-rose-50 text-[11px] font-semibold">Urgent</Badge>;
       default:
-        return <Badge variant="secondary" className="bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-50 shadow-none font-black text-[11px] tracking-widest uppercase">{type || 'General'}</Badge>;
+        return <Badge variant="secondary" className="border-slate-200 bg-slate-50 text-slate-600 shadow-none hover:bg-slate-50 text-[11px] font-semibold">{type || 'General'}</Badge>;
     }
   };
 
-  const totalPages = Math.ceil(logs.length / itemsPerPage);
+  const getStatusMeta = (status?: string) => {
+    const normalized = (status || '').toLowerCase();
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentLogs = logs.slice(startIndex, startIndex + itemsPerPage);
+    if (normalized.includes('missed') || normalized.includes('failed') || normalized.includes('no answer')) {
+      return {
+        label: status || 'Missed',
+        icon: PhoneMissed,
+        className: 'bg-rose-50 text-rose-700 border-rose-100'
+      };
+    }
+
+    if (normalized.includes('completed') || normalized.includes('handled')) {
+      return {
+        label: status || 'Completed',
+        icon: CheckCircle2,
+        className: 'bg-emerald-50 text-emerald-700 border-emerald-100'
+      };
+    }
+
+    return {
+      label: status || 'Open',
+      icon: PhoneCall,
+      className: 'bg-amber-50 text-amber-700 border-amber-100'
+    };
+  };
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+      onPageChange(page);
     }
   };
 
+  const startItem = totalItems === 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+  const endItem = Math.min(totalItems, (currentPage - 1) * pageSize + logs.length);
+
   if (isLoading && logs.length === 0) {
     return (
-      <div className="flex-1 flex flex-col p-4 gap-3">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="h-24 bg-slate-50/50 rounded-2xl animate-pulse border border-slate-100" />
+      <div className="flex min-h-[420px] flex-col gap-2 overflow-hidden p-3 md:flex-1">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-20 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      {/* Modern Header */}
-      <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between bg-white shrink-0 sticky top-0 z-10">
-        <div className="flex items-center gap-2">
-          <h2 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Activity Log</h2>
-          <span className="px-1.5 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-[10px] font-black text-slate-400">
-            {logs.length}
+    <div className="flex min-h-0 flex-col bg-white md:h-full">
+      <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-3 py-3 sm:px-4">
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold leading-5 text-slate-950">Recent calls</h2>
+          <span className="block text-xs font-medium leading-4 text-slate-500">
+            {totalItems}
+            {' '}
+            calls shown
           </span>
         </div>
 
-        {/* Pagination Controls */}
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50"
+            className="h-8 w-8 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
           >
             <ChevronLeft size={16} />
           </Button>
-          <span className="text-[10px] font-black text-slate-400 w-12 text-center uppercase tracking-tighter">
+          <span className="w-11 text-center text-xs font-semibold text-slate-500">
             {currentPage} / {totalPages || 1}
           </span>
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-50"
+            className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100"
             disabled={currentPage === totalPages || totalPages === 0}
             onClick={() => handlePageChange(currentPage + 1)}
           >
@@ -113,85 +161,89 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
         </div>
       </div>
 
-      {/* Scrollable List Area */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="scrollbar-hide min-h-0 md:flex-1 md:overflow-y-auto md:overscroll-contain">
         {logs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center p-8">
-            <div className="w-16 h-16 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-4 shadow-sm border border-slate-100">
-              <Search className="text-slate-200" size={32} />
+          <div className="flex min-h-[360px] flex-col items-center justify-center p-8 text-center md:h-full">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+              <Search className="text-slate-300" size={26} />
             </div>
-            <h3 className="text-slate-900 font-black text-sm uppercase tracking-tight">No results found</h3>
-            <p className="text-slate-400 text-[11px] mt-1 font-bold uppercase tracking-wider">Try adjusting your filters</p>
+            <h3 className="text-sm font-semibold text-slate-950">No calls found</h3>
+            <p className="mt-1 text-xs font-medium text-slate-500">Try a wider date range or reset filters.</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-50">
-            {currentLogs.map((log) => {
+          <div className="space-y-2 p-3 md:space-y-0 md:divide-y md:divide-slate-100 md:p-0">
+            {logs.map((log) => {
               const isSelected = selectedId === log.id;
               const isUrgent = log.is_urgent || log.status?.includes('Action');
+              const statusMeta = getStatusMeta(log.status);
+              const StatusIcon = statusMeta.icon;
 
               return (
                 <div
                   key={log.id}
                   onClick={() => onSelect(log.id)}
+                  onMouseEnter={() => onPrefetch?.(log.id)}
+                  onFocus={() => onPrefetch?.(log.id)}
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onSelect(log.id);
+                    }
+                  }}
                   className={`
-                    group px-6 py-5 cursor-pointer transition-all duration-300 relative
+                    group relative cursor-pointer rounded-lg border border-slate-200 px-3 py-3 shadow-sm shadow-slate-200/50 transition-colors md:rounded-none md:border-0 md:px-4 md:shadow-none
                     ${isSelected
-                      ? 'bg-slate-900/5'
-                      : 'bg-white hover:bg-slate-50/50'
+                      ? 'bg-cyan-50/70 ring-1 ring-cyan-100 md:ring-0'
+                      : 'bg-white hover:bg-slate-50'
                     }
                   `}
                 >
-                  {/* Selected Indicator */}
                   {isSelected && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#4285F4] rounded-r-full shadow-[0_0_12px_rgba(66,133,244,0.3)]" />
+                    <div className="absolute bottom-3 left-0 top-3 hidden w-1 rounded-r-full bg-cyan-600 md:block" />
                   )}
 
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-2.5 sm:gap-3">
                     <div className={`
-                      h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500
+                      flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors sm:h-9 sm:w-9
                       ${isSelected
-                        ? 'bg-gradient-to-br from-[#4285F4] to-[#3474E0] text-white scale-110 shadow-xl shadow-blue-200/50'
-                        : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-[#4285F4] group-hover:scale-105'
+                        ? 'border-cyan-100 bg-white text-cyan-700'
+                        : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-cyan-100 group-hover:bg-cyan-50 group-hover:text-cyan-700'
                       }
                     `}>
-                      <Headset size={20} className={isSelected ? 'animate-pulse' : ''} />
+                      <PhoneCall size={18} />
                     </div>
 
-                    <div className="flex-1 min-w-0 space-y-1.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className={`
-                          text-[15px] font-black truncate tracking-tight transition-colors
-                          ${isSelected ? 'text-slate-900' : 'text-slate-900'}
-                        `}>
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                      <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
+                        <h3 className="min-w-0 truncate text-sm font-semibold tracking-tight text-slate-950">
                           {log.caller_name || 'Anonymous Caller'}
                         </h3>
-                        <span className="text-xs font-black text-slate-400 uppercase tracking-tighter shrink-0">
+                        <span className="shrink-0 text-xs font-semibold text-slate-500">
                           {formatLogDate(log.created_at)}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
                         {getTypeBadge(log.category)}
-                        <div className="h-1 w-1 rounded-full bg-slate-200" />
-                        <div className="flex items-center gap-1 text-xs font-black text-slate-400 uppercase tracking-tighter">
+                        <Badge variant="outline" className={`gap-1 border text-[11px] font-semibold shadow-none ${statusMeta.className}`}>
+                          <StatusIcon size={11} />
+                          {statusMeta.label}
+                        </Badge>
+                        <div className="flex items-center gap-1 rounded-md bg-slate-50 px-1.5 py-0.5 text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200">
                           <Clock size={10} />
                           {formatDuration(log.duration_seconds || 0)}
                         </div>
+                        {getLeadBadge(log.lead_score)}
                         {isUrgent && (
-                          <>
-                            <div className="h-1 w-1 rounded-full bg-slate-200" />
-                            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-rose-50 text-rose-600 rounded-lg ring-1 ring-rose-500/20 text-[11px] font-black uppercase tracking-widest">
-                              <Zap size={9} className="fill-rose-500" />
-                              URGENT
-                            </div>
-                          </>
+                          <div className="flex items-center gap-1 rounded-md bg-rose-50 px-1.5 py-0.5 text-[11px] font-semibold text-rose-700 ring-1 ring-rose-100">
+                            <AlertTriangle size={10} />
+                            Follow-up
+                          </div>
                         )}
                       </div>
 
-                      <p className={`
-                        text-[13px] font-medium line-clamp-2 leading-relaxed
-                        ${isSelected ? 'text-slate-700/70' : 'text-slate-500'}
-                      `}>
+                      <p className="line-clamp-2 text-[13px] font-medium leading-5 text-slate-600 md:line-clamp-1">
                         {log.summary || log.transcript || 'No details available for this call'}
                       </p>
                     </div>
@@ -202,7 +254,40 @@ const LogList: React.FC<LogListProps> = ({ logs, selectedId, onSelect, isLoading
           </div>
         )}
       </div>
-    </div >
+
+      <div className="flex shrink-0 flex-col gap-3 border-t border-slate-200 bg-white px-3 py-3 sm:px-4">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-xs font-medium text-slate-500">
+            Showing {startItem}-{endItem} of {totalItems}
+          </span>
+          <span className="rounded-md bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
+            {pageSize} per page
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 rounded-lg text-xs font-semibold"
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            <ChevronLeft size={14} className="mr-1.5" />
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 rounded-lg text-xs font-semibold"
+            disabled={currentPage === totalPages || totalPages === 0}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Next
+            <ChevronRight size={14} className="ml-1.5" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

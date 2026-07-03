@@ -3,6 +3,7 @@ export interface PhoneNumber {
   phone_number: string;
   friendly_name?: string;
   status: 'active' | 'inactive';
+  provider?: 'telnyx' | 'signalwire';
   capabilities?: {
     voice: boolean;
     sms: boolean;
@@ -29,6 +30,7 @@ export interface Subaccount {
   sid: string;
   friendly_name: string;
   status: string;
+  provider?: 'telnyx' | 'signalwire';
   date_created?: string;
   date_updated?: string;
   auth_token?: string;

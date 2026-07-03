@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 // removed missing imports
 import ScrollToTop from './components/ScrollToTop';
 import { LazyMotion, domAnimation } from 'framer-motion';
@@ -14,6 +14,9 @@ import { SearchProvider } from './context/SearchProvider';
 import { PageTracking } from './components/PageTracking';
 import { WebVitalsTracking } from './components/WebVitalsTracking';
 
+
+// Persistent dashboard shell (sidebar/header mounted once)
+import DashboardShell from './pages/layouts/DashboardShell';
 
 // Lazy Load Pages
 import { lazyImport } from './utils/lazyImport';
@@ -35,6 +38,7 @@ const Preview = lazyImport(() => import('./pages/setup/Preview'));
 import Landing from './pages/landing/index';
 
 const Privacy = lazyImport(() => import('./pages/landing/Privacy'));
+const NotFound = lazyImport(() => import('./pages/NotFound'));
 const Terms = lazyImport(() => import('./pages/landing/Terms'));
 const Contact = lazyImport(() => import('./pages/landing/Contact'));
 
@@ -58,8 +62,7 @@ const NumberDetails = lazyImport(() => import('./pages/voice-setup/NumberDetails
 const SetupSubaccount = lazyImport(() => import('./pages/voice-setup/SetupSubaccount'));
 const GetNewNumber = lazyImport(() => import('./pages/voice-setup/GetNewNumber'));
 const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
-const Inventory = lazyImport(() => import('./pages/dashboard/Inventory'));
-const Orders = lazyImport(() => import('./pages/dashboard/Orders'));
+const Knowledge = lazyImport(() => import('./pages/dashboard/Knowledge'));
 
 
 function App() {
@@ -118,6 +121,7 @@ function App() {
                     </SearchProvider>
                   </BusinessSetupProvider>
                 }>
+                  <Route element={<DashboardShell />}>
                   <Route path="/dashboard" element={<DashboardHome />} />
                   <Route path="/dashboard/calls" element={<CallLogs />} />
                   <Route path="/dashboard/calls/:callId" element={<CallLogs />} />
@@ -133,10 +137,8 @@ function App() {
                   <Route path="/dashboard/voice-setup/setup-subaccount" element={<SetupSubaccount />} />
                   <Route path="/dashboard/voice-setup/buy" element={<GetNewNumber />} />
                   <Route path="/dashboard/business-details" element={<BusinessSetup />} />
-                  <Route path="/dashboard/inventory" element={<Inventory />} />
-                  <Route path="/dashboard/inventory" element={<Inventory />} />
-                  <Route path="/dashboard/orders" element={<Orders />} />
-                  <Route path="/dashboard/orders" element={<Orders />} />
+                  <Route path="/dashboard/knowledge" element={<Knowledge />} />
+                  <Route path="/dashboard/agent" element={<Navigate to="/dashboard/settings" replace />} />
 
                   {/* Voice Model Setup Routes (Moved inside Dashboard) */}
                   <Route path="/dashboard/voice-model/*" element={
@@ -152,9 +154,13 @@ function App() {
                       </SetupProvider>
                     </ErrorBoundary>
                   } />
+                  </Route>
                 </Route>
               </Route>
             </Route>
+
+            {/* 404 Catch-all */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </LazyMotion>

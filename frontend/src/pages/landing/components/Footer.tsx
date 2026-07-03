@@ -6,20 +6,15 @@ export function Footer() {
     Product: [
       { label: 'AI Receptionist Features', href: '/features' },
       { label: 'Pricing', href: '/pricing' },
-      { label: 'How It Works', href: '/process' },
-      { label: 'ROI Calculator', href: '/roi-calculator' },
-      { label: 'Integrations', href: '/integrations' }
+      { label: 'How It Works', href: '/process' }
     ],
-    Industries: [
-      { label: 'Medical & Dental', href: '/industries/medical' },
-      { label: 'Law Firms', href: '/industries/legal' },
-      { label: 'Home Services', href: '/industries/contractors' },
-      { label: 'Real Estate', href: '/industries/real-estate' },
-      { label: 'Chiropractic', href: '/industries/chiropractic' }
+    Resources: [
+      { label: 'Blog', href: '/blog' },
+      { label: 'Multilingual AI Receptionists', href: '/blog/multilingual-ai-receptionists-immigrant-markets' },
+      { label: 'Dental Practice Case Study', href: '/blog/dental-practice-case-study-89-percent' },
+      { label: 'AI SMS Follow-up Guide', href: '/blog/ai-sms-follow-up-converts-missed-calls' }
     ],
     Company: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Blog', href: '/blog' },
       { label: 'Contact', href: '/contact' }
     ],
     Support: [
@@ -51,7 +46,7 @@ export function Footer() {
           </div>
 
           {/* Links */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
             {Object.entries(footerLinks).map(([category, links]) => (
               <div key={category}>
                 <h4 className="text-slate-900 font-black mb-5 tracking-[0.2em] uppercase text-[11px]">{category}</h4>

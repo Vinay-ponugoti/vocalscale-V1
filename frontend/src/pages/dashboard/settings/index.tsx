@@ -12,6 +12,8 @@ import { NotificationSettingsContent } from './components/NotificationSettingsCo
 import IntegrationsContent from './components/IntegrationsContent';
 import type { NotificationSettings, Voice, VoiceSettings } from '../../../types/settings';
 
+const clampSpeakingSpeed = (speed?: number) => Math.max(0.7, Math.min(1.5, speed || 1.0));
+
 const Settings = () => {
   const navigate = useNavigate();
   const unsavedChangesRef = useRef({
@@ -88,7 +90,7 @@ const Settings = () => {
           id: voiceSettingsResp.id,
           voice_id: voiceSettingsResp.voice_id || '',
           model_name: voiceSettingsResp.model_name || '',
-          speaking_speed: voiceSettingsResp.speaking_speed || 1.0,
+          speaking_speed: clampSpeakingSpeed(voiceSettingsResp.speaking_speed),
           conversation_tone: voiceSettingsResp.conversation_tone || 'friendly',
           custom_greeting: voiceSettingsResp.custom_greeting || '',
           after_hours_greeting: voiceSettingsResp.after_hours_greeting || '',
@@ -183,8 +185,7 @@ const Settings = () => {
           custom_greeting: voiceSettings.custom_greeting,
           after_hours_greeting: voiceSettings.after_hours_greeting,
           language: voiceSettings.language,
-          is_active: voiceSettings.is_active,
-          sync_google_calendar: voiceSettings.sync_google_calendar
+          is_active: voiceSettings.is_active
         };
         await api.updateVoiceSettings(voiceUpdates);
       }
@@ -269,20 +270,20 @@ const Settings = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex flex-col h-full overflow-hidden bg-slate-50 relative">
+      <div className="flex h-full flex-col overflow-hidden bg-[#f7f8fb] text-slate-950">
 
-        {/* Mobile Header with Save Button */}
-        <div className="lg:hidden flex-none px-4 py-4 border-b border-slate-200 bg-white flex items-center justify-between z-10 shrink-0">
+        <div className="lg:hidden flex-none border-b border-slate-200 bg-white px-4 py-4">
+          <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-lg font-bold tracking-tight text-slate-900">Settings</h1>
-            <p className="text-xs text-slate-500 mt-0.5">Configuration & Preferences</p>
+              <h1 className="text-lg font-black tracking-tight text-slate-950">Settings</h1>
+              <p className="mt-0.5 text-xs font-semibold text-slate-500">Voice, booking, alerts, and integrations</p>
           </div>
           <button
             onClick={handleSaveAll}
             disabled={savingAll || !hasUnsavedChanges}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all duration-200 ${savingAll || !hasUnsavedChanges
-              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-              : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-200 hover:-translate-y-0.5'
+              className={`flex h-10 items-center gap-2 rounded-lg px-4 text-xs font-black uppercase tracking-wider transition ${savingAll || !hasUnsavedChanges
+              ? 'cursor-not-allowed bg-slate-100 text-slate-400'
+              : 'bg-cyan-600 text-white shadow-sm shadow-cyan-200 hover:bg-cyan-700'
               }`}
           >
             {savingAll ? (
@@ -292,53 +293,49 @@ const Settings = () => {
             )}
             {savingAll ? 'Saving...' : 'Save'}
           </button>
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
 
-          {/* --- Sidebar / Tabs --- */}
-          <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-slate-100 bg-white flex flex-col shrink-0">
-            <div className="hidden lg:block p-4 lg:p-6 pb-2 lg:pb-4">
-              <h1 className="text-lg font-black text-slate-900 tracking-tight">Settings</h1>
-              <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.15em] mt-0.5">Configuration</p>
+          <div className="flex w-full shrink-0 flex-col border-b border-slate-200 bg-white lg:w-72 lg:border-b-0 lg:border-r">
+            <div className="hidden border-b border-slate-100 p-6 lg:block">
+              <h1 className="text-2xl font-black tracking-tight text-slate-950">Settings</h1>
+              <p className="mt-1 text-xs font-semibold text-slate-500">Control center</p>
             </div>
 
-            {/* Scrollable Tabs Area */}
-            <div className="flex-1 overflow-x-auto lg:overflow-y-auto px-4 py-3 lg:py-2 flex lg:flex-col gap-1.5 custom-scrollbar scrollbar-hide lg:scrollbar-default">
+            <div className="custom-scrollbar flex gap-1.5 overflow-x-auto px-4 py-3 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:p-4">
               {sections.map((section) => (
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
-                  className={`flex-shrink-0 lg:w-full flex items-center gap-3.5 p-3 rounded-2xl transition-all duration-300 group ${activeSection === section.id
-                    ? 'bg-indigo-50/80 text-indigo-950 lg:border lg:border-indigo-100/50 shadow-sm shadow-indigo-100/10'
-                    : 'text-slate-400 hover:bg-slate-50 hover:text-slate-700'
+                  className={`group flex shrink-0 items-center gap-3 rounded-lg border p-3 text-left transition lg:w-full ${activeSection === section.id
+                    ? 'border-cyan-200 bg-cyan-50 text-cyan-950'
+                    : 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-800'
                     }`}
                 >
-                  <div className={`p-2.5 rounded-xl transition-all duration-300 ${activeSection === section.id
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                    : 'bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-indigo-600'
+                  <div className={`flex h-9 w-9 items-center justify-center rounded-lg transition ${activeSection === section.id
+                    ? 'bg-cyan-600 text-white'
+                    : 'bg-slate-100 text-slate-400 group-hover:text-cyan-600'
                     }`}>
                     <section.icon size={16} />
                   </div>
-                  <div className="text-left">
-                    <p className={`text-[13px] font-black tracking-tight transition-colors ${activeSection === section.id ? 'text-slate-900' : 'text-slate-600'
+                  <div className="min-w-0">
+                    <p className={`text-sm font-black tracking-tight ${activeSection === section.id ? 'text-slate-950' : 'text-slate-700'
                       }`}>{section.label}</p>
-                    <p className={`hidden lg:block text-[10px] font-bold uppercase tracking-widest ${activeSection === section.id ? 'text-indigo-600/70' : 'text-slate-400'}`}>{section.description}</p>
+                    <p className={`hidden truncate text-xs font-semibold lg:block ${activeSection === section.id ? 'text-cyan-700' : 'text-slate-400'}`}>{section.description}</p>
                   </div>
                 </button>
               ))}
             </div>
 
-            {/* Desktop Save Button Area */}
-            <div className="hidden lg:block p-5 mt-auto border-t border-slate-50">
+            <div className="mt-auto hidden border-t border-slate-100 p-5 lg:block">
               <button
                 onClick={handleSaveAll}
                 disabled={savingAll || !hasUnsavedChanges}
-                className={`
-                w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300
-                ${savingAll || !hasUnsavedChanges
-                    ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100'
-                    : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-100 hover:-translate-y-0.5 active:translate-y-0'
+                className={`flex h-11 w-full items-center justify-center gap-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition ${savingAll || !hasUnsavedChanges
+                    ? 'cursor-not-allowed border border-slate-200 bg-slate-50 text-slate-300'
+                    : 'bg-cyan-600 text-white shadow-sm shadow-cyan-200 hover:bg-cyan-700'
                   }
               `}
               >
@@ -353,12 +350,11 @@ const Settings = () => {
           </div>
 
           {/* --- Main Content Area --- */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 2xl:p-12">
-            <div className="w-full space-y-6 lg:space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="custom-scrollbar flex-1 overflow-y-auto p-4 md:p-6 2xl:p-8">
+            <div className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-              {/* Header / Alerts */}
               {message && (
-                <div className={`p-4 rounded-2xl flex items-center gap-3 border shadow-sm animate-in fade-in slide-in-from-top-2 ${message.type === 'success'
+                <div className={`flex items-center gap-3 rounded-lg border p-4 shadow-sm animate-in fade-in slide-in-from-top-2 ${message.type === 'success'
                   ? 'bg-emerald-50 text-emerald-800 border-emerald-100'
                   : 'bg-rose-50 text-rose-800 border-rose-100'
                   }`}>
@@ -369,32 +365,29 @@ const Settings = () => {
                 </div>
               )}
 
-              {/* Content Sections */}
               <div className="space-y-6">
                 {activeSection === 'voice' && (
                   <div className="space-y-6">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <h2 className="text-xl font-black text-slate-900 tracking-tight">AI Voice Setup</h2>
-                        <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-1">Sound & Persona Configuration</p>
+                        <h2 className="text-2xl font-black tracking-tight text-slate-950">AI Voice Setup</h2>
+                        <p className="mt-1 text-sm font-semibold text-slate-500">Select the voice, language, pacing, and opening messages.</p>
                       </div>
                       <button
                         onClick={() => navigate('/dashboard/voice-model/method')}
-                        className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-400 hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm"
+                        className="hidden h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black uppercase tracking-wider text-slate-500 shadow-sm transition hover:border-cyan-500 hover:text-cyan-700 sm:flex"
                       >
                         Advanced <ChevronRight size={12} />
                       </button>
                     </div>
 
-                    <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
-                      <VoiceSettingsContent
-                        settings={voiceSettings}
-                        availableVoices={availableVoices}
-                        onChange={handleVoiceChange}
-                        onNavigateToAdvanced={() => navigate('/dashboard/voice-model/method')}
-                        plan={userPlan}
-                      />
-                    </div>
+                    <VoiceSettingsContent
+                      settings={voiceSettings}
+                      availableVoices={availableVoices}
+                      onChange={handleVoiceChange}
+                      onNavigateToAdvanced={() => navigate('/dashboard/voice-model/method')}
+                      plan={userPlan}
+                    />
                   </div>
                 )}
 
@@ -402,19 +395,19 @@ const Settings = () => {
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-xl font-black text-slate-900 tracking-tight">Booking Requirements</h2>
-                        <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-1">Appointment Rule Definition</p>
+                        <h2 className="text-2xl font-black tracking-tight text-slate-950">Booking Requirements</h2>
+                        <p className="mt-1 text-sm font-semibold text-slate-500">Appointment intake fields and validation rules.</p>
                       </div>
                       <button
                         onClick={() => {
                           window.dispatchEvent(new CustomEvent('booking-requirements-add-trigger'));
                         }}
-                        className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-400 hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm"
+                        className="hidden h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black uppercase tracking-wider text-slate-500 shadow-sm transition hover:border-cyan-500 hover:text-cyan-700 sm:flex"
                       >
                         Add Field
                       </button>
                     </div>
-                    <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
+                    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60 lg:p-6">
                       <BookingRequirementsContent />
                     </div>
                   </div>
@@ -423,10 +416,10 @@ const Settings = () => {
                 {activeSection === 'notifications' && (
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-xl font-black text-slate-900 tracking-tight">Notification Alerts</h2>
-                      <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-1">System Alert Preferences</p>
+                      <h2 className="text-2xl font-black tracking-tight text-slate-950">Notification Alerts</h2>
+                      <p className="mt-1 text-sm font-semibold text-slate-500">Call alerts, booking emails, and transfer behavior.</p>
                     </div>
-                    <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
+                    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60 lg:p-6">
                       <NotificationSettingsContent
                         settings={notifications}
                         onChange={handleNotificationChange}
@@ -438,10 +431,10 @@ const Settings = () => {
                 {activeSection === 'integrations' && (
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-xl font-black text-slate-900 tracking-tight">Integrations</h2>
-                      <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-1">Connected Apps & Services</p>
+                      <h2 className="text-2xl font-black tracking-tight text-slate-950">Integrations</h2>
+                      <p className="mt-1 text-sm font-semibold text-slate-500">Connected apps and calendar sync.</p>
                     </div>
-                    <div className="bg-white p-5 lg:p-8 rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50">
+                    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60 lg:p-6">
                       <IntegrationsContent />
                     </div>
                   </div>

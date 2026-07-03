@@ -67,9 +67,11 @@ const NumberDetails = () => {
 
     if (numbersLoading) {
         return (
-            <DashboardLayout>
-                <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-white"></div>
+            <DashboardLayout fullWidth>
+                <div className="flex min-h-screen items-center justify-center bg-[#f7f8fb]">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50">
+                        <div className="h-7 w-7 animate-spin rounded-full border-2 border-cyan-700 border-t-transparent"></div>
+                    </div>
                 </div>
             </DashboardLayout>
         );
@@ -77,13 +79,15 @@ const NumberDetails = () => {
 
     if (!number) {
         return (
-            <DashboardLayout>
-                <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <ShieldAlert className="w-12 h-12 text-muted-foreground" />
-                    <h2 className="text-xl font-bold text-foreground">Number Not Found</h2>
+            <DashboardLayout fullWidth>
+                <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f7f8fb] p-6 text-center">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-slate-200 bg-white">
+                        <ShieldAlert className="h-8 w-8 text-slate-400" />
+                    </div>
+                    <h2 className="text-xl font-black tracking-tight text-slate-950">Number not found</h2>
                     <button
                         onClick={() => navigate('/dashboard/voice-setup')}
-                        className="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-black rounded-xl font-bold hover:opacity-90 transition-all"
+                        className="h-10 rounded-md bg-slate-950 px-5 text-xs font-bold text-white transition-colors hover:bg-slate-800"
                     >
                         Back to List
                     </button>
@@ -98,36 +102,37 @@ const NumberDetails = () => {
 
     return (
         <DashboardLayout fullWidth>
-            <main className="flex-1 flex flex-col overflow-y-auto bg-background dark:bg-slate-950 h-full scrollbar-premium">
+            <main className="scrollbar-hide flex h-full flex-1 flex-col overflow-y-auto bg-[#f7f8fb] text-slate-950">
 
 
-                <div className="px-4 py-8 md:px-8 md:py-12 max-w-6xl mx-auto w-full space-y-8 md:space-y-10">
+                <div className="mx-auto w-full max-w-[1500px] space-y-5 px-4 py-5 md:px-6 md:py-8 xl:px-8">
                     {/* Breadcrumbs */}
-                    <nav className="flex items-center gap-2 text-xs font-black uppercase tracking-widest pt-4">
-                        <Link to="/dashboard/voice-setup" className="text-muted-foreground hover:text-slate-900 dark:hover:text-white transition-colors">Phone Numbers</Link>
-                        <ChevronRight className="text-muted-foreground/40 w-3.5 h-3.5" />
-                        <span className="text-slate-900 dark:text-white font-black">{number.phone_number}</span>
+                    <nav className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                        <Link to="/dashboard/voice-setup" className="transition-colors hover:text-cyan-700">Phone Numbers</Link>
+                        <ChevronRight className="h-3.5 w-3.5 text-slate-300" />
+                        <span className="font-black text-slate-950">{number.phone_number}</span>
                     </nav>
 
                     {/* Page Heading */}
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8">
+                    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
                         <div className="flex flex-col gap-4 md:gap-2">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                                <div className="hidden sm:block p-3 bg-slate-900/10 dark:bg-white/10 rounded-2xl border border-slate-900/20 dark:border-white/20">
-                                    <Phone className="w-8 h-8 text-slate-900 dark:text-white" />
+                                <div className="hidden rounded-lg border border-cyan-100 bg-cyan-50 p-3 text-cyan-700 sm:block">
+                                    <Phone className="h-7 w-7" />
                                 </div>
                                 <div>
-                                    <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground leading-none flex items-center gap-3">
-                                        <div className="sm:hidden p-2 bg-slate-900/10 dark:bg-white/10 rounded-xl border border-slate-900/20 dark:border-white/20">
-                                            <Phone className="w-5 h-5 text-slate-900 dark:text-white" />
+                                    <h1 className="flex items-center gap-3 text-2xl font-black tracking-tight text-slate-950 md:text-3xl">
+                                        <div className="rounded-lg border border-cyan-100 bg-cyan-50 p-2 text-cyan-700 sm:hidden">
+                                            <Phone className="h-5 w-5" />
                                         </div>
                                         {number.phone_number}
                                     </h1>
                                     <div className="flex items-center gap-3 mt-2">
-                                        <p className="text-muted-foreground text-base md:text-lg font-medium">{number.friendly_name || 'Business Line'}</p>
-                                        <span className={`px-2.5 py-0.5 md:px-3 md:py-1 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest ${number.status === 'active'
-                                            ? 'bg-success/10 text-success border border-success/20'
-                                            : 'bg-muted text-muted-foreground border border-border'
+                                        <p className="text-sm font-medium text-slate-500 md:text-base">{number.friendly_name || 'Business Line'}</p>
+                                        <span className={`rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${number.status === 'active'
+                                            ? 'border border-emerald-100 bg-emerald-50 text-emerald-700'
+                                            : 'border border-slate-200 bg-slate-50 text-slate-500'
                                             }`}>
                                             {number.status || 'Active'}
                                         </span>
@@ -138,60 +143,59 @@ const NumberDetails = () => {
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                             <button
                                 onClick={() => navigate('/dashboard/voice-setup')}
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-border bg-card text-xs md:text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-muted transition-all shadow-sm group"
+                                className="group flex h-10 flex-1 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 md:flex-none"
                             >
-                                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
                                 Return
                             </button>
-                            <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-xs md:text-sm font-black uppercase tracking-widest hover:bg-destructive/10 transition-all">
+                            <button className="flex h-10 flex-1 items-center justify-center gap-2 rounded-md border border-rose-100 bg-rose-50 px-4 text-xs font-bold text-rose-700 transition-colors hover:bg-rose-100 md:flex-none">
                                 Release
                             </button>
-                            <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black text-xs md:text-sm font-black uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
-                                <Settings className="w-4 h-4" strokeWidth={3} />
+                            <button className="flex h-10 flex-1 items-center justify-center gap-2 rounded-md bg-slate-950 px-4 text-xs font-bold text-white transition-colors hover:bg-slate-800 md:flex-none">
+                                <Settings className="h-4 w-4" strokeWidth={3} />
                                 Configure
                             </button>
                         </div>
                     </div>
+                    </div>
 
-                    <div className="space-y-6 md:space-y-8">
-                        <div className="bg-card rounded-3xl border border-border p-6 md:p-10 shadow-premium-sm relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-slate-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-slate-500/10 transition-all duration-1000" />
-
-                            <h3 className="text-lg md:text-xl font-black mb-8 md:mb-10 text-foreground flex items-center gap-3">
+                    <div className="space-y-5">
+                        <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+                            <h3 className="mb-6 flex items-center gap-3 text-lg font-black tracking-tight text-slate-950">
                                 General Information
-                                <div className="h-1 w-8 bg-slate-900/20 dark:bg-white/20 rounded-full" />
+                                <div className="h-1 w-8 rounded-full bg-cyan-100" />
                             </h3>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 md:gap-y-10 gap-x-8 md:gap-x-16">
-                                <div>
-                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 opacity-60">Number Type</p>
-                                    <p className="text-lg font-bold text-foreground">Local (10-Digit)</p>
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                                    <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Number Type</p>
+                                    <p className="text-sm font-black text-slate-950">Local (10-Digit)</p>
                                 </div>
-                                <div>
-                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 opacity-60">Country Origin</p>
-                                    <p className="text-lg font-bold text-foreground flex items-center gap-2">
+                                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                                    <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Country Origin</p>
+                                    <p className="text-sm font-black text-slate-950">
                                         United States
                                     </p>
                                 </div>
-                                <div>
-                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 opacity-60">Account Identifier (ID)</p>
+                                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                                    <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Account ID</p>
                                     <div className="flex items-center gap-2">
-                                        <p className="text-sm font-mono font-black text-slate-600 dark:text-slate-400 truncate max-w-[200px]">{number.id}</p>
-                                        <button className="p-1 hover:bg-slate-900/10 dark:hover:bg-white/10 rounded transition-colors">
-                                            <ExternalLink className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
+                                        <p className="max-w-[180px] truncate font-mono text-xs font-bold text-slate-600">{number.id}</p>
+                                        <button className="rounded p-1 transition-colors hover:bg-slate-200">
+                                            <ExternalLink className="h-3.5 w-3.5 text-slate-500" />
                                         </button>
                                     </div>
                                 </div>
-                                <div>
-                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 opacity-60">Activation Date</p>
-                                    <p className="text-lg font-bold text-foreground">{formattedDate}</p>
+                                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                                    <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Activation Date</p>
+                                    <p className="text-sm font-black text-slate-950">{formattedDate}</p>
                                 </div>
                             </div>
 
-                            <div className="my-12 h-px bg-border/50" />
+                            <div className="my-6 h-px bg-slate-200" />
 
-                            <h4 className="text-xs font-black text-foreground uppercase tracking-[0.2em] mb-8 opacity-80">Line Capabilities</h4>
-                            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
+                            <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">Line Capabilities</h4>
+                            <div className="grid grid-cols-2 gap-3">
                                 <CapabilityCard
                                     icon={Mic}
                                     label="Voice"
@@ -205,68 +209,68 @@ const NumberDetails = () => {
                             </div>
                         </div>
 
-                        <div className="bg-card rounded-3xl border border-border p-6 md:p-8 shadow-premium-sm">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-2 bg-warning/10 rounded-xl">
-                                    <ShieldAlert className="w-5 h-5 text-warning" />
+                        <div className="rounded-lg border border-amber-100 bg-amber-50 p-4">
+                            <div className="mb-2 flex items-center gap-3">
+                                <div className="rounded-md bg-white p-2 text-amber-600">
+                                    <ShieldAlert className="h-5 w-5" />
                                 </div>
-                                <h4 className="text-xs md:text-sm font-black uppercase tracking-widest">System Advisory</h4>
+                                <h4 className="text-sm font-black tracking-tight text-slate-950">System Advisory</h4>
                             </div>
-                            <p className="text-[10px] md:text-xs font-medium text-muted-foreground leading-relaxed">
+                            <p className="text-sm font-medium leading-6 text-slate-600">
                                 Avoid releasing numbers if they are tied to active marketing campaigns. Released numbers may not be retrievable.
                             </p>
                         </div>
                     </div>
 
                     {/* Activity Table */}
-                    <div className="bg-card rounded-3xl border border-border overflow-hidden shadow-premium-sm">
-                        <div className="px-6 py-6 md:px-10 md:py-8 border-b border-border flex flex-col sm:flex-row justify-between items-center gap-6">
+                    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+                        <div className="flex flex-col items-center justify-between gap-4 border-b border-slate-200 px-5 py-4 sm:flex-row">
                             <div className="flex flex-col gap-1 text-center sm:text-left">
-                                <h3 className="text-xl font-black text-foreground tracking-tight">Communication Logs</h3>
-                                <p className="text-[10px] md:text-xs font-medium text-muted-foreground uppercase tracking-widest opacity-60">Verified live traffic activity</p>
+                                <h3 className="text-lg font-black tracking-tight text-slate-950">Communication Logs</h3>
+                                <p className="text-sm font-medium text-slate-500">Verified live traffic activity</p>
                             </div>
-                            <div className="flex items-center gap-4 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-                                <div className="hidden sm:flex items-center bg-muted/50 rounded-xl px-4 py-2 border border-border group focus-within:ring-2 focus-within:ring-slate-900/10 dark:focus-within:ring-white/10 transition-all">
-                                    <Search className="text-muted-foreground w-3.5 h-3.5 group-focus-within:text-foreground transition-colors" />
+                            <div className="flex w-full items-center gap-3 overflow-x-auto pb-1 sm:w-auto sm:pb-0">
+                                <div className="hidden items-center rounded-lg border border-slate-200 bg-white px-3 py-2 transition-all focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-500/10 sm:flex">
+                                    <Search className="h-3.5 w-3.5 text-slate-400" />
                                     <input
-                                        className="bg-transparent border-none focus:ring-0 text-xs w-32 text-foreground placeholder-muted-foreground/60 ml-2"
+                                        className="ml-2 w-32 border-none bg-transparent text-xs font-semibold text-slate-950 placeholder:text-slate-400 focus:ring-0"
                                         placeholder="Search Logs..."
                                         type="text"
                                     />
                                 </div>
-                                <Link to="/dashboard/calls" className="px-6 py-2.5 bg-muted hover:bg-slate-900/5 dark:hover:bg-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 group border border-border">
+                                <Link to="/dashboard/calls" className="group flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50">
                                     History
-                                    <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                    <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                                 </Link>
                             </div>
                         </div>
 
-                        <div className="overflow-x-auto scrollbar-thin">
+                        <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="bg-muted/30 border-b border-border">
+                                <thead className="border-b border-slate-200 bg-slate-50">
                                     <tr>
-                                        <th className="px-6 py-4 md:px-10 md:py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Timestamp</th>
-                                        <th className="px-6 py-4 md:px-10 md:py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Channel</th>
-                                        <th className="px-6 py-4 md:px-10 md:py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Flow</th>
-                                        <th className="px-6 py-4 md:px-10 md:py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Counterparty</th>
-                                        <th className="px-6 py-4 md:px-10 md:py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Duration</th>
-                                        <th className="px-6 py-4 md:px-10 md:py-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-right">Settlement</th>
+                                        <th className="px-5 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">Timestamp</th>
+                                        <th className="px-5 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">Channel</th>
+                                        <th className="px-5 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">Flow</th>
+                                        <th className="px-5 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">Counterparty</th>
+                                        <th className="px-5 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">Duration</th>
+                                        <th className="px-5 py-4 text-right text-[11px] font-bold uppercase tracking-wider text-slate-500">Settlement</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-border/50">
+                                <tbody className="divide-y divide-slate-100">
                                     {logsLoading ? (
                                         <tr>
-                                            <td colSpan={6} className="px-10 py-24 text-center">
+                                            <td colSpan={6} className="px-10 py-20 text-center">
                                                 <div className="flex flex-col items-center gap-4">
-                                                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-900 dark:border-white"></div>
-                                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] animate-pulse">Syncing logs...</span>
+                                                    <div className="h-9 w-9 animate-spin rounded-full border-2 border-cyan-700 border-t-transparent"></div>
+                                                    <span className="text-sm font-semibold text-slate-500">Syncing logs...</span>
                                                 </div>
                                             </td>
                                         </tr>
                                     ) : logs.length > 0 ? (
                                         logs.map((log, idx) => (
-                                            <tr key={idx} className="hover:bg-muted/20 transition-all group">
-                                                <td className="px-6 py-4 md:px-10 md:py-6 text-xs font-bold text-foreground/80 whitespace-nowrap">
+                                            <tr key={idx} className="group transition-colors hover:bg-slate-50">
+                                                <td className="whitespace-nowrap px-5 py-4 text-xs font-semibold text-slate-700">
                                                     {new Date(log.created_at).toLocaleString('en-US', {
                                                         month: 'short',
                                                         day: 'numeric',
@@ -274,45 +278,45 @@ const NumberDetails = () => {
                                                         minute: '2-digit'
                                                     })}
                                                 </td>
-                                                <td className="px-6 py-4 md:px-10 md:py-6">
+                                                <td className="px-5 py-4">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="p-2 bg-primary/5 rounded-xl border border-primary/10 group-hover:bg-primary/10 transition-colors">
-                                                            <Phone className="w-4 h-4 text-primary" />
+                                                        <div className="rounded-md border border-cyan-100 bg-cyan-50 p-2 text-cyan-700">
+                                                            <Phone className="h-4 w-4" />
                                                         </div>
-                                                        <span className="text-xs font-black uppercase tracking-widest text-foreground">Voice</span>
+                                                        <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Voice</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 md:px-10 md:py-6">
-                                                    <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest border ${log.direction === 'inbound'
-                                                        ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
-                                                        : 'bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white border-slate-900/20 dark:border-white/20'
+                                                <td className="px-5 py-4">
+                                                    <span className={`rounded-md border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${log.direction === 'inbound'
+                                                        ? 'border-cyan-100 bg-cyan-50 text-cyan-700'
+                                                        : 'border-slate-200 bg-slate-50 text-slate-700'
                                                         }`}>
                                                         {log.direction || 'Inbound'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 md:px-10 md:py-6 text-xs font-mono font-black text-foreground/70">
+                                                <td className="px-5 py-4 font-mono text-xs font-bold text-slate-600">
                                                     {log.from === number.phone_number ? log.to : log.from}
                                                 </td>
-                                                <td className="px-6 py-4 md:px-10 md:py-6 text-xs font-bold text-foreground flex items-center gap-2">
-                                                    <Clock className="w-4 h-4 text-muted-foreground" />
+                                                <td className="flex items-center gap-2 px-5 py-4 text-xs font-bold text-slate-700">
+                                                    <Clock className="h-4 w-4 text-slate-400" />
                                                     {log.duration || '0m 45s'}
                                                 </td>
-                                                <td className="px-6 py-4 md:px-10 md:py-6 text-xs font-black text-foreground text-right">
-                                                    <span className="text-muted-foreground/50 mr-1">$</span>
+                                                <td className="px-5 py-4 text-right text-xs font-black text-slate-700">
+                                                    <span className="mr-1 text-slate-400">$</span>
                                                     {log.cost?.toFixed(4) || '0.0150'}
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className="px-10 py-32 text-center">
+                                            <td colSpan={6} className="px-10 py-24 text-center">
                                                 <div className="flex flex-col items-center gap-6">
-                                                    <div className="w-20 h-20 bg-muted rounded-3xl flex items-center justify-center opacity-40">
-                                                        <Clock className="w-10 h-10 text-muted-foreground" />
+                                                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+                                                        <Clock className="h-8 w-8 text-slate-300" />
                                                     </div>
                                                     <div className="flex flex-col gap-2">
-                                                        <p className="text-lg font-black text-foreground tracking-tight">No Activity Records</p>
-                                                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest max-w-[200px] mx-auto leading-relaxed">
+                                                        <p className="text-lg font-black tracking-tight text-slate-950">No Activity Records</p>
+                                                        <p className="mx-auto max-w-[240px] text-sm font-medium leading-6 text-slate-500">
                                                             Logs will be automatically archived here as traffic occurs.
                                                         </p>
                                                     </div>
@@ -326,13 +330,13 @@ const NumberDetails = () => {
                     </div>
 
                     {/* Detailed Legal Footer */}
-                    <footer className="mt-16 py-12 border-t border-border flex flex-col items-center gap-4">
-                        <div className="flex items-center gap-8 mb-4">
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors cursor-pointer">Privacy</span>
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors cursor-pointer">Terms</span>
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors cursor-pointer">Status</span>
+                    <footer className="mt-8 flex flex-col items-center gap-3 border-t border-slate-200 py-8">
+                        <div className="mb-2 flex items-center gap-6">
+                            <span className="cursor-pointer text-xs font-bold text-slate-400 transition-colors hover:text-slate-700">Privacy</span>
+                            <span className="cursor-pointer text-xs font-bold text-slate-400 transition-colors hover:text-slate-700">Terms</span>
+                            <span className="cursor-pointer text-xs font-bold text-slate-400 transition-colors hover:text-slate-700">Status</span>
                         </div>
-                        <p className="text-muted-foreground/40 text-[9px] font-black uppercase tracking-[0.3em] text-center max-w-lg leading-relaxed">
+                        <p className="max-w-lg text-center text-xs font-medium leading-6 text-slate-400">
                             VocalScale Intelligence Platform. Secure Unified Communications Infrastructure. All transactions processed via encrypted Stripe channels.
                         </p>
                     </footer>
@@ -349,16 +353,16 @@ interface CapabilityCardProps {
 }
 
 const CapabilityCard = ({ icon: Icon, label, active }: CapabilityCardProps) => (
-    <div className={`flex flex-col items-center gap-4 p-6 rounded-2xl border transition-all duration-300 ${active
-        ? 'bg-card border-slate-900/10 dark:border-white/10 shadow-premium-sm hover:border-slate-900/20 dark:hover:border-white/20'
-        : 'bg-muted/20 border-border opacity-40 grayscale'
+    <div className={`flex flex-col items-center gap-3 rounded-lg border p-5 transition-colors ${active
+        ? 'border-cyan-100 bg-cyan-50/60'
+        : 'border-slate-200 bg-slate-50 opacity-60 grayscale'
         }`}>
-        <div className={`p-3 rounded-2xl ${active ? 'bg-slate-900/5 dark:bg-white/5 text-slate-900 dark:text-white' : 'bg-muted text-muted-foreground'}`}>
-            <Icon className="w-6 h-6" />
+        <div className={`rounded-md p-3 ${active ? 'bg-white text-cyan-700' : 'bg-white text-slate-400'}`}>
+            <Icon className="h-5 w-5" />
         </div>
         <div className="flex flex-col items-center gap-1">
-            <span className={`text-[10px] font-black uppercase tracking-widest ${active ? 'text-foreground' : 'text-muted-foreground'}`}>{label}</span>
-            {active && <span className="text-[8px] font-black text-emerald-500 uppercase tracking-wider px-1.5 py-0.5 bg-emerald-500/10 rounded-full">Active</span>}
+            <span className={`text-xs font-bold uppercase tracking-wider ${active ? 'text-slate-950' : 'text-slate-400'}`}>{label}</span>
+            {active && <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600">Active</span>}
         </div>
     </div>
 );

@@ -33,7 +33,7 @@ export const Label = ({ children, className }: { children: React.ReactNode; clas
 export const Toggle = ({ active, onChange }: { active: boolean; onChange?: () => void }) => (
   <button
     onClick={onChange}
-    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${active ? 'bg-indigo-600' : 'bg-gray-300'}`}
+    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${active ? 'bg-cyan-600' : 'bg-gray-300'}`}
   >
     <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${active ? 'translate-x-5' : 'translate-x-1'}`} />
   </button>

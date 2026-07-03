@@ -10,7 +10,7 @@ import type { ModelOption } from '../../../../types/chat';
 import EmptyState from './EmptyState';
 import { useChat } from '../../../../hooks/useChat';
 import { useAuth } from '../../../../context/AuthContext';
-import { ChevronDown, AlertCircle, X } from 'lucide-react';
+import { AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import { ImageStatusBadge } from './ImageCard';
 
