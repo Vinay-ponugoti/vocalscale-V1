@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import {
   Building2, Mail, Phone, MapPin, Zap, Globe,
-  Search, Loader2, Star,
+  Search, Loader2, Star, AlertCircle,
   Sparkles, X, ChevronDown
 } from 'lucide-react';
 import { businessSetupAPI } from '../../../api/businessSetup';
@@ -58,8 +58,8 @@ const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLI
     ref={ref}
     {...props}
     className={`
-      w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium rounded-xl
-      focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white
+      w-full px-4 py-3 bg-white border border-slate-200 text-slate-950 text-sm font-medium rounded-lg
+      focus:ring-2 focus:ring-cyan-500/10 focus:border-cyan-500 focus:bg-white
       transition-all duration-200 placeholder:text-slate-400
       disabled:opacity-50 disabled:cursor-not-allowed
       ${props.className || ''}
@@ -73,8 +73,8 @@ const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HT
     ref={ref}
     {...props}
     className={`
-      w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium rounded-xl
-      focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white
+      w-full px-4 py-3 bg-white border border-slate-200 text-slate-950 text-sm font-medium rounded-lg
+      focus:ring-2 focus:ring-cyan-500/10 focus:border-cyan-500 focus:bg-white
       transition-all duration-200 cursor-pointer appearance-none
       disabled:opacity-50 disabled:cursor-not-allowed
       ${props.className || ''}
@@ -88,8 +88,8 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttribu
     ref={ref}
     {...props}
     className={`
-      w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium rounded-xl
-      focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white
+      w-full px-4 py-3 bg-white border border-slate-200 text-slate-950 text-sm font-medium rounded-lg
+      focus:ring-2 focus:ring-cyan-500/10 focus:border-cyan-500 focus:bg-white
       transition-all duration-200 placeholder:text-slate-400 resize-none
       disabled:opacity-50 disabled:cursor-not-allowed
       ${props.className || ''}
@@ -99,9 +99,9 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttribu
 TextArea.displayName = 'TextArea';
 
 const Label = ({ children, optional }: { children: React.ReactNode, optional?: boolean }) => (
-  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 block mb-2">
+  <label className="mb-2 block text-sm font-bold leading-none text-slate-800 peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
     {children}
-    {optional && <span className="ml-2 font-normal text-slate-500 text-xs">(Optional)</span>}
+    {optional && <span className="ml-2 text-xs font-semibold text-slate-400">(Optional)</span>}
   </label>
 );
 
@@ -116,27 +116,27 @@ interface SearchResultProps {
 const SearchResultCard = ({ business, onSelect }: SearchResultProps) => (
   <button
     onClick={() => onSelect(business)}
-    className="w-full bg-white text-left rounded-xl border border-slate-200 hover:border-indigo-400 p-2 flex items-start gap-4 transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-0.5 group"
+    className="group flex w-full items-start gap-4 rounded-lg border border-slate-200 bg-white p-2 text-left transition-colors hover:border-cyan-300 hover:bg-cyan-50/30"
   >
     {/* Image Section */}
-    <div className="w-24 h-24 rounded-lg bg-slate-100 overflow-hidden shrink-0 relative border border-slate-100">
+    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md border border-slate-200 bg-slate-100">
       {business.photo_url ? (
         <img src={business.photo_url} alt={business.name} className="w-full h-full object-cover" />
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-[#F2E3DB] text-slate-300">
-          <Building2 className="w-8 h-8 opacity-50" />
+          <Building2 className="h-8 w-8 opacity-50" />
         </div>
       )}
-      <div className="absolute top-1 right-1 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded shadow-sm flex items-center gap-0.5">
-        <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
+      <div className="absolute right-1 top-1 flex items-center gap-0.5 rounded bg-white/90 px-1.5 py-0.5 shadow-sm backdrop-blur-sm">
+        <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
         <span className="text-[10px] font-bold text-slate-900">{business.rating || 'N/A'}</span>
       </div>
     </div>
 
     {/* Content Section */}
-    <div className="flex-1 py-1 min-w-0">
+    <div className="min-w-0 flex-1 py-1">
       <div className="flex items-start justify-between gap-2 mb-1">
-        <h3 className="text-base font-bold text-slate-900 truncate pr-2 group-hover:text-indigo-700 transition-colors">{business.name}</h3>
+        <h3 className="truncate pr-2 text-base font-bold text-slate-950 transition-colors group-hover:text-cyan-800">{business.name}</h3>
         {business.types?.[0] && (
           <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full uppercase tracking-wider shrink-0">
             {business.types[0].replace(/_/g, ' ')}
@@ -154,8 +154,8 @@ const SearchResultCard = ({ business, onSelect }: SearchResultProps) => (
           {business.user_ratings_total ? `(${business.user_ratings_total} reviews)` : '(New)'}
         </span>
         <div className="flex items-center gap-1.5 ml-auto mr-2">
-          <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-            Select <Sparkles className="w-3 h-3" />
+          <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-cyan-700 opacity-0 transition-opacity group-hover:opacity-100">
+            Select <Sparkles className="h-3 w-3" />
           </span>
         </div>
       </div>
@@ -178,6 +178,7 @@ export const BusinessDetails: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [isPopulating, setIsPopulating] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [searchError, setSearchError] = useState('');
   const [showSuccessMessage, setShowSuccessMessage] = useState(true);
 
   // Auto-hide success message immediately after setup
@@ -240,11 +241,14 @@ export const BusinessDetails: React.FC = () => {
     if (!searchQuery.trim()) return;
     setIsSearching(true);
     setShowSearch(true);
+    setSearchError('');
     try {
       const results = await businessSetupAPI.searchGooglePlaces(searchQuery);
-      setSearchResults(results);
+      setSearchResults(Array.isArray(results) ? results : []);
     } catch (error) {
       console.error('Search failed:', error);
+      setSearchResults([]);
+      setSearchError(error instanceof Error ? error.message : 'Could not search Google Places. Try again or enter details manually.');
     } finally {
       setIsSearching(false);
     }
@@ -330,7 +334,7 @@ export const BusinessDetails: React.FC = () => {
       }
 
       // Save directly with the explicit data (bypasses stale stateRef)
-      const result = await actions.saveDataDirect(dataToSave);
+      await actions.saveDataDirect(dataToSave);
 
       // Reviews are handled directly by the backend cron/sync jobs instead of the UI
 
@@ -338,8 +342,10 @@ export const BusinessDetails: React.FC = () => {
       setShowSearch(false);
       setSearchQuery('');
       setSearchResults([]);
+      setSearchError('');
     } catch (error) {
       console.error('Failed to fetch business details:', error);
+      setSearchError(error instanceof Error ? error.message : 'Could not sync this business. Try another result or enter details manually.');
     } finally {
       setIsPopulating(false);
     }
@@ -365,27 +371,30 @@ export const BusinessDetails: React.FC = () => {
   };
 
   return (
-    <div className="w-full font-sans relative">
+    <div className="relative w-full font-sans">
 
       {/* Search Result Overlay */}
       {showSearch && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-start justify-center pt-[15vh] px-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[70vh] animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-white/75 px-4 pt-[12vh] backdrop-blur-md animate-in fade-in duration-200">
+          <div className="flex max-h-[74vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl shadow-slate-200/70 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
 
             {/* Header */}
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+            <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                <div className="rounded-md bg-cyan-50 p-2 text-cyan-700">
                   <Search className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Search Businesses</h3>
-                  <p className="text-xs text-slate-500">Select your business to sync details.</p>
+                  <h3 className="text-sm font-bold text-slate-950">Search Businesses</h3>
+                  <p className="text-xs font-medium text-slate-500">Select your business to sync details.</p>
                 </div>
               </div>
               <button
-                onClick={() => setShowSearch(false)}
-                className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
+                onClick={() => {
+                  setShowSearch(false);
+                  setSearchError('');
+                }}
+                className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
                 title="Close"
               >
                 <X className="w-5 h-5" />
@@ -393,11 +402,11 @@ export const BusinessDetails: React.FC = () => {
             </div>
 
             {/* Results Area */}
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/50">
+            <div className="scrollbar-hide flex-1 overflow-y-auto bg-slate-50/70 p-4">
               {isSearching ? (
                 <div className="space-y-4">
                   {[1, 2, 3].map(i => (
-                    <div key={i} className="bg-white p-3 rounded-xl border border-slate-100 flex gap-4 animate-pulse">
+                    <div key={i} className="flex animate-pulse gap-4 rounded-lg border border-slate-200 bg-white p-3">
                       <div className="w-20 h-20 bg-slate-100 rounded-lg shrink-0" />
                       <div className="flex-1 space-y-2 py-1">
                         <div className="h-4 bg-slate-100 rounded w-3/4" />
@@ -406,9 +415,36 @@ export const BusinessDetails: React.FC = () => {
                       </div>
                     </div>
                   ))}
-                  <div className="flex items-center justify-center gap-2 text-slate-400 text-xs font-medium py-2">
+                  <div className="flex items-center justify-center gap-2 py-2 text-xs font-medium text-slate-400">
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     Scanning Google Places...
+                  </div>
+                </div>
+              ) : searchError ? (
+                <div className="flex flex-col items-center justify-center rounded-lg border border-rose-100 bg-white px-6 py-12 text-center">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+                    <AlertCircle className="h-7 w-7" />
+                  </div>
+                  <h4 className="mb-1 font-bold text-slate-950">Connection did not complete</h4>
+                  <p className="mb-5 max-w-md text-sm font-medium leading-6 text-slate-500">{searchError}</p>
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    <button
+                      onClick={handleSearch}
+                      disabled={isSearching || !searchQuery.trim()}
+                      className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-cyan-700 px-4 text-xs font-bold text-white transition-colors hover:bg-cyan-800 disabled:bg-slate-100 disabled:text-slate-400"
+                    >
+                      {isSearching && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                      Try Again
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowSearch(false);
+                        setSearchError('');
+                      }}
+                      className="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50"
+                    >
+                      Enter Manually
+                    </button>
                   </div>
                 </div>
               ) : searchResults.length > 0 ? (
@@ -421,20 +457,23 @@ export const BusinessDetails: React.FC = () => {
                       isSelected={false}
                     />
                   ))}
-                  <p className="text-center text-[10px] text-slate-400 font-medium py-2">Showing top 5 results for relevance</p>
+                  <p className="py-2 text-center text-[10px] font-medium text-slate-400">Showing top 5 results for relevance</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-slate-100">
                     <Search className="w-8 h-8 text-slate-300" />
                   </div>
-                  <h4 className="text-slate-900 font-bold mb-1">No businesses found</h4>
-                  <p className="text-slate-500 text-xs max-w-[200px] mb-6">We couldn't find any matches for "{searchQuery}". Try a different spelling or location.</p>
+                  <h4 className="mb-1 font-bold text-slate-950">No businesses found</h4>
+                  <p className="mb-6 max-w-[220px] text-xs font-medium text-slate-500">We could not find any matches for "{searchQuery}". Try a different spelling or location.</p>
                   <button
-                    onClick={() => setShowSearch(false)}
-                    className="px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold text-xs rounded-lg hover:bg-slate-50 transition-colors"
+                    onClick={() => {
+                      setShowSearch(false);
+                      setSearchError('');
+                    }}
+                    className="rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50"
                   >
-                    Close & Enter Manually
+                    Enter Manually
                   </button>
                 </div>
               )}
@@ -444,20 +483,20 @@ export const BusinessDetails: React.FC = () => {
       )}
 
       {isPopulating && (
-        <div className="fixed inset-0 z-[60] bg-white/80 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-white/80 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="flex flex-col items-center">
-            <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mb-4" />
-            <p className="text-slate-900 font-black uppercase tracking-widest text-[11px]">Syncing Business Data...</p>
+            <Loader2 className="mb-4 h-10 w-10 animate-spin text-cyan-700" />
+            <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">Syncing Business Data...</p>
           </div>
         </div>
       )}
 
-      <div className="space-y-10">
+      <div className="space-y-5">
 
         {/* AI Smart Connect Section — guarded by initialLoaded to prevent race condition on refresh */}
         {!initialLoaded || loading ? (
           /* Still loading from API — show skeleton placeholder, NOT the setup form */
-          <div className="relative overflow-hidden rounded-2xl p-8 border border-slate-100 bg-slate-50/50 animate-pulse">
+          <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-white p-8 animate-pulse">
             <div className="flex items-start gap-4 mb-8">
               <div className="w-12 h-12 rounded-2xl bg-slate-200" />
               <div className="space-y-2 flex-1">
@@ -472,42 +511,42 @@ export const BusinessDetails: React.FC = () => {
           null
         ) : (
           /* First-time setup — show AI Smart Connect search */
-          <div className="relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 rounded-2xl" />
-            <div className="relative bg-white/50 backdrop-blur-sm rounded-2xl p-8 border border-indigo-100 shadow-xl shadow-indigo-100/50 transition-all duration-300 hover:shadow-indigo-100/80 hover:border-indigo-200">
+          <div className="rounded-lg border border-cyan-100 bg-white p-5 shadow-sm">
 
               {/* Header */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+              <div className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-white rounded-2xl border border-indigo-100 shadow-md shadow-indigo-100/50 text-indigo-600 shrink-0">
-                    <Sparkles className="w-6 h-6" />
+                  <div className="shrink-0 rounded-md border border-cyan-100 bg-cyan-50 p-3 text-cyan-700">
+                    <Sparkles className="h-5 w-5" />
                   </div>
                   <div>
-                    <h4 className="scroll-m-20 text-lg font-semibold tracking-tight text-slate-900">AI Smart Connect</h4>
-                    <p className="text-sm text-slate-500 mt-1">
-                      Instantly populate your business profile by syncing directly with Google Places.
+                    <h4 className="text-base font-black tracking-tight text-slate-950">Google Business Connect</h4>
+                    <p className="mt-1 text-sm font-medium leading-6 text-slate-500">
+                      Pull in verified business details, contact info, and hours from Google Places.
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Search input */}
-              <div className="relative max-w-2xl">
-                <div className="relative group/search">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within/search:text-indigo-500 transition-colors" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    placeholder="Search for your business (e.g. 'Coffee Shop New York')"
-                    className="w-full pl-12 pr-32 py-4 bg-white border border-slate-200 rounded-xl text-base text-slate-900 shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder:text-slate-400"
-                  />
-                  <div className="absolute right-2 top-2 bottom-2">
+              <div className="relative max-w-3xl">
+                <div className="grid gap-2 sm:block group/search">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within/search:text-cyan-600" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                      placeholder="Search for your business (e.g. 'Coffee Shop New York')"
+                      className="w-full rounded-lg border border-slate-200 bg-white py-3.5 pl-12 pr-4 text-base text-slate-950 shadow-sm transition-all placeholder:text-slate-400 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 sm:pr-32"
+                    />
+                  </div>
+                  <div className="sm:absolute sm:bottom-2 sm:right-2 sm:top-2">
                     <button
                       onClick={handleSearch}
                       disabled={isSearching || !searchQuery.trim()}
-                      className="h-full px-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white rounded-lg font-bold text-sm transition-all flex items-center gap-2 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300 disabled:shadow-none translate-y-0 active:translate-y-0.5"
+                      className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-cyan-700 px-5 text-sm font-bold text-white transition-colors hover:bg-cyan-800 disabled:bg-slate-100 disabled:text-slate-400 sm:h-full sm:w-auto"
                     >
                       {isSearching ? (
                         <>
@@ -517,18 +556,18 @@ export const BusinessDetails: React.FC = () => {
                       ) : (
                         <>
                           <span>Connect</span>
-                          <Sparkles className="w-4 h-4 opacity-70" />
+                          <Sparkles className="h-4 w-4 opacity-70" />
                         </>
                       )}
                     </button>
                   </div>
                 </div>
               </div>
-            </div>
           </div>
         )}
 
-        <div className="space-y-8">
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           {/* Business Name Section */}
           <div className="group">
             <Label>Company Name</Label>
@@ -541,7 +580,7 @@ export const BusinessDetails: React.FC = () => {
                 name="businessName"
                 value={data.business.business_name}
                 onChange={handleChange}
-                placeholder="e.g. Nexus Automations"
+                placeholder="e.g. Joe's Pizza"
                 className="pl-11"
               />
             </div>
@@ -597,7 +636,7 @@ export const BusinessDetails: React.FC = () => {
           </div>
 
           {/* Contact Info Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:col-span-2">
 
             {/* Phone */}
             <div className="group">
@@ -673,7 +712,7 @@ export const BusinessDetails: React.FC = () => {
           </div>
 
           {/* Address */}
-          <div className="group">
+          <div className="group lg:col-span-2">
             <Label optional>Physical Address</Label>
             <div className="relative">
               <div className="absolute top-3 left-3 pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
@@ -688,39 +727,27 @@ export const BusinessDetails: React.FC = () => {
                 className="pl-10"
               />
             </div>
-            <p className="mt-2 text-xs text-slate-400 font-mono">
-              Determines regional voice accent settings.
+            <p className="mt-2 text-xs font-medium text-slate-400">
+              Used for location context, caller directions, and regional routing.
             </p>
           </div>
 
           {/* Configuration Tip */}
-          <div className="p-5 bg-slate-900 border border-slate-800 rounded-xl flex gap-4 text-slate-300 shadow-lg">
-            <div className="p-2 bg-slate-800 rounded-lg text-slate-100 shrink-0">
-              <Zap size={20} />
+          <div className="flex gap-4 rounded-lg border border-cyan-100 bg-cyan-50/70 p-4 text-slate-700 lg:col-span-2">
+            <div className="shrink-0 rounded-md border border-cyan-100 bg-white p-2 text-cyan-700">
+              <Zap size={18} />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-1">Next Step</h4>
-              <p className="text-xs leading-relaxed text-slate-400">
+              <h4 className="mb-1 text-sm font-bold text-slate-950">Agent context</h4>
+              <p className="text-xs font-medium leading-relaxed text-slate-600">
                 Customizing the AI personality and knowledge base happens in the upcoming configuration stages.
               </p>
             </div>
           </div>
 
+          </div>
         </div>
       </div>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.2);
-          border-radius: 10px;
-        }
-      `}</style>
     </div >
   );
 };

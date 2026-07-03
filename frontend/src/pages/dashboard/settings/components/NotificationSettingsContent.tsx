@@ -1,29 +1,25 @@
 import React from 'react';
-import {
-  Globe, PhoneForwarded
-} from 'lucide-react';
+import { MailCheck, PhoneForwarded, Siren } from 'lucide-react';
 import { Toggle } from '../../components/SettingsComponents';
 import type { NotificationSettingsProps } from '../../../../types/settings';
+
+const sanitizePhoneInput = (value: string) => value.replace(/[^0-9+()-\s]/g, '');
 
 export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = ({
   settings,
   onChange,
 }) => {
   return (
-    <div className="space-y-8 2xl:space-y-12">
-      {/* Basic Toggles */}
-      <div className="space-y-4 2xl:space-y-6">
-        <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 mb-5 px-1">Delivery Channels</h3>
-
-        {/* Booking Confirmations */}
-        <div className="flex items-center justify-between p-5 bg-slate-50/50 rounded-2xl hover:bg-white hover:border-indigo-100 transition-all duration-300 border border-slate-100 group">
-          <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-emerald-500 shrink-0 shadow-sm group-hover:shadow-md transition-all">
-              <Globe size={20} />
+    <div className="space-y-5">
+      <section className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-cyan-700">
+              <MailCheck className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[15px] font-black text-slate-900 tracking-tight">New Booking Confirmations</p>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mt-1">Email notification for new calendar bookings</p>
+              <p className="text-sm font-semibold text-slate-950">Booking confirmation emails</p>
+              <p className="mt-1 text-sm font-medium text-slate-500">Send an email when a new appointment is booked.</p>
             </div>
           </div>
           <Toggle
@@ -31,85 +27,72 @@ export const NotificationSettingsContent: React.FC<NotificationSettingsProps> = 
             onChange={() => onChange({ booking_confirmations: !settings.booking_confirmations })}
           />
         </div>
-      </div>
+      </section>
 
-      {/* Call Transfer Configuration */}
-      <div className="space-y-5 pt-6 border-t border-slate-100">
-        <div>
-          <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 px-1">Call Forwarding & Routing</h3>
-          <p className="text-[11px] text-slate-500 px-1 mt-1 font-bold uppercase tracking-wide opacity-80">Configure how calls are routed to your team based on AI escalation.</p>
+      <section className="rounded-lg border border-slate-200 bg-white">
+        <div className="border-b border-slate-200 p-4">
+          <h3 className="text-sm font-semibold text-slate-950">Call routing</h3>
+          <p className="mt-1 text-sm font-medium text-slate-500">Choose where callers should be transferred when the assistant escalates.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 2xl:gap-8">
-          {/* Urgent Transfer */}
-          <div className={`p-5 bg-white rounded-2xl border shadow-sm transition-all ${settings.urgent_transfer_enabled ? 'border-rose-200 bg-rose-50/30' : 'border-slate-100 opacity-70'}`}>
-            <div className="flex items-start gap-4">
-              <div className={`p-2 rounded-xl shrink-0 ${settings.urgent_transfer_enabled ? 'bg-rose-100 border border-rose-200 text-rose-600' : 'bg-slate-100 border border-slate-200 text-slate-400'}`}>
-                <PhoneForwarded size={16} />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-wider">Urgent Transfer</h4>
-                  <Toggle
-                    active={settings.urgent_transfer_enabled || false}
-                    onChange={() => onChange({ urgent_transfer_enabled: !settings.urgent_transfer_enabled })}
-                  />
+        <div className="grid grid-cols-1 gap-4 p-4 lg:grid-cols-2">
+          <div className={`rounded-lg border p-4 transition ${settings.urgent_transfer_enabled ? 'border-rose-200 bg-rose-50/40' : 'border-slate-200 bg-white'}`}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${settings.urgent_transfer_enabled ? 'border-rose-200 bg-white text-rose-600' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
+                  <Siren className="h-5 w-5" />
                 </div>
-                <p className="text-[11px] font-bold text-slate-500 mb-4 opacity-70">Route here when AI detects an emergency.</p>
-
-                <div className={`flex items-center gap-3 px-3 py-2 rounded-xl border transition-colors ${settings.urgent_transfer_enabled ? 'bg-white border-rose-100' : 'bg-slate-50/50 border-slate-100'}`}>
-                  <span className="text-sm">📱</span>
-                  <input
-                    type="tel"
-                    value={settings.transfer_number || ''}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9+()-\s]/g, '');
-                      onChange({ transfer_number: value });
-                    }}
-                    disabled={!settings.urgent_transfer_enabled}
-                    placeholder="+1 (555) 000-0000"
-                    className={`w-full bg-transparent border-none p-0 font-mono text-xs font-black tracking-tight focus:ring-0 focus:outline-none ${settings.urgent_transfer_enabled ? 'text-slate-900 placeholder:text-slate-300' : 'text-slate-400 placeholder:text-slate-300 cursor-not-allowed'}`}
-                  />
+                <div>
+                  <p className="text-sm font-semibold text-slate-950">Urgent transfer</p>
+                  <p className="mt-1 text-sm font-medium text-slate-500">Emergency or high-priority requests.</p>
                 </div>
               </div>
+              <Toggle
+                active={settings.urgent_transfer_enabled || false}
+                onChange={() => onChange({ urgent_transfer_enabled: !settings.urgent_transfer_enabled })}
+              />
             </div>
+
+            <label className="mt-4 block text-xs font-semibold text-slate-500">Transfer number</label>
+            <input
+              type="tel"
+              value={settings.transfer_number || ''}
+              onChange={(event) => onChange({ transfer_number: sanitizePhoneInput(event.target.value) })}
+              disabled={!settings.urgent_transfer_enabled}
+              placeholder="+1 (555) 000-0000"
+              className="mt-2 h-10 w-full rounded-lg border border-slate-200 bg-white px-3 font-mono text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            />
           </div>
 
-          {/* Standard Transfer */}
-          <div className={`p-5 bg-white rounded-2xl border shadow-sm transition-all ${settings.standard_transfer_enabled ? 'border-indigo-200 bg-indigo-50/30' : 'border-slate-100 opacity-70'}`}>
-            <div className="flex items-start gap-4">
-              <div className={`p-2 rounded-xl shrink-0 ${settings.standard_transfer_enabled ? 'bg-indigo-100 border border-indigo-200 text-indigo-600' : 'bg-slate-100 border border-slate-200 text-slate-400'}`}>
-                <PhoneForwarded size={16} />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-wider">Standard Transfer</h4>
-                  <Toggle
-                    active={settings.standard_transfer_enabled || false}
-                    onChange={() => onChange({ standard_transfer_enabled: !settings.standard_transfer_enabled })}
-                  />
+          <div className={`rounded-lg border p-4 transition ${settings.standard_transfer_enabled ? 'border-cyan-200 bg-cyan-50/40' : 'border-slate-200 bg-white'}`}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${settings.standard_transfer_enabled ? 'border-cyan-200 bg-white text-cyan-700' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
+                  <PhoneForwarded className="h-5 w-5" />
                 </div>
-                <p className="text-[11px] font-bold text-slate-500 mb-4 opacity-70">Route here for non-escalated requests.</p>
-
-                <div className={`flex items-center gap-3 px-3 py-2 rounded-xl border transition-colors ${settings.standard_transfer_enabled ? 'bg-white border-indigo-100' : 'bg-slate-50/50 border-slate-100'}`}>
-                  <span className="text-sm">📱</span>
-                  <input
-                    type="tel"
-                    value={settings.standard_transfer_number || ''}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9+()-\s]/g, '');
-                      onChange({ standard_transfer_number: value });
-                    }}
-                    disabled={!settings.standard_transfer_enabled}
-                    placeholder="+1 (555) 000-0000"
-                    className={`w-full bg-transparent border-none p-0 font-mono text-xs font-black tracking-tight focus:ring-0 focus:outline-none ${settings.standard_transfer_enabled ? 'text-slate-900 placeholder:text-slate-300' : 'text-slate-400 placeholder:text-slate-300 cursor-not-allowed'}`}
-                  />
+                <div>
+                  <p className="text-sm font-semibold text-slate-950">Standard transfer</p>
+                  <p className="mt-1 text-sm font-medium text-slate-500">General handoff when a caller asks for a person.</p>
                 </div>
               </div>
+              <Toggle
+                active={settings.standard_transfer_enabled || false}
+                onChange={() => onChange({ standard_transfer_enabled: !settings.standard_transfer_enabled })}
+              />
             </div>
+
+            <label className="mt-4 block text-xs font-semibold text-slate-500">Transfer number</label>
+            <input
+              type="tel"
+              value={settings.standard_transfer_number || ''}
+              onChange={(event) => onChange({ standard_transfer_number: sanitizePhoneInput(event.target.value) })}
+              disabled={!settings.standard_transfer_enabled}
+              placeholder="+1 (555) 000-0000"
+              className="mt-2 h-10 w-full rounded-lg border border-slate-200 bg-white px-3 font-mono text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            />
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

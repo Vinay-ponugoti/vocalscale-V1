@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Calendar } from 'lucide-react';
+import { Calendar, Clock, UserRound } from 'lucide-react';
 
 interface ScheduledAppointment {
   id: string;
@@ -14,41 +14,56 @@ interface AppointmentScheduleProps {
 }
 
 const AppointmentSchedule: React.FC<AppointmentScheduleProps> = ({ appointments }) => {
+  const sortedAppointments = [...appointments].sort((a, b) =>
+    new Date(a.startTimeIso).getTime() - new Date(b.startTimeIso).getTime()
+  );
+
   if (appointments.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-40 text-center text-gray-500">
-        <Calendar className="w-8 h-8 mb-2 opacity-50" />
-        <p className="text-sm font-medium">No appointments today</p>
+      <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50/70 px-4 py-8 text-center">
+        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 shadow-sm">
+          <Calendar size={20} />
+        </div>
+        <p className="text-sm font-bold text-slate-900">No appointments booked</p>
+        <p className="mt-1 text-xs font-medium leading-5 text-slate-500">New bookings for this day will appear here.</p>
       </div>
     );
   }
 
-  // Sort appointments by time using ISO string
-  const sortedAppointments = [...appointments].sort((a, b) => 
-    new Date(a.startTimeIso).getTime() - new Date(b.startTimeIso).getTime()
-  );
-
   return (
     <div className="space-y-3">
+      <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-black tracking-tight text-slate-950">Booked appointments</p>
+            <p className="mt-0.5 text-xs font-medium text-slate-500">Today&apos;s confirmed schedule</p>
+          </div>
+          <span className="flex h-8 min-w-8 items-center justify-center rounded-lg bg-white px-2 text-sm font-black text-cyan-700 ring-1 ring-cyan-100">
+            {sortedAppointments.length}
+          </span>
+        </div>
+      </div>
+
       {sortedAppointments.map((appt) => (
-        <div 
+        <div
           key={appt.id}
-          className="p-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="group rounded-lg border border-slate-200 bg-white p-3 shadow-sm shadow-slate-200/60 transition hover:border-cyan-100 hover:bg-cyan-50/30"
         >
-          <div className="flex items-start justify-between mb-1">
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">
+          <div className="flex items-start justify-between gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-100 bg-cyan-50 px-2 py-1 text-xs font-bold text-cyan-700">
+              <Clock size={12} />
               {appt.formattedTime}
             </span>
-            <span className="text-[10px] text-gray-400 font-medium px-1.5 border border-gray-100 rounded">
+            <span className="max-w-[120px] truncate rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500">
               {appt.service_type}
             </span>
           </div>
-          
-          <div className="flex items-center gap-2 mt-2">
-            <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-              <User className="w-3.5 h-3.5 text-gray-500" />
+
+          <div className="mt-3 flex items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 transition group-hover:border-cyan-100 group-hover:bg-white group-hover:text-cyan-700">
+              <UserRound size={15} />
             </div>
-            <h4 className="text-sm font-semibold text-gray-800 truncate">
+            <h4 className="min-w-0 truncate text-sm font-bold text-slate-950">
               {appt.customer_name}
             </h4>
           </div>

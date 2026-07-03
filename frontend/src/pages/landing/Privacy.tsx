@@ -194,7 +194,7 @@ const Privacy = () => {
                                             <li>• To create and manage your VocalScale account</li>
                                             <li>• To provide, operate, and maintain our AI voice agent services</li>
                                             <li>• To process voice data and generate AI-powered responses</li>
-                                            <li>• To route calls to your designated business phone number via Twilio</li>
+                                            <li>• To route calls to your designated business phone number via supported telephony providers</li>
                                         </ul>
                                     </div>
                                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
@@ -262,8 +262,8 @@ const Privacy = () => {
                                                 <td className="p-4">Billing information, payment methods</td>
                                             </tr>
                                             <tr>
-                                                <td className="p-4 font-semibold text-slate-900">Twilio</td>
-                                                <td className="p-4">Telephony & SMS services</td>
+                                                <td className="p-4 font-semibold text-slate-900">Telnyx / SignalWire</td>
+                                                <td className="p-4">Telephony services</td>
                                                 <td className="p-4">Phone numbers, call metadata, SMS</td>
                                             </tr>
                                             <tr>

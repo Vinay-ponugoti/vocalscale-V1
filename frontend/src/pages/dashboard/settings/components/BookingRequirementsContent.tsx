@@ -109,43 +109,39 @@ export const BookingRequirementsContent: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center gap-4">
-        <div className="relative w-10 h-10">
-          <div className="absolute inset-0 border-4 border-slate-100 rounded-full" />
-          <div className="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin" />
+      <div className="flex flex-col items-center justify-center gap-4 py-20">
+        <div className="relative h-10 w-10">
+          <div className="absolute inset-0 rounded-full border-4 border-slate-100" />
+          <div className="absolute inset-0 animate-spin rounded-full border-4 border-cyan-600 border-t-transparent" />
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 animate-pulse">Synchronizing</span>
-          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Booking Rules</span>
+          <span className="text-xs font-semibold text-slate-600">Loading booking rules</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 2xl:space-y-12">
-      {/* Header Info */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 2xl:gap-6 pb-2">
+    <div className="space-y-5">
+      <div className="flex flex-col justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center">
         <div>
-          <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 px-1">Active Requirements</h3>
-          <p className="text-[11px] text-slate-500 px-1 mt-1 font-bold uppercase tracking-wide opacity-80">Configure what information AI must collect from callers.</p>
+          <h3 className="text-sm font-semibold text-slate-950">Information to collect</h3>
+          <p className="mt-1 text-sm font-medium text-slate-500">Set which caller details must be captured before a booking is finalized.</p>
         </div>
 
         {hasChanges && (
           <m.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2.5 bg-indigo-50/50 px-4 py-2.5 rounded-2xl border border-indigo-100/50 shadow-sm"
+            className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2"
           >
-            <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
-            <span className="text-[10px] font-black text-indigo-700 uppercase tracking-[0.15em]">Unsaved Changes</span>
+            <div className="h-2 w-2 rounded-full bg-amber-500" />
+            <span className="text-xs font-semibold text-amber-800">Unsaved changes</span>
           </m.div>
         )}
       </div>
 
-
-
-      <div className="grid grid-cols-1 gap-3 2xl:gap-5">
+      <div className="grid grid-cols-1 gap-3">
         <AnimatePresence mode="popLayout">
           {requirements.map((req, idx) => {
             const Icon = getFieldIcon(req.field_name);
@@ -158,52 +154,47 @@ export const BookingRequirementsContent: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.98 }}
-                className={`
-                  group relative flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300
+                className={`group relative flex items-center gap-4 rounded-lg border p-4 transition
                   ${req.required
-                    ? 'bg-white border-indigo-100 shadow-sm shadow-indigo-50/50'
-                    : 'bg-slate-50/50 border-slate-100 hover:bg-white hover:border-slate-200'
+                    ? 'border-cyan-200 bg-white shadow-sm shadow-cyan-100/50'
+                    : 'border-slate-200 bg-white hover:border-slate-300'
                   }
                 `}
               >
-                {/* Drag Handle Icon (Static for now) */}
-                <div className="text-slate-300 group-hover:text-slate-400 transition-colors">
+                <div className="text-slate-300 transition-colors group-hover:text-slate-400">
                   <GripVertical size={18} />
                 </div>
 
-                {/* Icon & Name */}
                 <div className={`
-                  p-2.5 rounded-xl transition-all duration-300
-                  ${req.required ? 'bg-indigo-50 text-indigo-600' : 'bg-white text-slate-400 border border-slate-100'}
+                  rounded-lg p-2.5 transition
+                  ${req.required ? 'bg-cyan-50 text-cyan-700' : 'border border-slate-200 bg-slate-50 text-slate-400'}
                 `}>
                   <Icon size={18} />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-black text-slate-900 text-sm tracking-tight truncate">{req.field_name}</h4>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className={`text-[9px] font-black uppercase tracking-widest ${req.required ? 'text-indigo-600' : 'text-slate-400'
+                  <h4 className="truncate text-sm font-semibold text-slate-950">{req.field_name}</h4>
+                  <div className="mt-1 flex items-center gap-2">
+                    <span className={`text-xs font-medium ${req.required ? 'text-cyan-700' : 'text-slate-500'
                       }`}>
-                      {req.required ? 'Mandatory Field' : 'Optional Collection'}
+                      {req.required ? 'Required before booking' : 'Optional detail'}
                     </span>
                     {isDefault && (
                       <>
                         <span className="w-1 h-1 rounded-full bg-slate-200" />
-                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Core System</span>
+                        <span className="text-xs font-medium text-slate-400">Default</span>
                       </>
                     )}
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleToggleStatus(idx)}
-                    className={`
-                      px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest border transition-all duration-300
+                    className={`rounded-lg border px-4 py-2 text-xs font-semibold transition
                       ${req.required
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100/50 hover:bg-indigo-700 hover:-translate-y-0.5'
-                        : 'bg-white text-slate-500 border-slate-200 hover:border-indigo-600 hover:text-indigo-600'
+                        ? 'border-cyan-600 bg-cyan-600 text-white hover:bg-cyan-700'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-cyan-500 hover:text-cyan-700'
                       }
                     `}
                   >
@@ -213,7 +204,7 @@ export const BookingRequirementsContent: React.FC = () => {
                   {!isDefault && (
                     <button
                       onClick={() => handleRemove(idx)}
-                      className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all duration-300"
+                      className="rounded-lg p-2 text-slate-300 transition hover:bg-rose-50 hover:text-rose-500"
                       title="Remove Field"
                     >
                       <Trash2 size={16} strokeWidth={2.5} />
@@ -225,7 +216,6 @@ export const BookingRequirementsContent: React.FC = () => {
           })}
         </AnimatePresence>
 
-        {/* Add Field Section */}
         <AnimatePresence mode="wait">
           {!isAddingField ? (
             <m.button
@@ -234,12 +224,12 @@ export const BookingRequirementsContent: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsAddingField(true)}
-              className="group flex items-center justify-center gap-4 p-5 rounded-3xl border-2 border-dashed border-slate-200 text-slate-400 hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50/20 transition-all duration-300"
+              className="group flex items-center justify-center gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5 text-slate-500 transition hover:border-cyan-500 hover:bg-cyan-50 hover:text-cyan-700"
             >
-              <div className="p-2 bg-slate-100 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+              <div className="rounded-lg bg-white p-2 transition group-hover:bg-cyan-600 group-hover:text-white">
                 <Plus size={18} strokeWidth={3} />
               </div>
-              <span className="font-black text-[11px] uppercase tracking-[0.15em]">Add Custom Requirement</span>
+              <span className="text-sm font-semibold">Add custom field</span>
             </m.button>
           ) : (
             <m.div
@@ -247,9 +237,9 @@ export const BookingRequirementsContent: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="flex items-center gap-3 p-3 bg-white border border-indigo-100 rounded-2xl shadow-lg shadow-indigo-50/50"
+              className="flex flex-col gap-3 rounded-lg border border-cyan-200 bg-white p-3 shadow-sm shadow-cyan-100/50 sm:flex-row sm:items-center"
             >
-              <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
+              <div className="rounded-lg bg-cyan-50 p-2.5 text-cyan-700">
                 <Settings2 size={18} />
               </div>
               <input
@@ -262,21 +252,21 @@ export const BookingRequirementsContent: React.FC = () => {
                   if (e.key === 'Enter') handleAdd();
                   if (e.key === 'Escape') setIsAddingField(false);
                 }}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-black text-slate-900 placeholder:text-slate-300 placeholder:font-bold"
+                className="min-h-10 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-950 outline-none placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-100"
               />
-              <div className="flex items-center gap-1.5 pr-1">
+              <div className="flex items-center justify-end gap-2">
                 <button
                   onClick={() => setIsAddingField(false)}
-                  className="px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-colors"
+                  className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-500 transition-colors hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAdd}
                   disabled={!newFieldName.trim()}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-[9px] font-black uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-indigo-100"
+                  className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-cyan-100 hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Add Field
+                  Add
                 </button>
               </div>
             </m.div>
@@ -284,18 +274,14 @@ export const BookingRequirementsContent: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      {/* Footer Policy Card */}
-      <div className="bg-slate-900 p-5 rounded-3xl flex gap-5 items-center shadow-2xl shadow-slate-200">
-        <div className="p-3 bg-white/10 rounded-2xl border border-white/5">
-          <ShieldCheck size={24} className="text-indigo-400 shrink-0" />
+      <div className="flex items-start gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div className="rounded-lg border border-slate-200 bg-white p-2.5 text-cyan-700">
+          <ShieldCheck size={20} className="shrink-0" />
         </div>
-        <div className="space-y-1">
-          <p className="text-[13px] font-black text-white tracking-tight flex items-center gap-2">
-            Verification Protocol
-            <span className="px-1.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 text-[8px] uppercase tracking-tighter">Active</span>
-          </p>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide leading-relaxed">
-            Fields marked as <span className="text-white">Required</span> are hard-validated by the AI before appointment finalization.
+        <div>
+          <p className="text-sm font-semibold text-slate-950">Booking validation</p>
+          <p className="mt-1 text-sm font-medium leading-6 text-slate-500">
+            Required fields must be collected before the assistant can complete an appointment.
           </p>
         </div>
       </div>

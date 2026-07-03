@@ -8,6 +8,10 @@ export interface Voice {
   sample_audio_url?: string;
   is_premium?: boolean;
   is_active?: boolean;
+  age?: string;
+  language?: string;
+  characteristics?: string[];
+  use_cases?: string[];
   created_at?: string;
 }
 

@@ -59,8 +59,8 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
   const totalCalls = safeData.reduce((sum, d) => sum + d.calls, 0);
 
   return (
-    <Card className="border-slate-200 bg-white shadow-sm overflow-hidden h-full flex flex-col pt-0">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row px-6">
+    <Card className="rounded-2xl border-0 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.08)] overflow-hidden h-full flex flex-col pt-0 hover:border-transparent hover:shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
+      <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row px-6">
         <div className="grid flex-1 gap-1">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-blue-50 text-[#4285F4] ring-1 ring-[#4285F4]/10">
@@ -69,7 +69,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
             <CardTitle className="text-base font-black text-slate-900 uppercase tracking-tight">Call Volume</CardTitle>
           </div>
           <CardDescription className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-            Displaying {safeData.length} active records
+            {totalCalls} {totalCalls === 1 ? 'call' : 'calls'} over {safeData.length} {safeData.length === 1 ? 'day' : 'days'}
           </CardDescription>
         </div>
 

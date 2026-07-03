@@ -1,6 +1,7 @@
 import { AISummary } from './components/AISummary';
 import { RecentReviews } from './components/RecentReviews';
 import { ReviewOverview } from './components/ReviewOverview';
+import { ConnectGoogleBusiness } from './components/ConnectGoogleBusiness';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { useReviews } from '../../../hooks/useReviews';
 
@@ -9,24 +10,28 @@ const Reviews = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
-        <ReviewOverview
-          stats={stats.data}
-          loading={stats.loading}
-          onSync={sync.trigger}
-          isSyncing={sync.isSyncing}
-        />
+      <div className="scrollbar-hide h-full overflow-y-auto bg-[#f7f8fb] text-slate-950">
+        <div className="mx-auto w-full max-w-[1500px] space-y-5 px-4 py-5 md:px-6 md:py-8 xl:px-8">
+          <ConnectGoogleBusiness onVerified={sync.trigger} />
 
-        <AISummary
-          summary={summary.data}
-          loading={summary.loading}
-        />
+          <ReviewOverview
+            stats={stats.data}
+            loading={stats.loading}
+            onSync={sync.trigger}
+            isSyncing={sync.isSyncing}
+          />
 
-        <RecentReviews
-          reviews={reviews.data}
-          loading={reviews.loading}
-          isPaid={reviews.isPaid || stats.data?.isPaid}
-        />
+          <AISummary
+            summary={summary.data}
+            loading={summary.loading}
+          />
+
+          <RecentReviews
+            reviews={reviews.data}
+            loading={reviews.loading}
+            isPaid={reviews.isPaid || stats.data?.isPaid}
+          />
+        </div>
       </div>
     </DashboardLayout>
   );

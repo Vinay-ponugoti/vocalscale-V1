@@ -16,12 +16,14 @@ export default defineConfig(({ mode }) => {
     csp += ` script-src 'self' 'unsafe-inline'${isDev ? ' \'unsafe-eval\'' : ''} https://challenges.cloudflare.com https://static.cloudflareinsights.com https://www.clarity.ms https://scripts.clarity.ms https://www.googletagmanager.com https://www.google-analytics.com;`;
     csp += ` style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;`;
     csp += ` img-src 'self' data: blob: https://c.bing.com https://*.google-analytics.com https://*.supabase.co https://*.googleapis.com https://*.googleusercontent.com;`;
-    csp += ` media-src 'self' data: https://*.r2.dev https://api.vocalscale.com;`;
+    csp += ` media-src 'self' data: blob: https://*.r2.dev https://api.vocalscale.com https://*.supabase.co${isDev ? ' http://localhost:* http://127.0.0.1:*' : ''};`;
     // Always include the known production API origins; extend with env-var for extras
     const prodOrigins = `'self' https://api.vocalscale.com https://billing.vocalscale.com https://knowledge.vocalscale.com https://*.supabase.co https://static.cloudflareinsights.com https://challenges.cloudflare.com https://*.clarity.ms https://c.bing.com https://www.google-analytics.com https://formsubmit.co https://api.web3forms.com`;
     const extraOrigins = allowedOrigins !== 'self' ? ` ${allowedOrigins}` : '';
-    csp += ` connect-src ${prodOrigins}${extraOrigins} ${isDev || allowInternet ? 'https:' : ''} wss:;`;
-    csp += ` font-src 'self' https://fonts.gstatic.com;`;
+    // In dev, allow the local backend stack (api/payment/knowledge) and local Supabase over http.
+    const devOrigins = isDev ? ' http://localhost:* http://127.0.0.1:* ws://localhost:*' : '';
+    csp += ` connect-src ${prodOrigins}${extraOrigins}${devOrigins} ${isDev || allowInternet ? 'https:' : ''} wss:;`;
+    csp += ` font-src 'self' data: https://fonts.gstatic.com;`;
     csp += ` frame-src 'self' https://challenges.cloudflare.com;`;
 
     return csp;
@@ -57,7 +59,6 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom', 'date-fns'],
             ui: ['lucide-react', 'clsx', 'tailwind-merge'],
-            supabase: ['@supabase/supabase-js'],
             motion: ['framer-motion'],
           },
         },

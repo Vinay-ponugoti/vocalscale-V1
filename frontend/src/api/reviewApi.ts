@@ -73,6 +73,30 @@ class ReviewAPI {
     async syncReviews(): Promise<{ success: boolean; synced: number; message: string }> {
         return this.request('/reviews/sync', { method: 'POST' });
     }
+
+    // ─── Google Business connection (client account) ───
+
+    async getConnectionStatus(): Promise<{
+        connected: boolean;
+        reviewsEnabled?: boolean;
+        reviewsVerified?: boolean;
+        businessAccountId?: string | null;
+        lastSyncedAt?: string | null;
+    }> {
+        return this.request('/integrations/google-calendar/status');
+    }
+
+    async getConnectUrl(feature: 'reviews' | 'both' = 'reviews'): Promise<{ authUrl: string }> {
+        return this.request(`/integrations/google-calendar/connect?feature=${feature}`, { method: 'POST' });
+    }
+
+    async verifyConnection(): Promise<{ connected: boolean; verified: boolean; accountId?: string; error?: string }> {
+        return this.request('/reviews/verify', { method: 'POST' });
+    }
+
+    async disconnect(feature: 'reviews' = 'reviews'): Promise<{ success: boolean }> {
+        return this.request(`/integrations/google-calendar/disconnect?feature=${feature}`, { method: 'DELETE' });
+    }
 }
 
 export const reviewApi = new ReviewAPI();

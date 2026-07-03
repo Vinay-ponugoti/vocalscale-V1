@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useDashboardLayout } from './layoutOptions';
 import {
   LayoutDashboard,
   HelpCircle,
@@ -18,8 +19,7 @@ import {
   CreditCard,
   Star,
   Brain,
-  Package,
-  ShoppingBag
+  BookOpen
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -31,7 +31,6 @@ import ProfileDropdown from '../../components/dashboard/ProfileDropdown';
 import { NavigationGuard } from '../../utils/navigationGuard';
 import { cn } from '../../lib/utils';
 import { PAGE_PADDING } from '../../constants/layout';
-import SupportWidget from '../../components/SupportWidget';
 
 
 // 30% Charcoal / Slate
@@ -98,7 +97,7 @@ const NavItem = ({
   );
 };
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
   children,
   fullWidth = false,
   secondaryNav,
@@ -286,11 +285,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               isActive={isActive('/dashboard/appointments')}
             />
             <NavItem
-              item={{ path: '/dashboard/orders', label: 'Orders', icon: ShoppingBag }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/orders')}
-            />
-            <NavItem
               item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/reviews')}
@@ -308,9 +302,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               isActive={isActive('/dashboard/voice-setup')}
             />
             <NavItem
-              item={{ path: '/dashboard/inventory', label: 'Inventory', icon: Package }}
+              item={{ path: '/dashboard/knowledge', label: 'Knowledge', icon: BookOpen }}
               isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/inventory')}
+              isActive={isActive('/dashboard/knowledge')}
             />
 
             <div className="mt-auto">
@@ -360,9 +354,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* Bottom Card & Upgrade */}
           {!isLoadingSubscription && !hasActiveSubscription && (
-            <div className="p-3 border-t space-y-2 border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-surface))]">
-              {/* Promo Card / Plan Badge */}
-              {sidebarOpen && (
+            <div className={cn(
+              "p-3 border-t border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-surface))]",
+              !sidebarOpen && "flex justify-center"
+            )}>
+              {sidebarOpen ? (
+                /* Expanded: full promo card */
                 <div className={`relative overflow-hidden rounded-xl p-3 shadow-sm border transition-all duration-500 group hover:shadow-lg bg-white border-slate-100 hover:border-blue-200`}>
                   {/* Decorative background element */}
                   <div className="absolute -right-3 -top-3 w-12 h-12 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all duration-700" />
@@ -386,6 +383,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     </Link>
                   </div>
                 </div>
+              ) : (
+                /* Collapsed: icon-only button (matches NavItem collapsed pattern) */
+                <Link
+                  to="/dashboard/billing/plans"
+                  title="Upgrade plan"
+                  aria-label="Upgrade plan"
+                  className="w-11 h-11 flex items-center justify-center rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-md shadow-blue-200 no-underline"
+                >
+                  <Zap size={18} strokeWidth={2.5} />
+                </Link>
               )}
             </div>
           )}
@@ -425,6 +432,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   aria-label="Search dashboard"
                   placeholder="Search logs, appointments..."
                   value={localSearch}
+                  onChange={(event) => setLocalSearch(event.target.value)}
                   className="w-full pl-11 pr-12 py-2.5 border rounded-xl text-sm font-medium transition-all shadow-sm focus:outline-none focus:ring-4 focus:ring-[hsl(var(--ds-electric-tint))] border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-white))] text-[hsl(var(--ds-ink))] focus:border-[hsl(var(--ds-electric))]"
                 />
                 {/* Keyboard shortcut hint */}
@@ -598,11 +606,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     onClick={() => setMobileMenuOpen(false)}
                   />
                   <NavItem
-                    item={{ path: '/dashboard/orders', label: 'Orders', icon: ShoppingBag }}
-                    isActive={isActive('/dashboard/orders')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
                     item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
                     isActive={isActive('/dashboard/reviews')}
                     onClick={() => setMobileMenuOpen(false)}
@@ -622,8 +625,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     onClick={() => setMobileMenuOpen(false)}
                   />
                   <NavItem
-                    item={{ path: '/dashboard/inventory', label: 'Inventory', icon: Package }}
-                    isActive={isActive('/dashboard/inventory')}
+                    item={{ path: '/dashboard/knowledge', label: 'Knowledge', icon: BookOpen }}
+                    isActive={isActive('/dashboard/knowledge')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
                 </div>
@@ -670,11 +673,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
         )}
-        {/* SupportWidget only on Help Center page */}
-        {location.pathname === '/dashboard/help' && <SupportWidget />}
       </div>
     </>
   );
+};
+
+/**
+ * Page-facing wrapper. Kept for backwards compatibility so pages can continue to use
+ * <DashboardLayout fullWidth>…</DashboardLayout>. It no longer renders the sidebar/header
+ * itself — DashboardShell does that once — it just forwards layout options to the shell
+ * and renders the page content.
+ */
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, fullWidth, secondaryNav, hideHeader }) => {
+  useDashboardLayout({ fullWidth, secondaryNav, hideHeader });
+  return <>{children}</>;
 };
 
 export default DashboardLayout;

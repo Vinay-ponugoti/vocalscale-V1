@@ -84,67 +84,87 @@ export function HowItWorks() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-14 md:mb-20">
-          {steps.map((step, index) => (
-            <div
-              key={index}
-              onMouseEnter={() => setActiveStep(index)}
-              className={cn(
-                "group relative flex flex-col p-6 md:p-10 bg-white border rounded-[2rem] md:rounded-[2.5rem] transition-all duration-500 cursor-pointer",
-                activeStep === index
-                  ? "border-blue-400 shadow-2xl shadow-blue-500/10 scale-[1.02]"
-                  : "border-slate-200 shadow-sm hover:border-blue-300"
-              )}
-            >
-              {/* Active indicator */}
-              <div className={cn(
-                "absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-slate-800 rounded-full transition-all duration-500",
-                activeStep === index ? "opacity-100" : "opacity-0"
-              )} />
+        <div className="relative mb-14 md:mb-24">
+          {/* Timeline connector (desktop) */}
+          <div
+            aria-hidden="true"
+            className="hidden lg:block absolute top-7 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent"
+          />
 
-              <div className="flex justify-between items-start mb-8">
-                <div className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 bg-white border shadow-sm",
-                  activeStep === index ? "border-blue-200 shadow-blue-500/20 scale-110" : "border-slate-100"
-                )}>
-                  <step.icon className={cn(
-                    "w-7 h-7 transition-colors duration-500",
-                    activeStep === index ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"
-                  )} strokeWidth={1.5} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-10">
+            {steps.map((step, index) => {
+              const isActive = activeStep === index;
+              return (
+                <div
+                  key={index}
+                  onMouseEnter={() => setActiveStep(index)}
+                  className="group relative"
+                >
+                  <div className="flex items-center gap-5">
+                    {/* Step node */}
+                    <div
+                      className={cn(
+                        "relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white border transition-all duration-500",
+                        isActive
+                          ? "border-blue-600 shadow-lg shadow-blue-500/20"
+                          : "border-slate-200 shadow-sm group-hover:border-slate-300"
+                      )}
+                    >
+                      <step.icon
+                        className={cn(
+                          "w-6 h-6 transition-colors duration-500",
+                          isActive ? "text-blue-600" : "text-slate-400"
+                        )}
+                        strokeWidth={1.5}
+                      />
+                    </div>
+
+                    <div>
+                      <span
+                        className={cn(
+                          "block text-[10px] font-black uppercase tracking-[0.25em] transition-colors duration-500",
+                          isActive ? "text-blue-600" : "text-slate-400"
+                        )}
+                      >
+                        Step {step.number}
+                      </span>
+                      <h3 className="mt-1 text-xl md:text-2xl font-bold tracking-tight text-slate-900">
+                        {step.title}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 lg:mt-6">
+                    <p className="text-slate-600 font-medium text-[15px] leading-relaxed">
+                      {step.description}
+                    </p>
+
+                    <ul
+                      className={cn(
+                        "mt-5 space-y-2.5 border-l pl-5 transition-colors duration-500",
+                        isActive ? "border-blue-200" : "border-slate-200"
+                      )}
+                    >
+                      {step.features.map((feature) => (
+                        <li
+                          key={feature}
+                          className="flex items-center gap-2.5 text-sm font-semibold text-slate-500"
+                        >
+                          <span
+                            className={cn(
+                              "h-1.5 w-1.5 rounded-full transition-colors duration-500",
+                              isActive ? "bg-blue-600" : "bg-slate-300"
+                            )}
+                          />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <span className={cn(
-                  "text-4xl italic font-black tracking-tighter transition-colors duration-500",
-                  activeStep === index ? "text-blue-100" : "text-slate-100 group-hover:text-blue-50"
-                )}>
-                  {step.number}
-                </span>
-              </div>
-
-              <h3 className="text-2xl font-bold tracking-tight text-slate-900 mb-4">
-                {step.title}
-              </h3>
-              <p className="text-slate-600 font-medium text-[15px] leading-relaxed mb-6 group-hover:text-slate-900 transition-colors">
-                {step.description}
-              </p>
-
-              {/* Feature tags */}
-              <div className="flex flex-wrap gap-2 mt-auto">
-                {step.features.map((feature) => (
-                  <span
-                    key={feature}
-                    className={cn(
-                      "px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full transition-all duration-300",
-                      activeStep === index
-                        ? "bg-blue-50 text-blue-700 border border-blue-200"
-                        : "bg-slate-50 text-slate-500 border border-slate-100"
-                    )}
-                  >
-                    {feature}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
 
         {/* Live Demo Section - Voice AI Showcase */}

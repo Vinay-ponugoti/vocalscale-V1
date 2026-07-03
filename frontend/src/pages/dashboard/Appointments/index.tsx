@@ -382,22 +382,22 @@ const FullScreenAppointments: React.FC = () => {
 
     if (appt.status === 'Scheduled' || appt.status === 'Confirmed') {
       return {
-        bg: isNight ? 'bg-indigo-700/95' : 'bg-indigo-600/90',
-        hover: 'hover:bg-indigo-700',
-        border: 'border-indigo-800/30',
+        bg: isNight ? 'bg-cyan-800/95' : 'bg-cyan-600/95',
+        hover: 'hover:bg-cyan-700',
+        border: 'border-cyan-900/30',
         text: 'text-white',
-        dot: 'bg-indigo-600'
+        dot: 'bg-cyan-600'
       };
     }
 
     // Type-based fallback colors
     if (appt.type === 'Strategy') {
       return {
-        bg: isNight ? 'bg-purple-700/95' : 'bg-purple-500/90',
-        hover: 'hover:bg-purple-600',
-        border: 'border-purple-600/30',
+        bg: isNight ? 'bg-sky-800/95' : 'bg-sky-600/95',
+        hover: 'hover:bg-sky-700',
+        border: 'border-sky-900/30',
         text: 'text-white',
-        dot: 'bg-purple-500'
+        dot: 'bg-sky-600'
       };
     }
     if (appt.type === 'Consultation') {

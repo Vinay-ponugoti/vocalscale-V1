@@ -896,13 +896,16 @@ export const api = {
   /**
    * Get voice sample URL with query parameter sanitization
    */
-  getVoiceSampleUrl(voiceId: string, text?: string) {
+  getVoiceSampleUrl(voiceId: string, text?: string, speed?: number) {
     const sanitizedVoiceId = sanitizeString(voiceId, 100);
     const params = new URLSearchParams();
 
     if (text) {
       const sanitizedText = sanitizeString(text, 500);
       params.append('text', sanitizedText);
+    }
+    if (typeof speed === 'number') {
+      params.append('speed', String(Math.max(0.7, Math.min(1.5, speed))));
     }
 
     const queryString = params.toString();
@@ -945,9 +948,9 @@ export const api = {
       if (!allowedFields.includes(key)) continue;
 
       if (typeof value === 'number') {
-        // Clamp speaking_speed to reasonable range
+        // Deepgram voice controls support a natural range from 0.7x to 1.5x.
         if (key === 'speaking_speed') {
-          sanitized[key] = Math.max(0.5, Math.min(2, value));
+          sanitized[key] = Math.max(0.7, Math.min(1.5, value));
         } else {
           sanitized[key] = value;
         }
@@ -1199,4 +1202,3 @@ export const validateProfileUpdatesExport = validateProfileUpdates;
 export const sanitizeUrlParamsExport = sanitizeUrlParams;
 export const createUserFriendlyErrorExport = createUserFriendlyError;
 export const logDetailedErrorExport = logDetailedError;
-

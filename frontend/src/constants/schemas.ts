@@ -32,8 +32,8 @@ export const webPageSchema = (title: string, description: string, url: string) =
         "url": "https://vocalscale.com",
         "logo": "https://vocalscale.com/logo.png"
     },
-    "datePublished": new Date().toISOString(),
-    "dateModified": new Date().toISOString(),
+    "datePublished": "2024-01-01",
+    "dateModified": "2026-07-03",
     "inLanguage": "en-US",
     "mainEntity": {
         "@type": "Organization",
@@ -98,13 +98,6 @@ export const productSchema = {
             "url": "https://vocalscale.com/pricing"
         }
     ],
-    "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "1247",
-        "bestRating": "5",
-        "worstRating": "1"
-    },
     "featureList": [
         "24/7 AI Receptionist & Live Call Answering",
         "AI Appointment Scheduling with Google Calendar & Outlook",

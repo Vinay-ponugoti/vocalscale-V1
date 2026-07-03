@@ -1,70 +1,44 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { CallLog } from '../pages/dashboard/CallLogs/types';
 import { env } from '../config/env';
 import { getAuthHeader } from '../lib/api';
 
+export async function fetchCallLog(callId: string, signal?: AbortSignal): Promise<CallLog> {
+  const headers = await getAuthHeader();
+  const response = await fetch(`${env.API_URL}/dashboard/calls/${callId}`, {
+    headers,
+    signal
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  interface RawCallLog {
+    caller_phone?: string;
+    phone_number?: string;
+  }
+
+  const rawData = data as RawCallLog;
+  return {
+    ...data,
+    phone_number: rawData.caller_phone || rawData.phone_number
+  } as CallLog;
+}
+
 export function useCallLog(callId?: string) {
-  const [loading, setLoading] = useState(false);
-  const [log, setLog] = useState<CallLog | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['call-log', callId],
+    queryFn: ({ signal }) => fetchCallLog(callId as string, signal),
+    enabled: Boolean(callId),
+    staleTime: 60000
+  });
 
-  useEffect(() => {
-    if (!callId) {
-      setLog(null);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    let mounted = true;
-
-    const fetchLog = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const headers = await getAuthHeader();
-        const response = await fetch(`${env.API_URL}/dashboard/calls/${callId}`, {
-          headers
-        });
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (mounted) {
-          interface RawCallLog {
-            caller_phone?: string;
-            phone_number?: string;
-          }
-          const rawData = data as RawCallLog;
-          const mappedData = data ? {
-            ...data,
-            phone_number: rawData.caller_phone || rawData.phone_number
-          } : null;
-          setLog(mappedData as CallLog | null);
-        }
-      } catch (err: unknown) {
-        if (mounted) {
-          const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
-          setError(errorMessage);
-          setLog(null);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchLog();
-
-    return () => {
-      mounted = false;
-    };
-  }, [callId]);
-
-  return { loading, log, error };
+  return {
+    loading: isLoading,
+    log: data ?? null,
+    error: error instanceof Error ? error.message : null
+  };
 }

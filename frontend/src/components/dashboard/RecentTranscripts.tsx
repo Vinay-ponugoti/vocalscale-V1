@@ -50,21 +50,21 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
     .slice(0, 4);
 
   return (
-    <Card className="border-white-light shadow-sm h-full flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-white-light">
-        <div className="space-y-1">
+    <Card className="rounded-2xl border-0 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.08)] h-full min-w-0 flex flex-col hover:border-transparent hover:shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
+      <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 pb-4">
+        <div className="min-w-0 space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-blue-electric/10 flex items-center justify-center">
+            <div className="w-8 h-8 shrink-0 rounded-xl bg-blue-electric/10 flex items-center justify-center">
               <MessageSquare className="w-4 h-4 text-blue-electric" />
             </div>
-            <CardTitle className="text-base font-black text-charcoal tracking-tight uppercase">Recent Activity</CardTitle>
+            <CardTitle className="min-w-0 truncate text-base font-black text-charcoal tracking-tight uppercase">Recent Activity</CardTitle>
           </div>
-          <p className="text-[11px] font-bold text-charcoal-light uppercase tracking-widest pl-10">Latest customer interactions</p>
+          <p className="truncate pl-10 text-[11px] font-bold text-charcoal-light uppercase tracking-widest">Latest customer interactions</p>
         </div>
         <Button
           variant="ghost"
           size="sm"
-          className="text-[11px] font-black uppercase tracking-widest text-charcoal-light hover:text-blue-electric group"
+          className="shrink-0 text-[11px] font-black uppercase tracking-widest text-charcoal-light hover:text-blue-electric group"
           onClick={() => navigate('/dashboard/calls')}
         >
           View All
@@ -84,7 +84,7 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-white-light">
+          <div className="divide-y divide-slate-100">
             {displayedCalls.map((call) => (
               <div
                 key={call.id}
@@ -92,7 +92,7 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
                 onClick={() => navigate(`/dashboard/calls/${call.id}`)}
               >
                 <div className="flex items-start gap-4">
-                  <div className="relative">
+                  <div className="relative shrink-0">
                     <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-white-light to-white-soft flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-500">
                       <span className="text-sm font-black text-charcoal-medium">
                         {(call.caller_name || "U").charAt(0).toUpperCase()}
@@ -106,28 +106,28 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
                     )}
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="text-sm font-black text-charcoal truncate tracking-tight">
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex min-w-0 items-center justify-between gap-2">
+                      <h4 className="min-w-0 truncate text-sm font-black text-charcoal tracking-tight">
                         {call.caller_name || "Unknown Caller"}
                       </h4>
                       <Badge
                         variant="outline"
-                        className={`text-[9px] font-black uppercase tracking-widest border-none px-2 py-0.5 rounded-lg ${getCategoryStyles(call.category)}`}
+                        className={`max-w-[92px] shrink-0 truncate rounded-lg border-none px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${getCategoryStyles(call.category)}`}
                       >
                         {call.category}
                       </Badge>
                     </div>
 
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-charcoal-light uppercase tracking-widest">
+                    <div className="mb-2 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+                      <div className="flex shrink-0 items-center gap-1.5 text-[10px] font-bold text-charcoal-light uppercase tracking-widest">
                         <Clock className="w-3 h-3" />
                         {formatTime(call.created_at)}
                       </div>
-                      <span className="w-1 h-1 rounded-full bg-charcoal-light"></span>
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-electric uppercase tracking-widest">
+                      <span className="hidden sm:block w-1 h-1 rounded-full bg-charcoal-light"></span>
+                      <div className="flex min-w-0 items-center gap-1.5 text-[10px] font-bold text-blue-electric uppercase tracking-widest">
                         <Sparkles className="w-3 h-3" />
-                        AI Summarized
+                        <span className="truncate">AI Summarized</span>
                       </div>
                     </div>
 
@@ -136,8 +136,8 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
                     </p>
                   </div>
 
-                  <div className="self-center opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 duration-300">
-                    <div className="w-8 h-8 rounded-full bg-white shadow-sm border border-white-light flex items-center justify-center">
+                  <div className="hidden shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 duration-300 sm:block">
+                    <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center">
                       <ChevronRight className="w-4 h-4 text-blue-electric" />
                     </div>
                   </div>

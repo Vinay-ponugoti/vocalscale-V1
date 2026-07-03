@@ -18,9 +18,15 @@ import type { Subaccount } from '../../types/voice';
 import { billingApi } from '../../api/billing';
 import { useAuth } from '../../context/AuthContext';
 
+const PROVIDER_STORAGE_KEY = 'voice_ai_telephony_provider';
+
 const SetupSubaccount = () => {
   const navigate = useNavigate();
   const [businessName, setBusinessName] = useState('');
+  const [provider, setProvider] = useState<'telnyx' | 'signalwire'>(() => {
+    const saved = sessionStorage.getItem(PROVIDER_STORAGE_KEY);
+    return saved === 'telnyx' || saved === 'signalwire' ? saved : 'signalwire';
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -62,6 +68,10 @@ const SetupSubaccount = () => {
         if (data.has_subaccount && data.subaccount) {
           setExistingSubaccount(data.subaccount);
           setBusinessName(data.subaccount.friendly_name || '');
+          if (data.subaccount.provider === 'telnyx' || data.subaccount.provider === 'signalwire') {
+            setProvider(data.subaccount.provider);
+            sessionStorage.setItem(PROVIDER_STORAGE_KEY, data.subaccount.provider);
+          }
 
           const status = data.subaccount.status?.toLowerCase();
 
@@ -103,24 +113,32 @@ const SetupSubaccount = () => {
           ...headers
         },
         body: JSON.stringify({
-          friendly_name: businessName.trim()
+          friendly_name: businessName.trim(),
+          provider
         }),
       });
 
       const data = await response.json().catch(() => ({}));
 
       if (response.status === 409) {
-        setError(data.detail || 'Infrastructure already allocated for this profile.');
         if (data.sid) {
-          checkExistingSubaccount();
+          sessionStorage.setItem(PROVIDER_STORAGE_KEY, provider);
+          setSuccess(true);
+          await checkExistingSubaccount();
+          setTimeout(() => {
+            navigate('/dashboard/voice-setup/buy');
+          }, 800);
+          return;
         }
+        setError(data.detail || 'Infrastructure already allocated for this profile.');
         return;
       }
 
       if (!response.ok) {
-        throw new Error(data.detail || data.error || 'Infrastructure provisioning failure');
+        throw new Error(data.detail || data.error || "Couldn't finish setup. Please try again.");
       }
 
+      sessionStorage.setItem(PROVIDER_STORAGE_KEY, provider);
       setExistingSubaccount(data);
       setSuccess(true);
 
@@ -129,7 +147,7 @@ const SetupSubaccount = () => {
       }, 1500);
 
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Fatal error during infrastructure provisioning.';
+      const errorMessage = err instanceof Error ? err.message : "Couldn't finish setup. Please try again.";
       console.error(err);
       setError(errorMessage);
     } finally {
@@ -141,154 +159,187 @@ const SetupSubaccount = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex-1 flex flex-col items-center justify-center bg-background dark:bg-slate-950 p-6 sm:p-12 min-h-screen relative overflow-hidden scrollbar-premium">
-
-        {/* Background Decorative Elements */}
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-          <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute top-1/2 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        </div>
-
-        <div className="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10 items-center">
-
-          {/* Left Column: Vision & Trust */}
-          <div className="space-y-10">
-            <div className="space-y-6">
-              <div className="w-16 h-16 rounded-3xl bg-primary text-primary-foreground flex items-center justify-center shadow-glow-blue rotate-3 hover:rotate-0 transition-transform duration-500">
-                <Building2 size={32} />
+      <div className="flex min-h-screen flex-col bg-[#f7f8fb] text-slate-950">
+        <header className="border-b border-slate-200 bg-white px-4 py-4 md:px-6 xl:px-8">
+          <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50 text-cyan-700">
+                <Building2 size={20} />
               </div>
-              <h1 className="text-5xl font-black text-foreground tracking-tighter leading-[0.9]">
-                Provision <span className="text-primary italic">Enterprise</span> Infrastructure.
-              </h1>
-              <p className="text-muted-foreground text-lg font-medium leading-relaxed max-w-md italic opacity-80">
-                Setup your dedicated voice subaccount. A one-time initialization to unlock global telecommunication nodes.
-              </p>
+              <div>
+                <h1 className="text-xl font-black tracking-tight text-slate-950">Provider Setup</h1>
+                <p className="text-sm font-medium text-slate-500">Create the provider account used for phone numbers.</p>
+              </div>
             </div>
-
-            <div className="space-y-6">
-              {[
-                {
-                  icon: <ShieldCheck className="text-success" />,
-                  title: 'Secure Isolation',
-                  desc: 'Dedicated SID for isolated voice data processing.'
-                },
-                {
-                  icon: <Zap className="text-primary" />,
-                  title: 'Instant Activation',
-                  desc: 'Zero-latency infrastructure provisioning.'
-                }
-              ].map((item, i) => (
-                <div key={i} className="flex gap-5 group">
-                  <div className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-premium-sm">
-                    {item.icon}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-black text-foreground uppercase tracking-widest mb-1">{item.title}</h4>
-                    <p className="text-xs text-muted-foreground font-medium">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <button
+              onClick={() => navigate('/dashboard/voice-setup')}
+              className="hidden h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 sm:inline-flex"
+            >
+              Back to Numbers
+            </button>
           </div>
+        </header>
 
-          {/* Right Column: Interactive Panel */}
-          <div className="relative">
-            {success ? (
-              <div className="bg-card rounded-[3rem] border border-border shadow-premium-2xl p-12 text-center relative overflow-hidden animate-in zoom-in-95 duration-500">
-                <div className="absolute top-0 inset-x-0 h-2 bg-success shadow-glow-green" />
-                <div className="w-24 h-24 rounded-full bg-success/10 text-success flex items-center justify-center mx-auto mb-8 animate-bounce">
-                  <CheckCircle size={48} />
+        <main className="scrollbar-hide flex-1 overflow-y-auto px-4 py-6 md:px-6 md:py-10">
+          <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+            <section className="space-y-5">
+              <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-cyan-100 bg-cyan-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-cyan-700">
+                  One-time setup
                 </div>
-                <h3 className="text-3xl font-black text-foreground tracking-tight mb-4">Infrastructure Ready</h3>
-                <p className="text-muted-foreground font-medium mb-10 text-sm leading-relaxed">
-                  Authentication successful. Redirecting to number acquisition module...
+                <h2 className="text-3xl font-black tracking-tight text-slate-950">Set up your AI phone line</h2>
+                <p className="mt-3 text-sm font-medium leading-6 text-slate-500">
+                  This creates the isolated provider account VocalScale uses to purchase and route numbers for your business.
+                </p>
+              </div>
+
+              <div className="grid gap-3">
+                {[
+                  {
+                    icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />,
+                    title: 'Private and secure',
+                    desc: 'Provider resources stay isolated to your business.'
+                  },
+                  {
+                    icon: <Zap className="h-5 w-5 text-cyan-700" />,
+                    title: 'Ready in seconds',
+                    desc: 'After setup, you can search inventory and activate a number.'
+                  }
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-50">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-black tracking-tight text-slate-950">{item.title}</h4>
+                      <p className="mt-1 text-sm font-medium text-slate-500">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section>
+            {success ? (
+              <div className="rounded-lg border border-emerald-100 bg-white p-8 text-center shadow-sm animate-in zoom-in-95 duration-300">
+                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                  <CheckCircle size={34} />
+                </div>
+                <h3 className="mb-3 text-2xl font-black tracking-tight text-slate-950">Phone setup ready</h3>
+                <p className="mb-8 text-sm font-medium leading-6 text-slate-500">
+                  Your provider account is ready. Redirecting to number purchase...
                 </p>
                 <div className="flex flex-col items-center gap-4">
-                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                  <Loader2 className="h-7 w-7 animate-spin text-cyan-700" />
                   <button
                     onClick={() => navigate('/dashboard/voice-setup/buy')}
-                    className="flex items-center gap-3 px-10 py-4 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs rounded-[1.25rem] shadow-glow-blue transition-all hover:-translate-y-1 active:scale-95"
+                    className="inline-flex h-11 items-center gap-2 rounded-md bg-slate-950 px-5 text-xs font-bold text-white transition-colors hover:bg-slate-800"
                   >
-                    Proceed Now
+                    Continue
                     <ArrowRight size={16} />
                   </button>
                 </div>
               </div>
             ) : existingSubaccount ? (
-              <div className="bg-card rounded-[3rem] border border-border shadow-premium-2xl p-12 relative overflow-hidden animate-in slide-in-from-right-4 duration-500">
-                <div className="absolute top-0 inset-x-0 h-2 bg-primary shadow-glow-blue" />
-                <div className="mb-10">
-                  <h3 className="text-2xl font-black text-foreground tracking-tight mb-2">Node Detected</h3>
-                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Active Subaccount session located</p>
+              <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm animate-in slide-in-from-right-4 duration-300">
+                <div className="mb-6">
+                  <h3 className="mb-1 text-2xl font-black tracking-tight text-slate-950">You are all set</h3>
+                  <p className="text-sm font-medium text-slate-500">Your AI phone line provider account is ready.</p>
                 </div>
 
-                <div className="bg-muted/30 rounded-[2rem] p-8 border border-border/50 mb-10 space-y-6">
+                <div className="mb-6 space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
                   <div>
-                    <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mb-2 opacity-60">Provisioned Title</p>
-                    <p className="text-xl font-black text-foreground tracking-tight">{existingSubaccount.friendly_name}</p>
+                    <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Business Name</p>
+                    <p className="text-lg font-black tracking-tight text-slate-950">{existingSubaccount.friendly_name}</p>
                   </div>
                   <div>
-                    <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mb-2 opacity-60">System Identifier (SID)</p>
-                    <p className="text-[10px] font-mono font-bold text-primary break-all bg-primary/5 p-3 rounded-xl border border-primary/10">
+                    <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Provider Account</p>
+                    <p className="break-all rounded-md border border-cyan-100 bg-white p-3 font-mono text-xs font-bold text-cyan-800">
                       {existingSubaccount.sid}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Provider</p>
+                    <p className="text-sm font-black text-slate-950">
+                      {provider === 'telnyx' ? 'Telnyx' : 'SignalWire'}
                     </p>
                   </div>
                 </div>
 
                 <button
                   onClick={() => navigate('/dashboard/voice-setup/buy')}
-                  className="w-full flex items-center justify-center gap-4 px-10 py-5 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs rounded-[1.5rem] shadow-glow-blue transition-all hover:-translate-y-1 active:scale-95 group"
+                  className="group flex h-11 w-full items-center justify-center gap-2 rounded-md bg-slate-950 px-5 text-xs font-bold text-white transition-colors hover:bg-slate-800"
                 >
-                  Enter Marketplace
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  Choose Number
+                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
                 </button>
               </div>
             ) : (
-              <div className="bg-card rounded-[3rem] border border-border shadow-premium-2xl p-12 relative overflow-hidden animate-in slide-in-from-bottom-8 duration-700">
-                <div className="absolute top-0 inset-x-0 h-2 bg-primary/20" />
-
-                <div className="mb-10">
-                  <h3 className="text-2xl font-black text-foreground tracking-tight mb-2">Initialize Instance</h3>
-                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Required System Parameter</p>
+              <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm animate-in slide-in-from-bottom-8 duration-300">
+                <div className="mb-6">
+                  <h3 className="mb-1 text-2xl font-black tracking-tight text-slate-950">Create provider account</h3>
+                  <p className="text-sm font-medium text-slate-500">Required before buying a number.</p>
                 </div>
 
-                <div className="space-y-8 mb-10">
+                <div className="mb-6 space-y-5">
+                  <div className="space-y-3">
+                    <label className="ml-1 text-xs font-bold text-slate-500">
+                      Telephony Provider
+                    </label>
+                    <div className="grid grid-cols-2 gap-2 rounded-lg border border-slate-200 bg-slate-100 p-1">
+                      {(['signalwire', 'telnyx'] as const).map((p) => (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => {
+                            setProvider(p);
+                            sessionStorage.setItem(PROVIDER_STORAGE_KEY, p);
+                          }}
+                          className={`rounded-md px-4 py-2.5 text-xs font-bold transition-colors ${
+                            provider === p ? 'bg-white text-cyan-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                          }`}
+                        >
+                          {p === 'signalwire' ? 'SignalWire' : 'Telnyx'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                      Business Identity <span className="text-destructive">*</span>
+                    <label className="ml-1 text-xs font-bold text-slate-500">
+                      Business Identity <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative group">
-                      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
-                        <ArrowRight size={18} />
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-cyan-700">
+                        <ArrowRight size={16} />
                       </div>
                       <input
                         type="text"
                         value={businessName}
                         onChange={(e) => setBusinessName(e.target.value)}
-                        placeholder="e.g. Nexus Corp"
-                        className="w-full h-18 pl-14 pr-6 rounded-[1.25rem] border border-border bg-muted/30 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-sm font-bold"
+                        placeholder="e.g. Joe's Pizza"
+                        className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10"
                         disabled={loading}
                       />
                     </div>
                   </div>
 
                   {error && (
-                    <div className="bg-destructive/5 border border-destructive/20 rounded-[1.25rem] p-5 flex items-start gap-4 animate-in fade-in slide-in-from-top-4">
-                      <AlertCircle className="text-destructive shrink-0 mt-0.5" size={18} />
-                      <p className="text-[10px] font-black text-destructive uppercase tracking-wide leading-relaxed">{error}</p>
+                    <div className="flex items-start gap-3 rounded-lg border border-rose-100 bg-rose-50 p-4 animate-in fade-in slide-in-from-top-4">
+                      <AlertCircle className="mt-0.5 shrink-0 text-rose-600" size={18} />
+                      <p className="text-sm font-semibold leading-6 text-rose-700">{error}</p>
                     </div>
                   )}
 
                   {hasSubscription === false && (
-                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-[1.25rem] p-6 text-center space-y-4">
-                      <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-relaxed">
-                        Active quota required to initialize nodes.
+                    <div className="space-y-4 rounded-lg border border-amber-100 bg-amber-50 p-5 text-center">
+                      <p className="text-sm font-semibold leading-6 text-amber-700">
+                        Active subscription required to create a phone provider account.
                       </p>
                       <button
                         onClick={() => navigate('/dashboard/plans')}
-                        className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline decoration-2 underline-offset-4"
+                        className="text-xs font-bold text-cyan-700 hover:underline"
                       >
-                        Browse Infrastructure Tiers
+                        Browse Plans
                       </button>
                     </div>
                   )}
@@ -297,38 +348,28 @@ const SetupSubaccount = () => {
                 <button
                   onClick={handleCreateSubaccount}
                   disabled={loading || !businessName.trim() || hasSubscription === false}
-                  className={`w-full flex items-center justify-center gap-4 px-10 py-5 font-black uppercase tracking-widest text-xs rounded-[1.5rem] transition-all ${hasSubscription === false
-                    ? 'bg-muted text-muted-foreground cursor-not-allowed border border-border opacity-50'
-                    : 'bg-primary text-primary-foreground shadow-glow-blue hover:-translate-y-1 active:scale-95'
+                  className={`flex h-11 w-full items-center justify-center gap-2 rounded-md px-5 text-xs font-bold transition-colors ${hasSubscription === false
+                    ? 'cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400'
+                    : 'bg-slate-950 text-white hover:bg-slate-800'
                     }`}
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Provisioning Node...
+                      Creating Account...
                     </>
                   ) : (
                     <>
-                      {hasSubscription === false ? 'Quota Required' : 'Initialize Infrastructure'}
+                      {hasSubscription === false ? 'Subscription Required' : 'Create Account'}
                       <ArrowRight size={18} />
                     </>
                   )}
                 </button>
               </div>
             )}
-
-            {/* Action Bar Background Glow */}
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] -z-10" />
+            </section>
           </div>
-        </div>
-
-        {/* Footer Integrity */}
-        <div className="mt-20 flex items-center gap-2 opacity-40">
-          <ShieldAlert size={14} className="text-primary" />
-          <span className="text-[9px] font-black text-foreground uppercase tracking-[0.3em]">
-            AES-256 Cloud Infrastructure Encryption Active
-          </span>
-        </div>
+        </main>
       </div>
     </DashboardLayout>
   );

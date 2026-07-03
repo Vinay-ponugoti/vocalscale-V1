@@ -1,8 +1,78 @@
-import React, { useState } from 'react';
-import { Globe, Volume2, Loader2, Mic, Play, Square, Search, ChevronDown, MessageSquare, Clock } from 'lucide-react';
-import type { VoiceSettingsProps } from '../../../../types/settings';
+import React, { useMemo, useState } from 'react';
+import {
+  BriefcaseBusiness,
+  Check,
+  ChevronDown,
+  Clock,
+  Gauge,
+  Globe2,
+  Headphones,
+  Loader2,
+  Mic2,
+  Play,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Square,
+  ToggleLeft,
+  Volume2,
+} from 'lucide-react';
+import type { Voice, VoiceSettingsProps } from '../../../../types/settings';
 import { useVoicePreview } from '../../../../hooks/useVoicePreview';
 import { api } from '../../../../lib/api';
+import { WebCallPreview } from './WebCallPreview';
+
+const LANGUAGES = [
+  { value: 'en-US', label: 'English', hint: 'US, UK, AU, IN, NZ' },
+  { value: 'es', label: 'Spanish', hint: 'Spain and Latin America' },
+  { value: 'fr', label: 'French', hint: 'France' },
+  { value: 'de', label: 'German', hint: 'Germany' },
+  { value: 'it', label: 'Italian', hint: 'Italy' },
+  { value: 'nl', label: 'Dutch', hint: 'Netherlands' },
+  { value: 'ja', label: 'Japanese', hint: 'Japan' },
+];
+
+const TONES = [
+  { value: 'friendly', label: 'Friendly', description: 'Warm front-desk energy', Icon: Sparkles },
+  { value: 'professional', label: 'Professional', description: 'Clear and composed', Icon: BriefcaseBusiness },
+  { value: 'casual', label: 'Casual', description: 'Relaxed and direct', Icon: Headphones },
+];
+
+const GREETING_PREVIEW_ID = 'greeting-preview';
+
+const normalizeGender = (gender?: string) => {
+  const value = gender?.toLowerCase() || '';
+  if (value.includes('masculine') || value === 'male') return 'male';
+  if (value.includes('feminine') || value === 'female') return 'female';
+  return 'neutral';
+};
+
+const getVoiceLanguage = (voice: Voice) => {
+  const explicit = voice.language?.toLowerCase();
+  if (explicit) return explicit.split('-')[0];
+  const parts = voice.provider_voice_id?.toLowerCase().split('-') || [];
+  return parts[parts.length - 1] || 'en';
+};
+
+const languageMatches = (voice: Voice, selectedLanguage: string) => {
+  const voiceLanguage = getVoiceLanguage(voice);
+  const selectedBase = selectedLanguage.toLowerCase().split('-')[0];
+  if (selectedBase === 'en') return voiceLanguage === 'en';
+  return voiceLanguage === selectedBase;
+};
+
+const describeGender = (gender?: string) => {
+  const normalized = normalizeGender(gender);
+  if (normalized === 'male') return 'Masculine';
+  if (normalized === 'female') return 'Feminine';
+  return 'Neutral';
+};
+
+const voiceDescription = (voice?: Voice) => {
+  if (!voice) return 'Choose a voice to preview and assign.';
+  const details = [describeGender(voice.gender), voice.accent, voice.age].filter(Boolean);
+  return details.join(' · ');
+};
 
 export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
   settings,
@@ -12,424 +82,442 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 }) => {
   const { isLoading, isPlaying, playVoice, stopVoice } = useVoicePreview();
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
-  const [genderFilter, setGenderFilter] = useState<'all' | 'Male' | 'Female'>('all');
+  const [genderFilter, setGenderFilter] = useState<'all' | 'male' | 'female'>('all');
   const [voiceSearch, setVoiceSearch] = useState('');
 
-  const handleVoicePreview = async (voiceId: string, providerVoiceId: string | null, sampleUrl: string | null) => {
-    if (playingVoiceId === voiceId && isPlaying) {
+  const activeVoices = useMemo(
+    () => availableVoices.filter((voice) => voice.is_active !== false),
+    [availableVoices]
+  );
+
+  const selectedVoice = activeVoices.find((voice) => voice.id === settings.voice_id);
+
+  const languageVoices = useMemo(
+    () => activeVoices.filter((voice) => languageMatches(voice, settings.language)),
+    [activeVoices, settings.language]
+  );
+
+  const visibleVoices = useMemo(() => {
+    const normalizedSearch = voiceSearch.trim().toLowerCase();
+    const byPlan = plan === 'starter'
+      ? [
+        ...languageVoices.filter((voice) => normalizeGender(voice.gender) === 'male').slice(0, 5),
+        ...languageVoices.filter((voice) => normalizeGender(voice.gender) === 'female').slice(0, 5),
+      ]
+      : languageVoices;
+
+    return byPlan
+      .filter((voice) => genderFilter === 'all' || normalizeGender(voice.gender) === genderFilter)
+      .filter((voice) => {
+        if (!normalizedSearch) return true;
+        const haystack = [
+          voice.name,
+          voice.accent,
+          voice.provider_voice_id,
+          voice.age,
+          ...(voice.characteristics || []),
+          ...(voice.use_cases || []),
+        ].join(' ').toLowerCase();
+        return haystack.includes(normalizedSearch);
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [genderFilter, languageVoices, plan, voiceSearch]);
+
+  const languageCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    LANGUAGES.forEach((language) => {
+      const base = language.value.toLowerCase().split('-')[0];
+      const count = activeVoices.filter((voice) => {
+        return getVoiceLanguage(voice) === base;
+      }).length;
+      counts.set(language.value, count);
+    });
+    return counts;
+  }, [activeVoices]);
+
+  const handleVoicePreview = async (voice: Voice) => {
+    if (playingVoiceId === voice.id && isPlaying) {
       stopVoice();
       setPlayingVoiceId(null);
-    } else {
-      const urlToPlay = providerVoiceId ? api.getVoiceSampleUrl(providerVoiceId) : sampleUrl;
-      if (!urlToPlay) {
-        console.warn('No sample source available for this voice');
-        return;
-      }
-      setPlayingVoiceId(voiceId);
-      await playVoice(urlToPlay);
+      return;
+    }
+
+    const urlToPlay = voice.provider_voice_id
+      ? api.getVoiceSampleUrl(voice.provider_voice_id, undefined, settings.speaking_speed)
+      : voice.sample_audio_url;
+
+    if (!urlToPlay) {
+      console.warn('No sample source available for this voice');
+      return;
+    }
+
+    setPlayingVoiceId(voice.id);
+    await playVoice(urlToPlay);
+    setPlayingVoiceId(null);
+  };
+
+  const handleGreetingPreview = async () => {
+    if (playingVoiceId === GREETING_PREVIEW_ID && isPlaying) {
+      stopVoice();
       setPlayingVoiceId(null);
+      return;
     }
+
+    if (!selectedVoice?.provider_voice_id) return;
+
+    const text = settings.custom_greeting?.trim() || 'Hi, thanks for calling. How can I help today?';
+    const url = api.getVoiceSampleUrl(selectedVoice.provider_voice_id, text, settings.speaking_speed);
+
+    setPlayingVoiceId(GREETING_PREVIEW_ID);
+    await playVoice(url);
+    setPlayingVoiceId(null);
   };
 
-  const [displayVoices, setDisplayVoices] = useState<typeof availableVoices>(availableVoices);
-
-  React.useEffect(() => {
-    if (genderFilter === 'all') {
-      setDisplayVoices(availableVoices);
-    }
-  }, [availableVoices, genderFilter]);
-
-  React.useEffect(() => {
-    const fetchFilteredVoices = async () => {
-      try {
-        const filterGender = genderFilter === 'Male' ? 'Masculine' : genderFilter === 'Female' ? 'Feminine' : 'all';
-        const response = await api.getVoices({ gender: filterGender });
-        if (response.data) {
-          setDisplayVoices(response.data);
-        }
-      } catch (error) {
-        console.error('Failed to filter voices:', error);
-      }
-    };
-    fetchFilteredVoices();
-  }, [genderFilter]);
-
-  const languageVoices = displayVoices.filter(voice => {
-    if (voice.is_active === false) return false;
-    const selectedLangBase = settings.language.toLowerCase().split('-')[0];
-    if (voice.accent && voice.accent.toLowerCase().includes(selectedLangBase)) return true;
-    const providerVoiceId = voice.provider_voice_id?.toLowerCase() || '';
-    return providerVoiceId.includes('-' + selectedLangBase) ||
-      providerVoiceId.startsWith('aura-2-' + selectedLangBase) ||
-      providerVoiceId.includes(selectedLangBase);
-  });
-
-  // Apply Plan Limits (Starter: 5 Male, 5 Female)
-  const planFilteredVoices = React.useMemo(() => {
-    if (plan === 'starter') {
-      const males = languageVoices.filter(v => v.gender === 'Masculine' || v.gender === 'male').slice(0, 5);
-      const females = languageVoices.filter(v => v.gender === 'Feminine' || v.gender === 'female').slice(0, 5);
-      // Combine and sort by name to keep consistent order
-      return [...males, ...females].sort((a, b) => a.name.localeCompare(b.name));
-    }
-    return languageVoices;
-  }, [languageVoices, plan]);
-
-  const filteredVoices = planFilteredVoices.filter(voice => {
-    if (!voiceSearch) return true;
-    const q = voiceSearch.toLowerCase();
-    return voice.name?.toLowerCase().includes(q) || voice.accent?.toLowerCase().includes(q);
-  });
-
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLanguage = e.target.value;
-    const selectedLangBase = newLanguage.toLowerCase().split('-')[0];
-    const defaultVoiceForLanguage = availableVoices.find(voice => {
-      if (voice.is_active === false) return false;
-      const providerVoiceId = voice.provider_voice_id?.toLowerCase() || '';
-      return providerVoiceId.startsWith('aura-2-' + selectedLangBase) ||
-        providerVoiceId.includes('-' + selectedLangBase);
-    });
+  const handleLanguageChange = (language: string) => {
+    const defaultVoice = activeVoices.find((voice) => languageMatches(voice, language));
     onChange({
-      language: newLanguage,
-      voice_id: defaultVoiceForLanguage?.id || '',
-      model_name: defaultVoiceForLanguage?.name || ''
+      language,
+      voice_id: defaultVoice?.id || '',
+      model_name: defaultVoice?.name || ''
     });
   };
-
-  const selectedVoice = availableVoices.find(v => v.id === settings.voice_id);
-
-  const toneConfig = [
-    { value: 'friendly', label: 'Friendly', desc: 'Warm and approachable', icon: '😊' },
-    { value: 'professional', label: 'Professional', desc: 'Formal and polished', icon: '💼' },
-    { value: 'casual', label: 'Casual', desc: 'Relaxed and natural', icon: '🎯' }
-  ];
 
   return (
-    <div className="space-y-0">
-
-      {/* ── Section 1: Voice Provider ── */}
-      <div className="pb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-[13px] font-semibold text-slate-900">Voice</span>
-          <span className="text-[11px] text-slate-400">·</span>
-          <span className="text-[11px] text-slate-400 font-medium">Select your AI assistant's voice</span>
-        </div>
-
-        {/* Currently selected voice banner */}
-        {selectedVoice && (
-          <div className="mt-3 flex items-center gap-3 px-4 py-3 bg-slate-900 rounded-xl">
-            <div className="w-9 h-9 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-              <Volume2 className="w-4 h-4 text-indigo-400" />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.6fr)] gap-6">
+        <section className="rounded-lg border border-slate-200 bg-white">
+          <div className="flex flex-col gap-4 border-b border-slate-200 p-4 sm:p-5">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-sm font-semibold text-slate-950">
+                  <Mic2 className="h-4 w-4 text-cyan-600" />
+                  Voice catalog
+                </div>
+                <p className="mt-1 text-xs font-medium text-slate-500">
+                  Aura-2 voices filtered by the call language.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
+                <ShieldCheck className="h-4 w-4" />
+                Deepgram Aura-2
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold text-white truncate">{selectedVoice.name}</p>
-              <p className="text-[11px] text-slate-400 font-medium">
-                {selectedVoice.gender === 'Masculine' || selectedVoice.gender === 'male' ? 'Male' : 'Female'} · {selectedVoice.accent || 'English'}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleVoicePreview(selectedVoice.id, selectedVoice.provider_voice_id || null, selectedVoice.sample_audio_url || null)}
-              className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-            >
-              {playingVoiceId === selectedVoice.id && isLoading ? (
-                <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
-              ) : playingVoiceId === selectedVoice.id && isPlaying ? (
-                <Square className="w-3 h-3 text-white fill-white" />
-              ) : (
-                <Play className="w-3.5 h-3.5 text-white fill-white" />
-              )}
-            </button>
-          </div>
-        )}
 
-        {/* Filter bar */}
-        <div className="mt-3 flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search voices..."
-              value={voiceSearch}
-              onChange={(e) => setVoiceSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-[13px] bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
-            />
-          </div>
-          <div className="flex bg-slate-100 rounded-lg p-0.5 border border-slate-200">
-            {(['all', 'Male', 'Female'] as const).map((g) => (
-              <button
-                key={g}
-                onClick={() => setGenderFilter(g)}
-                className={`px-3 py-1.5 text-[11px] font-medium rounded-md transition-all ${genderFilter === g
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-                  }`}
-              >
-                {g === 'all' ? 'All' : g}
-              </button>
-            ))}
-          </div>
-        </div>
+            <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto]">
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search name, accent, model, style"
+                  value={voiceSearch}
+                  onChange={(event) => setVoiceSearch(event.target.value)}
+                  className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium text-slate-950 outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+                />
+              </div>
 
-        {/* Voice list */}
-        <div className="mt-3 border border-slate-200 rounded-xl overflow-hidden bg-white">
-          <div className="max-h-[280px] overflow-y-auto divide-y divide-slate-100 voice-list-scroll">
-            {filteredVoices.map(voice => {
-              const isSelected = settings.voice_id === voice.id;
-              const isVoicePlaying = playingVoiceId === voice.id && isPlaying;
-              const isVoiceLoading = playingVoiceId === voice.id && isLoading;
-
-              return (
-                <div
-                  key={voice.id}
-                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors group ${isSelected
-                    ? 'bg-indigo-50/80'
-                    : 'hover:bg-slate-50'
-                    }`}
-                  onClick={() => {
-                    onChange({ voice_id: voice.id, model_name: voice.name || '' });
-                  }}
-                >
-                  {/* Radio indicator */}
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'border-indigo-600' : 'border-slate-300 group-hover:border-slate-400'
-                    }`}>
-                    {isSelected && <div className="w-2 h-2 rounded-full bg-indigo-600" />}
-                  </div>
-
-                  {/* Voice info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[13px] font-medium ${isSelected ? 'text-indigo-900' : 'text-slate-800'}`}>
-                        {voice.name}
-                      </span>
-                      <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${voice.gender === 'male' || voice.gender === 'Masculine'
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'bg-pink-50 text-pink-600'
-                        }`}>
-                        {voice.gender === 'male' || voice.gender === 'Masculine' ? 'M' : 'F'}
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-slate-400 font-medium">{voice.accent}</span>
-                  </div>
-
-                  {/* Play button */}
+              <div className="grid grid-cols-3 rounded-lg border border-slate-200 bg-slate-50 p-1">
+                {(['all', 'male', 'female'] as const).map((gender) => (
                   <button
+                    key={gender}
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleVoicePreview(voice.id, voice.provider_voice_id || null, voice.sample_audio_url || null);
-                    }}
-                    disabled={isVoiceLoading}
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all flex-shrink-0 ${isVoicePlaying
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-600'
+                    onClick={() => setGenderFilter(gender)}
+                    className={`h-8 min-w-16 rounded-md px-3 text-xs font-semibold transition ${genderFilter === gender
+                      ? 'bg-white text-slate-950 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-900'
                       }`}
                   >
-                    {isVoiceLoading ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : isVoicePlaying ? (
-                      <div className="flex gap-[3px] items-end h-3.5">
-                        <div className="w-[2.5px] bg-white rounded-full animate-[pulse_0.6s_ease-in-out_infinite]" style={{ height: '6px' }} />
-                        <div className="w-[2.5px] bg-white rounded-full animate-[pulse_0.6s_ease-in-out_infinite]" style={{ height: '14px', animationDelay: '150ms' }} />
-                        <div className="w-[2.5px] bg-white rounded-full animate-[pulse_0.6s_ease-in-out_infinite]" style={{ height: '8px', animationDelay: '300ms' }} />
-                      </div>
-                    ) : (
-                      <Play className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    )}
+                    {gender === 'all' ? 'All' : gender === 'male' ? 'Masc' : 'Fem'}
                   </button>
-                </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="scrollbar-hide grid max-h-[520px] grid-cols-1 overflow-y-auto p-3 sm:grid-cols-2 2xl:grid-cols-3">
+            {visibleVoices.map((voice) => {
+              const selected = settings.voice_id === voice.id;
+              const loading = playingVoiceId === voice.id && isLoading;
+              const playing = playingVoiceId === voice.id && isPlaying;
+              const gender = normalizeGender(voice.gender);
+
+              return (
+                <button
+                  key={voice.id}
+                  type="button"
+                  onClick={() => onChange({ voice_id: voice.id, model_name: voice.name || '' })}
+                  className={`m-1 rounded-lg border p-3 text-left transition ${selected
+                    ? 'border-cyan-500 bg-cyan-50 ring-2 ring-cyan-100'
+                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                    }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${selected ? 'bg-cyan-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                      {selected ? <Check className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                    </span>
+
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2">
+                        <span className="truncate text-sm font-semibold text-slate-950">{voice.name}</span>
+                        <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase ${gender === 'male'
+                          ? 'bg-blue-50 text-blue-700'
+                          : gender === 'female'
+                            ? 'bg-rose-50 text-rose-700'
+                            : 'bg-slate-100 text-slate-600'
+                          }`}>
+                          {gender === 'male' ? 'M' : gender === 'female' ? 'F' : 'N'}
+                        </span>
+                      </span>
+                      <span className="mt-0.5 block truncate text-xs font-medium text-slate-500">
+                        {voice.accent || getVoiceLanguage(voice).toUpperCase()}
+                      </span>
+                    </span>
+
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleVoicePreview(voice);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          handleVoicePreview(voice);
+                        }
+                      }}
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition ${playing
+                        ? 'bg-cyan-600 text-white'
+                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900'
+                        }`}
+                    >
+                      {loading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : playing ? (
+                        <Square className="h-3.5 w-3.5 fill-current" />
+                      ) : (
+                        <Play className="h-3.5 w-3.5 fill-current" />
+                      )}
+                    </span>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {(voice.characteristics || []).slice(0, 3).map((tag) => (
+                      <span key={tag} className="rounded-md bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-600">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </button>
               );
             })}
 
-            {filteredVoices.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-center">
-                <Mic className="w-5 h-5 text-slate-300 mb-2" />
-                <p className="text-[13px] text-slate-400 font-medium">No voices found</p>
-                <p className="text-[11px] text-slate-300 mt-0.5">Try a different filter or language</p>
+            {visibleVoices.length === 0 && (
+              <div className="col-span-full flex min-h-48 flex-col items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 text-center">
+                <Mic2 className="mb-2 h-6 w-6 text-slate-300" />
+                <p className="text-sm font-semibold text-slate-700">No matching voices</p>
+                <p className="mt-1 text-xs font-medium text-slate-400">Change language, search, or gender filters.</p>
               </div>
             )}
           </div>
-        </div>
+        </section>
+
+        <aside className="space-y-4">
+          <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500">
+                <Volume2 className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-slate-500">Current selection</p>
+                <h3 className="mt-1 truncate text-xl font-black tracking-tight text-slate-950">
+                  {selectedVoice?.name || 'Not set'}
+                </h3>
+                <p className="mt-1 text-sm font-medium text-slate-600">{voiceDescription(selectedVoice)}</p>
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-2 text-sm">
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                <span className="font-semibold text-slate-500">Model</span>
+                <span className="truncate font-mono text-xs font-semibold text-slate-800">{selectedVoice?.provider_voice_id || 'Unassigned'}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                <span className="font-semibold text-slate-500">Speed</span>
+                <span className="font-semibold text-slate-800">{settings.speaking_speed.toFixed(1)}x</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGreetingPreview}
+              disabled={!selectedVoice?.provider_voice_id || (playingVoiceId === GREETING_PREVIEW_ID && isLoading)}
+              className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-slate-950 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+            >
+              {playingVoiceId === GREETING_PREVIEW_ID && isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : playingVoiceId === GREETING_PREVIEW_ID && isPlaying ? (
+                <Square className="h-3.5 w-3.5 fill-current" />
+              ) : (
+                <Play className="h-3.5 w-3.5 fill-current" />
+              )}
+              {playingVoiceId === GREETING_PREVIEW_ID && isPlaying ? 'Stop preview' : 'Preview greeting'}
+            </button>
+            <p className="mt-2 text-center text-xs font-medium text-slate-400">
+              Hear your first message in the selected voice.
+            </p>
+          </section>
+
+          <WebCallPreview />
+
+          <section className="rounded-lg border border-slate-200 bg-white p-4">
+            <label className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-950">
+              <Globe2 className="h-4 w-4 text-cyan-600" />
+              Language
+            </label>
+            <div className="grid gap-2">
+              {LANGUAGES.map((language) => {
+                const active = settings.language === language.value;
+                const count = languageCounts.get(language.value) || 0;
+
+                return (
+                  <button
+                    key={language.value}
+                    type="button"
+                    onClick={() => handleLanguageChange(language.value)}
+                    className={`flex items-center justify-between rounded-lg border px-3 py-2 text-left transition ${active
+                      ? 'border-cyan-500 bg-cyan-50'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                      }`}
+                  >
+                    <span>
+                      <span className="block text-sm font-semibold text-slate-950">{language.label}</span>
+                      <span className="block text-xs font-medium text-slate-500">{language.hint}</span>
+                    </span>
+                    <span className={`rounded-md px-2 py-1 text-xs font-bold ${active ? 'bg-cyan-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        </aside>
       </div>
 
-      {/* ── Divider ── */}
-      <div className="border-t border-slate-200" />
-
-      {/* ── Section 2: Language & Speed row ── */}
-      <div className="py-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Language */}
-        <div>
-          <label className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-900 mb-2">
-            <Globe className="w-3.5 h-3.5 text-slate-500" />
-            Language
-          </label>
-          <div className="relative">
-            <select
-              className="w-full appearance-none bg-white border border-slate-200 text-slate-900 text-[13px] font-medium py-2.5 pl-3 pr-9 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all cursor-pointer hover:border-slate-300"
-              value={settings.language}
-              onChange={handleLanguageChange}
-            >
-              <optgroup label="English">
-                <option value="en-US">English (US)</option>
-                <option value="en-GB">English (UK)</option>
-                <option value="en-AU">English (Australia)</option>
-                <option value="en-NZ">English (New Zealand)</option>
-                <option value="en-IN">English (India)</option>
-              </optgroup>
-              <optgroup label="European">
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="it">Italian</option>
-                <option value="nl">Dutch</option>
-              </optgroup>
-              <optgroup label="Asian">
-                <option value="ja">Japanese</option>
-              </optgroup>
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-          </div>
-        </div>
-
-        {/* Speaking Speed */}
-        <div>
-          <label className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-900 mb-2">
-            <Clock className="w-3.5 h-3.5 text-slate-500" />
-            Speaking Speed
-            <span className="ml-auto text-[12px] font-mono font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
-              {settings.speaking_speed}x
+      <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <label className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-950">
+            <Gauge className="h-4 w-4 text-cyan-600" />
+            Speaking speed
+            <span className="ml-auto rounded-md bg-cyan-50 px-2 py-1 text-xs font-bold text-cyan-700">
+              {settings.speaking_speed.toFixed(1)}x
             </span>
           </label>
-          <div className="relative w-full h-10 flex items-center bg-white border border-slate-200 rounded-lg px-3">
-            <span className="text-[10px] text-slate-400 font-medium mr-2 flex-shrink-0">0.5x</span>
-            <div className="relative flex-1 h-6 flex items-center">
-              <div className="absolute w-full h-1 bg-slate-200 rounded-full" />
-              <div
-                className="absolute h-1 bg-indigo-500 rounded-full pointer-events-none transition-all"
-                style={{ width: `${((settings.speaking_speed - 0.5) / 1.5) * 100}%` }}
-              />
-              <input
-                type="range"
-                min="0.5"
-                max="2"
-                step="0.1"
-                value={settings.speaking_speed}
-                onChange={(e) => onChange({ speaking_speed: parseFloat(e.target.value) })}
-                className="relative w-full h-full appearance-none bg-transparent cursor-pointer z-10 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-indigo-500 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110"
-              />
-            </div>
-            <span className="text-[10px] text-slate-400 font-medium ml-2 flex-shrink-0">2.0x</span>
+          <div className="flex h-11 items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3">
+            <span className="text-xs font-bold text-slate-400">0.7x</span>
+            <input
+              type="range"
+              min="0.7"
+              max="1.5"
+              step="0.1"
+              value={settings.speaking_speed}
+              onChange={(event) => onChange({ speaking_speed: parseFloat(event.target.value) })}
+              className="h-2 min-w-0 flex-1 cursor-pointer accent-cyan-600"
+            />
+            <span className="text-xs font-bold text-slate-400">1.5x</span>
           </div>
         </div>
-      </div>
 
-      {/* ── Divider ── */}
-      <div className="border-t border-slate-200" />
-
-      {/* ── Section 3: Conversation Tone ── */}
-      <div className="py-6">
-        <label className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-900 mb-3">
-          <MessageSquare className="w-3.5 h-3.5 text-slate-500" />
-          Conversation Tone
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {toneConfig.map((tone) => {
-            const isActive = settings.conversation_tone === tone.value;
-            return (
-              <button
-                key={tone.value}
-                onClick={() => onChange({ conversation_tone: tone.value })}
-                className={`relative py-3.5 px-3 rounded-xl border transition-all text-left group ${isActive
-                  ? 'bg-indigo-50 border-indigo-200 ring-1 ring-indigo-500/25'
-                  : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                  }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-base">{tone.icon}</span>
-                  <span className={`text-[13px] font-semibold ${isActive ? 'text-indigo-900' : 'text-slate-800'}`}>
-                    {tone.label}
+        <div className="rounded-lg border border-slate-200 bg-white p-5 xl:col-span-2">
+          <label className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-950">
+            <Clock className="h-4 w-4 text-cyan-600" />
+            Conversation tone
+          </label>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {TONES.map(({ value, label, description, Icon }) => {
+              const active = settings.conversation_tone === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onChange({ conversation_tone: value })}
+                  className={`rounded-lg border p-3 text-left transition ${active
+                    ? 'border-cyan-500 bg-cyan-50'
+                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                    }`}
+                >
+                  <span className="flex items-center gap-2 text-sm font-semibold text-slate-950">
+                    <Icon className={`h-4 w-4 ${active ? 'text-cyan-600' : 'text-slate-400'}`} />
+                    {label}
                   </span>
-                </div>
-                <p className={`text-[11px] font-medium ${isActive ? 'text-indigo-600/70' : 'text-slate-400'}`}>
-                  {tone.desc}
-                </p>
-                {/* Active dot */}
-                {isActive && (
-                  <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-indigo-500" />
-                )}
-              </button>
-            );
-          })}
+                  <span className="mt-1 block text-xs font-medium text-slate-500">{description}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* ── Divider ── */}
-      <div className="border-t border-slate-200" />
-
-      {/* ── Section 4: First Message ── */}
-      <div className="py-6">
-        <label className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-900 mb-1">
-          First Message
-        </label>
-        <p className="text-[11px] text-slate-400 font-medium mb-3">
-          The greeting your AI assistant says when answering a call
-        </p>
-        <textarea
-          rows={3}
-          placeholder="Hi! Thanks for calling [Business Name]. You are on a recorded line. How can I help you?"
-          value={settings.custom_greeting}
-          onChange={(e) => onChange({ custom_greeting: e.target.value })}
-          className="w-full bg-white border border-slate-200 text-slate-900 placeholder-slate-400 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all resize-none font-medium text-[13px] leading-relaxed hover:border-slate-300"
-        />
-        <div className="flex items-center justify-end mt-1.5">
-          <span className="text-[11px] text-slate-400 font-medium">
-            {settings.custom_greeting?.length || 0} characters
-          </span>
+      <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-950">
+            <Volume2 className="h-4 w-4 text-cyan-600" />
+            First message
+          </label>
+          <textarea
+            rows={4}
+            placeholder="Hi, thanks for calling. How can I help today?"
+            value={settings.custom_greeting}
+            onChange={(event) => onChange({ custom_greeting: event.target.value })}
+            className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium leading-6 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+          />
+          <p className="mt-2 text-right text-xs font-semibold text-slate-400">
+            {settings.custom_greeting?.length || 0}/500
+          </p>
         </div>
-      </div>
 
-      {/* ── Divider ── */}
-      <div className="border-t border-slate-200" />
+        <div className="rounded-lg border border-slate-200 bg-white p-5">
+          <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-950">
+            <ChevronDown className="h-4 w-4 text-cyan-600" />
+            After-hours message
+          </label>
+          <textarea
+            rows={4}
+            placeholder="We are currently closed, but I can still take a message or help with scheduling."
+            value={settings.after_hours_greeting}
+            onChange={(event) => onChange({ after_hours_greeting: event.target.value })}
+            className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium leading-6 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+          />
+          <p className="mt-2 text-right text-xs font-semibold text-slate-400">
+            {settings.after_hours_greeting?.length || 0}/500
+          </p>
+        </div>
+      </section>
 
-      {/* ── Section 5: Status Toggle ── */}
-      <div className="pt-6">
-        <div className="flex items-center justify-between">
+      <section className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+            <ToggleLeft className="h-5 w-5" />
+          </div>
           <div>
-            <span className="text-[13px] font-semibold text-slate-900">Enable AI Receptionist</span>
-            <p className="text-[11px] text-slate-400 font-medium mt-0.5">
-              Allow the AI to autonomously handle incoming calls
+            <p className="text-sm font-semibold text-slate-950">AI receptionist</p>
+            <p className="mt-1 text-xs font-medium text-slate-500">
+              Incoming calls use the selected voice when this is enabled.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => onChange({ is_active: !settings.is_active })}
-            className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${settings.is_active ? 'bg-indigo-600' : 'bg-slate-200'
-              }`}
-          >
-            <div
-              className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200 ${settings.is_active ? 'translate-x-5' : 'translate-x-0'
-                }`}
-            />
-          </button>
         </div>
-      </div>
-
-      <style>{`
-        .voice-list-scroll::-webkit-scrollbar {
-          width: 4px;
-        }
-        .voice-list-scroll::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .voice-list-scroll::-webkit-scrollbar-thumb {
-          background: #e2e8f0;
-          border-radius: 10px;
-        }
-        .voice-list-scroll::-webkit-scrollbar-thumb:hover {
-          background: #cbd5e1;
-        }
-      `}</style>
+        <button
+          type="button"
+          onClick={() => onChange({ is_active: !settings.is_active })}
+          className={`relative h-8 w-14 rounded-full transition ${settings.is_active ? 'bg-cyan-600' : 'bg-slate-300'}`}
+          aria-pressed={settings.is_active}
+        >
+          <span
+            className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow-sm transition ${settings.is_active ? 'left-7' : 'left-1'}`}
+          />
+        </button>
+      </section>
     </div>
   );
 };

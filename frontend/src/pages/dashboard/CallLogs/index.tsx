@@ -1,21 +1,33 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
-import { useCallLogs } from '../../../hooks/useCallLogs';
-import { useCallLog } from '../../../hooks/useCallLog';
+import { useCallLogStats, useCallLogs } from '../../../hooks/useCallLogs';
+import { fetchCallLog, useCallLog } from '../../../hooks/useCallLog';
 import { useSearch } from '../../../hooks/useSearch';
 import type { CallLogFilters } from './types';
 import LogList from './components/LogList';
 import LogDetails from './components/LogDetails';
-import { Loader2, ArrowLeft, RefreshCw, Headset, XCircle, FileText, Zap, Clock, Calendar, ChevronRight } from 'lucide-react';
-import { startOfDay, subDays, isAfter, isBefore, parseISO } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
+import { Loader2, ArrowLeft, RefreshCw, XCircle, FileText, Calendar, ChevronRight, Search, Download } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
+import { exportCallsToExcel, EXPORT_RANGE_OPTIONS, type ExportRange } from './exportCalls';
+
+const PAGE_SIZE = 8;
+
+function useDebouncedValue<T>(value: T, delayMs: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setDebouncedValue(value), delayMs);
+    return () => window.clearTimeout(timeout);
+  }, [delayMs, value]);
+
+  return debouncedValue;
+}
 
 const CallLogsPage = () => {
-  const { state } = useBusinessSetup();
-  const timezone = state.data.business.timezone || 'America/New_York';
+  const queryClient = useQueryClient();
   const { callId } = useParams<{ callId?: string }>();
   const navigate = useNavigate();
   const { searchQuery } = useSearch();
@@ -28,13 +40,48 @@ const CallLogsPage = () => {
     dateRange: '7d'
   });
 
-  // Sync global search query with local filters
-  if (searchQuery !== prevSearchQuery) {
-    setPrevSearchQuery(searchQuery);
-    setFilters(prev => ({ ...prev, search: searchQuery }));
-  }
-
   const [customDate, setCustomDate] = useState<string>('');
+  const [page, setPage] = useState(1);
+
+  const { state: businessState } = useBusinessSetup();
+  const timezone = businessState.data.business.timezone || 'America/New_York';
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [exportingRange, setExportingRange] = useState<ExportRange | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!exportMenuOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(event.target as Node)) {
+        setExportMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [exportMenuOpen]);
+
+  const handleExport = async (range: ExportRange) => {
+    setExportError(null);
+    setExportingRange(range);
+    try {
+      const count = await exportCallsToExcel(range, timezone);
+      setExportMenuOpen(false);
+      if (count === 0) setExportError('No calls found for that range.');
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : 'Export failed.');
+    } finally {
+      setExportingRange(null);
+    }
+  };
+
+  useEffect(() => {
+    if (searchQuery !== prevSearchQuery) {
+      setPrevSearchQuery(searchQuery);
+      setFilters(prev => ({ ...prev, search: searchQuery }));
+      setPage(1);
+    }
+  }, [prevSearchQuery, searchQuery]);
 
   const handleSelectLog = (id: string | null) => {
     if (id) {
@@ -44,53 +91,36 @@ const CallLogsPage = () => {
     }
   };
 
-  const { logs, loading: listLoading, isPlaceholderData, error: listError, refetch } = useCallLogs({ ...filters, customDate });
+  const debouncedFilters = useDebouncedValue(filters, 300);
+  const debouncedCustomDate = useDebouncedValue(customDate, 300);
+  const queryFilters = useMemo(() => ({ ...debouncedFilters, customDate: debouncedCustomDate }), [debouncedCustomDate, debouncedFilters]);
+
+  const { logs, total, loading: listLoading, isPlaceholderData, error: listError, refetch } = useCallLogs(queryFilters, page, PAGE_SIZE);
+  const { stats: serverStats, refetch: refetchStats } = useCallLogStats(queryFilters);
   const { log: singleLog, loading: singleLoading } = useCallLog(callId);
 
   const isInitialLoading = listLoading && !isPlaceholderData;
 
-  // --- Stats Calculation ---
-  const stats = (() => {
-    const now = toZonedTime(new Date(), timezone);
-    const todayStart = startOfDay(now);
-    const yesterdayStart = startOfDay(subDays(now, 1));
-    const validLogs = logs.filter(log => log.created_at);
-
-    const todayLogs = validLogs.filter(l => {
-      const date = toZonedTime(parseISO(l.created_at), timezone);
-      return isAfter(date, todayStart);
-    });
-    const yesterdayLogs = validLogs.filter(l => {
-      const date = toZonedTime(parseISO(l.created_at), timezone);
-      return isAfter(date, yesterdayStart) && isBefore(date, todayStart);
-    });
-
-    const callsToday = todayLogs.length;
-    const callsYesterday = yesterdayLogs.length;
-    const callsTrend = callsYesterday > 0 ? Math.round(((callsToday - callsYesterday) / callsYesterday) * 100) : (callsToday > 0 ? 100 : 0);
-
-    const urgentToday = todayLogs.filter(l => l.is_urgent || l.status?.includes('Action')).length;
-
-    const avgDuration = todayLogs.length > 0
-      ? Math.round(todayLogs.reduce((sum, l) => sum + (l.duration_seconds || 0), 0) / todayLogs.length)
-      : 0;
-
-    return {
-      callsToday,
-      callsTrend: `${callsTrend > 0 ? '+' : ''}${callsTrend}%`,
-      callsTrendUp: callsTrend >= 0,
-      urgentToday,
-      avgDuration: avgDuration > 60 ? `${Math.floor(avgDuration / 60)}m ${avgDuration % 60}s` : `${avgDuration}s`
-    };
-  })();
+  const stats = serverStats || {
+    callsToday: 0,
+    callsTrend: '0%',
+    callsTrendUp: true,
+    missedCalls: 0,
+    handledRate: 0,
+    followUpCalls: 0,
+    avgDuration: '0s',
+    total: 0
+  };
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+    setPage(1);
   };
 
   const handleCustomDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const date = e.target.value;
     setCustomDate(date);
+    setPage(1);
     if (date) {
       handleFilterChange('dateRange', 'Custom');
     }
@@ -104,23 +134,59 @@ const CallLogsPage = () => {
       dateRange: '7d'
     });
     setCustomDate('');
+    setPage(1);
   };
 
   const selectedLog = callId ? singleLog : logs.find(l => l.id === selectedLogId);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const filtersNav = (
-    <div className="flex items-center gap-4 w-full overflow-x-auto no-scrollbar pb-2 lg:pb-0">
-      <div className="flex items-center gap-2 shrink-0">
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  const handlePrefetchLog = (id: string) => {
+    queryClient.prefetchQuery({
+      queryKey: ['call-log', id],
+      queryFn: ({ signal }) => fetchCallLog(id, signal),
+      staleTime: 60000
+    });
+  };
+
+  const compactStats = [
+    { label: 'Today', value: stats.callsToday, detail: `${stats.callsTrend} vs yesterday`, tone: 'text-slate-950', accent: 'border-slate-200' },
+    { label: 'Missed', value: stats.missedCalls, detail: 'needs review', tone: 'text-rose-600', accent: 'border-rose-100 bg-rose-50/40' },
+    { label: 'Handled', value: `${stats.handledRate}%`, detail: 'completed', tone: 'text-emerald-600', accent: 'border-emerald-100 bg-emerald-50/40' },
+    { label: 'Follow-ups', value: stats.followUpCalls, detail: 'needs callback', tone: 'text-amber-600', accent: 'border-amber-100 bg-amber-50/40' }
+  ];
+
+  const listControls = (
+    <div className="space-y-3 border-b border-slate-200 bg-white p-4">
+      <div className="relative">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input
+          type="search"
+          value={filters.search}
+          onChange={(e) => handleFilterChange('search', e.target.value)}
+          placeholder="Search caller, phone, or summary..."
+          className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
         <div className="relative">
           <select
             value={filters.status}
             onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2 rounded-xl outline-none focus:ring-2 focus:ring-slate-500/10 focus:border-slate-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
+            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-3 pr-8 text-xs font-semibold text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
           >
             <option value="All">All Status</option>
             <option value="Completed">Completed</option>
+            <option value="Missed">Missed</option>
+            <option value="Action Req">Action Required</option>
+            <option value="Pending">Pending</option>
             <option value="In Progress">In Progress</option>
-            <option value="Failed">Failed</option>
           </select>
           <ChevronRight size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
         </div>
@@ -129,28 +195,25 @@ const CallLogsPage = () => {
           <select
             value={filters.type}
             onChange={(e) => handleFilterChange('type', e.target.value)}
-            className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2 rounded-xl outline-none focus:ring-2 focus:ring-slate-500/10 focus:border-slate-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
+            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-3 pr-8 text-xs font-semibold text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
           >
             <option value="All">All Types</option>
             <option value="Booking">Booking</option>
             <option value="Inquiry">Inquiry</option>
-            <option value="Urgent">Urgent</option>
             <option value="General">General</option>
           </select>
           <ChevronRight size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
         </div>
       </div>
 
-      <div className="h-6 w-[1px] bg-slate-200 mx-1 shrink-0" />
-
-      <div className="flex items-center gap-2 shrink-0">
-        <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-1.5 rounded-xl group focus-within:ring-2 focus-within:ring-slate-500/10 focus-within:border-slate-500 transition-all hover:border-slate-300 shadow-sm">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_auto]">
+        <div className="flex h-9 min-w-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 transition hover:border-slate-300 focus-within:border-cyan-500 focus-within:ring-2 focus-within:ring-cyan-100">
           <Calendar size={14} className="text-slate-400 group-focus-within:text-slate-900" />
           <input
             type="date"
             value={customDate}
             onChange={handleCustomDateChange}
-            className="bg-transparent text-[11px] font-black text-slate-700 uppercase tracking-tight outline-none w-28 cursor-pointer"
+            className="min-w-0 flex-1 bg-transparent text-xs font-semibold text-slate-700 outline-none"
           />
         </div>
 
@@ -161,7 +224,7 @@ const CallLogsPage = () => {
               handleFilterChange('dateRange', e.target.value);
               if (e.target.value !== 'Custom') setCustomDate('');
             }}
-            className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-tight pl-3 pr-8 py-2 rounded-xl outline-none focus:ring-2 focus:ring-slate-500/10 focus:border-slate-500 transition-all cursor-pointer hover:border-slate-300 shadow-sm"
+            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-3 pr-8 text-xs font-semibold text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 sm:w-[116px]"
           >
             <option value="24h">Last 24h</option>
             <option value="7d">Last 7 Days</option>
@@ -171,105 +234,136 @@ const CallLogsPage = () => {
           </select>
           <ChevronRight size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" />
         </div>
-      </div>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handleReset}
-        className="h-9 w-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all active:scale-95 ml-auto border border-transparent hover:border-slate-100 shrink-0"
-        title="Reset Filters"
-      >
-        <RefreshCw size={16} />
-      </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleReset}
+          className="h-9 w-full shrink-0 rounded-lg border border-transparent text-slate-400 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900 active:scale-95 sm:w-9"
+          title="Reset Filters"
+        >
+          <RefreshCw size={16} />
+        </Button>
+      </div>
     </div>
   );
 
   return (
-    <DashboardLayout fullWidth secondaryNav={filtersNav}>
-      <div className="flex flex-col h-full bg-white overflow-hidden">
+    <DashboardLayout fullWidth>
+      <div className="flex h-full flex-col gap-3 overflow-y-auto bg-[#f7f8fb] px-3 py-3 text-slate-950 md:gap-4 md:overflow-hidden md:px-6 md:py-4 lg:px-8">
 
-        {/* Mobile Filters */}
-        <div className="lg:hidden mb-4 p-4 border-b">
-          {filtersNav}
-        </div>
-
-        {/* Unified Card Container */}
-        <div className="flex flex-col h-full overflow-hidden w-full animate-in fade-in zoom-in-95 duration-500">
-
-          {/* Top Bar: Integrated Stats */}
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-8 bg-white shrink-0 overflow-x-auto no-scrollbar">
-            {/* Stats Items */}
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-[#4285F4] ring-1 ring-[#4285F4]/10 shadow-sm transition-all duration-300 hover:scale-110">
-                <Headset size={16} />
+        <div className="shrink-0">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0 shrink-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl font-black tracking-tight text-slate-950 sm:text-2xl">Call Logs</h1>
+                <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-600">
+                  {total} total
+                </span>
               </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-black text-slate-900">{stats.callsToday}</span>
-                  <span className={`text-[10px] font-bold ${stats.callsTrendUp ? 'text-emerald-600' : 'text-rose-600'}`}>
-                    {stats.callsTrend}
-                  </span>
-                </div>
-              </div>
+              <p className="mt-0.5 max-w-2xl text-xs font-medium leading-5 text-slate-500 sm:text-sm">
+                Triage missed calls, review follow-ups, and open the transcript.
+              </p>
             </div>
 
-            <div className="h-8 w-px bg-slate-100" />
-
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 ring-1 ring-rose-500/10">
-                <Zap size={16} />
+            <div className="flex min-w-0 items-stretch gap-2">
+              <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 sm:grid-cols-4 lg:flex-none">
+                {compactStats.map((item) => (
+                  <div key={item.label} className={`min-w-0 rounded-lg border bg-white px-2.5 py-1.5 shadow-sm shadow-slate-200/50 sm:px-3 lg:w-[140px] xl:w-[160px] ${item.accent}`}>
+                    <div className="flex items-start justify-between gap-2 sm:items-baseline">
+                      <span className="truncate text-xs font-semibold text-slate-500">{item.label}</span>
+                      <span className={`text-sm font-black sm:text-base ${item.tone}`}>{item.value}</span>
+                    </div>
+                    <p className="mt-0.5 truncate text-xs font-medium text-slate-400">{item.detail}</p>
+                  </div>
+                ))}
               </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Urgent</p>
-                <span className="text-sm font-black text-slate-900">{stats.urgentToday}</span>
+              <div ref={exportRef} className="relative shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setExportMenuOpen((open) => !open)}
+                  title="Export to Excel"
+                  className="h-full gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+                >
+                  {exportingRange ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+                  <span className="hidden sm:inline">Export</span>
+                  <ChevronRight size={13} className={`text-slate-400 transition-transform ${exportMenuOpen ? '-rotate-90' : 'rotate-90'}`} />
+                </Button>
+                {exportMenuOpen && (
+                  <div className="absolute right-0 top-full z-30 mt-2 w-48 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg shadow-slate-200/60 animate-in fade-in zoom-in-95 duration-150">
+                    <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                      Export to Excel
+                    </p>
+                    {EXPORT_RANGE_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => handleExport(option.value)}
+                        disabled={exportingRange !== null}
+                        className="flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {option.label}
+                        {exportingRange === option.value && <Loader2 size={13} className="animate-spin text-cyan-600" />}
+                      </button>
+                    ))}
+                    {exportError && (
+                      <p className="border-t border-slate-100 px-3 py-2 text-[11px] font-medium text-rose-600">{exportError}</p>
+                    )}
+                  </div>
+                )}
               </div>
-            </div>
-
-            <div className="h-8 w-px bg-slate-100" />
-
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 ring-1 ring-amber-500/10">
-                <Clock size={16} />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Avg Time</p>
-                <span className="text-sm font-black text-slate-900">{stats.avgDuration}</span>
-              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  refetch();
+                  refetchStats();
+                }}
+                title="Refresh"
+                className="h-auto w-10 shrink-0 rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm hover:bg-slate-50"
+              >
+                <RefreshCw size={15} />
+              </Button>
             </div>
           </div>
+        </div>
 
-          {/* Main Content Area: Split View */}
-          <div className="flex-1 flex overflow-hidden w-full relative">
+        <div className="min-h-0 md:flex-1">
+          <div className="relative flex w-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm shadow-slate-200/60 animate-in fade-in duration-300 md:h-full md:flex-row">
 
-            {/* Left Panel: Master List */}
             <div className={`
               ${selectedLogId ? 'hidden md:flex' : 'flex'} 
-              w-full md:w-[380px] lg:w-[420px] border-r border-slate-100 flex-col bg-slate-50/30 overflow-hidden shrink-0
+              min-h-0 w-full flex-col bg-white overflow-hidden shrink-0 md:h-full md:w-[360px] md:border-r md:border-slate-200 xl:w-[400px] 2xl:w-[430px]
             `}>
+              {listControls}
               {listError ? (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                  <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mb-4 text-red-500 ring-1 ring-red-500/10">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-rose-50 text-rose-500 ring-1 ring-rose-500/10">
                     <XCircle size={28} />
                   </div>
-                  <h3 className="text-slate-900 font-black text-base tracking-tight mb-1">Failed to load logs</h3>
+                  <h3 className="mb-1 text-base font-semibold tracking-tight text-slate-950">Failed to load logs</h3>
                   <p className="text-slate-500 text-sm mb-6 max-w-[240px]">{listError}</p>
-                  <Button variant="outline" onClick={() => refetch()} className="text-slate-900 font-bold text-xs uppercase tracking-wider">Try again</Button>
+                  <Button variant="outline" onClick={() => refetch()} className="text-xs font-semibold text-slate-900">Try again</Button>
                 </div>
               ) : (
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                <div className="flex-1 overflow-hidden">
                   <LogList
                     logs={logs}
                     selectedId={selectedLogId}
                     onSelect={handleSelectLog}
+                    onPrefetch={handlePrefetchLog}
                     isLoading={isInitialLoading}
+                    currentPage={page}
+                    totalPages={totalPages}
+                    totalItems={total}
+                    pageSize={PAGE_SIZE}
+                    onPageChange={setPage}
                   />
                   {isPlaceholderData && (
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-                      <div className="bg-white/90 backdrop-blur-md border border-slate-100 px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in zoom-in duration-300">
-                        <div className="w-1.5 h-1.5 bg-slate-900 rounded-full animate-pulse" />
-                        <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Updating Logs...</span>
+                      <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white/90 px-4 py-1.5 shadow-sm backdrop-blur-md animate-in fade-in zoom-in duration-300">
+                        <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-600" />
+                        <span className="text-xs font-semibold text-slate-900">Updating logs...</span>
                       </div>
                     </div>
                   )}
@@ -280,22 +374,21 @@ const CallLogsPage = () => {
             {/* Right Panel: Detail View */}
             <div className={`
               ${selectedLogId ? 'flex' : 'hidden md:flex'} 
-              flex-1 bg-white overflow-y-auto custom-scrollbar relative
+              scrollbar-hide min-h-0 min-w-0 flex-1 bg-[#f7f8fb] overflow-y-auto relative
             `}>
               {selectedLogId ? (
                 singleLoading ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-20">
-                    <div className="w-16 h-16 rounded-3xl bg-blue-50 flex items-center justify-center mb-6 ring-1 ring-[#4285F4]/10">
-                      <Loader2 className="animate-spin text-[#4285F4]" size={32} />
+                    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-lg bg-cyan-50 ring-1 ring-cyan-500/10">
+                      <Loader2 className="animate-spin text-cyan-600" size={32} />
                     </div>
-                    <p className="text-slate-900 font-black text-base tracking-tight">Analyzing Call Data...</p>
+                    <p className="text-base font-semibold tracking-tight text-slate-950">Loading call details...</p>
                   </div>
                 ) : selectedLog ? (
-                  <div className="p-6 md:p-8 animate-in fade-in slide-in-from-right-2 duration-300 w-full max-w-5xl mx-auto">
-                    {/* Mobile Back Button */}
+                  <div className="min-h-full w-full p-3 animate-in fade-in slide-in-from-right-2 duration-300 md:p-4">
                     <button
                       onClick={() => handleSelectLog(null)}
-                      className="md:hidden flex items-center gap-2 text-slate-500 font-black text-[10px] uppercase tracking-widest mb-8 hover:text-slate-900 transition-colors"
+                      className="mb-3 flex h-10 w-full items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 shadow-sm transition-colors hover:text-slate-900 md:hidden"
                     >
                       <ArrowLeft size={14} />
                       Back to List
@@ -304,17 +397,17 @@ const CallLogsPage = () => {
                   </div>
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center p-12 text-center">
-                    <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mb-8 ring-1 ring-rose-500/10">
-                      <XCircle className="text-rose-500" size={40} />
+                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-rose-50 ring-1 ring-rose-500/10">
+                      <XCircle className="text-rose-500" size={32} />
                     </div>
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-3">Log Not Found</h2>
+                    <h2 className="mb-3 text-xl font-black tracking-tight text-slate-950">Log Not Found</h2>
                     <p className="text-slate-500 max-w-sm mx-auto mb-10 text-sm font-medium leading-relaxed">
                       The requested call record could not be retrieved. It may have been archived or deleted from our servers.
                     </p>
                     <Button
                       onClick={() => handleSelectLog(null)}
                       variant="outline"
-                      className="text-slate-900 font-bold text-xs uppercase tracking-wider"
+                      className="text-xs font-semibold text-slate-900"
                     >
                       Return to List
                     </Button>
@@ -322,35 +415,18 @@ const CallLogsPage = () => {
                 )
               ) : (
                 <div className="h-full flex flex-col items-center justify-center p-12 text-center">
-                  <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] border border-slate-100 flex items-center justify-center mb-8 shadow-sm">
-                    <FileText size={40} className="text-slate-300" />
+                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-sm">
+                    <FileText size={30} className="text-slate-300" />
                   </div>
-                  <h3 className="text-xl font-black text-slate-900 tracking-tight mb-3 uppercase">Select a Conversation</h3>
-                  <p className="max-w-xs mx-auto text-slate-500 text-sm font-medium leading-relaxed">
-                    Click on any call log from the left panel to view full transcripts, AI analysis, and recordings.
+                  <h3 className="mb-2 text-lg font-black tracking-tight text-slate-950">Select a call</h3>
+                  <p className="max-w-xs mx-auto text-slate-500 text-sm font-medium leading-6">
+                    Choose a call from the list to review the summary, transcript, and follow-up details.
                   </p>
                 </div>
               )}
             </div>
           </div>
         </div>
-
-        <style>{`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #E2E8F0;
-            border-radius: 10px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #CBD5E1;
-            border-radius: 10px;
-          }
-        `}</style>
       </div>
     </DashboardLayout>
   );
