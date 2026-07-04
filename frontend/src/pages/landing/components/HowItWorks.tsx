@@ -1,6 +1,7 @@
-import { Sparkles, Puzzle, Phone, Zap, Headphones, Calendar } from 'lucide-react';
+import { Sparkles, Puzzle, Phone, Zap, Headphones } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect, useRef } from 'react';
+import { LiveCallDemo } from './LiveCallDemo';
 
 export function HowItWorks() {
   const [activeStep, setActiveStep] = useState(0);
@@ -208,7 +209,8 @@ export function HowItWorks() {
                 </h3>
 
                 <p className="text-slate-600 font-medium leading-relaxed mb-6 md:mb-8 text-base md:text-lg">
-                  Experience how our AI handles real conversations—with natural pauses, empathy, and perfect recall of your business details.
+                  Don't take our word for it. Press the button and have a real conversation with our AI —
+                  natural pauses, empathy, and instant answers, live from your browser.
                 </p>
 
                 <div className="flex flex-wrap gap-3">
@@ -220,74 +222,8 @@ export function HowItWorks() {
                 </div>
               </div>
 
-              {/* Interactive Chat Demo */}
-              <div className="space-y-4 relative">
-                {/* Live indicator */}
-                <div className="absolute -top-8 right-0 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                  </span>
-                  Live Demo
-                </div>
-
-                <div className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-[10px] font-black shrink-0 text-white shadow-lg relative overflow-hidden">
-                    <div className={cn(
-                      "absolute inset-0 bg-white/20",
-                      isSpeaking && "animate-pulse"
-                    )} />
-                    AI
-                  </div>
-                  <div className="bg-blue-600 text-white rounded-[2rem] rounded-tl-none p-5 text-sm font-medium leading-relaxed shadow-lg shadow-blue-500/20 relative">
-                    "Good afternoon! This is Sarah from Bright Dental. I see you're looking to schedule a cleaning. Do you prefer morning or afternoon appointments?"
-                    {/* Voice wave overlay */}
-                    <div className="absolute bottom-2 right-4 flex gap-0.5 items-end h-3">
-                      {[...Array(3)].map((_, i) => (
-                        <div
-                          key={i}
-                          className={cn(
-                            "w-0.5 bg-white/40 rounded-full transition-all duration-200",
-                            isSpeaking ? "animate-pulse" : "h-1"
-                          )}
-                          style={{
-                            height: isSpeaking ? `${[6, 10, 4][i]}px` : '4px',
-                            animationDelay: `${i * 50}ms`
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 items-start justify-end">
-                  <div className="bg-slate-100 border border-slate-200 text-slate-700 rounded-[2rem] rounded-tr-none p-5 text-sm font-medium leading-relaxed">
-                    "Morning works better for me, maybe next Tuesday?"
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-[10px] font-black shrink-0 text-slate-500 uppercase">You</div>
-                </div>
-
-                <div className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-[10px] font-black shrink-0 text-white shadow-lg">
-                    AI
-                  </div>
-                  <div className="bg-slate-50 border border-slate-100 text-slate-800 rounded-[2rem] rounded-tl-none p-5 text-sm font-bold leading-relaxed flex items-center gap-3">
-                    <Calendar className="h-4 w-4 text-slate-500" />
-                    <span>"Perfect! I have Tuesday at 9:00 AM with Dr. Chen. I'll send a confirmation text now."</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 items-start justify-end opacity-60">
-                  <div className="bg-slate-100 border border-slate-200 text-slate-700 rounded-[2rem] rounded-tr-none p-5 text-sm font-medium leading-relaxed flex items-center gap-2">
-                    <span className="flex gap-1">
-                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                    </span>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-[10px] font-black shrink-0 text-slate-500 uppercase">You</div>
-                </div>
-              </div>
+              {/* Real live call demo — talks to the actual AI agent */}
+              <LiveCallDemo />
             </div>
           </div>
         </div>

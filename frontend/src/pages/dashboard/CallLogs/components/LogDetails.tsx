@@ -1,9 +1,10 @@
 import React from 'react';
-import { AlertTriangle, Bot, CheckCircle2, Clock, FileText, Flag, Phone, PhoneMissed, Share } from 'lucide-react';
+import { AlertTriangle, Bot, CheckCircle2, Clock, FileText, Flag, Loader2, Phone, PhoneMissed, PhoneOutgoing, Share } from 'lucide-react';
 import type { CallLog } from '../types';
 import { format, parseISO } from 'date-fns';
 import { Button } from '../../../../components/ui/Button';
 import { Badge } from '../../../../components/ui/Badge';
+import { callsApi } from '../../../../api/calls';
 
 interface LogDetailsProps {
   log: CallLog;
@@ -119,6 +120,38 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
   const [shareLabel, setShareLabel] = React.useState<string | null>(null);
 
+  // AI follow-up call composer
+  const [instruction, setInstruction] = React.useState('');
+  const [sending, setSending] = React.useState(false);
+  const [followUpError, setFollowUpError] = React.useState<string | null>(null);
+  const [followUpSuccess, setFollowUpSuccess] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    // Reset composer when switching between calls
+    setInstruction('');
+    setFollowUpError(null);
+    setFollowUpSuccess(null);
+    setSending(false);
+  }, [log.id]);
+
+  const handleFollowUpCall = async () => {
+    if (!log.phone_number || instruction.trim().length < 5) return;
+    setFollowUpError(null);
+    setFollowUpSuccess(null);
+    setSending(true);
+    try {
+      await callsApi.startOutboundCall(log.phone_number, instruction.trim(), log.caller_name);
+      setFollowUpSuccess('Call placed! Watch the Outbound tab for the result and transcript.');
+      setInstruction('');
+    } catch (err) {
+      setFollowUpError(err instanceof Error ? err.message : 'Could not place the call.');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const isOutbound = log.direction === 'outbound';
+
   const buildCallText = () => {
     const lines = [
       `Call with ${log.caller_name || 'Unknown Caller'}`,
@@ -177,6 +210,12 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                   <StatusIcon size={13} />
                   {statusMeta.label}
                 </Badge>
+                {isOutbound && (
+                  <Badge variant="outline" className="gap-1 border-indigo-100 bg-indigo-50 text-xs font-semibold text-indigo-700 shadow-none">
+                    <PhoneOutgoing size={13} />
+                    Outbound
+                  </Badge>
+                )}
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-slate-500 sm:gap-x-4">
                 <span className="flex min-w-0 items-center gap-1.5">
@@ -322,6 +361,51 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
             </div>
           </section>
 
+          {/* AI follow-up call: type an instruction, the agent calls this customer */}
+          {log.phone_number && (
+            <section className="overflow-hidden rounded-lg border border-indigo-100 bg-white shadow-sm shadow-slate-200/60">
+              <div className="flex items-center gap-2 border-b border-indigo-100 bg-indigo-50/50 px-4 py-3">
+                <PhoneOutgoing size={15} className="text-indigo-600" />
+                <h2 className="text-base font-black tracking-tight text-slate-950">AI follow-up call</h2>
+              </div>
+              <div className="space-y-3 p-4">
+                <p className="text-xs font-medium leading-5 text-slate-500">
+                  Tell the AI what to accomplish — it calls {log.caller_name && log.caller_name !== 'Unknown' ? log.caller_name : 'this customer'} right away and handles it.
+                </p>
+                <textarea
+                  value={instruction}
+                  onChange={(e) => setInstruction(e.target.value)}
+                  rows={3}
+                  maxLength={500}
+                  disabled={sending}
+                  placeholder='e.g. "Follow up about the appointment and confirm a time for next week"'
+                  className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-medium text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
+                />
+                {followUpError && <p className="text-xs font-semibold text-rose-600">{followUpError}</p>}
+                {followUpSuccess && (
+                  <p className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+                    <CheckCircle2 size={14} /> {followUpSuccess}
+                  </p>
+                )}
+                <Button
+                  onClick={handleFollowUpCall}
+                  disabled={sending || instruction.trim().length < 5}
+                  className="h-10 w-full rounded-lg bg-indigo-600 text-sm font-semibold text-white shadow-none hover:bg-indigo-700 disabled:opacity-60"
+                >
+                  {sending ? (
+                    <>
+                      <Loader2 size={15} className="mr-2 animate-spin" /> Placing call…
+                    </>
+                  ) : (
+                    <>
+                      <PhoneOutgoing size={15} className="mr-2" /> Call now
+                    </>
+                  )}
+                </Button>
+              </div>
+            </section>
+          )}
+
           <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
             <div className="border-b border-slate-200 bg-white px-4 py-3">
               <h2 className="text-base font-black tracking-tight text-slate-950">Call details</h2>
@@ -341,6 +425,23 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                   {statusMeta.label}
                 </Badge>
               </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-slate-500">Direction</span>
+                <span className="flex items-center gap-1.5 text-sm font-black text-slate-950">
+                  {isOutbound ? <PhoneOutgoing size={14} className="text-indigo-600" /> : <Phone size={14} className="text-slate-400" />}
+                  {isOutbound ? 'Outbound' : 'Inbound'}
+                </span>
+              </div>
+
+              {log.objective && (
+                <div className="pt-1">
+                  <span className="text-sm font-semibold text-slate-500">Objective</span>
+                  <p className="mt-1 rounded-lg border border-indigo-100 bg-indigo-50/50 p-2.5 text-sm font-medium leading-5 text-slate-950">
+                    {log.objective}
+                  </p>
+                </div>
+              )}
 
               {log.lead_score && (
                 <div className="space-y-3 pt-1">

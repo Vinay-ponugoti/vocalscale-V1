@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Clock, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, Flame, PhoneCall, PhoneMissed, Search
+  Clock, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, Flame, PhoneCall, PhoneMissed, PhoneOutgoing, Search
 } from 'lucide-react';
 import type { CallLog } from '../types';
 import { parseISO, isToday, isYesterday } from 'date-fns';
@@ -46,7 +46,6 @@ const LogList: React.FC<LogListProps> = ({
   currentPage,
   totalPages,
   totalItems,
-  pageSize,
   onPageChange
 }) => {
   const { state } = useBusinessSetup();
@@ -111,9 +110,6 @@ const LogList: React.FC<LogListProps> = ({
     }
   };
 
-  const startItem = totalItems === 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
-  const endItem = Math.min(totalItems, (currentPage - 1) * pageSize + logs.length);
-
   if (isLoading && logs.length === 0) {
     return (
       <div className="flex min-h-[420px] flex-col gap-2 overflow-hidden p-3 md:flex-1">
@@ -175,6 +171,7 @@ const LogList: React.FC<LogListProps> = ({
             {logs.map((log) => {
               const isSelected = selectedId === log.id;
               const isUrgent = log.is_urgent || log.status?.includes('Action');
+              const isOutbound = log.direction === 'outbound';
               const statusMeta = getStatusMeta(log.status);
               const StatusIcon = statusMeta.icon;
 
@@ -206,12 +203,14 @@ const LogList: React.FC<LogListProps> = ({
                   <div className="flex items-start gap-2.5 sm:gap-3">
                     <div className={`
                       flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors sm:h-9 sm:w-9
-                      ${isSelected
-                        ? 'border-cyan-100 bg-white text-cyan-700'
-                        : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-cyan-100 group-hover:bg-cyan-50 group-hover:text-cyan-700'
+                      ${isOutbound
+                        ? 'border-indigo-100 bg-indigo-50 text-indigo-600'
+                        : isSelected
+                          ? 'border-cyan-100 bg-white text-cyan-700'
+                          : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-cyan-100 group-hover:bg-cyan-50 group-hover:text-cyan-700'
                       }
                     `}>
-                      <PhoneCall size={18} />
+                      {isOutbound ? <PhoneOutgoing size={18} /> : <PhoneCall size={18} />}
                     </div>
 
                       <div className="min-w-0 flex-1 space-y-1.5">
@@ -225,6 +224,12 @@ const LogList: React.FC<LogListProps> = ({
                       </div>
 
                       <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                        {isOutbound && (
+                          <Badge variant="outline" className="gap-1 border-indigo-100 bg-indigo-50 text-[11px] font-semibold text-indigo-700 shadow-none">
+                            <PhoneOutgoing size={11} />
+                            Outbound
+                          </Badge>
+                        )}
                         {getTypeBadge(log.category)}
                         <Badge variant="outline" className={`gap-1 border text-[11px] font-semibold shadow-none ${statusMeta.className}`}>
                           <StatusIcon size={11} />
@@ -255,38 +260,6 @@ const LogList: React.FC<LogListProps> = ({
         )}
       </div>
 
-      <div className="flex shrink-0 flex-col gap-3 border-t border-slate-200 bg-white px-3 py-3 sm:px-4">
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-xs font-medium text-slate-500">
-            Showing {startItem}-{endItem} of {totalItems}
-          </span>
-          <span className="rounded-md bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
-            {pageSize} per page
-          </span>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-9 rounded-lg text-xs font-semibold"
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-          >
-            <ChevronLeft size={14} className="mr-1.5" />
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-9 rounded-lg text-xs font-semibold"
-            disabled={currentPage === totalPages || totalPages === 0}
-            onClick={() => handlePageChange(currentPage + 1)}
-          >
-            Next
-            <ChevronRight size={14} className="ml-1.5" />
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };

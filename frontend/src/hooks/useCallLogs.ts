@@ -36,6 +36,10 @@ const buildCallLogParams = (filters: CallLogFilters & { customDate?: string }) =
     params.append('category', filters.type);
   }
 
+  if (filters.direction && filters.direction !== 'All') {
+    params.append('direction', filters.direction.toLowerCase());
+  }
+
   if (filters.search) {
     params.append('search', filters.search);
   }
