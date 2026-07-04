@@ -15,6 +15,8 @@ export interface CallLog {
   notes?: string;
   follow_up_required?: boolean;
   handled_by?: string;
+  direction?: 'inbound' | 'outbound' | string;
+  objective?: string;
 }
 
 export interface CallLogFilters {
@@ -22,4 +24,5 @@ export interface CallLogFilters {
   status: string;
   type: string;
   dateRange: string;
+  direction: string;
 }

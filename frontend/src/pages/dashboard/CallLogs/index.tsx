@@ -8,7 +8,7 @@ import { useSearch } from '../../../hooks/useSearch';
 import type { CallLogFilters } from './types';
 import LogList from './components/LogList';
 import LogDetails from './components/LogDetails';
-import { Loader2, ArrowLeft, RefreshCw, XCircle, FileText, Calendar, ChevronRight, Search, Download } from 'lucide-react';
+import { Loader2, ArrowLeft, RefreshCw, XCircle, FileText, Calendar, ChevronRight, Search, Download, PhoneIncoming, PhoneOutgoing } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import { exportCallsToExcel, EXPORT_RANGE_OPTIONS, type ExportRange } from './exportCalls';
@@ -37,7 +37,8 @@ const CallLogsPage = () => {
     search: searchQuery,
     status: 'All',
     type: 'All',
-    dateRange: '7d'
+    dateRange: '7d',
+    direction: 'All'
   });
 
   const [customDate, setCustomDate] = useState<string>('');
@@ -131,7 +132,8 @@ const CallLogsPage = () => {
       search: '',
       status: 'All',
       type: 'All',
-      dateRange: '7d'
+      dateRange: '7d',
+      direction: 'All'
     });
     setCustomDate('');
     setPage(1);
@@ -163,6 +165,24 @@ const CallLogsPage = () => {
 
   const listControls = (
     <div className="space-y-3 border-b border-slate-200 bg-white p-4">
+      {/* Inbound / Outbound tabs */}
+      <div className="grid grid-cols-3 gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+        {(['All', 'Inbound', 'Outbound'] as const).map((dir) => (
+          <button
+            key={dir}
+            onClick={() => handleFilterChange('direction', dir)}
+            className={`flex h-8 items-center justify-center gap-1.5 rounded-md text-xs font-bold transition ${filters.direction === dir
+              ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200'
+              : 'text-slate-500 hover:text-slate-900'
+              }`}
+          >
+            {dir === 'Inbound' && <PhoneIncoming size={13} className={filters.direction === dir ? 'text-cyan-600' : ''} />}
+            {dir === 'Outbound' && <PhoneOutgoing size={13} className={filters.direction === dir ? 'text-indigo-600' : ''} />}
+            {dir}
+          </button>
+        ))}
+      </div>
+
       <div className="relative">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
         <input
