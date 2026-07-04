@@ -5,6 +5,11 @@
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RR0JE1XEQM" nonce="%%VITE_CSP_NONCE%%"></script>
   <script nonce="%%VITE_CSP_NONCE%%">
+    // Only measure real production traffic — localhost and preview
+    // deployments are excluded so dev visits never pollute the data
+    if (location.hostname !== 'vocalscale.com' && location.hostname !== 'www.vocalscale.com') {
+      window['ga-disable-G-RR0JE1XEQM'] = true;
+    }
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
@@ -58,42 +63,6 @@
     content="VocalScale is the AI receptionist that answers every call 24/7, books appointments, and qualifies leads in 50+ languages. Contact us for pricing." />
   <meta property="twitter:image" content="https://vocalscale.com/logo.png" />
   <meta property="twitter:image:alt" content="VocalScale AI Receptionist Dashboard" />
-  <!-- Microsoft Clarity -->
-  <script type="text/javascript" nonce="%%VITE_CSP_NONCE%%">
-    (function (c, l, a, r, i, t, y) {
-      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
-      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
-      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
-    })(window, document, "clarity", "script", "%%VITE_CLARITY_PROJECT_ID%%");
-  </script>
-
-  <!-- Google Analytics 4 (Performance & Dynamic ID) -->
-  <script nonce="%%VITE_CSP_NONCE%%">
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-
-    // Only configure if VITE_GA_TRACKING_ID is set (prevents double tracking if it's the same)
-    const envGaId = '%%VITE_GA_TRACKING_ID%%';
-    if (envGaId && envGaId !== 'G-RR0JE1XEQM' && !envGaId.includes('VITE_GA_TRACKING_ID')) {
-      gtag('config', envGaId);
-    }
-
-    // Optional: Performance monitoring
-    if ('PerformanceObserver' in window) {
-      const perfObserver = new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          if (entry.entryType === 'navigation') {
-            gtag('event', 'timing_complete', {
-              'name_to': entry.name,
-              'value': entry.duration,
-              'event_category': 'SEO'
-            });
-          }
-        }
-      });
-      perfObserver.observe({ entryTypes: ['navigation'] });
-    }
-  </script>
 
   <!-- Website + Sitelinks Search Action Schema -->
   <script type="application/ld+json">
