@@ -9,17 +9,15 @@ export function Pricing() {
   const plans = [
     {
       name: 'Starter',
-      description: 'Perfect for ambitious solo pros. Automated 24/7 AI Receptionist.',
+      description: 'For solo pros & small teams. A 24/7 AI receptionist that answers, books, and never misses a call.',
       features: [
-        '300 AI minutes included',
-        'Additional usage available with custom plans',
-        'In-app & Google Calendar scheduling',
-        'Standard AI voice models',
-        'Email support',
-        'Call history & transcripts',
-        '1 Local phone number',
-        'AI Image Generation',
-        'AI Text Generation'
+        '24/7 AI call answering — never miss a customer',
+        'Books appointments into Google Calendar & Outlook',
+        'Natural AI voices in 7 languages',
+        'Full call transcripts, summaries & recordings',
+        '1 local business number',
+        'Smart call routing & message taking',
+        'Email support'
       ],
       cta: 'Contact Us',
       popular: false,
@@ -28,19 +26,16 @@ export function Pricing() {
     },
     {
       name: 'Professional',
-      description: 'Powerhouse for growing teams. Auto-schedule appointments & scale.',
+      description: 'For growing teams that live on the phone. Capture every lead, book more, and scale support without hiring.',
       features: [
-        '1000 AI minutes included',
-        'Additional usage available with custom plans',
-        'In-app & Google Calendar scheduling',
-        'Premium HD voice models',
-        'Priority 24/7 support',
-        'Custom knowledge base',
+        'Everything in Starter, plus:',
+        'Premium HD voices — ultra-natural & human-like',
+        'Custom knowledge base trained on your business',
         'Up to 5 phone numbers',
-        'Sentiment analysis',
-        'CRM integrations',
-        'AI Image Generation',
-        'AI Text Generation'
+        'Sentiment analysis & automatic lead scoring',
+        'CRM sync — HubSpot, Salesforce, Pipedrive',
+        'Automated SMS follow-up on missed calls',
+        'Priority 24/7 support'
       ],
       cta: 'Contact Us',
       popular: true,
@@ -79,7 +74,7 @@ export function Pricing() {
           </motion.h2>
 
           <p className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed mb-12">
-            Pricing is tailored to your call volume, workflows, and support needs. Contact us for a custom plan built around your business.
+            A full-time receptionist costs <span className="font-bold text-slate-900">$3,000+ a month</span> and still clocks out at 5pm. VocalScale answers every call 24/7 for a fraction of that — with plans built around your call volume, workflows, and support needs.
           </p>
         </div>
 

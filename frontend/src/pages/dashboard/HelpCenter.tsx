@@ -3,10 +3,57 @@ import { Search, Rocket, Receipt, ArrowRight, Ticket, X, CheckCircle2, Info, Pho
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import HelpCategoryCard from '../../components/HelpCategoryCard';
 import FAQItem from '../../components/FAQItem';
+import { SEO } from '../../components/SEO';
+import SchemaMarkup from '../../components/SchemaMarkup';
 import { useToast } from '@/hooks/useToast';
 // FloatingChat removed
 
 const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/landing.mp4";
+
+// Single source of truth for the FAQ — rendered on-page AND emitted as
+// FAQPage structured data, so the visible answers and the schema never drift.
+const FAQS: { question: string; answer: string }[] = [
+  {
+    question: 'How much does VocalScale cost?',
+    answer:
+      'Plans start at $399/month for Starter (750 AI minutes, ~250 calls) and $999/month for Professional (2,500 AI minutes, ~830 calls). Annual billing saves around 20%. Extra minutes are billed at $0.079–$0.089 per minute depending on your plan, and there are no setup fees.',
+  },
+  {
+    question: 'How fast does the AI respond to callers?',
+    answer:
+      'Our AI uses ultra-low-latency processing (around 500ms), so the conversation feels natural and human-like without awkward pauses.',
+  },
+  {
+    question: 'Can I train the AI on my own business data?',
+    answer:
+      'Yes. Upload PDFs or Word docs, or paste your website URL, and the AI learns your pricing, services, hours, and FAQs so it answers caller questions accurately.',
+  },
+  {
+    question: 'Which languages does the AI support?',
+    answer:
+      'Seven languages — English, Spanish, French, German, Italian, Dutch, and Japanese — each answered in a natural, native-sounding voice. Just pick a voice in the matching language and the AI greets and converses in it.',
+  },
+  {
+    question: 'Can the AI transfer calls to a human?',
+    answer:
+      'Yes. Set escalation rules and the AI will warm-transfer the call to a live agent for complex or high-priority requests. If transfers are off, it captures a detailed message and callback number instead.',
+  },
+  {
+    question: 'What happens if I go over my included minutes?',
+    answer:
+      'Additional minutes are billed at $0.079–$0.089 per minute so calls are never dropped. You can enable Auto-Refill in Billing Settings to keep service uninterrupted during busy months.',
+  },
+  {
+    question: 'Can I cancel anytime?',
+    answer:
+      'Yes — there are no long-term contracts. Manage or cancel your subscription anytime from the Billing page, and you keep access until the end of your current cycle.',
+  },
+  {
+    question: 'How long does setup take?',
+    answer:
+      'Most businesses are live in minutes: upload your knowledge base, choose a voice and tone, set your greeting and hours, and connect a phone number. No engineering required.',
+  },
+];
 
 interface Article {
   title: string;
@@ -43,7 +90,23 @@ const VideoPlayer = ({ src }: { src: string }) => {
 
 const HelpCenter = () => {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [query, setQuery] = useState('');
   const { showToast } = useToast();
+
+  const q = query.trim().toLowerCase();
+  const filteredFaqs = q
+    ? FAQS.filter((f) => `${f.question} ${f.answer}`.toLowerCase().includes(q))
+    : FAQS;
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQS.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  };
   
   // Ticket form state
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -212,12 +275,12 @@ const HelpCenter = () => {
             <h4 className="font-black text-slate-900 text-sm mb-4">Pricing Model</h4>
             <div className="space-y-3">
               <div className="flex justify-between items-center text-[13px]">
-                <span className="text-slate-500">Base Minutes</span>
-                <span className="font-bold text-slate-900">Included in Plan</span>
+                <span className="text-slate-500">Included Minutes</span>
+                <span className="font-bold text-slate-900">750 (Starter) · 2,500 (Pro)</span>
               </div>
               <div className="flex justify-between items-center text-[13px]">
                 <span className="text-slate-500">Overage Rate</span>
-                <span className="font-bold text-slate-900">$0.094 / minute</span>
+                <span className="font-bold text-slate-900">$0.079–$0.089 / min</span>
               </div>
               <div className="flex justify-between items-center text-[13px]">
                 <span className="text-slate-500">Billing Cycle</span>
@@ -238,6 +301,12 @@ const HelpCenter = () => {
 
   return (
     <DashboardLayout fullWidth>
+      <SEO
+        title="Help Center & Support — VocalScale AI Receptionist"
+        description="Get help with your VocalScale AI receptionist: setup, call management, pricing, billing, supported languages, and transfers. Answers to common questions plus 24/7 support."
+        canonical="https://vocalscale.com/dashboard/help"
+      />
+      <SchemaMarkup type="FAQPage" schema={faqSchema} />
       <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
 
 
@@ -299,12 +368,24 @@ const HelpCenter = () => {
               </div>
               <input
                 type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Search help articles and FAQs"
                 className="w-full py-5 pl-14 pr-36 rounded-2xl bg-slate-50 border border-slate-100 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 focus:bg-white shadow-sm transition-all"
-                placeholder="Search for answers (e.g. 'billing', 'voice setup')..."
+                placeholder="Search for answers (e.g. 'pricing', 'languages', 'transfer')..."
               />
-              <button className="absolute right-2.5 top-2.5 bottom-2.5 bg-indigo-600 hover:bg-indigo-700 text-white px-8 rounded-xl font-black text-[13px] tracking-tight transition-all shadow-sm hover:shadow-indigo-200 active:scale-[0.98]">
-                Search
-              </button>
+              {query ? (
+                <button
+                  onClick={() => setQuery('')}
+                  className="absolute right-2.5 top-2.5 bottom-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 px-6 rounded-xl font-black text-[13px] tracking-tight transition-all active:scale-[0.98]"
+                >
+                  Clear
+                </button>
+              ) : (
+                <div className="absolute right-2.5 top-2.5 bottom-2.5 bg-indigo-600 text-white px-8 rounded-xl font-black text-[13px] tracking-tight flex items-center shadow-sm">
+                  Search
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -361,23 +442,23 @@ const HelpCenter = () => {
               </div>
 
               <div className="space-y-1">
-                <FAQItem
-                  defaultOpen={true}
-                  question="How fast does the AI respond to callers?"
-                  answer="Our AI features ultra-low latency processing (~500ms), ensuring the conversation feels natural and human-like without awkward pauses."
-                />
-                <FAQItem
-                  question="Can I train the AI on my own business data?"
-                  answer="Yes! You can upload PDFs, docx, or paste your website URL. The AI will learn your pricing, services, and FAQs to answer caller queries accurately."
-                />
-                <FAQItem
-                  question="Does it support multiple languages?"
-                  answer="Absolutely. We support over 30+ languages with automatic language detection, allowing your AI to switch seamlessly between English, Spanish, French, and more."
-                />
-                <FAQItem
-                  question="Can the AI transfer calls to a human?"
-                  answer="Yes. You can define specific 'Escalation Rules' where the AI will automatically transfer the call to a live agent if it encounters a complex request."
-                />
+                {filteredFaqs.length > 0 ? (
+                  filteredFaqs.map((faq, i) => (
+                    <FAQItem
+                      key={faq.question}
+                      defaultOpen={i === 0}
+                      question={faq.question}
+                      answer={faq.answer}
+                    />
+                  ))
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
+                    <p className="text-sm font-semibold text-slate-700">No results for “{query}”.</p>
+                    <p className="mt-1 text-[13px] font-medium text-slate-500">
+                      Try another term, or submit a ticket below and we’ll help you out.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Check, Zap, Star, Shield, ArrowLeft, Crown, Loader2, AlertCircle, X } from 'lucide-react';
+import { Check, Zap, Star, Shield, ArrowLeft, Loader2, AlertCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import DashboardLayout from '../../layouts/DashboardLayout';
@@ -24,25 +24,6 @@ interface Subscription {
   plan_name?: string;
   stripe_price_id?: string;
   next_billing?: string;
-}
-
-interface PlanDesignInfo {
-  icon: React.FC<{ className?: string }>;
-  popular: boolean;
-  color: string;
-}
-
-interface GroupedPlan extends Plan {
-  icon?: React.FC<{ className?: string }>;
-  popular?: boolean;
-  color?: string;
-  monthlyPrice: number;
-  annualPrice: number;
-  monthlyPriceId: string;
-  annualPriceId: string;
-  current: boolean;
-  originalMonthlyPrice?: number;
-  currentInterval?: string;
 }
 
 const Plans: React.FC = () => {
@@ -114,155 +95,91 @@ const Plans: React.FC = () => {
     }
   };
 
-  const planDesignInfo: Record<string, PlanDesignInfo> = {
-    'Starter': { icon: Zap, popular: false, color: 'blue' },
-    'Professional': { icon: Star, popular: true, color: 'indigo' },
-    'Elite': { icon: Crown, popular: false, color: 'violet' },
-  };
-
+  // The pricing shown here is UI-owned so it is always correct regardless of
+  // what the billing API returns. The API is consulted only for the live
+  // Stripe price id (checkout) and to detect the user's current plan.
   const getDisplayPlans = () => {
-    if (plansData.length > 0) {
-      const groupedPlans: Record<string, GroupedPlan> = {};
+    const currentPlanName = subscription?.plan_name || '';
 
-      plansData.forEach(plan => {
-        if (!groupedPlans[plan.name]) {
-          groupedPlans[plan.name] = {
-            ...plan,
-            ...planDesignInfo[plan.name] || { icon: Star, psychology: 'Custom' },
-            description: plan.description || getDefaultDescription(plan.name),
-            features: plan.features || getDefaultFeatures(plan.name),
-            monthlyPrice: 0,
-            annualPrice: 0,
-            monthlyPriceId: '',
-            annualPriceId: '',
-            current: false,
-          };
-        }
+    const priceIdFor = (name: string, fallback: string) => {
+      const match = plansData.find(
+        (p) => p.name === name && p.interval === (isAnnual ? 'year' : 'month')
+      );
+      return match?.stripe_price_id || fallback;
+    };
 
-        if (plan.interval === 'month') {
-          groupedPlans[plan.name].monthlyPrice = plan.price_amount / 100;
-          groupedPlans[plan.name].monthlyPriceId = plan.stripe_price_id;
-          groupedPlans[plan.name].originalMonthlyPrice = plan.name === 'Starter' ? 99 : plan.name === 'Professional' ? 169 : 0;
-        } else if (plan.interval === 'year') {
-          groupedPlans[plan.name].annualPrice = (plan.price_amount / 100) / 12;
-          groupedPlans[plan.name].annualPriceId = plan.stripe_price_id;
-        }
-
-        if (plan.id === subscription?.plan || plan.stripe_price_id === subscription?.stripe_price_id) {
-          groupedPlans[plan.name].current = true;
-          groupedPlans[plan.name].currentInterval = plan.interval;
-        }
-      });
-
-      const currentPlanName = subscription?.plan_name || '';
-
-      return Object.values(groupedPlans)
-        .filter(plan => {
-          // Remove Elite always
-          if (plan.name === 'Elite') return false;
-
-          // If on Starter, only show Professional (as upgrade)
-          if (currentPlanName === 'Starter') {
-            return plan.name === 'Professional';
-          }
-
-          // If on Professional, show nothing (we'll handle empty state in render)
-          if (currentPlanName === 'Professional') {
-            return false;
-          }
-
-          // Otherwise (no subscription/trial), show both
-          return true;
-        })
-        .map(plan => ({
-          ...plan,
-          cta: plan.current ? 'Current Plan' : `Upgrade to ${plan.name}`,
-          stripe_price_id: isAnnual ? (plan.annualPriceId || plan.monthlyPriceId) : (plan.monthlyPriceId || plan.annualPriceId),
-          monthlyPrice: plan.monthlyPrice || plan.annualPrice * 1.2,
-          annualPrice: plan.annualPrice || plan.monthlyPrice * 0.8,
-          contactUs: false
-        }));
-    }
-
-    return [
+    const catalog = [
       {
         name: 'Starter',
-        description: 'Perfect for ambitious solo pros. Automated 24/7 AI Receptionist.',
-        monthlyPrice: 69,
-        originalMonthlyPrice: 99,
-        annualPrice: 59,
-        features: [
-          '300 AI minutes included',
-          'Extra minutes: $0.094/min',
-          'In-app & Google Calendar scheduling',
-          'Standard AI voice models',
-          'Email support',
-          'Call history & transcripts',
-          '1 Local phone number',
-        ],
-        cta: 'Upgrade to Starter',
-        current: false,
+        description: 'For solo pros & small teams. A 24/7 AI receptionist that never misses a call.',
+        monthlyPrice: 399,
+        originalMonthlyPrice: 499,
+        annualPrice: 319,
+        features: getDefaultFeatures('Starter'),
         icon: Zap,
         popular: false,
         color: 'blue',
-        stripe_price_id: 'price_starter',
-        promoText: 'Grab Early! First 3 months same price if you subscribe now.'
+        stripe_price_id: priceIdFor('Starter', 'price_starter'),
+        promoText: 'Replaces a $3,000/mo receptionist — answers every call, day or night.',
+        contactUs: false,
       },
       {
         name: 'Professional',
-        description: 'Powerhouse for growing teams. Auto-schedule appointments & scale.',
-        monthlyPrice: 118,
-        originalMonthlyPrice: 169,
-        annualPrice: 99,
-        features: [
-          '1000 AI minutes included',
-          'Extra minutes: $0.094/min',
-          'In-app & Google Calendar scheduling',
-          'Premium HD voice models',
-          'Priority 24/7 support',
-          'Custom knowledge base',
-          'Up to 5 phone numbers',
-          'Sentiment analysis',
-          'CRM integrations'
-        ],
-        cta: 'Upgrade to Professional',
-        current: false,
+        description: 'For growing teams. Capture every lead, book more, and scale without hiring.',
+        monthlyPrice: 999,
+        originalMonthlyPrice: 1299,
+        annualPrice: 799,
+        features: getDefaultFeatures('Professional'),
         icon: Star,
         popular: true,
         color: 'indigo',
-        stripe_price_id: 'price_pro',
-        promoText: 'Grab Early! First 3 months same price if you subscribe now.'
-      }
+        stripe_price_id: priceIdFor('Professional', 'price_pro'),
+        promoText: 'Most popular for multi-location & high-volume teams.',
+        contactUs: false,
+      },
     ];
-  };
 
-  const getDefaultDescription = (name: string) => {
-    if (name === 'Starter') return 'Perfect for ambitious solo pros. Automated 24/7 AI Receptionist.';
-    if (name === 'Professional') return 'Powerhouse for growing teams. Auto-schedule appointments & scale.';
-    if (name === 'Elite') return 'Maximum power for high-volume businesses and agencies.';
-    return 'Scale your business with the right AI capabilities.';
+    return catalog
+      .filter((plan) => {
+        // On Starter → only show Professional as the upgrade.
+        if (currentPlanName === 'Starter') return plan.name === 'Professional';
+        // On Professional → nothing to upgrade (render shows the active state).
+        if (currentPlanName === 'Professional') return false;
+        // No subscription / trial → show both.
+        return true;
+      })
+      .map((plan) => {
+        const current = plan.name === currentPlanName;
+        return {
+          ...plan,
+          current,
+          cta: current ? 'Current Plan' : `Upgrade to ${plan.name}`,
+        };
+      });
   };
 
   const getDefaultFeatures = (name: string) => {
     if (name === 'Starter') return [
-      '300 AI minutes included',
-      'Extra minutes: $0.094/min',
-      'In-app & Google Calendar scheduling',
-      'Standard AI voice models',
-      'Email support',
-      'Call history & transcripts',
-      '1 Local phone number'
+      '750 AI minutes included (~250 calls)',
+      'Extra minutes: $0.089/min',
+      '24/7 call answering & smart routing',
+      'Appointment booking — Google Calendar & Outlook',
+      'Natural AI voices in 7 languages',
+      'Call transcripts, summaries & recordings',
+      '1 local phone number',
+      'Email support'
     ];
     if (name === 'Professional') return [
-      '1000 AI minutes included',
-      'Extra minutes: $0.094/min',
-      'In-app & Google Calendar scheduling',
-      'Premium HD voice models',
-      'Priority 24/7 support',
-      'Custom knowledge base',
+      'Everything in Starter, plus:',
+      '2,500 AI minutes included (~830 calls)',
+      'Extra minutes: $0.079/min',
+      'Premium HD voices — ultra-natural & low-latency',
+      'Custom knowledge base trained on your business',
       'Up to 5 phone numbers',
-      'Sentiment analysis',
-      'CRM integrations'
+      'Sentiment analysis & lead scoring',
+      'CRM integrations — HubSpot, Salesforce, Pipedrive',
+      'Automated SMS follow-up on missed calls',
+      'Priority 24/7 support'
     ];
     if (name === 'Elite') return [
       'Custom AI minutes',
@@ -383,13 +300,13 @@ const Plans: React.FC = () => {
 
                       <div className="mb-5">
                         <div className="flex flex-col gap-1">
-                          {!isAnnual && (
+                          {!isAnnual && !!plan.originalMonthlyPrice && plan.originalMonthlyPrice > plan.monthlyPrice && (
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-bold text-slate-400 line-through decoration-slate-400/50 decoration-2">
                                 ${plan.originalMonthlyPrice}
                               </span>
                               <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase rounded border border-emerald-200">
-                                30% OFF
+                                {Math.round((1 - plan.monthlyPrice / plan.originalMonthlyPrice) * 100)}% OFF
                               </span>
                             </div>
                           )}

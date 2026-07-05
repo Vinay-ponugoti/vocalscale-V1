@@ -184,7 +184,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                   <span className="font-bold text-charcoal-light">Est. Cost</span>
                   <span className="font-black text-charcoal">
                     {usage?.overage_minutes && usage.overage_minutes > 0
-                      ? `$${((usage.overage_minutes) * 0.10).toFixed(2)}`
+                      ? `$${((usage.overage_minutes) * 0.089).toFixed(2)}`
                       : '$0.00'}
                   </span>
                 </div>
