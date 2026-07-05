@@ -194,12 +194,12 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                   Voice catalog
                 </div>
                 <p className="mt-1 text-xs font-medium text-slate-500">
-                  Aura-2 voices filtered by the call language.
+                  Voices filtered by the call language.
                 </p>
               </div>
               <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
                 <ShieldCheck className="h-4 w-4" />
-                Deepgram Aura-2
+                Premium voices
               </div>
             </div>
 
@@ -339,8 +339,8 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
 
             <div className="mt-5 space-y-2 text-sm">
               <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                <span className="font-semibold text-slate-500">Model</span>
-                <span className="truncate font-mono text-xs font-semibold text-slate-800">{selectedVoice?.provider_voice_id || 'Unassigned'}</span>
+                <span className="font-semibold text-slate-500">Accent</span>
+                <span className="truncate text-xs font-semibold text-slate-800">{selectedVoice ? (selectedVoice.accent || describeGender(selectedVoice.gender)) : 'Unassigned'}</span>
               </div>
               <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
                 <span className="font-semibold text-slate-500">Speed</span>

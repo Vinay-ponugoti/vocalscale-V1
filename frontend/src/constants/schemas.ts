@@ -102,7 +102,7 @@ export const productSchema = {
         "24/7 AI Receptionist & Live Call Answering",
         "AI Appointment Scheduling with Google Calendar & Outlook",
         "Smart Call Routing and Warm Transfer",
-        "Natural Language Conversations (Deepgram Aura-2)",
+        "Natural Language Conversations with Human-like AI Voices",
         "50+ Languages & Multi-Accent Support",
         "CRM Integration (HubSpot, Salesforce, Pipedrive)",
         "Real-time Analytics & Sentiment Analysis",
