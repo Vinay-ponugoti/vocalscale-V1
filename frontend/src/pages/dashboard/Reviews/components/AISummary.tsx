@@ -1,4 +1,4 @@
-import { Sparkles, TrendingUp, AlertTriangle } from 'lucide-react';
+import { FileText, TrendingUp, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '../../../../components/ui/Card';
 import type { AISummaryData } from '../../../../types/review';
 
@@ -28,11 +28,11 @@ export const AISummary = ({ summary, loading }: AISummaryProps) => {
         <div className="relative z-10 mb-6 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50 text-cyan-700">
-              <Sparkles className="h-5 w-5" />
+              <FileText className="h-5 w-5" />
             </div>
             <div className="flex items-center gap-3">
               <h2 className="text-xl font-black tracking-tight text-slate-950">
-                AI Review Summary
+                Review Summary
               </h2>
             </div>
           </div>

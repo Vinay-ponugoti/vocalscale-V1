@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Search, CheckCircle, Sparkles, Reply, Layers, MoreHorizontal, Filter, Lock } from 'lucide-react';
+import { Search, CheckCircle, FileText, Reply, Layers, MoreHorizontal, Filter, Lock } from 'lucide-react';
 import { StarRating } from '../../../../components/ui/StarRating';
 import {
   Card,
@@ -166,8 +166,8 @@ export const RecentReviews = ({ reviews, loading, isPaid }: RecentReviewsProps) 
                   ) : isPaid ? (
                     <div className="flex items-center gap-2">
                       <Button size="sm" className="flex h-9 items-center gap-2 rounded-md bg-cyan-700 px-4 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-cyan-800">
-                        <Sparkles className="w-4 h-4" />
-                        {review.critical ? 'Draft Apology' : 'AI Smart Reply'}
+                        <FileText className="w-4 h-4" />
+                        {review.critical ? 'Draft Apology' : 'Smart Reply'}
                       </Button>
                       <Button variant="outline" size="sm" className="flex h-9 items-center gap-2 rounded-md border-slate-200 px-4 text-[11px] font-bold uppercase tracking-wider text-slate-600">
                         <Reply className="w-4 h-4" />

@@ -8,10 +8,14 @@ interface UsageData {
   avg_duration_seconds?: number;
   used_minutes?: number;
   total_minutes?: number;
+  minutes_used?: number;
+  minutes_limit?: number;
+  usage_percent?: number;
   success_rate?: number;
   overage_minutes?: number;
   estimated_cost?: number;
   total_calls?: number;
+  calls_count?: number;
 }
 
 interface CallItem {
@@ -29,6 +33,15 @@ interface UsageBreakdownProps {
 }
 
 const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
+  const usedMinutes = usage?.used_minutes ?? usage?.minutes_used ?? 0;
+  const totalMinutes = usage?.total_minutes ?? usage?.minutes_limit ?? 0;
+  const usagePercent = totalMinutes > 0
+    ? Math.min(100, Math.max(0, usage?.usage_percent ?? ((usedMinutes / totalMinutes) * 100)))
+    : 0;
+  const overageMinutes = usage?.overage_minutes ?? Math.max(0, usedMinutes - totalMinutes);
+  const estimatedCost = usage?.estimated_cost ?? (overageMinutes * 0.089);
+  const totalCalls = usage?.total_calls ?? usage?.calls_count ?? 0;
+  const successRate = usage?.success_rate ?? (totalCalls > 0 ? 0 : 100);
   const avgDurationFormatted = usage?.avg_duration_seconds
     ? `${Math.floor(usage.avg_duration_seconds / 60)}m ${Math.round(usage.avg_duration_seconds % 60)}s`
     : '0s';
@@ -115,7 +128,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                       <AlertCircle size={10} />
                     </div>
                   </div>
-                  <p className="text-lg font-black text-charcoal tracking-tight">{usage?.success_rate || 100}%</p>
+                  <p className="text-lg font-black text-charcoal tracking-tight">{successRate.toFixed(1)}%</p>
                 </div>
               </CardContent>
             </Card>
@@ -136,7 +149,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                     </div>
                   </div>
                   <p className="text-lg font-black text-charcoal tracking-tight">
-                    {usage?.overage_minutes && usage.overage_minutes > 0 ? `${usage.overage_minutes.toFixed(1)}m` : '0m'}
+                    {overageMinutes > 0 ? `${overageMinutes.toFixed(2)}m` : '0m'}
                   </p>
                 </div>
               </CardContent>
@@ -150,7 +163,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                 <div>
                   <p className="text-[9px] font-black text-charcoal-light uppercase tracking-widest mb-1">Total Calls</p>
                   <p className="text-lg font-black text-charcoal tracking-tight">
-                    {usage?.total_calls || 0}
+                    {totalCalls}
                   </p>
                 </div>
               </CardContent>
@@ -166,16 +179,16 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                   <div className="flex justify-between text-[11px] mb-2">
                     <span className="font-bold text-charcoal-medium">Minutes Usage</span>
                     <span className="text-charcoal font-black">
-                      {usage?.used_minutes}m
+                      {usedMinutes.toFixed(2)}m
                       <span className="text-[9px] text-charcoal-light font-bold ml-1">
-                        ({Math.round((usage?.used_minutes / (usage?.total_minutes || 1)) * 100)}%)
+                        ({Math.round(usagePercent)}%)
                       </span>
                     </span>
                   </div>
                   <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-blue-600 rounded-full transition-all duration-1000"
-                      style={{ width: `${Math.min(100, (usage?.used_minutes / (usage?.total_minutes || 1)) * 100)}%` }}
+                      style={{ width: `${usagePercent}%` }}
                     ></div>
                   </div>
                 </div>
@@ -183,8 +196,8 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                 <div className="pt-4 border-t border-slate-100 flex justify-between items-center text-[10px]">
                   <span className="font-bold text-charcoal-light">Est. Cost</span>
                   <span className="font-black text-charcoal">
-                    {usage?.overage_minutes && usage.overage_minutes > 0
-                      ? `$${((usage.overage_minutes) * 0.089).toFixed(2)}`
+                    {overageMinutes > 0
+                      ? `$${estimatedCost.toFixed(2)}`
                       : '$0.00'}
                   </span>
                 </div>

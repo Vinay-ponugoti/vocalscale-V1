@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Save, Volume2, Bell, AlertTriangle, CheckCircle, ChevronRight, Zap, Link2
+  Save, Volume2, Bell, AlertTriangle, CheckCircle, ChevronRight, CalendarCheck, Link2
 } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { api } from '../../../lib/api';
@@ -263,7 +263,7 @@ const Settings = () => {
 
   const sections = [
     { id: 'voice', label: 'AI Voice', icon: Volume2, description: 'Sound & Persona' },
-    { id: 'booking', label: 'Booking', icon: Zap, description: 'Rules & Requirements' },
+    { id: 'booking', label: 'Booking', icon: CalendarCheck, description: 'Rules & Requirements' },
     { id: 'notifications', label: 'Alerts', icon: Bell, description: 'System Notifications' },
     { id: 'integrations', label: 'Integrations', icon: Link2, description: 'Connected Apps' },
   ];

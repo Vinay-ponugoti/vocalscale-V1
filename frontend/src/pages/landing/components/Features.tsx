@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { BrainCircuit, Activity, ShieldCheck, Timer, Languages, Smartphone, Sparkles, Play, Pause, PhoneCall, Bot, MessageSquare, Headphones } from 'lucide-react';
+import { Activity, BookOpenCheck, CalendarClock, FileText, Headphones, Languages, MessageSquare, Pause, PhoneCall, Play, ShieldCheck, Smartphone } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -125,50 +125,50 @@ function AiReceptionistVisual() {
 export function Features() {
   const features = [
     {
-      icon: BrainCircuit,
-      title: 'Advanced AI Receptionist',
-      description: 'Our AI receptionist uses next-generation neural voice technology to provide human-like conversations with 40+ high-fidelity voices. It handles calls with ultra-low latency, ensuring a natural flow that mimics human interaction perfectly. The system is capable of understanding complex queries, managing interruptions, and maintaining context throughout the conversation.',
+      icon: Headphones,
+      title: 'Voice options you can actually compare',
+      description: 'Preview voices before launch and choose the one that fits your callers. The point is not theatrical “AI magic”; it is a receptionist that is clear, calm, and easy to understand.',
       className: 'md:col-span-8 md:row-span-2 bg-white',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800',
       content: <AiReceptionistVisual />
     },
     {
-      icon: Timer,
-      title: 'Smart Scheduling & Calendar Sync',
-      description: 'Automate your entire booking process with intelligent calendar integration. Our system syncs in real-time with Google Calendar, Outlook, and other major platforms to prevent double bookings. It can negotiate times, handle rescheduling requests, and send automated confirmations to both parties.',
+      icon: CalendarClock,
+      title: 'Scheduling that respects your rules',
+      description: 'Connect your calendar, define services and availability, then let callers book without your team repeating the same intake steps all day.',
       className: 'md:col-span-4 md:row-span-1 bg-white',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800',
     },
     {
       icon: Activity,
-      title: 'Deep Analytics & Insights',
-      description: 'Gain valuable business intelligence from every call. Our analytics engine tracks call volume, duration, peak times, and customer sentiment. Get detailed reports on common customer queries, resolution rates, and agent performance metrics to optimize your operations.',
+      title: 'Call logs people can review',
+      description: 'See who called, what they needed, how long the call lasted, and whether someone should follow up.',
       className: 'md:col-span-4 md:row-span-1 bg-white',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800',
     },
     {
       icon: Languages,
-      title: 'Global Language Support',
-      description: 'Break down language barriers with support for over 50 languages and dialects. Our AI automatically detects the caller\'s language and switches instantly to provide a native-like experience. Perfect for businesses serving diverse communities or operating internationally.',
+      title: 'Language support for real neighborhoods',
+      description: 'Help callers in multiple languages without making them wait for the one staff member who can translate.',
       className: 'md:col-span-4 md:row-span-2 bg-white',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800',
     },
     {
       icon: ShieldCheck,
-      title: 'Enterprise-Grade Security',
-      description: 'Rest easy knowing your data is protected by bank-level security. We are fully PCI DSS compliant and utilize end-to-end encryption for all calls and data storage. Our infrastructure includes automated backups, role-based access control, and comprehensive audit logs.',
+      title: 'Controls for sensitive calls',
+      description: 'Keep call records, transcripts, and routing behavior organized so owners and managers can review what happened.',
       className: 'md:col-span-4 md:row-span-2 bg-white',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800',
     },
     {
       icon: Smartphone,
-      title: 'Mobile Control Center',
-      description: 'Take full control of your AI agent from anywhere. Our mobile-responsive dashboard allows you to monitor live calls, review transcripts, update scripts, and manage settings on the go. Receive instant notifications for urgent matters or missed opportunities.',
+      title: 'Manage it from the dashboard',
+      description: 'Review transcripts, adjust settings, update business information, and keep the phone workflow current from one place.',
       className: 'md:col-span-4 md:row-span-2 bg-white',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800',
@@ -177,30 +177,30 @@ export function Features() {
 
   const additionalFeatures = [
     {
-      icon: Bot,
-      title: 'Custom Knowledge Base',
-      description: 'Train your AI on your specific business data. Upload FAQs, pricing sheets, and policy documents to create a knowledgeable agent that represents your brand accurately.',
+      icon: BookOpenCheck,
+      title: 'Business knowledge',
+      description: 'Add FAQs, service details, policies, and pricing notes so callers get answers that match your business.',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800'
     },
     {
       icon: PhoneCall,
       title: 'Call Transfer & Routing',
-      description: 'Intelligent routing ensures calls reach the right department. The AI can warm transfer calls to human agents when complex issues arise or specific expertise is needed.',
+      description: 'Route urgent or high-value calls to a person, with enough context that the handoff does not feel cold.',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800'
     },
     {
       icon: MessageSquare,
       title: 'SMS Follow-up',
-      description: 'Automatically send text messages after calls with booking confirmations, links to resources, or satisfaction surveys to keep customers engaged.',
+      description: 'Send confirmations, links, or next steps after a call so the conversation does not disappear into memory.',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800'
     },
     {
-      icon: Headphones,
+      icon: FileText,
       title: 'Call Recording & Transcription',
-      description: 'Every call is recorded and transcribed in real-time with speaker diarization. Searchable transcripts make it easy to review conversations and extract key information.',
+      description: 'Searchable records make it easier to check details, coach staff, and follow up with the right caller.',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800'
     }
@@ -208,30 +208,26 @@ export function Features() {
 
   return (
     <section id="features" className="py-16 md:py-32 px-6 md:px-8 relative overflow-hidden bg-transparent">
-      {/* Background elements */}
-      <div className="absolute inset-0 z-0 bg-grid-slate-900/[0.03] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
-
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16 md:mb-32">
           <div
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8 shadow-sm"
           >
-            <Sparkles className="h-4 w-4 text-blue-600" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">Capabilities</span>
+            <FileText className="h-4 w-4 text-slate-700" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">What it handles</span>
           </div>
 
           <h2
-            className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
+            className="text-4xl sm:text-5xl md:text-7xl font-black tracking-normal text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
           >
-            Everything you need <br />
-            <span className="text-slate-900 italic tracking-tight">to scale.</span>
+            Practical tools for <br />
+            busy phone teams.
           </h2>
 
           <p
             className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed"
           >
-            We've combined state-of-the-art Voice AI with business-grade tools to help you provide world-class service, 24/7.
-            Our comprehensive platform includes everything from intelligent call routing to detailed analytics, designed to help your business grow.
+            The interface stays close to the work: answer calls, book appointments, collect details, route urgent issues, and leave a record your team can trust.
           </p>
         </div>
 
@@ -240,7 +236,7 @@ export function Features() {
             <div
               key={index}
               className={cn(
-                "group relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-6 md:p-8 lg:p-10 transition-all duration-500 hover:border-slate-300 hover:shadow-2xl hover:shadow-slate-200/50",
+                "group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 md:p-8 lg:p-10 transition-all duration-300 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-200/50",
                 feature.className
               )}
             >
@@ -259,7 +255,7 @@ export function Features() {
                 )}
 
                 <div className="mt-auto">
-                  <h3 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900 mb-3 md:mb-4">
+                  <h3 className="text-xl md:text-2xl font-bold tracking-normal text-slate-900 mb-3 md:mb-4">
                     {feature.title}
                   </h3>
                   <p className="text-slate-600 font-medium text-sm md:text-base leading-relaxed group-hover:text-slate-900 transition-colors mt-0">
@@ -268,8 +264,6 @@ export function Features() {
                 </div>
               </div>
 
-              {/* Hover highlight effect */}
-              <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.03),transparent_80%)]" />
             </div>
           ))}
         </div>

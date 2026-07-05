@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, Clock, MessageSquare, ChevronRight, Sparkles } from 'lucide-react';
+import { Phone, Clock, FileText, MessageSquare, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Badge } from '../ui/Badge';
@@ -50,14 +50,14 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
     .slice(0, 4);
 
   return (
-    <Card className="rounded-2xl border-0 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.08)] h-full min-w-0 flex flex-col hover:border-transparent hover:shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
+    <Card className="flex h-full min-w-0 flex-col rounded-lg border border-slate-200 bg-white shadow-sm hover:border-slate-300 hover:shadow-sm">
       <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 pb-4">
         <div className="min-w-0 space-y-1">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 shrink-0 rounded-xl bg-blue-electric/10 flex items-center justify-center">
               <MessageSquare className="w-4 h-4 text-blue-electric" />
             </div>
-            <CardTitle className="min-w-0 truncate text-base font-black text-charcoal tracking-tight uppercase">Recent Activity</CardTitle>
+            <CardTitle className="min-w-0 truncate text-base font-black text-charcoal uppercase">Recent Activity</CardTitle>
           </div>
           <p className="truncate pl-10 text-[11px] font-bold text-charcoal-light uppercase tracking-widest">Latest customer interactions</p>
         </div>
@@ -75,7 +75,7 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
       <CardContent className="p-0 flex-1">
         {calls.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center p-12 text-center">
-            <div className="w-16 h-16 bg-white-light rounded-2xl flex items-center justify-center mb-4">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-white-light">
               <Phone className="w-8 h-8 text-charcoal-light" />
             </div>
             <p className="text-sm font-black text-charcoal uppercase tracking-tight">No calls recorded</p>
@@ -93,7 +93,7 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
               >
                 <div className="flex items-start gap-4">
                   <div className="relative shrink-0">
-                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-white-light to-white-soft flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-500">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
                       <span className="text-sm font-black text-charcoal-medium">
                         {(call.caller_name || "U").charAt(0).toUpperCase()}
                       </span>
@@ -108,7 +108,7 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
 
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex min-w-0 items-center justify-between gap-2">
-                      <h4 className="min-w-0 truncate text-sm font-black text-charcoal tracking-tight">
+                      <h4 className="min-w-0 truncate text-sm font-black text-charcoal">
                         {call.caller_name || "Unknown Caller"}
                       </h4>
                       <Badge
@@ -125,14 +125,14 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
                         {formatTime(call.created_at)}
                       </div>
                       <span className="hidden sm:block w-1 h-1 rounded-full bg-charcoal-light"></span>
-                      <div className="flex min-w-0 items-center gap-1.5 text-[10px] font-bold text-blue-electric uppercase tracking-widest">
-                        <Sparkles className="w-3 h-3" />
-                        <span className="truncate">AI Summarized</span>
+                      <div className="flex min-w-0 items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        <FileText className="w-3 h-3" />
+                        <span className="truncate">Call Summary</span>
                       </div>
                     </div>
 
                     <p className="text-[12px] text-charcoal-light font-medium leading-relaxed line-clamp-2 group-hover:text-charcoal-medium transition-colors">
-                      {call.summary || call.transcript_snippet || "AI is processing this call transcript..."}
+                      {call.summary || call.transcript_snippet || "Transcript is being prepared..."}
                     </p>
                   </div>
 

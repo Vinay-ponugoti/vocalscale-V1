@@ -361,61 +361,61 @@ const FullScreenAppointments: React.FC = () => {
 
     if (appt.status === 'Canceled') {
       return {
-        bg: 'bg-slate-400/90',
-        hover: 'hover:bg-slate-500',
-        border: 'border-slate-500/50',
-        text: 'text-white',
+        bg: 'bg-slate-100',
+        hover: 'hover:bg-slate-200',
+        border: 'border-slate-400',
+        text: 'text-slate-500',
         dot: 'bg-slate-500'
       };
     }
 
-    // Status-based colors
+    // Google Calendar-style status colors: soft fill, strong left rule, dark text.
     if (appt.status === 'Pending') {
       return {
-        bg: isNight ? 'bg-amber-600/95' : 'bg-amber-500/90',
-        hover: 'hover:bg-amber-600',
-        border: 'border-amber-700/30',
-        text: 'text-white',
+        bg: isNight ? 'bg-amber-100' : 'bg-amber-50',
+        hover: 'hover:bg-amber-100',
+        border: 'border-amber-500',
+        text: 'text-amber-950',
         dot: 'bg-amber-500'
       };
     }
 
     if (appt.status === 'Scheduled' || appt.status === 'Confirmed') {
       return {
-        bg: isNight ? 'bg-cyan-800/95' : 'bg-cyan-600/95',
-        hover: 'hover:bg-cyan-700',
-        border: 'border-cyan-900/30',
-        text: 'text-white',
-        dot: 'bg-cyan-600'
+        bg: isNight ? 'bg-blue-100' : 'bg-blue-50',
+        hover: 'hover:bg-blue-100',
+        border: 'border-blue-600',
+        text: 'text-blue-950',
+        dot: 'bg-blue-600'
       };
     }
 
     // Type-based fallback colors
     if (appt.type === 'Strategy') {
       return {
-        bg: isNight ? 'bg-sky-800/95' : 'bg-sky-600/95',
-        hover: 'hover:bg-sky-700',
-        border: 'border-sky-900/30',
-        text: 'text-white',
-        dot: 'bg-sky-600'
+        bg: isNight ? 'bg-violet-100' : 'bg-violet-50',
+        hover: 'hover:bg-violet-100',
+        border: 'border-violet-600',
+        text: 'text-violet-950',
+        dot: 'bg-violet-600'
       };
     }
     if (appt.type === 'Consultation') {
       return {
-        bg: isNight ? 'bg-emerald-700/95' : 'bg-emerald-500/90',
-        hover: 'hover:bg-emerald-600',
-        border: 'border-emerald-600/30',
-        text: 'text-white',
-        dot: 'bg-emerald-500'
+        bg: isNight ? 'bg-emerald-100' : 'bg-emerald-50',
+        hover: 'hover:bg-emerald-100',
+        border: 'border-emerald-600',
+        text: 'text-emerald-950',
+        dot: 'bg-emerald-600'
       };
     }
 
     // Default fallback
     return {
-      bg: isNight ? 'bg-blue-700/95' : 'bg-blue-600/90',
-      hover: 'hover:bg-blue-700',
-      border: 'border-blue-800/30',
-      text: 'text-white',
+      bg: isNight ? 'bg-blue-100' : 'bg-blue-50',
+      hover: 'hover:bg-blue-100',
+      border: 'border-blue-600',
+      text: 'text-blue-950',
       dot: 'bg-blue-600'
     };
   };
@@ -798,13 +798,12 @@ const FullScreenAppointments: React.FC = () => {
                         onDragStart={(e) => handleDragStart(e, appt)}
                         onDragEnd={handleDragEnd}
                         className={`absolute ${colors.bg} ${colors.hover} ${colors.text} 
-                        rounded-xl md:rounded-xl shadow-md cursor-grab active:cursor-grabbing 
-                        transition-all duration-300 group overflow-hidden border-l-[4px] md:border-l-[4px] ${colors.border}
-                        backdrop-blur-sm
-                        hover:shadow-2xl hover:z-30 hover:scale-[1.02] hover:-translate-y-0.5
-                        ${isSelected ? `ring-2 ring-offset-2 ring-${DS.electric} z-40 scale-[1.04] shadow-2xl translate-z-10` : 'z-20'}
+                        rounded-md shadow-sm cursor-grab active:cursor-grabbing 
+                        transition-colors duration-150 group overflow-hidden border border-l-[4px] ${colors.border}
+                        hover:shadow-md hover:z-30
+                        ${isSelected ? 'ring-2 ring-blue-500 ring-offset-2 z-40 shadow-md' : 'z-20'}
                         ${isDragging ? 'opacity-40 scale-95 shadow-none' : ''}
-                        ${appt.status === 'Canceled' ? 'opacity-50 grayscale shadow-none' : ''}`}
+                        ${appt.status === 'Canceled' ? 'opacity-60 shadow-none' : ''}`}
                         style={{
                           top: pos.top,
                           height: pos.height,
@@ -822,43 +821,40 @@ const FullScreenAppointments: React.FC = () => {
                           }
                         }}
                       >
-                        {/* Glass effect shine */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
-
                         {/* Night Indicator */}
                         {isNight && (
                           <div className="absolute top-1 md:top-1.5 right-1 md:right-1.5 z-10">
-                            <Moon className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-white/70" />
+                            <Moon className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-slate-500" />
                           </div>
                         )}
 
                         {/* Drag Handle - Hidden on mobile */}
                         {!isMobile && (
                           <div className="absolute top-1 left-0.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab z-10">
-                            <GripVertical className="w-3.5 h-3.5 text-white/50" />
+                            <GripVertical className="w-3.5 h-3.5 text-slate-400" />
                           </div>
                         )}
 
                         {/* Partial visibility indicators */}
                         {pos.isBeforeVisible && (
-                          <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-6 h-1 bg-white/40 rounded-full z-10" />
+                          <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-6 h-1 rounded-full bg-slate-300 z-10" />
                         )}
                         {pos.isAfterVisible && (
-                          <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-6 h-1 bg-white/40 rounded-full z-10" />
+                          <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-6 h-1 rounded-full bg-slate-300 z-10" />
                         )}
 
                         <div className={`h-full flex flex-col justify-start relative z-0 ${isMobile ? 'px-2 py-1.5' : 'px-3 py-2.5'}`}>
                           <div className="flex items-center justify-between gap-1 mb-0.5 min-w-0">
-                            <p className={`font-bold truncate leading-tight flex-1 ${isMobile ? 'text-[11px]' : 'text-xs'}`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                            <p className={`font-semibold truncate leading-tight flex-1 ${isMobile ? 'text-[11px]' : 'text-xs'}`}>
                               {appt.customer_name}
                             </p>
                             {appt.status === 'Confirmed' && (
-                              <div className={`rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] animate-pulse flex-shrink-0 ${isMobile ? 'w-1 h-1' : 'w-1.5 h-1.5'}`} />
+                              <div className={`rounded-full ${colors.dot} flex-shrink-0 ${isMobile ? 'w-1 h-1' : 'w-1.5 h-1.5'}`} />
                             )}
                           </div>
 
                           {pos.rawHeight > (isMobile ? 2.5 : 3.5) && (
-                            <div className="flex items-center gap-1 opacity-95 mt-0.5 min-w-0" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.2)' }}>
+                            <div className="mt-0.5 flex min-w-0 items-center gap-1 opacity-80">
                               <Clock className={`${isMobile ? 'w-2 h-2' : 'w-2.5 h-2.5'} flex-shrink-0`} />
                               <p className={`truncate font-semibold ${isMobile ? 'text-[9px]' : 'text-[10px]'}`}>
                                 {formatTime(getZonedTime(appt.start_time))}
@@ -867,9 +863,9 @@ const FullScreenAppointments: React.FC = () => {
                           )}
 
                           {pos.rawHeight > (isMobile ? 5 : 6) && (
-                            <div className="mt-1 flex items-center gap-1 min-w-0" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.2)' }}>
-                              <div className="w-1 h-1 rounded-full bg-white/60 flex-shrink-0" />
-                              <p className={`opacity-90 truncate font-medium ${isMobile ? 'text-[9px]' : 'text-[10px]'}`}>
+                            <div className="mt-1 flex min-w-0 items-center gap-1">
+                              <div className={`h-1 w-1 flex-shrink-0 rounded-full ${colors.dot}`} />
+                              <p className={`truncate font-medium opacity-80 ${isMobile ? 'text-[9px]' : 'text-[10px]'}`}>
                                 {appt.title}
                               </p>
                             </div>

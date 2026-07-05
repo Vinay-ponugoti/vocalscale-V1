@@ -1,4 +1,4 @@
-import { Check, Zap, Star, Sparkles } from 'lucide-react';
+import { Check, PhoneCall, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -9,32 +9,32 @@ export function Pricing() {
   const plans = [
     {
       name: 'Starter',
-      description: 'For solo pros & small teams. A 24/7 AI receptionist that answers, books, and never misses a call.',
+      description: 'For owners and small teams that need dependable phone coverage without adding another seat at the desk.',
       features: [
-        '24/7 AI call answering — never miss a customer',
+        '24/7 call answering for routine requests',
         'Books appointments into Google Calendar & Outlook',
-        'Natural AI voices in 7 languages',
+        'Voice options and multilingual support',
         'Full call transcripts, summaries & recordings',
         '1 local business number',
-        'Smart call routing & message taking',
+        'Call routing and message taking',
         'Email support'
       ],
       cta: 'Contact Us',
       popular: false,
-      icon: Zap,
+      icon: PhoneCall,
       color: 'blue'
     },
     {
       name: 'Professional',
-      description: 'For growing teams that live on the phone. Capture every lead, book more, and scale support without hiring.',
+      description: 'For teams with more call volume, more locations, or a bigger follow-up workflow.',
       features: [
         'Everything in Starter, plus:',
-        'Premium HD voices — ultra-natural & human-like',
-        'Custom knowledge base trained on your business',
+        'Expanded voice and language options',
+        'Custom knowledge base for your business',
         'Up to 5 phone numbers',
         'Sentiment analysis & automatic lead scoring',
         'CRM sync — HubSpot, Salesforce, Pipedrive',
-        'Automated SMS follow-up on missed calls',
+        'SMS follow-up for missed calls',
         'Priority 24/7 support'
       ],
       cta: 'Contact Us',
@@ -46,9 +46,6 @@ export function Pricing() {
 
   return (
     <section id="pricing" className="py-16 md:py-32 px-6 md:px-8 relative overflow-hidden bg-transparent">
-      {/* Background decorations */}
-      <div className="absolute inset-0 z-0 bg-grid-slate-900/[0.03] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
-
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-12 md:mb-24">
           <motion.div
@@ -58,8 +55,8 @@ export function Pricing() {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 backdrop-blur-sm mb-6 md:mb-8 shadow-sm"
           >
-            <Sparkles className="h-4 w-4 text-blue-600 fill-blue-600/20" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">The Investment</span>
+            <PhoneCall className="h-4 w-4 text-slate-700" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">Plans</span>
           </motion.div>
 
           <motion.h2
@@ -67,14 +64,14 @@ export function Pricing() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
+            className="text-4xl sm:text-5xl md:text-7xl font-black tracking-normal text-slate-900 mb-6 md:mb-8 leading-[1.1] md:leading-[1.05]"
           >
-            Simple plans for <br />
-            <span className="text-slate-900 italic tracking-tight">growing teams.</span>
+            Pick the coverage <br />
+            your phone needs.
           </motion.h2>
 
           <p className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed mb-12">
-            A full-time receptionist costs <span className="font-bold text-slate-900">$3,000+ a month</span> and still clocks out at 5pm. VocalScale answers every call 24/7 for a fraction of that — with plans built around your call volume, workflows, and support needs.
+            Plans are built around call volume, scheduling complexity, handoff rules, and support needs. Start with the workflow your callers already expect.
           </p>
         </div>
 
@@ -88,12 +85,12 @@ export function Pricing() {
               transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
               whileHover={{ y: -8, transition: { duration: 0.3 } }}
               className={cn(
-                "group relative p-1 rounded-[2.5rem] transition-all duration-500",
+                "group relative p-1 rounded-2xl transition-all duration-300",
                 plan.popular ? "bg-slate-200 shadow-xl shadow-slate-200" : "bg-transparent border border-transparent"
               )}
             >
               <div className={cn(
-                "relative bg-white rounded-[2.4rem] p-8 md:p-12 h-full flex flex-col border",
+                "relative bg-white rounded-2xl p-8 md:p-12 h-full flex flex-col border",
                 plan.popular ? "border-slate-300" : "border-slate-200"
               )}>
                 {plan.popular && (
@@ -110,14 +107,14 @@ export function Pricing() {
                   )}>
                     <plan.icon className="w-6 h-6" strokeWidth={1.5} />
                   </div>
-                  <h3 className="text-3xl font-black tracking-tight text-slate-900 mb-2">{plan.name}</h3>
+                  <h3 className="text-3xl font-black tracking-normal text-slate-900 mb-2">{plan.name}</h3>
                   <p className="text-slate-600 font-medium text-sm leading-relaxed">{plan.description}</p>
                 </div>
 
                 <div className="mb-8 md:mb-10">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-baseline">
-                      <span className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900">
+                      <span className="text-4xl md:text-6xl font-black tracking-normal text-slate-900">
                         Contact Us
                       </span>
                     </div>
@@ -164,70 +161,48 @@ export function Pricing() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="max-w-6xl mx-auto mt-16 space-y-8"
+          className="max-w-5xl mx-auto mt-12 md:mt-14"
         >
-          <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
-            <h3 className="text-2xl font-bold text-slate-900 mb-4">Scalable Solutions for Enterprise Organizations</h3>
-            <p className="text-slate-600 leading-relaxed mb-6">
-              Beyond our Professional plan, VocalScale offers enterprise-grade solutions designed for organizations managing high-volume customer interactions across multiple locations, departments, and service lines. Our enterprise options include dedicated account management, custom AI model training, advanced security protocols, and white-label deployment options.
-            </p>
-            <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-white rounded-2xl p-8 md:p-10 border border-slate-200 shadow-sm">
+            <div className="mb-8 max-w-3xl">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">For larger teams and multiple locations</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Larger teams often need location-specific routing, department rules, and a rollout plan. We can help map those workflows before anything goes live.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-[1.1fr_0.9fr] gap-8">
               <div>
-                <h4 className="font-bold text-slate-900 mb-3">Enterprise Customization Options</h4>
+                <h4 className="font-bold text-slate-900 mb-3">Configuration options</h4>
                 <ul className="space-y-2 text-sm text-slate-600">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />
-                    <span><strong>Custom AI Voice Models:</strong> Train AI on your brand voice, terminology, and industry-specific language</span>
+                    <span><strong>Business language:</strong> Add terminology, FAQs, policies, and service details</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />
-                    <span><strong>Advanced Integration:</strong> Connect with enterprise CRM, ERP, and business intelligence systems</span>
+                    <span><strong>Integrations:</strong> Connect calendars, CRM records, and reporting workflows</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />
-                    <span><strong>Multi-Location Support:</strong> Manage reception across multiple offices with centralized reporting</span>
+                    <span><strong>Multi-location support:</strong> Route callers by office, service line, or availability</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />
-                    <span><strong>Compliance & Security:</strong> HIPAA, SOC 2, and industry-specific compliance certifications</span>
+                    <span><strong>Controls:</strong> Keep records, permissions, and escalation rules organized</span>
                   </li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-3">Volume Pricing Benefits</h4>
+                <h4 className="font-bold text-slate-900 mb-3">Volume planning</h4>
                 <p className="text-slate-600 leading-relaxed mb-4">
-                  Organizations processing high monthly call volume can contact our team for a plan aligned with their usage patterns, support expectations, and rollout requirements. Enterprise clients also receive priority support, dedicated infrastructure, and guaranteed uptime SLAs of 99.9%.
+                  Higher call volume changes what matters: overflow behavior, staff handoffs, reporting, and support expectations. We will size the plan around those requirements.
                 </p>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
                   <p className="text-sm text-slate-800 font-medium">
                     Contact our enterprise sales team for custom pricing tailored to your organization's specific requirements and usage patterns.
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 text-center shadow-sm">
-              <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-6 h-6 text-slate-800" />
-              </div>
-              <h4 className="font-bold text-slate-900 mb-2">No Hidden Fees</h4>
-              <p className="text-sm text-slate-600">Clear custom plans with no setup costs, cancellation fees, or surprise charges</p>
-            </div>
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 text-center shadow-sm">
-              <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-6 h-6 text-slate-800" />
-              </div>
-              <h4 className="font-bold text-slate-900 mb-2">Instant Activation</h4>
-              <p className="text-sm text-slate-600">Start receiving calls within minutes of signup with our streamlined onboarding process</p>
-            </div>
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 text-center shadow-sm">
-              <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="w-6 h-6 text-slate-800" />
-              </div>
-              <h4 className="font-bold text-slate-900 mb-2">15-Day Guarantee</h4>
-              <p className="text-sm text-slate-600">Full satisfaction guarantee with prorated refunds available anytime</p>
             </div>
           </div>
         </motion.div>

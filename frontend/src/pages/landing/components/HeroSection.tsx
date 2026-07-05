@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ChevronRight, Phone, TrendingUp, Globe, Check } from 'lucide-react'
+import { ArrowRight, ChevronRight, PhoneIncoming, CalendarCheck, Languages, Check } from 'lucide-react'
 import { type Variants } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { AnimatedGroup } from '@/components/ui/animated-group'
@@ -68,7 +68,7 @@ export function HeroSection() {
                                     <Link
                                         to="/signup"
                                         className="hover:bg-slate-100/80 bg-white/60 group mx-auto flex w-fit items-center gap-3 md:gap-4 rounded-full border border-slate-200 p-1 pl-4 shadow-sm shadow-slate-200/50 transition-all duration-300 backdrop-blur-md">
-                                        <span className="text-slate-600 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] line-clamp-1">Revolutionizing Business Communication</span>
+                                        <span className="text-slate-600 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] line-clamp-1">Built for real front desks and busy service teams</span>
                                         <span className="block h-4 w-0.5 border-l border-slate-200"></span>
 
                                         <div className="bg-blue-600 group-hover:bg-blue-500 size-6 overflow-hidden rounded-full duration-500 flex-shrink-0">
@@ -84,12 +84,12 @@ export function HeroSection() {
                                     </Link>
 
                                     <h1
-                                        className="mt-6 md:mt-10 max-w-4xl mx-auto text-balance text-5xl sm:text-6xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 leading-[1.1]">
-                                        The 24/7 AI Receptionist That Answers Every <span className="text-slate-900 italic pb-2 tracking-tight">Business Call</span>
+                                        className="mt-6 md:mt-10 max-w-4xl mx-auto text-balance text-5xl sm:text-6xl md:text-7xl font-black tracking-normal text-slate-900 leading-[1.08]">
+                                        A phone receptionist that sounds prepared, not scripted.
                                     </h1>
                                     <p
                                         className="mx-auto mt-6 max-w-3xl text-balance text-lg md:text-xl text-slate-600 leading-relaxed font-medium">
-                                        VocalScale is an AI-powered virtual receptionist and AI phone answering service for small businesses. Our voice agent answers calls 24/7, books appointments into your calendar, qualifies leads into your CRM, and warm-transfers urgent calls in 50+ languages. Contact us for pricing.
+                                        VocalScale answers the phone, follows your booking rules, takes messages, and routes urgent calls. It is built for small teams that need reliable coverage without sounding like a chatbot.
                                     </p>
 
 
@@ -117,7 +117,7 @@ export function HeroSection() {
                                             onClick={trackStartDemo}
                                             className="rounded-xl px-8 h-12 text-lg font-black bg-blue-600 hover:bg-white hover:text-slate-900 text-white shadow-xl shadow-blue-500/20 w-full md:w-auto transition-all active:scale-95 border border-transparent hover:border-blue-200">
                                             <Link to="/signup" className="hover:no-underline">
-                                                <span className="text-nowrap">Get Started Free</span>
+                                                <span className="text-nowrap">Start Setup</span>
                                             </Link>
                                         </Button>
                                     </div>
@@ -172,11 +172,10 @@ export function HeroSection() {
                                     )}
                                 </div>
 
-                                {/* Video caption with expanded content */}
+                                {/* Product caption */}
                                 <div className="mt-16 text-center max-w-4xl mx-auto">
                                     <p className="text-sm text-slate-600 leading-relaxed">
-                                        Explore VocalScale's powerful dashboard found at the heart of your operation. Seamlessly manage your AI workforce,
-                                        analyze real-time performance metrics, and configure advanced settings—all from a single, intuitive interface.
+                                        A product recording beats a perfect illustration: configure numbers, inspect calls, review transcripts, and tune the receptionist from the same dashboard your team uses every day.
                                     </p>
                                 </div>
                             </div>
@@ -186,24 +185,24 @@ export function HeroSection() {
                         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto px-6 md:px-8">
                             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
                                 <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-4 border border-slate-100">
-                                    <Phone className="w-6 h-6 text-slate-800" />
+                                    <PhoneIncoming className="w-6 h-6 text-slate-800" />
                                 </div>
-                                <h3 className="font-bold text-slate-900 mb-2">24/7 Availability</h3>
-                                <p className="text-sm text-slate-600">Never miss a customer call with AI that works around the clock</p>
+                                <h3 className="font-bold text-slate-900 mb-2">After-hours coverage</h3>
+                                <p className="text-sm text-slate-600">Answer calls when the counter is busy, the office is closed, or the team is with a customer.</p>
                             </div>
                             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
                                 <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-4 border border-slate-100">
-                                    <TrendingUp className="w-6 h-6 text-slate-800" />
+                                    <CalendarCheck className="w-6 h-6 text-slate-800" />
                                 </div>
-                                <h3 className="font-bold text-slate-900 mb-2">70% Cost Reduction</h3>
-                                <p className="text-sm text-slate-600">Slash operational costs while improving service quality</p>
+                                <h3 className="font-bold text-slate-900 mb-2">Booking rules that stick</h3>
+                                <p className="text-sm text-slate-600">Use your hours, services, staff limits, and calendar rules instead of a generic script.</p>
                             </div>
                             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
                                 <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-4 border border-slate-100">
-                                    <Globe className="w-6 h-6 text-slate-800" />
+                                    <Languages className="w-6 h-6 text-slate-800" />
                                 </div>
-                                <h3 className="font-bold text-slate-900 mb-2">50+ Languages</h3>
-                                <p className="text-sm text-slate-600">Serve global customers in their native language</p>
+                                <h3 className="font-bold text-slate-900 mb-2">Plain-language calls</h3>
+                                <p className="text-sm text-slate-600">Handle common caller questions in natural language, including multilingual conversations.</p>
                             </div>
                         </div>
 
@@ -214,17 +213,13 @@ export function HeroSection() {
                             <div className="grid md:grid-cols-2 gap-12 items-center">
                                 <div>
                                     <h2 className="text-3xl font-black text-slate-900 mb-6 leading-tight">
-                                        Replace Your Answering Service with an AI Receptionist
+                                        Keep the phone from running the whole day
                                     </h2>
                                     <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                                        Traditional answering services and live virtual receptionists are expensive, inconsistent, and capped by human availability.
-                                        VocalScale's AI voice agent delivers a consistent, on-brand front-desk experience for every caller — at a fraction of the cost
-                                        of a part-time receptionist or after-hours service.
+                                        Most small teams already know how they want calls handled. The hard part is doing it consistently while appointments, walk-ins, jobs, and follow-ups are happening at the same time.
                                     </p>
                                     <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                                        Our conversational AI understands context, remembers previous calls, and adapts to each caller's intent.
-                                        That means real appointments booked, real leads captured into your CRM, and a measurable reduction in operational
-                                        overhead — typically 70-85% lower than a human answering service.
+                                        VocalScale turns those everyday rules into a dependable phone workflow: answer, ask the right questions, book when possible, route when needed, and leave a useful record behind.
                                     </p>
                                     <div className="space-y-4">
                                         <div className="flex items-start gap-3">
@@ -232,8 +227,8 @@ export function HeroSection() {
                                                 <Check className="w-3 h-3 text-slate-800" />
                                             </div>
                                             <div>
-                                                <h4 className="font-semibold text-slate-900">Scalable Customer Support</h4>
-                                                <p className="text-sm text-slate-600">Handle unlimited concurrent calls without additional staffing costs</p>
+                                                <h4 className="font-semibold text-slate-900">Clear intake</h4>
+                                                <p className="text-sm text-slate-600">Collect names, phone numbers, services, urgency, and notes in a consistent format.</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
@@ -241,8 +236,8 @@ export function HeroSection() {
                                                 <Check className="w-3 h-3 text-slate-800" />
                                             </div>
                                             <div>
-                                                <h4 className="font-semibold text-slate-900">Consistent Quality</h4>
-                                                <p className="text-sm text-slate-600">Every interaction maintains professional standards and brand voice</p>
+                                                <h4 className="font-semibold text-slate-900">Human handoff</h4>
+                                                <p className="text-sm text-slate-600">Send urgent calls to a real person instead of forcing every caller through automation.</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
@@ -250,34 +245,34 @@ export function HeroSection() {
                                                 <Check className="w-3 h-3 text-slate-800" />
                                             </div>
                                             <div>
-                                                <h4 className="font-semibold text-slate-900">Instant Response</h4>
-                                                <p className="text-sm text-slate-600">No hold times or wait periods - customers get immediate assistance</p>
+                                                <h4 className="font-semibold text-slate-900">Reviewable records</h4>
+                                                <p className="text-sm text-slate-600">Transcripts and summaries make it easy to see what happened after the phone stops ringing.</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-                                    <h3 className="text-xl font-bold text-slate-900 mb-6">Industry Applications</h3>
+                                    <h3 className="text-xl font-bold text-slate-900 mb-6">Common phone workflows</h3>
                                     <div className="space-y-6">
                                         <div>
-                                            <h4 className="font-semibold text-slate-900 mb-2">Healthcare Practices</h4>
-                                            <p className="text-sm text-slate-600 mb-3">Automate appointment scheduling, prescription refills, and patient inquiries while maintaining HIPAA compliance.</p>
-                                            <div className="text-xs text-slate-700 font-bold">Reduced administrative overhead by 65%</div>
+                                            <h4 className="font-semibold text-slate-900 mb-2">Appointment requests</h4>
+                                            <p className="text-sm text-slate-600 mb-3">Gather the service, preferred time, caller details, and calendar constraints before confirming.</p>
+                                            <div className="text-xs text-slate-700 font-bold">Useful for clinics, salons, home services, and studios</div>
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-slate-900 mb-2">Legal Services</h4>
-                                            <p className="text-sm text-slate-600 mb-3">Handle client intake, schedule consultations, and provide case status updates with professional accuracy.</p>
-                                            <div className="text-xs text-slate-700 font-bold">Improved client response time by 85%</div>
+                                            <h4 className="font-semibold text-slate-900 mb-2">Lead intake</h4>
+                                            <p className="text-sm text-slate-600 mb-3">Qualify callers with practical questions and mark high-intent conversations for follow-up.</p>
+                                            <div className="text-xs text-slate-700 font-bold">Useful for legal, real estate, agencies, and consultants</div>
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-slate-900 mb-2">Real Estate</h4>
-                                            <p className="text-sm text-slate-600 mb-3">Qualify leads, schedule property viewings, and provide listing information around the clock.</p>
-                                            <div className="text-xs text-slate-700 font-bold">Increased lead conversion by 40%</div>
+                                            <h4 className="font-semibold text-slate-900 mb-2">Missed-call recovery</h4>
+                                            <p className="text-sm text-slate-600 mb-3">Log who called, why they called, and what needs attention before the opportunity goes cold.</p>
+                                            <div className="text-xs text-slate-700 font-bold">Useful for any team that works away from a desk</div>
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-slate-900 mb-2">E-commerce</h4>
-                                            <p className="text-sm text-slate-600 mb-3">Process orders, handle returns, and provide product support in multiple languages.</p>
-                                            <div className="text-xs text-slate-700 font-bold">Enhanced customer satisfaction scores by 92%</div>
+                                            <h4 className="font-semibold text-slate-900 mb-2">Routine questions</h4>
+                                            <p className="text-sm text-slate-600 mb-3">Answer hours, pricing, location, service area, preparation steps, and policy questions.</p>
+                                            <div className="text-xs text-slate-700 font-bold">Useful for teams repeating the same answers all week</div>
                                         </div>
                                     </div>
                                 </div>

@@ -6,6 +6,7 @@ import {
   HelpCircle,
   Settings,
   ChevronRight,
+  CheckCircle2,
   LogOut,
   Bell,
   Menu,
@@ -14,7 +15,7 @@ import {
   Calendar,
   Building2,
   Search,
-  Zap,
+  Gauge,
   Layers,
   CreditCard,
   Star,
@@ -199,6 +200,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
   const userFullName = profile?.full_name || user?.full_name || user?.user_metadata?.full_name || userEmail;
 
   const hasActiveSubscription = subscription && (subscription.status === 'active' || subscription.status === 'trialing');
+  const subscriptionStatusLabel = subscription?.status === 'trialing' ? 'Trial Active' : 'Plan Active';
 
   const isActive = (path: string) => {
     if (path === '/dashboard') {
@@ -236,11 +238,11 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
               )}
             >
               <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="VocalScale AI Phone Agent" width="428" height="428" className="w-10 h-10 flex-shrink-0 object-contain group-hover:scale-105 transition-transform" />
+                <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-10 h-10 flex-shrink-0 object-contain group-hover:scale-105 transition-transform" />
                 {sidebarOpen && (
                   <div className="flex flex-col">
                     <span className="text-xl font-black tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">VocalScale</span>
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">AI Phone Agent</span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Reception Desk</span>
                   </div>
                 )}
               </div>
@@ -265,10 +267,10 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
             <NavItem
               item={{ path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }}
               isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/dashboard')}
+              isActive={isActive('/dashboard')}
             />
             <NavItem
-              item={{ path: '/dashboard/chat', label: 'AI Chat', icon: Brain }}
+              item={{ path: '/dashboard/chat', label: 'Assistant Chat', icon: Brain }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/chat')}
             />
@@ -352,34 +354,62 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
 
-          {/* Bottom Card & Upgrade */}
-          {!isLoadingSubscription && !hasActiveSubscription && (
+          {/* Bottom Plan Status */}
+          {!isLoadingSubscription && (
             <div className={cn(
               "p-3 border-t border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-surface))]",
               !sidebarOpen && "flex justify-center"
             )}>
-              {sidebarOpen ? (
-                /* Expanded: full promo card */
-                <div className={`relative overflow-hidden rounded-xl p-3 shadow-sm border transition-all duration-500 group hover:shadow-lg bg-white border-slate-100 hover:border-blue-200`}>
-                  {/* Decorative background element */}
-                  <div className="absolute -right-3 -top-3 w-12 h-12 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all duration-700" />
-
-                  <div className="flex items-center gap-2 mb-1.5 relative z-10">
-                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform duration-500 group-hover:scale-110 bg-blue-50 text-blue-600`}>
-                      <Zap size={12} strokeWidth={2.5} />
+              {hasActiveSubscription ? (
+                sidebarOpen ? (
+                  <div className="rounded-lg border border-emerald-100 bg-white p-3 shadow-sm">
+                    <div className="mb-1.5 flex items-center gap-2">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600">
+                        <CheckCircle2 size={12} strokeWidth={2.5} />
+                      </div>
+                      <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-900">
+                        {subscriptionStatusLabel}
+                      </h4>
                     </div>
-                    <h4 className={`text-[10px] font-black uppercase tracking-widest text-slate-900`}>
-                      Upgrade
+
+                    <div>
+                      <p className="mb-2 text-[10px] font-medium leading-snug text-slate-500">Usage, invoices, and plan details are in Billing.</p>
+                      <Link
+                        to="/dashboard/billing"
+                        className="flex w-full items-center justify-center rounded-md border border-slate-200 bg-white py-1.5 text-[9px] font-black uppercase tracking-wider text-slate-700 no-underline transition-colors hover:bg-slate-50"
+                      >
+                        Open Billing
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    to="/dashboard/billing"
+                    title={subscriptionStatusLabel}
+                    aria-label={subscriptionStatusLabel}
+                    className="flex h-11 w-11 items-center justify-center rounded-lg border border-emerald-100 bg-emerald-50 text-emerald-600 no-underline transition-colors hover:bg-emerald-100"
+                  >
+                    <CheckCircle2 size={18} strokeWidth={2.5} />
+                  </Link>
+                )
+              ) : sidebarOpen ? (
+                <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition-colors hover:border-slate-300">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 text-slate-600">
+                      <Gauge size={12} strokeWidth={2.5} />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-900">
+                      Call Capacity
                     </h4>
                   </div>
 
-                  <div className="relative z-10">
-                    <p className="text-[9px] leading-tight mb-2 font-medium text-slate-500">Unlock unlimited AI minutes & models.</p>
+                  <div>
+                    <p className="mb-2 text-[10px] font-medium leading-snug text-slate-500">Review your plan when call volume starts climbing.</p>
                     <Link
                       to="/dashboard/billing/plans"
-                      className="w-full py-1.5 flex items-center justify-center bg-blue-600 text-white text-[9px] font-black uppercase tracking-wider rounded-lg hover:bg-blue-700 transition-all shadow-md shadow-blue-200 no-underline"
+                      className="flex w-full items-center justify-center rounded-md bg-slate-900 py-1.5 text-[9px] font-black uppercase tracking-wider text-white no-underline transition-colors hover:bg-slate-700"
                     >
-                      View Plans
+                      Review Plans
                     </Link>
                   </div>
                 </div>
@@ -387,11 +417,11 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                 /* Collapsed: icon-only button (matches NavItem collapsed pattern) */
                 <Link
                   to="/dashboard/billing/plans"
-                  title="Upgrade plan"
-                  aria-label="Upgrade plan"
-                  className="w-11 h-11 flex items-center justify-center rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-md shadow-blue-200 no-underline"
+                  title="Review plans"
+                  aria-label="Review plans"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-900 text-white no-underline transition-colors hover:bg-slate-700"
                 >
-                  <Zap size={18} strokeWidth={2.5} />
+                  <Gauge size={18} strokeWidth={2.5} />
                 </Link>
               )}
             </div>
@@ -532,7 +562,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                     <span className="text-[10px] font-medium text-slate-500 leading-tight">{userFullName}</span>
                   </div>
 
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm bg-gradient-to-br from-blue-500 to-indigo-600 ring-2 ring-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white ring-2 ring-white">
                     {firstLetter}
                   </div>
                 </button>
@@ -587,7 +617,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                     onClick={() => setMobileMenuOpen(false)}
                   />
                   <NavItem
-                    item={{ path: '/dashboard/chat', label: 'AI Chat', icon: Brain }}
+                    item={{ path: '/dashboard/chat', label: 'Assistant Chat', icon: Brain }}
                     isActive={isActive('/dashboard/chat')}
                     onClick={() => setMobileMenuOpen(false)}
                   />

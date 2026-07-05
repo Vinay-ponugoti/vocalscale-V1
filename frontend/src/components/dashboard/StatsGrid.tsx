@@ -59,7 +59,7 @@ const StatCard: React.FC<StatCardProps> = ({
   description
 }) => {
   return (
-    <Card className={`relative flex h-full min-h-[154px] flex-col overflow-hidden rounded-2xl border-0 shadow-[0_1px_3px_rgba(15,23,42,0.08)] transition-shadow duration-200 hover:border-transparent hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] ${highlight ? 'bg-orange-50/30' : 'bg-white'
+    <Card className={`relative flex h-full min-h-[154px] flex-col overflow-hidden rounded-lg border border-slate-200 shadow-sm transition-colors duration-200 hover:border-slate-300 hover:shadow-sm ${highlight ? 'bg-orange-50/30' : 'bg-white'
       }`}>
       <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-3">
         <CardTitle className="text-[12px] font-black text-charcoal-light tracking-[0.12em] uppercase leading-5">{label}</CardTitle>
@@ -71,7 +71,7 @@ const StatCard: React.FC<StatCardProps> = ({
       <CardContent className="flex flex-1 flex-col justify-end">
         <div className="flex min-w-0 flex-col gap-1">
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-charcoal tracking-tighter">{value}</span>
+            <span className="text-3xl font-black text-charcoal">{value}</span>
             {trend && (
               <div className={`flex shrink-0 items-center gap-0.5 text-xs font-black ${trend.isPositive ? 'text-emerald-600' : 'text-rose-600'
                 }`}>
@@ -115,7 +115,7 @@ interface ReviewStatCardProps {
 
 const ReviewStatCard: React.FC<ReviewStatCardProps> = ({ totalReviews, reviewsToday, rating, trend }) => {
   return (
-    <Card className="relative flex h-full min-h-[154px] flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.08)] transition-shadow duration-200 hover:border-transparent hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)]">
+    <Card className="relative flex h-full min-h-[154px] flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition-colors duration-200 hover:border-slate-300 hover:shadow-sm">
       <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-3">
         <CardTitle className="text-[12px] font-black text-charcoal-light tracking-[0.12em] uppercase leading-5">Reviews</CardTitle>
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
@@ -125,7 +125,7 @@ const ReviewStatCard: React.FC<ReviewStatCardProps> = ({ totalReviews, reviewsTo
       <CardContent className="flex flex-1 flex-col justify-end">
         <div className="flex min-w-0 flex-col gap-2">
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-charcoal tracking-tighter">{rating.toFixed(1)}</span>
+            <span className="text-3xl font-black text-charcoal">{rating.toFixed(1)}</span>
             {trend && (
               <div className={`flex shrink-0 items-center gap-0.5 text-xs font-black ${trend.isPositive ? 'text-emerald-600' : 'text-rose-600'
                 }`}>
@@ -169,7 +169,7 @@ const StatsGrid: React.FC<StatsGridProps> = ({ stats, appointmentsCount, reviews
         icon={Calendar}
         trend={stats.appointmentsTrend}
         badge={{ text: 'Upcoming', variant: 'secondary' }}
-        description="Scheduled via AI"
+        description="Scheduled in period"
       />
       <StatCard
         label="Urgent Alerts"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CalendarCheck2, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
+import { CalendarCheck2, CheckCircle2, Loader2 } from 'lucide-react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { SEO } from '@/components/SEO';
@@ -141,7 +141,7 @@ export default function Contact() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-8 md:mb-10">
               <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 backdrop-blur-sm text-slate-700 shadow-sm">
-                <Sparkles className="h-4 w-4 text-blue-600 fill-blue-600/20" />
+                <CalendarCheck2 className="h-4 w-4 text-blue-600" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">Contact us for pricing</span>
               </div>
               <h1 className="mt-5 text-3xl sm:text-4xl md:text-5xl font-black tracking-[-0.03em] text-slate-950 leading-[1.08]">

@@ -101,7 +101,7 @@ const Home = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-3xl font-black text-charcoal tracking-tight">
+              <h1 className="text-3xl font-black text-charcoal">
                 Overview
               </h1>
               {isPlaceholderData && (
@@ -112,7 +112,7 @@ const Home = () => {
               )}
             </div>
             <p className="text-charcoal-light mt-1 text-sm font-medium">
-              Real-time performance metrics for your AI agent.
+              Call coverage, bookings, and follow-up for your phone desk.
             </p>
           </div>
 
