@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import {
   BarChart3, MessageSquare, CalendarDays, TrendingUp, TrendingDown,
-  Loader2, RefreshCw, Zap, ArrowUpRight, ArrowDownRight
+  Loader2, RefreshCw, Layers, ArrowUpRight, ArrowDownRight
 } from 'lucide-react';
 import { useChatAnalytics } from '../../../../hooks/useChatAnalytics';
 
@@ -91,7 +91,7 @@ const ChatAnalytics: React.FC = () => {
     {
       label: 'Sessions',
       value: summary?.total_sessions ?? 0,
-      icon: Zap,
+      icon: Layers,
       color: 'amber',
     },
     {
@@ -268,7 +268,7 @@ const ChatAnalytics: React.FC = () => {
       {summary?.top_skill && (
         <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
-            <Zap size={18} className="text-violet-500" />
+            <Layers size={18} className="text-violet-500" />
           </div>
           <div>
             <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Most Used Skill</p>

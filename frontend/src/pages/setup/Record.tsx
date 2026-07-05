@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { AudioVisualizer } from '../../components/AudioVisualizer';
-import { FileText, CheckCircle2, Play, Pause, Trash2, ArrowRight, BarChart2, VolumeX, Mic, Square, Sparkles } from 'lucide-react';
+import { FileText, CheckCircle2, Play, Pause, Trash2, ArrowRight, BarChart2, VolumeX, Mic, Square } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSetup } from '../../context/useSetup';
 
@@ -281,7 +281,7 @@ export default function Record() {
               <div className="bg-white border border-slate-200 rounded-2xl p-6 h-full shadow-sm sticky top-6">
                 <div className="flex items-center gap-2 mb-6">
                    <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center text-amber-500">
-                      <Sparkles size={16} />
+                      <FileText size={16} />
                    </div>
                    <h3 className="font-bold text-slate-900">Pro Tips</h3>
                 </div>

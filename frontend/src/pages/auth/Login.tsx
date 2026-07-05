@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, LogIn, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AuthLayout from '../layouts/AuthLayout';
 import { useToast } from '../../hooks/useToast';
@@ -218,14 +218,7 @@ const Login = () => {
             disabled={loading}
             className="w-full h-14 bg-[#1e293b] hover:bg-[#020617] text-white rounded-[1rem] font-bold text-[16px] shadow-lg shadow-slate-950/20 active:scale-[0.98] transition-all mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Signing in…
-              </span>
-            ) : (
-              'Sign In'
-            )}
+            {loading ? 'Signing in…' : 'Sign In'}
           </Button>
         </form>
 

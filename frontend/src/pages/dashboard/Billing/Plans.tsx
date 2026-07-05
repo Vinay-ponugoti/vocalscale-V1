@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Check, Zap, Star, Shield, ArrowLeft, Loader2, AlertCircle, X } from 'lucide-react';
+import { Check, PhoneCall, Star, Shield, ArrowLeft, Loader2, AlertCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import DashboardLayout from '../../layouts/DashboardLayout';
@@ -116,7 +116,7 @@ const Plans: React.FC = () => {
         originalMonthlyPrice: 499,
         annualPrice: 319,
         features: getDefaultFeatures('Starter'),
-        icon: Zap,
+        icon: PhoneCall,
         popular: false,
         color: 'blue',
         stripe_price_id: priceIdFor('Starter', 'price_starter'),

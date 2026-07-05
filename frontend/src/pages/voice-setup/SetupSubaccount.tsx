@@ -8,7 +8,7 @@ import {
   CheckCircle,
   AlertCircle,
   ShieldCheck,
-  Zap,
+  Clock,
   ShieldAlert
 } from 'lucide-react';
 import { env } from '../../config/env';
@@ -201,7 +201,7 @@ const SetupSubaccount = () => {
                     desc: 'Provider resources stay isolated to your business.'
                   },
                   {
-                    icon: <Zap className="h-5 w-5 text-cyan-700" />,
+                    icon: <Clock className="h-5 w-5 text-cyan-700" />,
                     title: 'Ready in seconds',
                     desc: 'After setup, you can search inventory and activate a number.'
                   }

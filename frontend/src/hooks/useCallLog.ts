@@ -33,7 +33,9 @@ export function useCallLog(callId?: string) {
     queryKey: ['call-log', callId],
     queryFn: ({ signal }) => fetchCallLog(callId as string, signal),
     enabled: Boolean(callId),
-    staleTime: 60000
+    staleTime: 15000,
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
   });
 
   return {

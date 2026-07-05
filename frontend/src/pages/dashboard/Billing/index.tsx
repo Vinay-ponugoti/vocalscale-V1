@@ -27,7 +27,49 @@ interface UsageData {
   minutes_limit?: number;
   used_minutes?: number;
   minutes_used?: number;
+  remaining_minutes?: number;
+  usage_percent?: number;
+  calls_count?: number;
+  total_calls?: number;
+  avg_duration_seconds?: number;
+  success_rate?: number;
+  overage_minutes?: number;
+  estimated_cost?: number;
 }
+
+const toNumber = (value: unknown, fallback = 0) => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+};
+
+const normalizeUsage = (usage: UsageData | null, planLimit = 0): UsageData => {
+  const totalMinutes = toNumber(usage?.total_minutes ?? usage?.minutes_limit, planLimit);
+  const usedMinutes = toNumber(usage?.used_minutes ?? usage?.minutes_used, 0);
+  const overageMinutes = toNumber(usage?.overage_minutes, Math.max(0, usedMinutes - totalMinutes));
+  const usagePercent = totalMinutes > 0
+    ? toNumber(usage?.usage_percent, (usedMinutes / totalMinutes) * 100)
+    : 0;
+
+  return {
+    ...usage,
+    total_minutes: totalMinutes,
+    minutes_limit: totalMinutes,
+    used_minutes: usedMinutes,
+    minutes_used: usedMinutes,
+    remaining_minutes: toNumber(usage?.remaining_minutes, Math.max(0, totalMinutes - usedMinutes)),
+    usage_percent: Math.min(100, Math.max(0, usagePercent)),
+    calls_count: toNumber(usage?.calls_count ?? usage?.total_calls, 0),
+    total_calls: toNumber(usage?.total_calls ?? usage?.calls_count, 0),
+    avg_duration_seconds: toNumber(usage?.avg_duration_seconds, 0),
+    success_rate: toNumber(usage?.success_rate, usage?.total_calls || usage?.calls_count ? 0 : 100),
+    overage_minutes: overageMinutes,
+    estimated_cost: toNumber(usage?.estimated_cost, overageMinutes * 0.089),
+  };
+};
 
 const Billing: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -57,24 +99,43 @@ const Billing: React.FC = () => {
     }
   }, []);
 
+  const fetchBillingData = useCallback(async () => {
+    try {
+      const [subData, usageData] = await Promise.all([
+        billingApi.getSubscription(),
+        billingApi.getUsage()
+      ]);
+      setSubscription(subData);
+      setUsage(usageData);
+    } catch (error) {
+      console.error('Error fetching billing data:', error);
+    } finally {
+      setLoadingStats(false);
+    }
+  }, []);
+
   // Fetch Billing Stats
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [subData, usageData] = await Promise.all([
-          billingApi.getSubscription(),
-          billingApi.getUsage()
-        ]);
-        setSubscription(subData);
-        setUsage(usageData);
-      } catch (error) {
-        console.error('Error fetching billing data:', error);
-      } finally {
-        setLoadingStats(false);
+    fetchBillingData();
+  }, [fetchBillingData, subscribed]); // Refetch when subscription status changes
+
+  useEffect(() => {
+    const refreshUsage = () => {
+      if (document.visibilityState === 'visible') {
+        fetchBillingData();
       }
     };
-    fetchData();
-  }, [subscribed]); // Refetch when subscription status changes
+
+    const interval = window.setInterval(refreshUsage, 30000);
+    window.addEventListener('focus', refreshUsage);
+    document.addEventListener('visibilitychange', refreshUsage);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', refreshUsage);
+      document.removeEventListener('visibilitychange', refreshUsage);
+    };
+  }, [fetchBillingData]);
 
   useEffect(() => {
     if (success) {
@@ -157,10 +218,12 @@ const Billing: React.FC = () => {
   const cycleEnd = periodEnd ? format(periodEnd, 'MMM d') : format(endOfMonth(new Date()), 'MMM d');
 
   // Usage Calculation: Should show data if usage object exists, even if subscription is "inactive" (e.g. trial or recently expired)
-  const totalMinutes = usage?.total_minutes || usage?.minutes_limit || plan.limits?.ai_minutes || 0;
-  const usedMinutes = usage?.used_minutes || usage?.minutes_used || 0;
+  const normalizedUsage = normalizeUsage(usage, plan.limits?.ai_minutes ?? 0);
+  const totalMinutes = normalizedUsage.total_minutes ?? 0;
+  const usedMinutes = normalizedUsage.used_minutes ?? 0;
   const remainingPercentage = totalMinutes > 0 ? Math.min(100, Math.max(0, Math.round(((totalMinutes - usedMinutes) / totalMinutes) * 100))) : 0;
-  const overageMinutes = Math.max(0, usedMinutes - (totalMinutes || 0));
+  const overageMinutes = normalizedUsage.overage_minutes ?? 0;
+  const usagePercentage = normalizedUsage.usage_percent ?? 0;
 
   const mobileTabs = [
     { id: 'overview', label: 'Overview' },
@@ -239,7 +302,7 @@ const Billing: React.FC = () => {
               <div className="flex justify-between items-center mb-0.5">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Minutes Usage</p>
                 <span className={`text-[10px] font-black ${overageMinutes > 0 ? 'text-amber-600' : 'text-slate-600'}`}>
-                  {usedMinutes} / {totalMinutes}
+                  {usedMinutes.toFixed(2)} / {totalMinutes}
                 </span>
               </div>
 
@@ -250,7 +313,7 @@ const Billing: React.FC = () => {
                     remainingPercentage < 20 ? 'bg-rose-500' :
                       'bg-blue-600'
                     }`}
-                  style={{ width: `${Math.min(100, (usedMinutes / (totalMinutes || 1)) * 100)}%` }}
+                  style={{ width: `${usagePercentage}%` }}
                 />
               </div>
             </div>
@@ -265,7 +328,7 @@ const Billing: React.FC = () => {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                   </span>
-                  <span className="text-[10px] font-black uppercase tracking-wider">Overage: {overageMinutes}m</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider">Overage: {overageMinutes.toFixed(2)}m</span>
                 </div>
               </div>
             </>
@@ -319,7 +382,7 @@ const Billing: React.FC = () => {
 
           {/* Mobile: Overview Tab | Desktop: Always Show */}
           <div className={`${activeTab === 'overview' ? 'block' : 'hidden md:block'}`}>
-            <UsageBreakdown hasSubscription={hasSubscription} usage={usage} />
+            <UsageBreakdown hasSubscription={hasSubscription} usage={normalizedUsage} />
           </div>
 
           <div className="hidden md:block w-full h-px bg-slate-100 my-8" />

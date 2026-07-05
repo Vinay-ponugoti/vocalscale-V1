@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { ProgressBar } from '../../components/ui/ProgressBar';
-import { Play, ThumbsUp, RefreshCw, Check, Sparkles, Pause } from 'lucide-react';
+import { Play, ThumbsUp, RefreshCw, Check, Pause } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSetup } from '../../context/useSetup';
 import { api } from '../../lib/api';
@@ -424,7 +424,7 @@ export default function Processing() {
 
                     {/* Inner Icon */}
                     <div className="absolute inset-0 flex items-center justify-center bg-white rounded-full m-2 shadow-inner">
-                      <Sparkles className="text-indigo-500 animate-pulse" size={40} />
+                      <RefreshCw className="text-indigo-500 animate-spin-slow" size={40} />
                     </div>
                   </div>
 

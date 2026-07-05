@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import {
-  Building2, Mail, Phone, MapPin, Zap, Globe,
+  Building2, Mail, Phone, MapPin, Globe, Info,
   Search, Loader2, Star, AlertCircle,
-  Sparkles, X, ChevronDown
+  Check, X, ChevronDown
 } from 'lucide-react';
 import { businessSetupAPI } from '../../../api/businessSetup';
 
@@ -155,7 +155,7 @@ const SearchResultCard = ({ business, onSelect }: SearchResultProps) => (
         </span>
         <div className="flex items-center gap-1.5 ml-auto mr-2">
           <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-cyan-700 opacity-0 transition-opacity group-hover:opacity-100">
-            Select <Sparkles className="h-3 w-3" />
+            Select <Check className="h-3 w-3" />
           </span>
         </div>
       </div>
@@ -517,7 +517,7 @@ export const BusinessDetails: React.FC = () => {
               <div className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div className="flex items-start gap-4">
                   <div className="shrink-0 rounded-md border border-cyan-100 bg-cyan-50 p-3 text-cyan-700">
-                    <Sparkles className="h-5 w-5" />
+                    <Building2 className="h-5 w-5" />
                   </div>
                   <div>
                     <h4 className="text-base font-black tracking-tight text-slate-950">Google Business Connect</h4>
@@ -556,7 +556,7 @@ export const BusinessDetails: React.FC = () => {
                       ) : (
                         <>
                           <span>Connect</span>
-                          <Sparkles className="h-4 w-4 opacity-70" />
+                          <Globe className="h-4 w-4 opacity-70" />
                         </>
                       )}
                     </button>
@@ -735,7 +735,7 @@ export const BusinessDetails: React.FC = () => {
           {/* Configuration Tip */}
           <div className="flex gap-4 rounded-lg border border-cyan-100 bg-cyan-50/70 p-4 text-slate-700 lg:col-span-2">
             <div className="shrink-0 rounded-md border border-cyan-100 bg-white p-2 text-cyan-700">
-              <Zap size={18} />
+              <Info size={18} />
             </div>
             <div>
               <h4 className="mb-1 text-sm font-bold text-slate-950">Agent context</h4>

@@ -1,17 +1,13 @@
 import React from 'react';
-import { ShoppingCart, Sparkles } from 'lucide-react';
+import { ShoppingCart, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const UpsellCard: React.FC = () => {
   return (
-    <div className="flex flex-col gap-6 rounded-2xl bg-slate-900 p-8 shadow-xl shadow-blue-900/20 flex-1 relative overflow-hidden group">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 -mr-12 -mt-12 w-48 h-48 bg-blue-600 rounded-full blur-[80px] opacity-30 group-hover:opacity-50 transition-all duration-700"></div>
-      <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-40 h-40 bg-indigo-600 rounded-full blur-[70px] opacity-20 group-hover:opacity-40 transition-all duration-700"></div>
-
+    <div className="relative flex flex-1 flex-col gap-6 overflow-hidden rounded-lg bg-slate-900 p-8 shadow-sm">
       <div className="relative z-10">
-        <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-1.5 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-4 border border-blue-500/20 backdrop-blur-md">
-          <Sparkles size={12} strokeWidth={2.5} className="animate-pulse" />
+        <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-slate-700 bg-slate-800 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-slate-200">
+          <TrendingUp size={12} strokeWidth={2.5} />
           <span>Scale Faster</span>
         </div>
         <h4 className="font-black text-white text-3xl leading-tight tracking-tight">Expand Your<br />Capabilities</h4>

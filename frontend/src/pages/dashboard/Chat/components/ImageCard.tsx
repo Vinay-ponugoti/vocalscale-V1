@@ -20,7 +20,6 @@ import {
   Lightbulb,
   FileText,
   Instagram,
-  Sparkles,
 } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import { chatApi } from '../../../../api/chat';
@@ -105,7 +104,7 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-gray-100">
         <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-          <Sparkles size={12} className="text-blue-500" />
+          <FileText size={12} className="text-blue-500" />
           Social Media Content
         </div>
         {/* One-click Instagram copy */}

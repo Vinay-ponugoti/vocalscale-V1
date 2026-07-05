@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { ProgressBar } from '../../components/ui/ProgressBar';
-import { Play, Sparkles, CheckCircle2, Mic, Pause, ArrowRight } from 'lucide-react';
+import { Play, CheckCircle2, Mic, Pause, ArrowRight, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSetup } from '../../context/useSetup';
 import { useAuth } from '../../context/AuthContext';
@@ -326,7 +326,7 @@ export default function Preview() {
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center justify-center gap-2">
                   {aiVoiceBlob ? (
-                      <>Voice Clone Complete! <span className="text-yellow-400"><Sparkles fill="currentColor" size={20} /></span></>
+                      <>Voice Clone Complete! <span className="text-green-600"><CheckCircle2 size={20} /></span></>
                   ) : (
                       "Voice Setup Complete"
                   )}
@@ -378,7 +378,7 @@ export default function Preview() {
                         {/* AI Clone Player */}
                         <div className={`bg-blue-50/50 border transition-colors duration-300 rounded-xl p-4 relative overflow-hidden ${isPlayingClone ? 'border-blue-300 bg-blue-50 shadow-md' : 'border-blue-100'}`}>
                             <div className="absolute top-0 right-0 p-3">
-                                 <Sparkles className={`text-blue-400 ${isPlayingClone ? 'animate-spin-slow' : ''}`} size={14} />
+                                 <Mic className={`text-blue-400 ${isPlayingClone ? 'animate-pulse' : ''}`} size={14} />
                             </div>
                             <div className="mb-3">
                                 <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">AI Clone Preview</span>
@@ -432,7 +432,7 @@ export default function Preview() {
                                 >
                                     {isGenerating ? (
                                         <>
-                                            <Sparkles className="animate-spin" size={16} /> Generating...
+                                            <Loader2 className="animate-spin" size={16} /> Generating...
                                         </>
                                     ) : (
                                         <>

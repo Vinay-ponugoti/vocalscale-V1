@@ -1,4 +1,4 @@
-import { Sparkles, Puzzle, Phone, Zap, Headphones } from 'lucide-react';
+import { Cable, ClipboardList, Headphones, PhoneIncoming } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect, useRef } from 'react';
 import { LiveCallDemo } from './LiveCallDemo';
@@ -38,59 +38,52 @@ export function HowItWorks() {
   const steps = [
     {
       number: '01',
-      title: 'Design Your Agent',
-      description: 'Configure your AI\'s personality, knowledge base, and conversation flows. Match your brand voice perfectly.',
-      icon: Zap,
+      title: 'Write the call rules',
+      description: 'Add the questions callers should be asked, when to book, what to avoid, and when a person should step in.',
+      icon: ClipboardList,
       color: 'blue',
-      features: ['Custom Personality', 'Knowledge Base', 'Brand Voice']
+      features: ['Intake questions', 'Booking rules', 'Escalation notes']
     },
     {
       number: '02',
-      title: 'Connect Your Stack',
-      description: 'Integrate with your phone system, calendar, and CRM in one click. Works with 50+ tools out of the box.',
-      icon: Puzzle,
+      title: 'Connect the basics',
+      description: 'Attach the business number, calendar, and caller records your team already depends on.',
+      icon: Cable,
       color: 'indigo',
-      features: ['VoIP Ready', 'Two-Way Sync', 'API Access']
+      features: ['Phone number', 'Calendar sync', 'Caller history']
     },
     {
       number: '03',
-      title: 'Answer Every Call',
-      description: 'Your AI agent picks up instantly, handles complex conversations, and books appointments while you focus on growth.',
-      icon: Phone,
+      title: 'Start answering',
+      description: 'Calls are answered, summarized, and routed with the same workflow every time.',
+      icon: PhoneIncoming,
       color: 'violet',
-      features: ['24/7 Uptime', 'Smart Routing', 'Live Transcripts']
+      features: ['Call summaries', 'Routing', 'Follow-up notes']
     }
   ];
 
   return (
     <section ref={sectionRef} id="how-it-works" className="-mt-8 md:-mt-14 pt-4 md:pt-8 pb-12 md:pb-16 px-6 md:px-8 relative overflow-hidden bg-transparent">
-      {/* Animated background */}
-      <div className="absolute inset-0 z-0 bg-grid-slate-900/[0.03] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
-
-
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-8 md:mb-12">
           <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 backdrop-blur-sm mb-5 md:mb-6 shadow-sm hover:shadow-md transition-shadow">
-            <Sparkles className="h-4 w-4 text-blue-600 fill-blue-600/20" />
+            <ClipboardList className="h-4 w-4 text-slate-700" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">How It Works</span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-[-0.03em] text-slate-900 mb-4 md:mb-5 leading-[1.1] md:leading-[1.05]">
-            Your voice, <br />
-            <span className="text-slate-900 italic tracking-tight">supercharged by AI.</span>
+          <h2 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-normal text-slate-900 mb-4 md:mb-5 leading-[1.1] md:leading-[1.05]">
+            Setup that follows <br />
+            how your desk works.
           </h2>
 
           <p className="text-base md:text-xl text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
-            Deploy an intelligent voice agent that represents your brand. Handle calls, book meetings, and qualify leads around the clock.
+            Start with the everyday details: what callers ask, what your team needs, and when the call should move to a real person.
           </p>
         </div>
 
         <div className="relative mb-14 md:mb-24">
           {/* Timeline connector (desktop) */}
-          <div
-            aria-hidden="true"
-            className="hidden lg:block absolute top-7 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent"
-          />
+          <div aria-hidden="true" className="hidden lg:block absolute top-7 inset-x-0 h-px bg-slate-200" />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-10">
             {steps.map((step, index) => {
@@ -129,7 +122,7 @@ export function HowItWorks() {
                       >
                         Step {step.number}
                       </span>
-                      <h3 className="mt-1 text-xl md:text-2xl font-bold tracking-tight text-slate-900">
+                      <h3 className="mt-1 text-xl md:text-2xl font-bold tracking-normal text-slate-900">
                         {step.title}
                       </h3>
                     </div>
@@ -169,13 +162,8 @@ export function HowItWorks() {
         </div>
 
         {/* Live Demo Section - Voice AI Showcase */}
-        <div className="relative p-1 md:p-2 bg-slate-100 border border-slate-200 rounded-[3rem] shadow-sm overflow-hidden">
-          <div className="absolute inset-0 bg-slate-50/50 animate-pulse" />
-
-          <div className="relative bg-white rounded-[2.8rem] p-8 md:p-16 overflow-hidden border border-slate-100">
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-slate-50 to-transparent pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-1/3 h-full bg-gradient-to-r from-slate-50 to-transparent pointer-events-none" />
-
+        <div className="relative border border-slate-200 rounded-2xl shadow-sm overflow-hidden bg-white">
+          <div className="relative p-8 md:p-16 overflow-hidden">
             <div className="relative z-10 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
               <div>
                 <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-blue-500/20 relative overflow-hidden">
@@ -203,19 +191,17 @@ export function HowItWorks() {
                   </div>
                 </div>
 
-                <h3 className="font-bold text-3xl sm:text-5xl leading-[1.1] md:leading-[1.05] tracking-tight mb-4 md:mb-6 text-slate-900">
-                  Hear it in <br />
-                  <span className="text-blue-600 italic underline decoration-blue-200 decoration-2 md:decoration-4 underline-offset-8 tracking-tight">action.</span>
+                <h3 className="font-bold text-3xl sm:text-5xl leading-[1.1] md:leading-[1.05] tracking-normal mb-4 md:mb-6 text-slate-900">
+                  Try the phone flow before you trust it.
                 </h3>
 
                 <p className="text-slate-600 font-medium leading-relaxed mb-6 md:mb-8 text-base md:text-lg">
-                  Don't take our word for it. Press the button and have a real conversation with our AI —
-                  natural pauses, empathy, and instant answers, live from your browser.
+                  Use the live browser call to hear pacing, interruptions, and how the receptionist handles ordinary questions.
                 </p>
 
                 <div className="flex flex-wrap gap-3">
-                  {['Human-Like Latency', 'Context Awareness', 'Instant Booking'].map((tag) => (
-                    <span key={tag} className="px-5 py-2 bg-slate-50 border border-slate-200 text-blue-600 text-[10px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-default">
+                  {['Pacing', 'Interruptions', 'Booking rules'].map((tag) => (
+                    <span key={tag} className="px-5 py-2 bg-slate-50 border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-[0.2em] rounded-full transition-colors cursor-default">
                       {tag}
                     </span>
                   ))}

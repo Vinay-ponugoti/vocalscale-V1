@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import type { BusinessHour } from '../../../types/business';
 import {
-  Clock, Zap
+  Clock, CalendarClock
 } from 'lucide-react';
 
 // --- Types & Constants ---
@@ -150,7 +150,7 @@ export const BusinessHoursSettings: React.FC = () => {
       <div className="flex flex-col justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-50 text-cyan-700">
-            <Zap size={16} />
+            <CalendarClock size={16} />
           </div>
           <span className="text-sm font-black tracking-tight text-slate-950">Quick Presets</span>
         </div>

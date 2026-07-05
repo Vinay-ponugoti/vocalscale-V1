@@ -98,6 +98,8 @@ export function useCallLogs(filters: CallLogFilters & { customDate?: string }, p
     },
     placeholderData: keepPreviousData,
     staleTime: 30000, // 30 seconds
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
   });
 
   const logs = (data?.items || []).map((item: RawCallLog) => ({
@@ -141,7 +143,9 @@ export function useCallLogStats(filters: CallLogFilters & { customDate?: string 
       return response.json();
     },
     placeholderData: keepPreviousData,
-    staleTime: 30000
+    staleTime: 30000,
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
   });
 
   return {

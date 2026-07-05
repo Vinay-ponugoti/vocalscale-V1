@@ -12,7 +12,7 @@ import {
   Play,
   Search,
   ShieldCheck,
-  Sparkles,
+  Smile,
   Square,
   ToggleLeft,
   Volume2,
@@ -33,7 +33,7 @@ const LANGUAGES = [
 ];
 
 const TONES = [
-  { value: 'friendly', label: 'Friendly', description: 'Warm front-desk energy', Icon: Sparkles },
+  { value: 'friendly', label: 'Friendly', description: 'Warm front-desk energy', Icon: Smile },
   { value: 'professional', label: 'Professional', description: 'Clear and composed', Icon: BriefcaseBusiness },
   { value: 'casual', label: 'Casual', description: 'Relaxed and direct', Icon: Headphones },
 ];

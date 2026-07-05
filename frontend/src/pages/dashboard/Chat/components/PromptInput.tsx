@@ -7,7 +7,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
   X, Plus, ArrowUp, ChevronDown,
-  Frame, Palette, Sparkles, Zap, Bot, ImageIcon, FileText,
+  Frame, Palette, Gauge, Bot, ImageIcon, FileText,
 } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import type { FileAttachment, ModelOption } from '../../../../types/chat';
@@ -29,17 +29,17 @@ const MODELS: {
   dot: string;
   icon: React.ReactNode;
 }[] = [
-    { value: 'auto', label: 'Auto', short: 'Auto', dot: 'bg-blue-500', icon: <Sparkles size={12} /> },
-    { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash', short: 'Flash', dot: 'bg-emerald-500', icon: <Zap size={12} /> },
+    { value: 'auto', label: 'Auto', short: 'Auto', dot: 'bg-blue-500', icon: <Bot size={12} /> },
+    { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash', short: 'Flash', dot: 'bg-emerald-500', icon: <Gauge size={12} /> },
     { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', short: '2.5 Pro', dot: 'bg-violet-500', icon: <Bot size={12} /> },
     { value: 'imagen-4', label: 'Imagen 4', short: 'Imagen', dot: 'bg-orange-500', icon: <ImageIcon size={12} /> },
   ];
 
 const SLASH_COMMANDS = [
   { command: '/image', description: 'Generate an image', model: 'imagen-4' as ModelOption, prefix: 'Create an image of ', icon: <ImageIcon size={13} className="text-orange-500" /> },
-  { command: '/social', description: 'Write a social media post', model: 'gemini-2.5-pro' as ModelOption, prefix: 'Write a social media post about ', icon: <Sparkles size={13} className="text-violet-500" /> },
+  { command: '/social', description: 'Write a social media post', model: 'gemini-2.5-pro' as ModelOption, prefix: 'Write a social media post about ', icon: <FileText size={13} className="text-violet-500" /> },
   { command: '/email', description: 'Draft an email', model: 'gemini-2.5-pro' as ModelOption, prefix: 'Draft an email regarding ', icon: <Bot size={13} className="text-violet-500" /> },
-  { command: '/fast', description: 'Quick answer', model: 'gemini-2.0-flash' as ModelOption, prefix: '', icon: <Zap size={13} className="text-emerald-500" /> },
+  { command: '/fast', description: 'Quick answer', model: 'gemini-2.0-flash' as ModelOption, prefix: '', icon: <Gauge size={13} className="text-emerald-500" /> },
 ];
 
 const ASPECT_RATIOS = ['1:1', '16:9', '9:16', '4:3', '3:4'];
