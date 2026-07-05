@@ -127,7 +127,7 @@ export function Features() {
     {
       icon: BrainCircuit,
       title: 'Advanced AI Receptionist',
-      description: 'Our AI receptionist utilizes Deepgram Aura-2 technology to provide human-like conversations with 40+ high-fidelity voices. It handles calls with ultra-low latency, ensuring a natural flow that mimics human interaction perfectly. The system is capable of understanding complex queries, managing interruptions, and maintaining context throughout the conversation.',
+      description: 'Our AI receptionist uses next-generation neural voice technology to provide human-like conversations with 40+ high-fidelity voices. It handles calls with ultra-low latency, ensuring a natural flow that mimics human interaction perfectly. The system is capable of understanding complex queries, managing interruptions, and maintaining context throughout the conversation.',
       className: 'md:col-span-8 md:row-span-2 bg-white',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800',
