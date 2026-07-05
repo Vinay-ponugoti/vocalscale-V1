@@ -427,6 +427,9 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             />
             <span className="text-xs font-bold text-slate-400">1.5x</span>
           </div>
+          <p className="mt-3 text-xs font-medium leading-5 text-slate-400">
+            1.0x is the natural default. Changes apply to live calls and voice previews.
+          </p>
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-white p-5 xl:col-span-2">
