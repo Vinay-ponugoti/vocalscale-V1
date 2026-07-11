@@ -36,6 +36,7 @@ interface UsageData {
   success_rate?: number;
   overage_minutes?: number;
   estimated_cost?: number;
+  billing_period?: string;
 }
 
 const toNumber = (value: unknown, fallback = 0) => {
