@@ -20,7 +20,13 @@ import {
   CreditCard,
   Star,
   Brain,
-  BookOpen
+  BookOpen,
+  Bot,
+  Users,
+  TrendingUp,
+  Megaphone,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -49,7 +55,7 @@ interface DashboardLayoutProps {
 
 const SectionLabel = ({ label, sidebarOpen }: { label: string; sidebarOpen: boolean }) => (
   <h3 className={cn(
-    "px-6 mt-8 mb-3 text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-300 text-[hsl(var(--ds-stone))]",
+    "px-6 mt-8 mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] transition-all duration-300 text-[hsl(var(--ds-subtle-text))]",
     sidebarOpen ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
   )}>
     {label}
@@ -72,25 +78,25 @@ const NavItem = ({
   return (
     <Link
       to={item.path}
-      className={`group relative flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-5'} py-3 mx-2 rounded-xl text-sm font-bold transition-all duration-300 no-underline
+      className={`group relative flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-5'} py-2.5 mx-2 rounded-[10px] text-sm font-medium transition-all duration-300 no-underline
         ${isActive
-          ? 'text-blue-600 bg-blue-50 ring-1 ring-blue-100 shadow-sm' // Using DS Electric & Tint
-          : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+          ? 'text-slate-900 bg-slate-100 shadow-sm'
+          : 'text-slate-400 hover:bg-slate-50 hover:text-slate-700'
         } `}
       onClick={onClick}
       title={isCollapsed ? item.label : undefined}
     >
       {/* Active Indicator Bar */}
       {isActive && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-blue-600 rounded-r-full" />
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-emerald-400 rounded-r-full" />
       )}
 
-      <div className={`flex items-center gap-4 ${isCollapsed ? 'justify-center' : ''} `}>
-        <Icon size={18} strokeWidth={2.5} className={isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-700 transition-colors'} />
+      <div className={`flex items-center gap-3.5 ${isCollapsed ? 'justify-center' : ''} `}>
+        <Icon size={17} strokeWidth={2.25} className={isActive ? 'text-emerald-400' : 'text-slate-400 group-hover:text-slate-600 transition-colors'} />
         {!isCollapsed && <span className="transition-colors leading-relaxed py-0.5">{item.label}</span>}
       </div>
       {!isCollapsed && item.badge && (
-        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors ${isActive ? 'bg-blue-200 text-blue-800' : item.badgeColor || 'bg-blue-100 text-blue-700'} `}>
+        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors ${isActive ? 'bg-emerald-100 text-emerald-700' : item.badgeColor || 'bg-emerald-100 text-emerald-700'} `}>
           {item.badge}
         </span>
       )}
@@ -109,6 +115,16 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
   const { user, profile, signOut, loading } = useAuth();
   const { notifications, unreadCount, dismissNotification } = useNotifications();
   const { searchQuery, setSearchQuery, clearSearch } = useSearch();
+
+  const [theme, setTheme] = useState<'dark' | 'light'>(() =>
+    (localStorage.getItem('vs-theme') as 'dark' | 'light') || 'dark'
+  );
+  const toggleTheme = () => setTheme(t => {
+    const next = t === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('vs-theme', next);
+    return next;
+  });
+  const themeClass = theme === 'dark' ? 'vs-dark' : 'vs-light';
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -180,8 +196,8 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
   // Early return for loading state - AFTER all hooks are called
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className={cn(themeClass, "h-screen w-full flex items-center justify-center bg-[hsl(var(--ds-off-white))]")}>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
       </div>
     );
   }
@@ -215,14 +231,15 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
     <>
       <NavigationGuard isAuthenticated={!!user} />
       {/* Main Container - Using DS OffWhite for background */}
-      <div className="h-screen h-[100dvh] flex font-sans overflow-hidden bg-[hsl(var(--ds-off-white))]">
+      <div className={cn(themeClass, "h-screen h-[100dvh] flex font-sans overflow-hidden bg-[hsl(var(--ds-off-white))]")}>
 
         {/* SIDEBAR - Using DS White for surface */}
         <aside
           className={cn(
-            "hidden md:flex flex-col h-full transition-all duration-300 ease-in-out border-r border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-white))]",
+            "hidden md:flex flex-col h-full transition-all duration-300 ease-in-out border-r border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-surface))]",
             sidebarOpen ? 'w-[288px]' : 'w-[80px]'
           )}
+          onDoubleClick={() => setSidebarOpen(o => !o)}
         >
 
           {/* Logo Header */}
@@ -270,6 +287,11 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
               isActive={isActive('/dashboard')}
             />
             <NavItem
+              item={{ path: '/dashboard/insights', label: 'Performance', icon: TrendingUp }}
+              isCollapsed={!sidebarOpen}
+              isActive={isActive('/dashboard/insights')}
+            />
+            <NavItem
               item={{ path: '/dashboard/chat', label: 'Assistant Chat', icon: Brain }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/chat')}
@@ -280,6 +302,16 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
               item={{ path: '/dashboard/calls', label: 'Call Logs', icon: PhoneCall }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/calls')}
+            />
+            <NavItem
+              item={{ path: '/dashboard/contacts', label: 'Contacts', icon: Users }}
+              isCollapsed={!sidebarOpen}
+              isActive={isActive('/dashboard/contacts')}
+            />
+            <NavItem
+              item={{ path: '/dashboard/campaigns', label: 'Campaigns', icon: Megaphone }}
+              isCollapsed={!sidebarOpen}
+              isActive={isActive('/dashboard/campaigns')}
             />
             <NavItem
               item={{ path: '/dashboard/appointments', label: 'Appointments', icon: Calendar }}
@@ -302,6 +334,11 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
               item={{ path: '/dashboard/voice-setup', label: 'Voice Setup', icon: Layers }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/voice-setup')}
+            />
+            <NavItem
+              item={{ path: '/dashboard/agents', label: 'Agents', icon: Bot }}
+              isCollapsed={!sidebarOpen}
+              isActive={isActive('/dashboard/agents')}
             />
             <NavItem
               item={{ path: '/dashboard/knowledge', label: 'Knowledge', icon: BookOpen }}
@@ -333,20 +370,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
               {/* Sign Out Button */}
               <button
                 onClick={handleSignOut}
-                className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-5' : 'justify-center'} py-3 text-sm font-bold rounded-xl transition-all duration-300 group text-[hsl(var(--ds-stone))]`}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#FEF2F2'; // Very subtle red
-                  e.currentTarget.style.color = '#DC2626'; // Red
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  // Reset to DS stone color (HSL wrapper needed if inline, but class handles it now)
-                  // Actually, strictly speaking if we use class, inline style override persists.
-                  // Better to use classes for hover too if possible, but existing logic uses inline style for hover reset.
-                  // We can't easily rely on class for reset if we set inline style.
-                  // Let's stick to inline style for reset but use var CORRECTLY: `hsl(var(--ds-stone))`
-                  e.currentTarget.style.color = 'hsl(var(--ds-stone))';
-                }}
+                className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-5' : 'justify-center'} py-3 text-sm font-medium rounded-[10px] transition-all duration-300 group text-slate-400 hover:bg-rose-50 hover:text-rose-600`}
               >
                 <LogOut size={18} strokeWidth={2.5} className={sidebarOpen ? 'mr-3 group-hover:-translate-x-1 transition-transform' : ''} />
                 {sidebarOpen && <span>Log Out</span>}
@@ -433,7 +457,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
         <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
 
           {/* TOP NAVIGATION BAR — hidden for fullscreen pages like Chat */}
-          {!hideHeader && <header className="h-20 backdrop-blur-xl border-b border-[hsl(var(--ds-border))] shrink-0 z-50 px-2 md:px-10 flex items-center justify-between transition-all duration-300" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)' }}>
+          {!hideHeader && <header className="h-20 backdrop-blur-xl border-b border-[hsl(var(--ds-border))] shrink-0 z-50 px-2 md:px-10 flex items-center justify-between transition-all duration-300 bg-[hsl(var(--ds-off-white)/0.85)]">
 
             {/* Mobile Menu Toggle - Always visible on mobile, positioned at start */}
             <button
@@ -494,6 +518,14 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
 
               {/* Icon Actions */}
               <div className="flex items-center gap-1 border-r pr-2 md:pr-4 border-[hsl(var(--ds-border))]">
+                <button
+                  onClick={toggleTheme}
+                  aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+                  title={theme === 'dark' ? 'Light theme' : 'Dark theme'}
+                  className="p-2.5 rounded-xl transition-all text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+                >
+                  {theme === 'dark' ? <Sun size={20} strokeWidth={2.25} /> : <Moon size={20} strokeWidth={2.25} />}
+                </button>
                 <Link
                   to="/dashboard/billing"
                   className={cn(
@@ -595,7 +627,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
         {/* MOBILE MENU OVERLAY */}
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-50 md:hidden backdrop-blur-sm animate-in fade-in duration-200" style={{ backgroundColor: 'rgba(31, 41, 55, 0.4)' }} onClick={() => setMobileMenuOpen(false)}>
-            <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col animate-in slide-in-from-left duration-300 bg-[hsl(var(--ds-white))]" onClick={e => e.stopPropagation()}>
+            <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col animate-in slide-in-from-left duration-300 bg-[hsl(var(--ds-surface))]" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
                   <div className="flex items-center gap-3">
@@ -617,6 +649,11 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                     onClick={() => setMobileMenuOpen(false)}
                   />
                   <NavItem
+                    item={{ path: '/dashboard/insights', label: 'Performance', icon: TrendingUp }}
+                    isActive={isActive('/dashboard/insights')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  <NavItem
                     item={{ path: '/dashboard/chat', label: 'Assistant Chat', icon: Brain }}
                     isActive={isActive('/dashboard/chat')}
                     onClick={() => setMobileMenuOpen(false)}
@@ -628,6 +665,16 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                   <NavItem
                     item={{ path: '/dashboard/calls', label: 'Call Logs', icon: PhoneCall }}
                     isActive={isActive('/dashboard/calls')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  <NavItem
+                    item={{ path: '/dashboard/contacts', label: 'Contacts', icon: Users }}
+                    isActive={isActive('/dashboard/contacts')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  <NavItem
+                    item={{ path: '/dashboard/campaigns', label: 'Campaigns', icon: Megaphone }}
+                    isActive={isActive('/dashboard/campaigns')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
                   <NavItem
@@ -652,6 +699,11 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                   <NavItem
                     item={{ path: '/dashboard/voice-setup', label: 'Voice Setup', icon: Layers }}
                     isActive={isActive('/dashboard/voice-setup')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  <NavItem
+                    item={{ path: '/dashboard/agents', label: 'Agents', icon: Bot }}
+                    isActive={isActive('/dashboard/agents')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
                   <NavItem
@@ -685,15 +737,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                       handleSignOut();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-start px-5 py-3 mx-2 text-sm font-bold rounded-xl transition-colors group mt-4 text-[hsl(var(--ds-stone))]"
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#FEF2F2';
-                      e.currentTarget.style.color = '#DC2626';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = 'hsl(var(--ds-stone))';
-                    }}
+                    className="w-full flex items-center justify-start px-5 py-3 mx-2 text-sm font-medium rounded-[10px] transition-colors group mt-4 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
                   >
                     <LogOut size={18} strokeWidth={2.5} className="mr-3 group-hover:translate-x-1 transition-transform" />
                     <span>Log Out</span>

@@ -134,13 +134,13 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
     setSending(false);
   }, [log.id]);
 
-  const handleFollowUpCall = async () => {
-    if (!log.phone_number || instruction.trim().length < 5) return;
+  const placeCall = async (text: string) => {
+    if (!log.phone_number || text.trim().length < 5) return;
     setFollowUpError(null);
     setFollowUpSuccess(null);
     setSending(true);
     try {
-      await callsApi.startOutboundCall(log.phone_number, instruction.trim(), log.caller_name);
+      await callsApi.startOutboundCall(log.phone_number, text.trim(), log.caller_name);
       setFollowUpSuccess('Call placed! Watch the Outbound tab for the result and transcript.');
       setInstruction('');
     } catch (err) {
@@ -149,6 +149,13 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
       setSending(false);
     }
   };
+
+  const handleFollowUpCall = () => placeCall(instruction);
+
+  // One-click recovery for missed calls — no typing needed.
+  const MISSED_CALLBACK_INSTRUCTION =
+    'This customer called us but the call was missed. Apologize briefly for missing them, then help with whatever they were calling about.';
+  const handleQuickCallback = () => placeCall(MISSED_CALLBACK_INSTRUCTION);
 
   const isOutbound = log.direction === 'outbound';
 
@@ -369,6 +376,24 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                 <h2 className="text-base font-black tracking-tight text-slate-950">AI follow-up call</h2>
               </div>
               <div className="space-y-3 p-4">
+                {isMissed && !isOutbound && (
+                  <button
+                    onClick={handleQuickCallback}
+                    disabled={sending}
+                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-left transition hover:border-rose-300 hover:bg-rose-100/70 disabled:opacity-60"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold text-rose-800">Missed call — recover it now</span>
+                      <span className="block truncate text-xs text-rose-600">
+                        One click: the AI calls back, apologizes, and helps with what they needed.
+                      </span>
+                    </span>
+                    <span className="flex shrink-0 items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white">
+                      {sending ? <Loader2 size={13} className="animate-spin" /> : <PhoneOutgoing size={13} />}
+                      AI call back
+                    </span>
+                  </button>
+                )}
                 <p className="text-xs font-medium leading-5 text-slate-500">
                   Tell the AI what to accomplish — it calls {log.caller_name && log.caller_name !== 'Unknown' ? log.caller_name : 'this customer'} right away and handles it.
                 </p>

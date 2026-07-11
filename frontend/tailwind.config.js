@@ -12,29 +12,32 @@ export default {
          60% White / 30% Charcoal / 10% Electric Blue
          ======================================== */
       colors: {
-        /* White Palette (60%) */
-        white: {
-          DEFAULT: '#FFFFFF',
-          soft: '#F8FAFC',     /* Slate 50 */
-          light: '#F1F5F9',    /* Slate 100 */
-        },
+        /* Palettes below resolve through --twc-* vars (src/theme-vibe.css):
+           stock Tailwind values at :root, dark "Vibe Coded SaaS" values
+           inside .vs-dark (the post-login dashboard shell). */
+        white: { DEFAULT: 'rgb(var(--twc-white) / <alpha-value>)', soft: '#F8FAFC', light: '#F1F5F9' },
+        slate: { 50: 'rgb(var(--twc-slate-50) / <alpha-value>)', 100: 'rgb(var(--twc-slate-100) / <alpha-value>)', 200: 'rgb(var(--twc-slate-200) / <alpha-value>)', 300: 'rgb(var(--twc-slate-300) / <alpha-value>)', 400: 'rgb(var(--twc-slate-400) / <alpha-value>)', 500: 'rgb(var(--twc-slate-500) / <alpha-value>)', 600: 'rgb(var(--twc-slate-600) / <alpha-value>)', 700: 'rgb(var(--twc-slate-700) / <alpha-value>)', 800: 'rgb(var(--twc-slate-800) / <alpha-value>)', 900: 'rgb(var(--twc-slate-900) / <alpha-value>)', 950: 'rgb(var(--twc-slate-950) / <alpha-value>)' },
+        gray: { 50: 'rgb(var(--twc-gray-50) / <alpha-value>)', 100: 'rgb(var(--twc-gray-100) / <alpha-value>)', 200: 'rgb(var(--twc-gray-200) / <alpha-value>)', 300: 'rgb(var(--twc-gray-300) / <alpha-value>)', 400: 'rgb(var(--twc-gray-400) / <alpha-value>)', 500: 'rgb(var(--twc-gray-500) / <alpha-value>)', 600: 'rgb(var(--twc-gray-600) / <alpha-value>)', 700: 'rgb(var(--twc-gray-700) / <alpha-value>)', 800: 'rgb(var(--twc-gray-800) / <alpha-value>)', 900: 'rgb(var(--twc-gray-900) / <alpha-value>)', 950: 'rgb(var(--twc-gray-950) / <alpha-value>)' },
+        zinc: { 50: 'rgb(var(--twc-zinc-50) / <alpha-value>)', 100: 'rgb(var(--twc-zinc-100) / <alpha-value>)', 200: 'rgb(var(--twc-zinc-200) / <alpha-value>)', 300: 'rgb(var(--twc-zinc-300) / <alpha-value>)', 400: 'rgb(var(--twc-zinc-400) / <alpha-value>)', 500: 'rgb(var(--twc-zinc-500) / <alpha-value>)', 600: 'rgb(var(--twc-zinc-600) / <alpha-value>)', 700: 'rgb(var(--twc-zinc-700) / <alpha-value>)', 800: 'rgb(var(--twc-zinc-800) / <alpha-value>)', 900: 'rgb(var(--twc-zinc-900) / <alpha-value>)', 950: 'rgb(var(--twc-zinc-950) / <alpha-value>)' },
+        blue: { 50: 'rgb(var(--twc-blue-50) / <alpha-value>)', 100: 'rgb(var(--twc-blue-100) / <alpha-value>)', 200: 'rgb(var(--twc-blue-200) / <alpha-value>)', 300: 'rgb(var(--twc-blue-300) / <alpha-value>)', 400: 'rgb(var(--twc-blue-400) / <alpha-value>)', 500: 'rgb(var(--twc-blue-500) / <alpha-value>)', 600: 'rgb(var(--twc-blue-600) / <alpha-value>)', 700: 'rgb(var(--twc-blue-700) / <alpha-value>)', 800: 'rgb(var(--twc-blue-800) / <alpha-value>)', 900: 'rgb(var(--twc-blue-900) / <alpha-value>)', 950: 'rgb(var(--twc-blue-950) / <alpha-value>)', electric: '#3B82F6', dark: '#2563EB', darker: '#1D4ED8', light: '#60A5FA', muted: '#DBEAFE' },
+        cyan: { 50: 'rgb(var(--twc-cyan-50) / <alpha-value>)', 100: 'rgb(var(--twc-cyan-100) / <alpha-value>)', 200: 'rgb(var(--twc-cyan-200) / <alpha-value>)', 300: 'rgb(var(--twc-cyan-300) / <alpha-value>)', 400: 'rgb(var(--twc-cyan-400) / <alpha-value>)', 500: 'rgb(var(--twc-cyan-500) / <alpha-value>)', 600: 'rgb(var(--twc-cyan-600) / <alpha-value>)', 700: 'rgb(var(--twc-cyan-700) / <alpha-value>)', 800: 'rgb(var(--twc-cyan-800) / <alpha-value>)', 900: 'rgb(var(--twc-cyan-900) / <alpha-value>)', 950: 'rgb(var(--twc-cyan-950) / <alpha-value>)' },
+        indigo: { 50: 'rgb(var(--twc-indigo-50) / <alpha-value>)', 100: 'rgb(var(--twc-indigo-100) / <alpha-value>)', 200: 'rgb(var(--twc-indigo-200) / <alpha-value>)', 300: 'rgb(var(--twc-indigo-300) / <alpha-value>)', 400: 'rgb(var(--twc-indigo-400) / <alpha-value>)', 500: 'rgb(var(--twc-indigo-500) / <alpha-value>)', 600: 'rgb(var(--twc-indigo-600) / <alpha-value>)', 700: 'rgb(var(--twc-indigo-700) / <alpha-value>)', 800: 'rgb(var(--twc-indigo-800) / <alpha-value>)', 900: 'rgb(var(--twc-indigo-900) / <alpha-value>)', 950: 'rgb(var(--twc-indigo-950) / <alpha-value>)' },
+        violet: { 50: 'rgb(var(--twc-violet-50) / <alpha-value>)', 100: 'rgb(var(--twc-violet-100) / <alpha-value>)', 200: 'rgb(var(--twc-violet-200) / <alpha-value>)', 300: 'rgb(var(--twc-violet-300) / <alpha-value>)', 400: 'rgb(var(--twc-violet-400) / <alpha-value>)', 500: 'rgb(var(--twc-violet-500) / <alpha-value>)', 600: 'rgb(var(--twc-violet-600) / <alpha-value>)', 700: 'rgb(var(--twc-violet-700) / <alpha-value>)', 800: 'rgb(var(--twc-violet-800) / <alpha-value>)', 900: 'rgb(var(--twc-violet-900) / <alpha-value>)', 950: 'rgb(var(--twc-violet-950) / <alpha-value>)' },
+        purple: { 50: 'rgb(var(--twc-purple-50) / <alpha-value>)', 100: 'rgb(var(--twc-purple-100) / <alpha-value>)', 200: 'rgb(var(--twc-purple-200) / <alpha-value>)', 300: 'rgb(var(--twc-purple-300) / <alpha-value>)', 400: 'rgb(var(--twc-purple-400) / <alpha-value>)', 500: 'rgb(var(--twc-purple-500) / <alpha-value>)', 600: 'rgb(var(--twc-purple-600) / <alpha-value>)', 700: 'rgb(var(--twc-purple-700) / <alpha-value>)', 800: 'rgb(var(--twc-purple-800) / <alpha-value>)', 900: 'rgb(var(--twc-purple-900) / <alpha-value>)', 950: 'rgb(var(--twc-purple-950) / <alpha-value>)' },
+        emerald: { 50: 'rgb(var(--twc-emerald-50) / <alpha-value>)', 100: 'rgb(var(--twc-emerald-100) / <alpha-value>)', 200: 'rgb(var(--twc-emerald-200) / <alpha-value>)', 300: 'rgb(var(--twc-emerald-300) / <alpha-value>)', 400: 'rgb(var(--twc-emerald-400) / <alpha-value>)', 500: 'rgb(var(--twc-emerald-500) / <alpha-value>)', 600: 'rgb(var(--twc-emerald-600) / <alpha-value>)', 700: 'rgb(var(--twc-emerald-700) / <alpha-value>)', 800: 'rgb(var(--twc-emerald-800) / <alpha-value>)', 900: 'rgb(var(--twc-emerald-900) / <alpha-value>)', 950: 'rgb(var(--twc-emerald-950) / <alpha-value>)' },
+        green: { 50: 'rgb(var(--twc-green-50) / <alpha-value>)', 100: 'rgb(var(--twc-green-100) / <alpha-value>)', 200: 'rgb(var(--twc-green-200) / <alpha-value>)', 300: 'rgb(var(--twc-green-300) / <alpha-value>)', 400: 'rgb(var(--twc-green-400) / <alpha-value>)', 500: 'rgb(var(--twc-green-500) / <alpha-value>)', 600: 'rgb(var(--twc-green-600) / <alpha-value>)', 700: 'rgb(var(--twc-green-700) / <alpha-value>)', 800: 'rgb(var(--twc-green-800) / <alpha-value>)', 900: 'rgb(var(--twc-green-900) / <alpha-value>)', 950: 'rgb(var(--twc-green-950) / <alpha-value>)' },
+        red: { 50: 'rgb(var(--twc-red-50) / <alpha-value>)', 100: 'rgb(var(--twc-red-100) / <alpha-value>)', 200: 'rgb(var(--twc-red-200) / <alpha-value>)', 300: 'rgb(var(--twc-red-300) / <alpha-value>)', 400: 'rgb(var(--twc-red-400) / <alpha-value>)', 500: 'rgb(var(--twc-red-500) / <alpha-value>)', 600: 'rgb(var(--twc-red-600) / <alpha-value>)', 700: 'rgb(var(--twc-red-700) / <alpha-value>)', 800: 'rgb(var(--twc-red-800) / <alpha-value>)', 900: 'rgb(var(--twc-red-900) / <alpha-value>)', 950: 'rgb(var(--twc-red-950) / <alpha-value>)' },
+        rose: { 50: 'rgb(var(--twc-rose-50) / <alpha-value>)', 100: 'rgb(var(--twc-rose-100) / <alpha-value>)', 200: 'rgb(var(--twc-rose-200) / <alpha-value>)', 300: 'rgb(var(--twc-rose-300) / <alpha-value>)', 400: 'rgb(var(--twc-rose-400) / <alpha-value>)', 500: 'rgb(var(--twc-rose-500) / <alpha-value>)', 600: 'rgb(var(--twc-rose-600) / <alpha-value>)', 700: 'rgb(var(--twc-rose-700) / <alpha-value>)', 800: 'rgb(var(--twc-rose-800) / <alpha-value>)', 900: 'rgb(var(--twc-rose-900) / <alpha-value>)', 950: 'rgb(var(--twc-rose-950) / <alpha-value>)' },
+        amber: { 50: 'rgb(var(--twc-amber-50) / <alpha-value>)', 100: 'rgb(var(--twc-amber-100) / <alpha-value>)', 200: 'rgb(var(--twc-amber-200) / <alpha-value>)', 300: 'rgb(var(--twc-amber-300) / <alpha-value>)', 400: 'rgb(var(--twc-amber-400) / <alpha-value>)', 500: 'rgb(var(--twc-amber-500) / <alpha-value>)', 600: 'rgb(var(--twc-amber-600) / <alpha-value>)', 700: 'rgb(var(--twc-amber-700) / <alpha-value>)', 800: 'rgb(var(--twc-amber-800) / <alpha-value>)', 900: 'rgb(var(--twc-amber-900) / <alpha-value>)', 950: 'rgb(var(--twc-amber-950) / <alpha-value>)' },
+        orange: { 50: 'rgb(var(--twc-orange-50) / <alpha-value>)', 100: 'rgb(var(--twc-orange-100) / <alpha-value>)', 200: 'rgb(var(--twc-orange-200) / <alpha-value>)', 300: 'rgb(var(--twc-orange-300) / <alpha-value>)', 400: 'rgb(var(--twc-orange-400) / <alpha-value>)', 500: 'rgb(var(--twc-orange-500) / <alpha-value>)', 600: 'rgb(var(--twc-orange-600) / <alpha-value>)', 700: 'rgb(var(--twc-orange-700) / <alpha-value>)', 800: 'rgb(var(--twc-orange-800) / <alpha-value>)', 900: 'rgb(var(--twc-orange-900) / <alpha-value>)', 950: 'rgb(var(--twc-orange-950) / <alpha-value>)' },
 
-        /* Charcoal/Slate Palette (30%) */
+        /* Charcoal/Slate Palette (static, landing) */
         charcoal: {
           DEFAULT: '#1E293B',  /* Slate 800 */
           dark: '#0F172A',     /* Slate 900 */
           medium: '#334155',   /* Slate 700 */
           muted: '#475569',    /* Slate 600 */
           light: '#64748B',    /* Slate 500 */
-        },
-
-        /* Electric Blue Accent (10%) */
-        blue: {
-          electric: '#3B82F6', /* Blue 500 */
-          dark: '#2563EB',     /* Blue 600 */
-          darker: '#1D4ED8',   /* Blue 700 */
-          light: '#60A5FA',    /* Blue 400 */
-          muted: '#DBEAFE',    /* Blue 100 */
         },
 
         /* Brand Shorthand */

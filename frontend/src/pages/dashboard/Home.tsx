@@ -13,6 +13,10 @@ import CallVolumeChart from '../../components/dashboard/CallVolumeChart';
 import RecentTranscripts from '../../components/dashboard/RecentTranscripts';
 import DashboardSkeleton from '../../components/dashboard/DashboardSkeleton';
 import CalendarPicker from '../../components/dashboard/CalendarPicker';
+import StatusStrip from '../../components/dashboard/StatusStrip';
+import SetupChecklist from '../../components/dashboard/SetupChecklist';
+import NeedsAttention from '../../components/dashboard/NeedsAttention';
+import UpcomingAppointments from '../../components/dashboard/UpcomingAppointments';
 import { PAGE_PADDING } from '../../constants/layout';
 import { cn } from '../../lib/utils';
 import { reviewApi } from '../../api/reviewApi';
@@ -45,7 +49,15 @@ const Home = () => {
     }
   }, [timeRange]);
 
-  const { loading, isPlaceholderData, stats, recentCalls, appointments, chartData } = useDashboardData(selectedDate, daysCount, timezone);
+  const { loading, isPlaceholderData, stats, recentCalls, attentionCalls, appointments, chartData } = useDashboardData(selectedDate, daysCount, timezone);
+
+  const businessName = state.data.business.business_name?.trim();
+  const greeting = useMemo(() => {
+    const hour = toZonedTime(new Date(), timezone).getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }, [timezone]);
 
   useEffect(() => {
     let isMounted = true;
@@ -95,23 +107,24 @@ const Home = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className={cn("w-full animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full space-y-6", PAGE_PADDING)}>
+      <div className={cn("w-full animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full space-y-5", PAGE_PADDING)}>
 
         {/* --- Header Section --- */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-3xl font-black text-charcoal">
-                Overview
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+                {greeting}
+                {businessName ? <span className="text-slate-400"> — {businessName}</span> : ''}
               </h1>
               {isPlaceholderData && (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-electric/10 text-blue-electric rounded-full animate-pulse">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full animate-pulse">
                   <Clock size={12} className="animate-spin-slow" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Updating...</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider">Updating...</span>
                 </div>
               )}
             </div>
-            <p className="text-charcoal-light mt-1 text-sm font-medium">
+            <p className="mt-1 text-sm text-slate-500">
               Call coverage, bookings, and follow-up for your phone desk.
             </p>
           </div>
@@ -142,6 +155,12 @@ const Home = () => {
           </div>
         </div>
 
+        {/* --- Live status: number, agent, minutes --- */}
+        <StatusStrip />
+
+        {/* --- First-run setup checklist (self-hides when complete) --- */}
+        <SetupChecklist />
+
         {isInitialLoading ? (
           <DashboardSkeleton />
         ) : (
@@ -158,7 +177,7 @@ const Home = () => {
               />
             </div>
 
-            <div className="grid min-w-0 grid-cols-1 gap-4 md:gap-6 lg:gap-8 xl:grid-cols-3 2xl:grid-cols-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-4 md:gap-6 lg:gap-8 xl:grid-cols-3 2xl:grid-cols-4">
 
               {/* --- LEFT: CHART & CALLS --- */}
               <div className="min-w-0 space-y-4 md:space-y-6 lg:space-y-8 xl:col-span-2 2xl:col-span-3">
@@ -172,9 +191,11 @@ const Home = () => {
                 />
               </div>
 
-              {/* --- RIGHT: RECENT TRANSCRIPTS --- */}
-              <div className="min-w-0 xl:col-span-1 2xl:col-span-1 h-full">
+              {/* --- RIGHT: ACTION QUEUE, TRANSCRIPTS, APPOINTMENTS --- */}
+              <div className="min-w-0 space-y-4 xl:col-span-1 2xl:col-span-1">
+                <NeedsAttention calls={attentionCalls} />
                 <RecentTranscripts calls={recentCalls} />
+                <UpcomingAppointments appointments={appointments} />
               </div>
 
             </div>

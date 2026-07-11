@@ -150,21 +150,34 @@ class ChatAPI {
                   sources: data.sources || [],
                   intent: data.intent,
                   skill_used: data.skill_used,
+                  suggested_questions: data.suggested_questions,
+                  images: data.images,
+                  generation_id: data.generation_id,
+                  available_presets: data.available_presets,
+                  social_content: data.social_content ?? null,
                 });
 
               } else if (evt === 'error') {
                 // ── Error ───────────────────────────────────────────────────
                 console.error(`[SSE] error event: ${data.error}`);
-                onError(new Error(data.error || 'Unknown stream error'));
+                throw new Error(data.error || 'Unknown stream error');
 
               } else {
                 // ── Fallback: no event type — infer from payload ────────────
                 console.log(`[SSE] no event type — inferring from payload shape. keys: [${Object.keys(data).join(', ')}]`);
                 if (data.text) onChunk(data.text);
                 else if (data.session_id !== undefined) {
-                  onDone({ session_id: data.session_id, sources: data.sources || [] });
+                  onDone({
+                    session_id: data.session_id,
+                    sources: data.sources || [],
+                    suggested_questions: data.suggested_questions,
+                    images: data.images,
+                    generation_id: data.generation_id,
+                    available_presets: data.available_presets,
+                    social_content: data.social_content ?? null,
+                  });
                 } else if (data.error) {
-                  onError(new Error(data.error));
+                  throw new Error(data.error);
                 }
               }
 
@@ -182,14 +195,24 @@ class ChatAPI {
           const data = JSON.parse(buffer.slice(6));
           if (data.text) onChunk(data.text);
           if (data.session_id !== undefined) {
-            onDone({ session_id: data.session_id, sources: data.sources || [] });
+            onDone({
+              session_id: data.session_id,
+              sources: data.sources || [],
+              suggested_questions: data.suggested_questions,
+              images: data.images,
+              generation_id: data.generation_id,
+              available_presets: data.available_presets,
+              social_content: data.social_content ?? null,
+            });
           }
         } catch {
           // Ignore parse errors for final buffer
         }
       }
     } catch (error) {
-      onError(error instanceof Error ? error : new Error(String(error)));
+      const normalizedError = error instanceof Error ? error : new Error(String(error));
+      onError(normalizedError);
+      throw normalizedError;
     }
   }
 

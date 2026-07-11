@@ -53,7 +53,7 @@ const BusinessSetupContent = () => {
 
   return (
     <DashboardLayout fullWidth={true}>
-      <div className="flex h-full flex-col overflow-hidden bg-[#f7f8fb] text-slate-950">
+      <div className="flex h-full flex-col overflow-hidden bg-[hsl(var(--ds-off-white))] text-slate-950">
 
         <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-4 md:px-6 xl:px-8">
           <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -173,7 +173,7 @@ const BusinessSetupContent = () => {
             </div>
           </div>
 
-          <div className="scrollbar-hide relative flex-1 overflow-y-auto bg-[#f7f8fb]">
+          <div className="scrollbar-hide relative flex-1 overflow-y-auto bg-[hsl(var(--ds-off-white))]">
             <div className="mx-auto max-w-6xl px-4 py-5 pb-28 md:px-6 md:py-8 xl:px-10">
               <div className="animate-in fade-in slide-in-from-right-4 duration-300">
 

@@ -156,12 +156,19 @@ const CallLogsPage = () => {
     });
   };
 
+  // Each stat is a one-click filter shortcut — the alarm ("19 missed") and
+  // the action (see those calls) should be the same element.
   const compactStats = [
-    { label: 'Today', value: stats.callsToday, detail: `${stats.callsTrend} vs yesterday`, tone: 'text-slate-950', accent: 'border-slate-200' },
-    { label: 'Missed', value: stats.missedCalls, detail: 'needs review', tone: 'text-rose-600', accent: 'border-rose-100 bg-rose-50/40' },
-    { label: 'Handled', value: `${stats.handledRate}%`, detail: 'completed', tone: 'text-emerald-600', accent: 'border-emerald-100 bg-emerald-50/40' },
-    { label: 'Follow-ups', value: stats.followUpCalls, detail: 'needs callback', tone: 'text-amber-600', accent: 'border-amber-100 bg-amber-50/40' }
+    { label: 'Today', value: stats.callsToday, detail: `${stats.callsTrend} vs yesterday`, tone: 'text-slate-950', accent: 'border-slate-200', filter: { status: 'All', dateRange: '24h' } },
+    { label: 'Missed', value: stats.missedCalls, detail: 'needs review', tone: 'text-rose-600', accent: 'border-rose-100 bg-rose-50/40', filter: { status: 'Missed' } },
+    { label: 'Handled', value: `${stats.handledRate}%`, detail: 'completed', tone: 'text-emerald-600', accent: 'border-emerald-100 bg-emerald-50/40', filter: { status: 'Completed' } },
+    { label: 'Follow-ups', value: stats.followUpCalls, detail: 'needs callback', tone: 'text-amber-600', accent: 'border-amber-100 bg-amber-50/40', filter: { status: 'Action Req' } }
   ];
+
+  const applyStatShortcut = (filter: Record<string, string>) => {
+    setFilters(prev => ({ ...prev, ...filter }));
+    setPage(1);
+  };
 
   const listControls = (
     <div className="space-y-3 border-b border-slate-200 bg-white p-4">
@@ -270,7 +277,7 @@ const CallLogsPage = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex h-full flex-col gap-3 overflow-y-auto bg-[#f7f8fb] px-3 py-3 text-slate-950 md:gap-4 md:overflow-hidden md:px-6 md:py-4 lg:px-8">
+      <div className="flex h-full flex-col gap-3 overflow-y-auto bg-[hsl(var(--ds-off-white))] px-3 py-3 text-slate-950 md:gap-4 md:overflow-hidden md:px-6 md:py-4 lg:px-8">
 
         <div className="shrink-0">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -289,13 +296,19 @@ const CallLogsPage = () => {
             <div className="flex min-w-0 items-stretch gap-2">
               <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 sm:grid-cols-4 lg:flex-none">
                 {compactStats.map((item) => (
-                  <div key={item.label} className={`min-w-0 rounded-lg border bg-white px-2.5 py-1.5 shadow-sm shadow-slate-200/50 sm:px-3 lg:w-[140px] xl:w-[160px] ${item.accent}`}>
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => applyStatShortcut(item.filter)}
+                    title={`Show ${item.label.toLowerCase()} calls`}
+                    className={`min-w-0 rounded-lg border bg-white px-2.5 py-1.5 text-left shadow-sm shadow-slate-200/50 transition hover:shadow focus:outline-none focus:ring-2 focus:ring-cyan-100 sm:px-3 lg:w-[140px] xl:w-[160px] ${item.accent}`}
+                  >
                     <div className="flex items-start justify-between gap-2 sm:items-baseline">
                       <span className="truncate text-xs font-semibold text-slate-500">{item.label}</span>
                       <span className={`text-sm font-black sm:text-base ${item.tone}`}>{item.value}</span>
                     </div>
                     <p className="mt-0.5 truncate text-xs font-medium text-slate-400">{item.detail}</p>
-                  </div>
+                  </button>
                 ))}
               </div>
               <div ref={exportRef} className="relative shrink-0">
@@ -394,7 +407,7 @@ const CallLogsPage = () => {
             {/* Right Panel: Detail View */}
             <div className={`
               ${selectedLogId ? 'flex' : 'hidden md:flex'} 
-              scrollbar-hide min-h-0 min-w-0 flex-1 bg-[#f7f8fb] overflow-y-auto relative
+              scrollbar-hide min-h-0 min-w-0 flex-1 bg-[hsl(var(--ds-off-white))] overflow-y-auto relative
             `}>
               {selectedLogId ? (
                 singleLoading ? (

@@ -68,7 +68,7 @@ const NumberDetails = () => {
     if (numbersLoading) {
         return (
             <DashboardLayout fullWidth>
-                <div className="flex min-h-screen items-center justify-center bg-[#f7f8fb]">
+                <div className="flex min-h-screen items-center justify-center bg-[hsl(var(--ds-off-white))]">
                     <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50">
                         <div className="h-7 w-7 animate-spin rounded-full border-2 border-cyan-700 border-t-transparent"></div>
                     </div>
@@ -80,7 +80,7 @@ const NumberDetails = () => {
     if (!number) {
         return (
             <DashboardLayout fullWidth>
-                <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f7f8fb] p-6 text-center">
+                <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[hsl(var(--ds-off-white))] p-6 text-center">
                     <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-slate-200 bg-white">
                         <ShieldAlert className="h-8 w-8 text-slate-400" />
                     </div>
@@ -102,7 +102,7 @@ const NumberDetails = () => {
 
     return (
         <DashboardLayout fullWidth>
-            <main className="scrollbar-hide flex h-full flex-1 flex-col overflow-y-auto bg-[#f7f8fb] text-slate-950">
+            <main className="scrollbar-hide flex h-full flex-1 flex-col overflow-y-auto bg-[hsl(var(--ds-off-white))] text-slate-950">
 
 
                 <div className="mx-auto w-full max-w-[1500px] space-y-5 px-4 py-5 md:px-6 md:py-8 xl:px-8">

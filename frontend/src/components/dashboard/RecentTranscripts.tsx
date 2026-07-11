@@ -12,6 +12,8 @@ interface Call {
   category: string;
   transcript_snippet?: string;
   summary?: string;
+  phone_number?: string;
+  caller_phone?: string;
 }
 
 interface RecentTranscriptsProps {
@@ -47,7 +49,7 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
 
   const displayedCalls = [...calls]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 4);
+    .slice(0, 5);
 
   return (
     <Card className="flex h-full min-w-0 flex-col rounded-lg border border-slate-200 bg-white shadow-sm hover:border-slate-300 hover:shadow-sm">
@@ -93,11 +95,21 @@ const RecentTranscripts: React.FC<RecentTranscriptsProps> = ({ calls }) => {
               >
                 <div className="flex items-start gap-4">
                   <div className="relative shrink-0">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+                    {/* Avatar deep-links to the caller's contact card when we know the number */}
+                    <button
+                      title={call.phone_number || call.caller_phone ? 'View contact' : undefined}
+                      onClick={(e) => {
+                        const phone = call.phone_number || call.caller_phone;
+                        if (!phone) return; // fall through to the row click
+                        e.stopPropagation();
+                        navigate(`/dashboard/contacts?phone=${encodeURIComponent(phone)}`);
+                      }}
+                      className="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 transition hover:border-blue-300 hover:bg-blue-50"
+                    >
                       <span className="text-sm font-black text-charcoal-medium">
                         {(call.caller_name || "U").charAt(0).toUpperCase()}
                       </span>
-                    </div>
+                    </button>
                     {call.category === 'urgent' && (
                       <span className="absolute -top-1 -right-1 flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>

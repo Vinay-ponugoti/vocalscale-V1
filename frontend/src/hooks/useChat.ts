@@ -161,9 +161,20 @@ export function useChat(sessionId: string | null) {
         (data) => {
           returnedSessionId = data.session_id || null;
           receivedSuggestedQuestions = data.suggested_questions;
+          if (data.images?.length && receivedImages.length === 0) {
+            receivedImages = data.images;
+            receivedGenerationId = data.generation_id;
+            receivedPresets = data.available_presets || {};
+            receivedSocialContent = data.social_content ?? null;
+            hasLocalImagesRef.current = true;
+            setPendingImages(data.images);
+            setImageStatus('complete');
+          }
         },
         // onError
-        (err) => { throw err; },
+        (err) => {
+          setError(err.message || 'Failed to generate response');
+        },
         // onImageStatus
         (status) => {
           setImageStatus(status as ImageStatus);

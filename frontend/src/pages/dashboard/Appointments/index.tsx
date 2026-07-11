@@ -10,7 +10,7 @@ import {
 } from 'date-fns';
 import {
   ChevronLeft, ChevronRight, Plus, Clock, Moon, Sun,
-  X, Layers, FileText, GripVertical, MapPin, Phone, Trash2
+  X, Layers, FileText, GripVertical, MapPin, Phone, Trash2, Pencil
 } from 'lucide-react';
 
 import {
@@ -20,20 +20,20 @@ import {
 
 // --- DESIGN SYSTEM COLORS (Consistent with DashboardLayout) ---
 const DS = {
-  white: '#FFFFFF',
-  surface: '#FAFBFC',
-  offWhite: '#F5F7FA',
-  border: '#CBD5E1',
-  ink: '#1F2937',
-  charcoal: '#374151',
-  stone: '#4B5563',
-  subtleText: '#9CA3AF',
-  electric: '#3B82F6',
-  electricDark: '#2563EB',
-  electricLight: '#EFF6FF',
-  electricTint: 'rgba(59, 130, 246, 0.1)',
-  danger: '#EF4444',
-  dangerBg: '#FEF2F2'
+  white: 'hsl(var(--ds-white))',
+  surface: 'hsl(var(--ds-off-white))',
+  offWhite: 'hsl(var(--ds-off-white))',
+  border: 'rgb(var(--twc-slate-300))',
+  ink: 'rgb(var(--twc-slate-800))',
+  charcoal: 'rgb(var(--twc-slate-700))',
+  stone: 'rgb(var(--twc-slate-600))',
+  subtleText: 'rgb(var(--twc-slate-400))',
+  electric: 'hsl(var(--chart-1))',
+  electricDark: 'hsl(var(--chart-1))',
+  electricLight: 'rgb(var(--twc-blue-50))',
+  electricTint: 'hsl(var(--ds-electric-tint))',
+  danger: 'rgb(var(--twc-red-500))',
+  dangerBg: 'rgb(var(--twc-red-50))'
 };
 
 // ============ CUSTOM HOOKS ============
@@ -88,7 +88,7 @@ const FullScreenAppointments: React.FC = () => {
 
   useEffect(() => {
     if (isMobile) {
-      // eslint-disable-next-line
+       
       setViewMode('day');
     }
   }, [isMobile]);
@@ -97,6 +97,44 @@ const FullScreenAppointments: React.FC = () => {
   const [editForm, setEditForm] = useState<Partial<Appointment>>({});
   const [showWeekend, setShowWeekend] = useState(true);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  // Notes side pane — separate from editForm so notes save without entering edit mode
+  const [noteDraft, setNoteDraft] = useState('');
+  const [noteStatus, setNoteStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  // Dialog drag offset — reset each time a new appointment opens
+  const [dialogPos, setDialogPos] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    setNoteDraft(appointments.find(a => a.id === selectedAppointment)?.notes || '');
+    setNoteStatus('idle');
+    setDialogPos({ x: 0, y: 0 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAppointment]);
+
+  const startDialogDrag = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest('button, input, textarea, a')) return;
+    e.preventDefault();
+    const originX = e.clientX - dialogPos.x;
+    const originY = e.clientY - dialogPos.y;
+    const move = (ev: PointerEvent) => setDialogPos({ x: ev.clientX - originX, y: ev.clientY - originY });
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  const handleSaveNotes = async () => {
+    if (!selectedAppointment || !updateAppointment) return;
+    setNoteStatus('saving');
+    try {
+      await updateAppointment(selectedAppointment, { notes: noteDraft });
+      setNoteStatus('saved');
+    } catch (err) {
+      console.error('Failed to save notes:', err);
+      setNoteStatus('idle');
+    }
+  };
 
   // New Appointment State
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
@@ -356,72 +394,28 @@ const FullScreenAppointments: React.FC = () => {
   };
 
   // ============ STATUS COLORS ============
+  // Google Calendar-style chips: solid fill, white text, no border.
   const getAppointmentColors = (appt: Appointment) => {
-    const isNight = isNightAppointment(appt);
-
     if (appt.status === 'Canceled') {
-      return {
-        bg: 'bg-slate-100',
-        hover: 'hover:bg-slate-200',
-        border: 'border-slate-400',
-        text: 'text-slate-500',
-        dot: 'bg-slate-500'
-      };
+      return { bg: 'bg-slate-200', hover: 'hover:bg-slate-300', text: 'text-slate-500' };
     }
-
-    // Google Calendar-style status colors: soft fill, strong left rule, dark text.
     if (appt.status === 'Pending') {
-      return {
-        bg: isNight ? 'bg-amber-100' : 'bg-amber-50',
-        hover: 'hover:bg-amber-100',
-        border: 'border-amber-500',
-        text: 'text-amber-950',
-        dot: 'bg-amber-500'
-      };
+      return { bg: 'bg-amber-500', hover: 'hover:bg-amber-600', text: 'text-white' };
     }
-
     if (appt.status === 'Scheduled' || appt.status === 'Confirmed') {
-      return {
-        bg: isNight ? 'bg-blue-100' : 'bg-blue-50',
-        hover: 'hover:bg-blue-100',
-        border: 'border-blue-600',
-        text: 'text-blue-950',
-        dot: 'bg-blue-600'
-      };
+      return { bg: 'bg-blue-600', hover: 'hover:bg-blue-700', text: 'text-white' };
     }
-
-    // Type-based fallback colors
     if (appt.type === 'Strategy') {
-      return {
-        bg: isNight ? 'bg-violet-100' : 'bg-violet-50',
-        hover: 'hover:bg-violet-100',
-        border: 'border-violet-600',
-        text: 'text-violet-950',
-        dot: 'bg-violet-600'
-      };
+      return { bg: 'bg-violet-500', hover: 'hover:bg-violet-600', text: 'text-white' };
     }
     if (appt.type === 'Consultation') {
-      return {
-        bg: isNight ? 'bg-emerald-100' : 'bg-emerald-50',
-        hover: 'hover:bg-emerald-100',
-        border: 'border-emerald-600',
-        text: 'text-emerald-950',
-        dot: 'bg-emerald-600'
-      };
+      return { bg: 'bg-emerald-600', hover: 'hover:bg-emerald-700', text: 'text-white' };
     }
-
-    // Default fallback
-    return {
-      bg: isNight ? 'bg-blue-100' : 'bg-blue-50',
-      hover: 'hover:bg-blue-100',
-      border: 'border-blue-600',
-      text: 'text-blue-950',
-      dot: 'bg-blue-600'
-    };
+    return { bg: 'bg-blue-600', hover: 'hover:bg-blue-700', text: 'text-white' };
   };
 
   const getRowHeight = () => {
-    return isMobile ? 'h-24' : 'h-20'; // Fixed height for scrolling
+    return isMobile ? 'h-16' : 'h-14'; // GCal-like density; fixed height for scrolling
   };
 
   const selectedApptData = appointments.find(a => a.id === selectedAppointment);
@@ -437,7 +431,8 @@ const FullScreenAppointments: React.FC = () => {
   const handleSaveEdit = async () => {
     if (!selectedAppointment || !updateAppointment) return;
     try {
-      await updateAppointment(selectedAppointment, editForm);
+      // notes live in the side pane; include the draft so it isn't overwritten with a stale value
+      await updateAppointment(selectedAppointment, { ...editForm, notes: noteDraft });
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to update appointment:', error);
@@ -521,19 +516,73 @@ const FullScreenAppointments: React.FC = () => {
 
         {/* Header removed — content moves up */}
 
-        {/* Controls Wrapper */}
-        <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 ${isMobile ? 'px-4 py-2' : 'px-6 py-3'} bg-slate-50/50 border-b`} style={{ borderColor: DS.border }}>
-          <div className="flex items-center justify-between w-full sm:w-auto gap-3">
-            {/* View Toggle - Move to left */}
-            <div className="flex p-1 rounded-xl bg-white border shadow-sm" style={{ borderColor: DS.border }}>
+        {/* Toolbar — Google Calendar style: Today · chevrons · big month title | options · view · create */}
+        <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 ${isMobile ? 'px-4 py-2' : 'px-6 py-3'} border-b`} style={{ borderColor: DS.border, backgroundColor: DS.white }}>
+          <div className="flex items-center w-full sm:w-auto gap-1 sm:gap-2">
+            <button
+              onClick={() => setCurrentDate(toZonedTime(new Date(), timezone))}
+              className="px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full border transition-colors hover:bg-slate-50"
+              style={{ color: DS.ink, borderColor: 'rgb(var(--twc-slate-300))', backgroundColor: DS.white }}
+            >
+              Today
+            </button>
+            <button
+              onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? -1 : -7))}
+              aria-label="Previous"
+              className="p-2 rounded-full transition-colors hover:bg-slate-100"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: DS.stone }} />
+            </button>
+            <button
+              onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? 1 : 7))}
+              aria-label="Next"
+              className="p-2 rounded-full transition-colors hover:bg-slate-100"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: DS.stone }} />
+            </button>
+            <h2 className="ml-1 sm:ml-2 text-base sm:text-xl font-normal whitespace-nowrap" style={{ color: DS.ink }}>
+              {viewMode === 'day'
+                ? format(currentDate, 'MMMM d, yyyy')
+                : format(weekStart, 'MMMM yyyy')
+              }
+            </h2>
+          </div>
+
+          <div className={`flex items-center gap-1.5 ${isMobile ? 'w-full justify-end' : ''}`}>
+            <button
+              onClick={() => setShow24Hours(!show24Hours)}
+              title={show24Hours ? "Show business hours" : "Show 24 hours"}
+              className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-slate-100"
+              style={{ color: show24Hours ? DS.electric : DS.stone }}
+            >
+              {show24Hours ? <Moon size={17} /> : <Sun size={17} />}
+            </button>
+            <button
+              onClick={() => setTimeFormat(f => f === '12h' ? '24h' : '12h')}
+              title={`Switch to ${timeFormat === '12h' ? '24h' : '12h'} format`}
+              className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-slate-100"
+              style={{ color: DS.stone }}
+            >
+              <Clock size={17} />
+            </button>
+            {viewMode === 'week' && (
+              <button
+                onClick={() => setShowWeekend(!showWeekend)}
+                title={showWeekend ? "Hide weekends" : "Show weekends"}
+                className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-slate-100"
+                style={{ color: showWeekend ? DS.stone : DS.electric }}
+              >
+                <Layers size={17} />
+              </button>
+            )}
+
+            {/* View switcher */}
+            <div className="ml-1 flex p-0.5 rounded-full border" style={{ borderColor: 'rgb(var(--twc-slate-300))' }}>
               {(['day', 'week'] as const).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
-                  className={`px-3 sm:px-5 py-1 text-[10px] sm:text-xs font-bold rounded-lg transition-all capitalize ${viewMode === mode
-                    ? 'bg-white shadow-sm'
-                    : 'hover:bg-gray-100'
-                    }`}
+                  className={`px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium rounded-full transition-all capitalize ${viewMode === mode ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
                   style={{ color: viewMode === mode ? DS.electric : DS.stone }}
                 >
                   {mode}
@@ -541,77 +590,13 @@ const FullScreenAppointments: React.FC = () => {
               ))}
             </div>
 
-            {/* Navigation - Move to right on mobile */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentDate(toZonedTime(new Date(), timezone))}
-                className="px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all"
-                style={{ color: DS.charcoal, backgroundColor: DS.offWhite }}
-              >
-                Today
-              </button>
-              <div className="flex items-center rounded-xl overflow-hidden" style={{ backgroundColor: DS.offWhite }}>
-                <button
-                  onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? -1 : -7))}
-                  className="p-1.5 sm:p-2 transition-colors hover:bg-gray-200"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5 sm:w-4 h-4" style={{ color: DS.charcoal }} />
-                </button>
-                <span className="px-2 sm:px-4 text-[10px] sm:text-xs font-bold min-w-[70px] sm:min-w-[120px] text-center" style={{ color: DS.ink }}>
-                  {viewMode === 'day'
-                    ? format(currentDate, 'MMM d')
-                    : `${format(weekStart, 'MMM d')} - ${format(addDays(weekStart, 6), 'MMM d')}`
-                  }
-                </span>
-                <button
-                  onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? 1 : 7))}
-                  className="p-1.5 sm:p-2 transition-colors hover:bg-gray-200"
-                >
-                  <ChevronRight className="w-3.5 h-3.5 sm:w-4 h-4" style={{ color: DS.charcoal }} />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Options - More compact on mobile */}
-          <div className={`flex items-center gap-2 ${isMobile ? 'w-full justify-end' : ''}`}>
-            <button
-              onClick={() => setShow24Hours(!show24Hours)}
-              title={show24Hours ? "Switch to Day View" : "Switch to 24h View"}
-              className={`flex-shrink-0 flex items-center justify-center ${isMobile ? 'w-8 h-8' : 'w-10 h-10'} rounded-xl transition-colors ${show24Hours ? 'text-indigo-700' : 'hover:bg-gray-200'
-                }`}
-              style={{ backgroundColor: show24Hours ? '#EEF2FF' : DS.offWhite, color: show24Hours ? '#4338CA' : DS.charcoal }}
-            >
-              {show24Hours ? <Moon size={isMobile ? 16 : 18} /> : <Sun size={isMobile ? 16 : 18} />}
-            </button>
-
-            <button
-              onClick={() => setTimeFormat(f => f === '12h' ? '24h' : '12h')}
-              title={`Switch to ${timeFormat === '12h' ? '24h' : '12h'} format`}
-              className={`flex-shrink-0 flex items-center justify-center ${isMobile ? 'w-8 h-8' : 'w-10 h-10'} rounded-xl transition-colors hover:bg-gray-200`}
-              style={{ backgroundColor: DS.offWhite, color: DS.charcoal }}
-            >
-              <Clock size={isMobile ? 16 : 18} />
-            </button>
-
-            {viewMode === 'week' && (
-              <button
-                onClick={() => setShowWeekend(!showWeekend)}
-                title={showWeekend ? "Hide Weekends" : "Show Weekends"}
-                className={`flex-shrink-0 flex items-center justify-center ${isMobile ? 'w-8 h-8' : 'w-10 h-10'} rounded-xl transition-colors ${showWeekend ? 'hover:bg-gray-200' : 'text-orange-700'
-                  }`}
-                style={{ backgroundColor: showWeekend ? DS.offWhite : '#FFEDD5', color: showWeekend ? DS.charcoal : '#C2410C' }}
-              >
-                <Layers size={isMobile ? 16 : 18} />
-              </button>
-            )}
-
             <button
               onClick={() => setIsNewModalOpen(true)}
-              className="hidden lg:flex flex-shrink-0 items-center justify-center w-10 h-10 text-white rounded-xl shadow-lg transition-all active:scale-95"
-              style={{ backgroundColor: DS.electric, boxShadow: `0 10px 15px -3px ${DS.electric}33` }}
+              className="hidden lg:flex flex-shrink-0 items-center gap-2 ml-1 pl-3 pr-4 h-10 text-white rounded-2xl shadow-md transition-all active:scale-95 text-sm font-medium"
+              style={{ backgroundColor: DS.electric }}
             >
-              <Plus size={20} />
+              <Plus size={18} />
+              Create
             </button>
           </div>
         </div>
@@ -619,57 +604,44 @@ const FullScreenAppointments: React.FC = () => {
         {/* ============ CALENDAR GRID ============ */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
-          {/* Days Header */}
+          {/* Days Header — GCal: small weekday caps over a large date, today gets a filled circle */}
           <div
-            className="flex-shrink-0 grid border-b-2"
+            className="flex-shrink-0 grid border-b"
             style={{
               gridTemplateColumns: viewMode === 'day' && !isMobile
                 ? `${isMobile ? '50px' : '65px'} repeat(${weekDays.length}, 1fr) 320px`
                 : `${isMobile ? '50px' : '65px'} repeat(${weekDays.length}, 1fr)`,
               borderColor: DS.border,
-              backgroundColor: DS.surface
+              backgroundColor: DS.white
             }}
           >
-            <div className="flex items-center justify-center py-2" style={{ borderRightColor: DS.border }}>
-              <Clock className="w-4 h-4" style={{ color: DS.subtleText }} />
-            </div>
+            <div />
             {weekDays.map((day, i) => {
               const isToday = isSameDay(day, new Date());
-              const dayAppts = getDayAppointments(day);
-              const hasNightAppts = dayAppts.some(isNightAppointment);
 
               return (
                 <div
                   key={i}
-                  className={`flex flex-col items-center justify-center ${isMobile ? 'py-1' : 'py-2 md:py-3'} border-r transition-colors ${isToday ? 'bg-blue-50/50' : ''
-                    }`}
+                  className={`flex flex-col items-center ${isMobile ? 'py-1.5' : 'py-2'} border-r`}
                   style={{ borderColor: DS.border }}
                 >
-                  {!isMobile && (
-                    <div className="flex items-center gap-1">
-                      <span className={`text-[10px] md:text-xs font-bold uppercase tracking-wider ${isToday ? DS.electric : DS.stone
-                        }`}>
-                        {format(day, 'EEE')}
-                      </span>
-                      {hasNightAppts && !show24Hours && (
-                        <Moon className="w-3 h-3 text-indigo-400" />
-                      )}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 mt-1 md:mt-2">
-                    <span className={`font-bold transition-all duration-300 ${isToday
-                      ? 'text-white bg-blue-600 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full text-sm md:text-lg shadow-lg shadow-blue-200 ring-2 ring-blue-100'
-                      : `${DS.ink} text-sm md:text-lg hover:text-blue-600`
-                      }`}>
-                      {format(day, 'd')}
-                    </span>
-                    {dayAppts.length > 0 && (
-                      <span className={`text-[9px] md:text-[10px] font-bold px-2 md:px-2.5 py-0.5 md:py-1 rounded-full shadow-sm transition-all ${isToday ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-200' : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'
-                        }`}>
-                        {dayAppts.length}
-                      </span>
-                    )}
-                  </div>
+                  <span
+                    className="text-[10px] md:text-[11px] font-medium uppercase tracking-wide"
+                    style={{ color: isToday ? DS.electric : DS.subtleText }}
+                  >
+                    {format(day, 'EEE')}
+                  </span>
+                  <button
+                    onClick={() => { setCurrentDate(day); setViewMode('day'); }}
+                    className={`mt-0.5 flex items-center justify-center rounded-full transition-colors ${isMobile ? 'w-8 h-8 text-base' : 'w-11 h-11 text-xl md:text-2xl'} ${isToday
+                      ? 'text-white bg-blue-600 hover:bg-blue-700'
+                      : 'hover:bg-slate-100'
+                      }`}
+                    style={isToday ? undefined : { color: DS.ink }}
+                    aria-label={format(day, 'EEEE, MMMM d')}
+                  >
+                    {format(day, 'd')}
+                  </button>
                 </div>
               );
             })}
@@ -691,22 +663,20 @@ const FullScreenAppointments: React.FC = () => {
             }}
           >
 
-            {/* Time Column */}
-            <div className="border-r sticky left-0 z-10 flex flex-col h-full" style={{ backgroundColor: DS.surface, borderColor: DS.border }}>
+            {/* Time Column — labels float on the hour line, GCal style */}
+            <div className="border-r sticky left-0 z-10 flex flex-col h-full" style={{ backgroundColor: DS.white, borderColor: DS.border }}>
               {hours.map((hour, hourIndex) => {
-                const isNightHour = hour < 7 || hour >= 21;
                 const isLastHour = hourIndex === hours.length - 1;
                 return (
                   <div
                     key={hour}
-                    className={`${getRowHeight()} flex items-start justify-end pr-2 md:pr-3 pt-2.5 border-b overflow-hidden ${isNightHour ? 'bg-slate-50/50' : ''
-                      } ${isLastHour ? 'mb-20' : ''}`}
-                    style={{ borderColor: '#CBD5E1' }}
+                    className={`${getRowHeight()} relative ${isLastHour ? 'mb-20' : ''}`}
                   >
-                    <span className={`text-[10px] md:text-xs font-bold tracking-tight ${isNightHour ? 'text-indigo-400' : 'text-slate-400'
-                      }`}>
-                      {formatHour(hour)}
-                    </span>
+                    {hourIndex > 0 && (
+                      <span className="absolute -top-2 right-2 md:right-3 text-[10px] md:text-[11px] font-medium text-slate-400">
+                        {formatHour(hour)}
+                      </span>
+                    )}
                   </div>
                 );
               })}
@@ -720,13 +690,11 @@ const FullScreenAppointments: React.FC = () => {
               return (
                 <div
                   key={dayIndex}
-                  className={`border-r relative flex flex-col transition-colors ${isToday ? 'bg-blue-50/30' : ''
-                    }`}
+                  className="border-r relative flex flex-col transition-colors"
                   style={{ borderColor: DS.border }}
                 >
                   {/* Hour Rows */}
                   {hours.map((hour, hourIndex) => {
-                    const isNightHour = hour < 7 || hour >= 21;
                     const isLastHour = hourIndex === hours.length - 1;
                     const isDropTarget = dragState.currentDropTarget?.day &&
                       isSameDay(dragState.currentDropTarget.day, day) &&
@@ -735,10 +703,9 @@ const FullScreenAppointments: React.FC = () => {
                     return (
                       <div
                         key={hour}
-                        className={`${getRowHeight()} border-b transition-colors ${isNightHour ? 'bg-slate-50/50' : ''
-                          } ${isDropTarget ? 'bg-blue-100/50 border-blue-300' : ''} ${dragState.isDragging ? 'cursor-copy' : ''
+                        className={`${getRowHeight()} border-b transition-colors ${isDropTarget ? 'bg-blue-100/50 border-blue-300' : ''} ${dragState.isDragging ? 'cursor-copy' : ''
                           } ${isLastHour ? 'mb-20' : ''}`} // Add margin to last hour for mobile scroll space
-                        style={{ borderColor: '#CBD5E1' }}
+                        style={{ borderColor: DS.border }}
                         onDragOver={(e) => handleDragOver(e, day, hour, 0)}
                         onDrop={(e) => handleDrop(e, day, hour, 0)}
                       >
@@ -797,13 +764,13 @@ const FullScreenAppointments: React.FC = () => {
                         draggable
                         onDragStart={(e) => handleDragStart(e, appt)}
                         onDragEnd={handleDragEnd}
-                        className={`absolute ${colors.bg} ${colors.hover} ${colors.text} 
-                        rounded-md shadow-sm cursor-grab active:cursor-grabbing 
-                        transition-colors duration-150 group overflow-hidden border border-l-[4px] ${colors.border}
+                        className={`absolute ${colors.bg} ${colors.hover} ${colors.text}
+                        rounded cursor-grab active:cursor-grabbing
+                        transition-colors duration-150 group overflow-hidden
                         hover:shadow-md hover:z-30
-                        ${isSelected ? 'ring-2 ring-blue-500 ring-offset-2 z-40 shadow-md' : 'z-20'}
+                        ${isSelected ? 'ring-2 ring-blue-500 ring-offset-1 z-40 shadow-md' : 'z-20'}
                         ${isDragging ? 'opacity-40 scale-95 shadow-none' : ''}
-                        ${appt.status === 'Canceled' ? 'opacity-60 shadow-none' : ''}`}
+                        ${appt.status === 'Canceled' ? 'opacity-70 line-through shadow-none' : ''}`}
                         style={{
                           top: pos.top,
                           height: pos.height,
@@ -824,51 +791,43 @@ const FullScreenAppointments: React.FC = () => {
                         {/* Night Indicator */}
                         {isNight && (
                           <div className="absolute top-1 md:top-1.5 right-1 md:right-1.5 z-10">
-                            <Moon className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-slate-500" />
+                            <Moon className="w-2.5 h-2.5 md:w-3 md:h-3 text-white/80" />
                           </div>
                         )}
 
                         {/* Drag Handle - Hidden on mobile */}
                         {!isMobile && (
                           <div className="absolute top-1 left-0.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab z-10">
-                            <GripVertical className="w-3.5 h-3.5 text-slate-400" />
+                            <GripVertical className="w-3.5 h-3.5 text-white/60" />
                           </div>
                         )}
 
                         {/* Partial visibility indicators */}
                         {pos.isBeforeVisible && (
-                          <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-6 h-1 rounded-full bg-slate-300 z-10" />
+                          <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-6 h-1 rounded-full bg-white/50 z-10" />
                         )}
                         {pos.isAfterVisible && (
-                          <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-6 h-1 rounded-full bg-slate-300 z-10" />
+                          <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-6 h-1 rounded-full bg-white/50 z-10" />
                         )}
 
-                        <div className={`h-full flex flex-col justify-start relative z-0 ${isMobile ? 'px-2 py-1.5' : 'px-3 py-2.5'}`}>
-                          <div className="flex items-center justify-between gap-1 mb-0.5 min-w-0">
-                            <p className={`font-semibold truncate leading-tight flex-1 ${isMobile ? 'text-[11px]' : 'text-xs'}`}>
-                              {appt.customer_name}
-                            </p>
-                            {appt.status === 'Confirmed' && (
-                              <div className={`rounded-full ${colors.dot} flex-shrink-0 ${isMobile ? 'w-1 h-1' : 'w-1.5 h-1.5'}`} />
+                        <div className={`h-full flex flex-col justify-start relative z-0 ${isMobile ? 'px-1.5 py-1' : 'px-2 py-1'}`}>
+                          <p className={`text-inherit font-medium truncate leading-tight ${isMobile ? 'text-[11px]' : 'text-xs'}`}>
+                            {appt.customer_name}
+                            {pos.rawHeight <= (isMobile ? 2.5 : 3.5) && (
+                              <span className="font-normal">, {formatTime(getZonedTime(appt.start_time))}</span>
                             )}
-                          </div>
+                          </p>
 
                           {pos.rawHeight > (isMobile ? 2.5 : 3.5) && (
-                            <div className="mt-0.5 flex min-w-0 items-center gap-1 opacity-80">
-                              <Clock className={`${isMobile ? 'w-2 h-2' : 'w-2.5 h-2.5'} flex-shrink-0`} />
-                              <p className={`truncate font-semibold ${isMobile ? 'text-[9px]' : 'text-[10px]'}`}>
-                                {formatTime(getZonedTime(appt.start_time))}
-                              </p>
-                            </div>
+                            <p className={`text-inherit truncate font-normal ${isMobile ? 'text-[10px]' : 'text-[11px]'}`}>
+                              {formatTime(getZonedTime(appt.start_time))} – {formatTime(getZonedTime(appt.end_time))}
+                            </p>
                           )}
 
                           {pos.rawHeight > (isMobile ? 5 : 6) && (
-                            <div className="mt-1 flex min-w-0 items-center gap-1">
-                              <div className={`h-1 w-1 flex-shrink-0 rounded-full ${colors.dot}`} />
-                              <p className={`truncate font-medium opacity-80 ${isMobile ? 'text-[9px]' : 'text-[10px]'}`}>
-                                {appt.title}
-                              </p>
-                            </div>
+                            <p className={`text-inherit mt-0.5 truncate font-normal ${isMobile ? 'text-[10px]' : 'text-[11px]'}`}>
+                              {appt.title}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -899,321 +858,252 @@ const FullScreenAppointments: React.FC = () => {
           </div>
         </div>
 
-        {/* ============ APPOINTMENT DETAIL MODAL ============ */}
+        {/* ============ APPOINTMENT DETAIL DIALOG — GCal-style event card ============ */}
         {selectedAppointment && selectedApptData && (() => {
+          const chipBg = getAppointmentColors(selectedApptData).bg;
+          const start = getZonedTime(selectedApptData.start_time);
+          const end = getZonedTime(selectedApptData.end_time);
+          const statusPill =
+            selectedApptData.status === 'Canceled' ? 'bg-slate-100 text-slate-500' :
+            selectedApptData.status === 'Pending' ? 'bg-amber-50 text-amber-700' :
+            'bg-emerald-50 text-emerald-700';
+          const inputCls = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all";
+          const inputStyle = { borderColor: 'rgb(var(--twc-slate-300))', color: DS.ink, backgroundColor: DS.white } as React.CSSProperties;
           return (
             <div className="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+              {/* click-away layer — no dimming, calendar stays normal */}
               <div
-                className="fixed inset-0 backdrop-blur-sm transition-opacity"
-                style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
+                className="fixed inset-0"
                 onClick={handleCloseModal}
               />
 
-              <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+              <div className="fixed inset-0 z-10 w-screen overflow-y-auto pointer-events-none">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                  {/* vs-light: the event card is always the white surface, in both themes */}
                   <div
-                    className="relative transform overflow-hidden rounded-3xl text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-xl animate-in slide-in-from-bottom duration-300 sm:zoom-in-95"
-                    style={{ backgroundColor: DS.white }}
+                    className="vs-light pointer-events-auto relative overflow-hidden rounded-2xl text-left shadow-2xl ring-1 ring-black/10 sm:my-8 sm:w-full sm:max-w-4xl animate-in fade-in zoom-in-95 duration-200"
+                    style={{ backgroundColor: DS.white, transform: `translate(${dialogPos.x}px, ${dialogPos.y}px)` }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Clean Header */}
-                    <div className="px-5 pt-5 pb-3 border-b" style={{ borderColor: DS.border }}>
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          {isEditing ? (
-                            <div className="space-y-3">
-                              <input
-                                type="text"
-                                value={editForm.customer_name || ''}
-                                onChange={e => setEditForm(prev => ({ ...prev, customer_name: e.target.value }))}
-                                className="w-full border-2 rounded-xl px-4 py-3 focus:outline-none transition-all text-2xl font-black"
-                                style={{ borderColor: DS.border, color: DS.ink, backgroundColor: DS.white }}
-                                onFocus={(e) => e.currentTarget.style.borderColor = DS.electric}
-                                onBlur={(e) => e.currentTarget.style.borderColor = DS.border}
-                                placeholder="Customer Name"
-                              />
-                              <input
-                                type="text"
-                                value={editForm.title || ''}
-                                onChange={e => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                                className="w-full border-2 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm font-bold"
-                                style={{ borderColor: DS.border, color: DS.stone, backgroundColor: DS.white }}
-                                onFocus={(e) => e.currentTarget.style.borderColor = DS.electric}
-                                onBlur={(e) => e.currentTarget.style.borderColor = DS.border}
-                                placeholder="Appointment Type"
-                              />
-                            </div>
-                          ) : (
-                            <div>
-                              <h2 className="text-2xl font-black leading-tight mb-1" style={{ color: DS.ink }}>
-                                {selectedApptData.customer_name}
-                              </h2>
-                              <div className="flex items-center gap-2">
-                                <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase" style={{
-                                  backgroundColor: DS.electricLight,
-                                  color: DS.electric
-                                }}>
-                                  {selectedApptData.title || selectedApptData.type || 'Consultation'}
-                                </span>
-                                <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase border" style={{
-                                  backgroundColor: DS.white,
-                                  color: DS.stone,
-                                  borderColor: DS.border
-                                }}>
-                                  {selectedApptData.status}
-                                </span>
-                                {isNightAppointment(selectedApptData) && (
-                                  <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase flex items-center gap-1" style={{
-                                    backgroundColor: '#EEF2FF',
-                                    color: '#6366F1'
-                                  }}>
-                                    <Moon size={10} />
-                                    Night
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        <button
-                          onClick={handleCloseModal}
-                          className="p-2 rounded-xl transition-all duration-300 active:scale-90 group ml-4"
-                          style={{
-                            backgroundColor: DS.offWhite,
-                            color: DS.stone
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = DS.border;
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = DS.offWhite;
-                          }}
-                        >
-                          <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-                        </button>
-                      </div>
+                    {/* Icon action bar — drag handle */}
+                    <div
+                      className="flex items-center justify-end gap-0.5 px-3 pt-3 cursor-move select-none touch-none"
+                      onPointerDown={startDialogDrag}
+                    >
+                      {!isEditing && !confirmingDelete && (
+                        <>
+                          <button
+                            onClick={handleStartEdit}
+                            title="Edit appointment"
+                            className="p-2 rounded-full transition-colors hover:bg-slate-100"
+                            style={{ color: DS.stone }}
+                          >
+                            <Pencil size={17} />
+                          </button>
+                          <button
+                            onClick={() => setConfirmingDelete(true)}
+                            title="Delete appointment"
+                            className="p-2 rounded-full transition-colors hover:bg-slate-100"
+                            style={{ color: DS.stone }}
+                          >
+                            <Trash2 size={17} />
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={handleCloseModal}
+                        aria-label="Close"
+                        className="p-2 rounded-full transition-colors hover:bg-slate-100"
+                        style={{ color: DS.stone }}
+                      >
+                        <X size={19} />
+                      </button>
                     </div>
 
-                    {/* Body - Clean Card Layout */}
-                    <div className="p-5 space-y-3" style={{ backgroundColor: DS.white }}>
-
-                      {/* Schedule Card - Compact Design */}
-                      <div className="bg-white border rounded-2xl p-4 transition-all hover:shadow-md" style={{ borderColor: DS.border }}>
-                        <div className="flex items-center gap-3">
-                          <div className="p-2.5 rounded-xl flex-shrink-0" style={{ backgroundColor: DS.electricLight }}>
-                            <Clock className="w-5 h-5" style={{ color: DS.electric }} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <div>
-                                <p className="text-base font-black leading-tight" style={{ color: DS.ink }}>
-                                  {format(getZonedTime(selectedApptData.start_time), 'EEEE')}
-                                </p>
-                                <p className="text-xs font-bold" style={{ color: DS.stone }}>
-                                  {format(getZonedTime(selectedApptData.start_time), 'MMMM d, yyyy')}
-                                </p>
+                    <div className="md:grid md:grid-cols-[minmax(0,1fr)_360px]">
+                      {/* LEFT — event details */}
+                      <div className="px-6 pb-6 pt-1">
+                        {/* Title row: color square + name + when */}
+                        <div className="flex items-start gap-4">
+                          <span className={`mt-2 w-4 h-4 rounded flex-shrink-0 ${chipBg}`} />
+                          <div className="min-w-0 flex-1">
+                            {isEditing ? (
+                              <div className="space-y-2">
+                                <input
+                                  type="text"
+                                  value={editForm.customer_name || ''}
+                                  onChange={e => setEditForm(prev => ({ ...prev, customer_name: e.target.value }))}
+                                  className={`${inputCls} text-lg`}
+                                  style={inputStyle}
+                                  placeholder="Customer name"
+                                />
+                                <input
+                                  type="text"
+                                  value={editForm.title || ''}
+                                  onChange={e => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                                  className={inputCls}
+                                  style={inputStyle}
+                                  placeholder="Appointment type"
+                                />
                               </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ backgroundColor: DS.electricLight, color: DS.electric }}>
-                                {formatTime(getZonedTime(selectedApptData.start_time))}
-                              </span>
-                              <span style={{ color: DS.subtleText, fontSize: '10px' }}>→</span>
-                              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ backgroundColor: DS.electricLight, color: DS.electric }}>
-                                {formatTime(getZonedTime(selectedApptData.end_time))}
-                              </span>
-                            </div>
+                            ) : (
+                              <>
+                                <h2 id="modal-title" className="text-xl md:text-2xl font-normal leading-snug" style={{ color: DS.ink }}>
+                                  {selectedApptData.customer_name}
+                                </h2>
+                                <p className="mt-0.5 text-sm" style={{ color: DS.stone }}>
+                                  {format(start, 'EEEE, MMMM d')} <span className="px-0.5">⋅</span> {formatTime(start)} – {formatTime(end)}
+                                </p>
+                              </>
+                            )}
                           </div>
                         </div>
-                      </div>
 
-                      {/* Location & Contact - Side by Side */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {/* Location Card */}
-                        <div className="bg-white border rounded-2xl p-4 transition-all hover:shadow-md" style={{ borderColor: DS.border }}>
-                          <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: DS.offWhite }}>
-                              <MapPin className="w-4 h-4" style={{ color: DS.stone }} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: DS.stone }}>Location</h3>
-                              {isEditing ? (
-                                <input
-                                  type="text"
-                                  value={editForm.location || ''}
-                                  onChange={e => setEditForm(prev => ({ ...prev, location: e.target.value }))}
-                                  className="w-full border-2 rounded-lg px-2 py-1.5 text-xs font-medium focus:outline-none transition-all"
-                                  style={{ borderColor: DS.border, color: DS.ink, backgroundColor: DS.white }}
-                                  onFocus={(e) => e.currentTarget.style.borderColor = DS.electric}
-                                  onBlur={(e) => e.currentTarget.style.borderColor = DS.border}
-                                  placeholder="Add location..."
-                                />
-                              ) : (
-                                <div>
-                                  <p className="text-sm font-bold leading-tight" style={{ color: DS.ink }}>
-                                    {selectedApptData.location ? 'Physical' : 'Virtual'}
-                                  </p>
-                                  <p className="text-xs font-medium mt-0.5" style={{ color: DS.stone }}>
-                                    {selectedApptData.location || 'Online / Remote'}
-                                  </p>
-                                </div>
+                        {/* Detail rows */}
+                        <div className="mt-6 space-y-4">
+                          <div className="flex items-center gap-4">
+                            <Layers size={17} className="flex-shrink-0" style={{ color: DS.subtleText }} />
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-sm truncate" style={{ color: DS.ink }}>
+                                {selectedApptData.title || selectedApptData.type || 'Consultation'}
+                              </span>
+                              <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${statusPill}`}>
+                                {selectedApptData.status}
+                              </span>
+                              {isNightAppointment(selectedApptData) && (
+                                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-600">
+                                  <Moon size={10} />
+                                  Night
+                                </span>
                               )}
                             </div>
                           </div>
-                        </div>
 
-                        {/* Contact Card */}
-                        <div className="bg-white border rounded-2xl p-4 transition-all hover:shadow-md" style={{ borderColor: DS.border }}>
-                          <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: '#ECFDF5' }}>
-                              <Phone className="w-4 h-4" style={{ color: '#059669' }} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: DS.stone }}>Contact</h3>
-                              {isEditing ? (
-                                <input
-                                  type="text"
-                                  value={editForm.phone || ''}
-                                  onChange={e => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
-                                  className="w-full border-2 rounded-lg px-2 py-1.5 text-xs font-medium focus:outline-none transition-all"
-                                  style={{ borderColor: DS.border, color: DS.ink, backgroundColor: DS.white }}
-                                  onFocus={(e) => e.currentTarget.style.borderColor = DS.electric}
-                                  onBlur={(e) => e.currentTarget.style.borderColor = DS.border}
-                                  placeholder="Add phone..."
-                                />
-                              ) : (
-                                <div className="flex items-center justify-between">
-                                  <p className="text-sm font-bold leading-tight" style={{ color: DS.ink }}>
-                                    {selectedApptData.phone || 'No phone'}
-                                  </p>
-                                  {selectedApptData.phone && (
-                                    <a
-                                      href={`tel:${selectedApptData.phone}`}
-                                      className="p-1.5 rounded-lg transition-colors flex-shrink-0"
-                                      style={{ backgroundColor: DS.electricLight }}
-                                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = DS.electric}
-                                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.electricLight}
-                                    >
-                                      <Phone className="w-3 h-3" style={{ color: DS.electric }} />
-                                    </a>
-                                  )}
-                                </div>
-                              )}
-                            </div>
+                          <div className="flex items-center gap-4">
+                            <MapPin size={17} className="flex-shrink-0" style={{ color: DS.subtleText }} />
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editForm.location || ''}
+                                onChange={e => setEditForm(prev => ({ ...prev, location: e.target.value }))}
+                                className={inputCls}
+                                style={inputStyle}
+                                placeholder="Add location"
+                              />
+                            ) : (
+                              <span className="text-sm truncate" style={{ color: DS.ink }}>
+                                {selectedApptData.location || 'Virtual — online / remote'}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-4">
+                            <Phone size={17} className="flex-shrink-0" style={{ color: DS.subtleText }} />
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={editForm.phone || ''}
+                                onChange={e => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
+                                className={inputCls}
+                                style={inputStyle}
+                                placeholder="Add phone"
+                              />
+                            ) : selectedApptData.phone ? (
+                              <a
+                                href={`tel:${selectedApptData.phone}`}
+                                className="text-sm hover:underline"
+                                style={{ color: DS.electric }}
+                              >
+                                {selectedApptData.phone}
+                              </a>
+                            ) : (
+                              <span className="text-sm" style={{ color: DS.stone }}>No phone on file</span>
+                            )}
                           </div>
                         </div>
-                      </div>
 
-                      {/* Notes Card - Full Width */}
-                      <div className="bg-white border rounded-2xl p-4 transition-all hover:shadow-md" style={{ borderColor: DS.border }}>
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: '#FFFBEB' }}>
-                            <FileText className="w-4 h-4" style={{ color: '#D97706' }} />
+                        {/* Edit / delete-confirm actions */}
+                        {isEditing && (
+                          <div className="mt-6 flex items-center gap-2">
+                            <button
+                              onClick={handleSaveEdit}
+                              className="px-5 py-2 text-sm font-medium text-white rounded-full transition-all active:scale-95"
+                              style={{ backgroundColor: DS.electric }}
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setIsEditing(false)}
+                              className="px-5 py-2 text-sm font-medium rounded-full transition-colors hover:bg-slate-100"
+                              style={{ color: DS.stone }}
+                            >
+                              Cancel
+                            </button>
                           </div>
-                          <h3 className="text-[10px] font-bold uppercase tracking-wider" style={{ color: DS.stone }}>Notes</h3>
-                        </div>
-                        {isEditing ? (
-                          <textarea
-                            value={editForm.notes || ''}
-                            onChange={e => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
-                            className="w-full border-2 rounded-xl px-3 py-2 min-h-[80px] text-sm font-medium focus:outline-none resize-none transition-all"
-                            style={{ borderColor: DS.border, color: DS.ink, backgroundColor: DS.white }}
-                            onFocus={(e) => e.currentTarget.style.borderColor = DS.electric}
-                            onBlur={(e) => e.currentTarget.style.borderColor = DS.border}
-                            placeholder="Add appointment notes..."
-                          />
-                        ) : (
-                          <div className="rounded-xl p-3" style={{ backgroundColor: DS.surface }}>
-                            <p className="text-xs leading-relaxed font-medium" style={{ color: DS.charcoal }}>
-                              {selectedApptData.notes || 'No additional notes provided.'}
+                        )}
+                        {confirmingDelete && (
+                          <div className="mt-6 flex items-center justify-between gap-3 rounded-xl px-4 py-3" style={{ backgroundColor: DS.dangerBg }}>
+                            <p className="text-sm font-medium" style={{ color: DS.danger }}>
+                              Delete this appointment?
                             </p>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => setConfirmingDelete(false)}
+                                className="px-4 py-1.5 text-sm font-medium rounded-full transition-colors hover:bg-slate-100"
+                                style={{ color: DS.stone }}
+                              >
+                                Keep
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    await deleteAppointment(selectedAppointment!);
+                                    handleCloseModal();
+                                  } catch (err) {
+                                    console.error('Failed to delete:', err);
+                                    setConfirmingDelete(false);
+                                  }
+                                }}
+                                className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-white rounded-full transition-all active:scale-95"
+                                style={{ backgroundColor: DS.danger }}
+                              >
+                                <Trash2 size={13} />
+                                Delete
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>
-                    </div>
 
-                    {/* Actions Footer */}
-                    <div className="px-5 py-4 border-t flex gap-3" style={{ borderColor: DS.border, backgroundColor: DS.white }}>
-                      {isEditing ? (
-                        <>
-                          <button
-                            onClick={() => setIsEditing(false)}
-                            className="flex-1 px-4 py-2.5 font-bold border-2 rounded-xl active:scale-95 transition-all text-sm"
-                            style={{ color: DS.stone, backgroundColor: DS.white, borderColor: DS.border }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = DS.offWhite}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.white}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={handleSaveEdit}
-                            className="flex-[1.5] px-4 py-2.5 font-bold text-white rounded-xl active:scale-95 transition-all text-sm shadow-md"
-                            style={{ backgroundColor: DS.electric }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = DS.electricDark}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.electric}
-                          >
-                            Save Changes
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          {confirmingDelete ? (
-                            <div className="flex-1 flex flex-col gap-2">
-                              <p className="text-xs font-semibold text-center" style={{ color: DS.danger }}>
-                                Delete this appointment?
-                              </p>
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => setConfirmingDelete(false)}
-                                  className="flex-1 px-4 py-2 font-bold border rounded-xl active:scale-95 transition-all text-sm"
-                                  style={{ color: DS.stone, borderColor: DS.border }}
-                                >
-                                  No
-                                </button>
-                                <button
-                                  onClick={async () => {
-                                    try {
-                                      await deleteAppointment(selectedAppointment!);
-                                      handleCloseModal();
-                                    } catch (err) {
-                                      console.error('Failed to delete:', err);
-                                      setConfirmingDelete(false);
-                                    }
-                                  }}
-                                  className="flex-1 px-4 py-2 font-bold text-white rounded-xl active:scale-95 transition-all text-sm flex items-center justify-center gap-1"
-                                  style={{ backgroundColor: '#DC2626' }}
-                                >
-                                  <Trash2 size={14} />
-                                  Yes, Delete
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              <button
-                                onClick={handleStartEdit}
-                                className="flex-1 px-4 py-2.5 font-bold border-2 rounded-xl active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
-                                style={{ color: DS.electric, backgroundColor: DS.white, borderColor: DS.electric }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = DS.electricLight}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.white}
-                              >
-                                <Layers size={16} />
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => setConfirmingDelete(true)}
-                                className="flex-1 px-4 py-2.5 font-bold text-white rounded-xl active:scale-95 transition-all text-sm shadow-md flex items-center justify-center gap-2"
-                                style={{ backgroundColor: DS.danger }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#DC2626'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = DS.danger}
-                              >
-                                <Trash2 size={16} />
-                                Delete
-                              </button>
-                            </>
+                      {/* RIGHT — notes, always editable, saves independently */}
+                      <div className="flex flex-col border-t md:border-t-0 md:border-l" style={{ borderColor: DS.border, backgroundColor: DS.surface }}>
+                        <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <FileText size={15} style={{ color: 'rgb(var(--twc-amber-500))' }} />
+                            <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: DS.stone }}>Notes</h3>
+                          </div>
+                          {noteStatus === 'saved' && (
+                            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgb(var(--twc-emerald-500))' }}>Saved</span>
                           )}
-                        </>
-                      )}
+                        </div>
+                        <textarea
+                          value={noteDraft}
+                          onChange={e => { setNoteDraft(e.target.value); if (noteStatus === 'saved') setNoteStatus('idle'); }}
+                          placeholder={'Notes only you and your team see.\n\nCapture context that makes the next call better — preferences, follow-ups promised, pricing discussed, no-show history…'}
+                          className="flex-1 w-full resize-none px-4 py-3 text-base leading-relaxed focus:outline-none bg-transparent min-h-[260px] md:min-h-[300px]"
+                          style={{ color: DS.ink }}
+                        />
+                        <div className="p-3 border-t" style={{ borderColor: DS.border }}>
+                          <button
+                            onClick={handleSaveNotes}
+                            disabled={noteStatus === 'saving' || noteDraft === (selectedApptData.notes || '')}
+                            className="w-full px-4 py-2 font-medium text-white rounded-full active:scale-95 transition-all text-sm disabled:opacity-40 disabled:active:scale-100"
+                            style={{ backgroundColor: DS.electric }}
+                          >
+                            {noteStatus === 'saving' ? 'Saving…' : 'Save Notes'}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1263,7 +1153,7 @@ const FullScreenAppointments: React.FC = () => {
                     value={newAppointmentData.customer_name}
                     onChange={e => setNewAppointmentData(prev => ({ ...prev, customer_name: e.target.value }))}
                     className="w-full rounded-xl px-3 py-2 text-sm font-medium"
-                    style={{ backgroundColor: DS.white, border: '1px solid #E5E7EB', color: DS.ink }}
+                    style={{ backgroundColor: DS.white, border: '1px solid rgb(var(--twc-slate-200))', color: DS.ink }}
                     placeholder="Enter customer name"
                   />
                 </div>
@@ -1278,7 +1168,7 @@ const FullScreenAppointments: React.FC = () => {
                     value={newAppointmentData.start_time}
                     onChange={e => setNewAppointmentData(prev => ({ ...prev, start_time: e.target.value }))}
                     className="w-full rounded-xl px-3 py-2 text-sm font-medium"
-                    style={{ backgroundColor: DS.white, border: '1px solid #E5E7EB', color: DS.ink }}
+                    style={{ backgroundColor: DS.white, border: '1px solid rgb(var(--twc-slate-200))', color: DS.ink }}
                   />
                 </div>
 
@@ -1290,7 +1180,7 @@ const FullScreenAppointments: React.FC = () => {
                     value={newAppointmentData.type}
                     onChange={e => setNewAppointmentData(prev => ({ ...prev, type: e.target.value }))}
                     className="w-full rounded-xl px-3 py-2 text-sm font-medium"
-                    style={{ backgroundColor: DS.white, border: '1px solid #E5E7EB', color: DS.ink }}
+                    style={{ backgroundColor: DS.white, border: '1px solid rgb(var(--twc-slate-200))', color: DS.ink }}
                   >
                     <option value="Consultation">Consultation</option>
                     <option value="Strategy">Strategy</option>
@@ -1308,7 +1198,7 @@ const FullScreenAppointments: React.FC = () => {
                     value={newAppointmentData.notes}
                     onChange={e => setNewAppointmentData(prev => ({ ...prev, notes: e.target.value }))}
                     className="w-full rounded-xl px-3 py-2 text-sm font-medium resize-none"
-                    style={{ backgroundColor: DS.white, border: '1px solid #E5E7EB', color: DS.ink }}
+                    style={{ backgroundColor: DS.white, border: '1px solid rgb(var(--twc-slate-200))', color: DS.ink }}
                     rows={3}
                     placeholder="Add any notes..."
                   />
