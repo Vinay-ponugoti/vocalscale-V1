@@ -123,9 +123,9 @@ export function HeroSection() {
                                 },
                                 ...transitionVariants,
                             }}>
-                            <div className="relative mt-10 md:mt-12 px-6 md:px-8">
-                                <div className="ring-slate-900/5 relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-white/40 bg-white/20 p-1.5 md:p-2 shadow-2xl shadow-slate-300/40 ring-1 backdrop-blur-sm">
-                                    <div className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: '1.6' }}>
+                            <div className="relative mt-10 md:mt-12 px-2 sm:px-6 md:px-8">
+                                <div className="ring-slate-900/5 relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-xl md:rounded-2xl border border-white/40 bg-white/20 p-1 md:p-2 shadow-2xl shadow-slate-300/40 ring-1 backdrop-blur-sm">
+                                    <div className="relative w-full overflow-hidden rounded-lg md:rounded-xl" style={{ aspectRatio: '1.6' }}>
                                         <iframe
                                             src="https://app.supademo.com/embed/cmrghzf970kv5qm3zw80tfx92?embed_v=2&autoplay=1&utm_source=embed"
                                             loading="lazy"
@@ -138,7 +138,7 @@ export function HeroSection() {
                                 </div>
 
                                 {/* Product caption */}
-                                <div className="mt-16 text-center max-w-4xl mx-auto">
+                                <div className="mt-8 md:mt-16 text-center max-w-4xl mx-auto px-4 md:px-0">
                                     <p className="text-sm text-slate-600 leading-relaxed">
                                         A product recording beats a perfect illustration: configure numbers, inspect calls, review transcripts, and tune the receptionist from the same dashboard your team uses every day.
                                     </p>
