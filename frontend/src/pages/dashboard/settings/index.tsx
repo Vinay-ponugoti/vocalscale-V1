@@ -1,23 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
-  Save, Volume2, Bell, AlertTriangle, CheckCircle, ChevronRight, CalendarCheck, Link2
+  Save, Bell, AlertTriangle, CheckCircle, CalendarCheck, Link2
 } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { api } from '../../../lib/api';
 import { businessSetupAPI } from '../../../api/businessSetup';
 import { BookingRequirementsContent } from './components/BookingRequirementsContent';
-import { VoiceSettingsContent } from './components/VoiceSettingsContent';
 import { NotificationSettingsContent } from './components/NotificationSettingsContent';
 import IntegrationsContent from './components/IntegrationsContent';
-import type { NotificationSettings, Voice, VoiceSettings } from '../../../types/settings';
-
-const clampSpeakingSpeed = (speed?: number) => Math.max(0.7, Math.min(1.5, speed || 1.0));
+import type { NotificationSettings } from '../../../types/settings';
 
 const Settings = () => {
-  const navigate = useNavigate();
   const unsavedChangesRef = useRef({
-    voiceSettings: false,
     notifications: false,
     bookingRequirements: false
   });
@@ -32,38 +26,22 @@ const Settings = () => {
     standard_transfer_number: ''
   });
 
-  const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
-    voice_id: '',
-    model_name: '',
-    speaking_speed: 1.0,
-    conversation_tone: 'friendly',
-    custom_greeting: '',
-    after_hours_greeting: '',
-    language: 'en-US',
-    is_active: true,
-    sync_google_calendar: true
-  });
-
-  const [availableVoices, setAvailableVoices] = useState<Voice[]>([]);
   const [savingAll, setSavingAll] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [activeSection, setActiveSection] = useState('voice');
-  const [userPlan, setUserPlan] = useState<string>('');
+  const [activeSection, setActiveSection] = useState('booking');
 
   useEffect(() => {
-    const anyChanges = unsavedChangesRef.current.voiceSettings ||
-      unsavedChangesRef.current.notifications ||
+    const anyChanges = unsavedChangesRef.current.notifications ||
       unsavedChangesRef.current.bookingRequirements;
     setHasUnsavedChanges(anyChanges);
-  }, [voiceSettings, notifications]);
+  }, [notifications]);
 
   useEffect(() => {
     const handleBookingChanges = (e: Event) => {
       const customEvent = e as CustomEvent;
       unsavedChangesRef.current.bookingRequirements = customEvent.detail?.hasChanges || false;
       setHasUnsavedChanges(
-        unsavedChangesRef.current.voiceSettings ||
         unsavedChangesRef.current.notifications ||
         unsavedChangesRef.current.bookingRequirements
       );
@@ -81,31 +59,6 @@ const Settings = () => {
 
   const loadSettings = async () => {
     try {
-      const voicesResp = await api.getVoices().catch(e => console.warn("Voices load failed", e));
-      if (voicesResp?.data) setAvailableVoices(voicesResp.data);
-
-      const voiceSettingsResp = await api.getVoiceSettings().catch(e => console.warn("Voice settings load failed", e));
-      if (voiceSettingsResp) {
-        setVoiceSettings({
-          id: voiceSettingsResp.id,
-          voice_id: voiceSettingsResp.voice_id || '',
-          model_name: voiceSettingsResp.model_name || '',
-          speaking_speed: clampSpeakingSpeed(voiceSettingsResp.speaking_speed),
-          conversation_tone: voiceSettingsResp.conversation_tone || 'friendly',
-          custom_greeting: voiceSettingsResp.custom_greeting || '',
-          after_hours_greeting: voiceSettingsResp.after_hours_greeting || '',
-          language: voiceSettingsResp.language || 'en-US',
-          is_active: voiceSettingsResp.is_active !== undefined ? voiceSettingsResp.is_active : true,
-          sync_google_calendar: voiceSettingsResp.sync_google_calendar !== undefined ? voiceSettingsResp.sync_google_calendar : true
-        });
-      }
-
-      // Load Billing Plan
-      const billingResp = await api.getBilling().catch(e => console.warn("Billing load failed", e));
-      if (billingResp?.plan) {
-        setUserPlan(billingResp.plan);
-      }
-
       // Load notification settings from business setup API
       const businessSetup = await api.getBusinessSetup().catch(e => console.warn("Business setup load failed", e));
       if (businessSetup?.notification_settings || businessSetup?.urgent_call_rules) {
@@ -160,12 +113,6 @@ const Settings = () => {
     }
   };
 
-  const handleVoiceChange = (updates: Partial<VoiceSettings>) => {
-    setVoiceSettings(prev => ({ ...prev, ...updates }));
-    unsavedChangesRef.current.voiceSettings = true;
-    setHasUnsavedChanges(true);
-  };
-
   const handleNotificationChange = (updates: Partial<NotificationSettings>) => {
     setNotifications(prev => ({ ...prev, ...updates }));
     unsavedChangesRef.current.notifications = true;
@@ -176,20 +123,6 @@ const Settings = () => {
     setSavingAll(true);
 
     try {
-      if (unsavedChangesRef.current.voiceSettings) {
-        const voiceUpdates = {
-          voice_id: voiceSettings.voice_id,
-          model_name: voiceSettings.model_name,
-          speaking_speed: voiceSettings.speaking_speed,
-          conversation_tone: voiceSettings.conversation_tone,
-          custom_greeting: voiceSettings.custom_greeting,
-          after_hours_greeting: voiceSettings.after_hours_greeting,
-          language: voiceSettings.language,
-          is_active: voiceSettings.is_active
-        };
-        await api.updateVoiceSettings(voiceUpdates);
-      }
-
       if (unsavedChangesRef.current.notifications) {
         // Save non-transfer notification settings
         const notificationData = {
@@ -245,7 +178,6 @@ const Settings = () => {
       }
 
       unsavedChangesRef.current = {
-        voiceSettings: false,
         notifications: false,
         bookingRequirements: false
       };
@@ -262,7 +194,6 @@ const Settings = () => {
   };
 
   const sections = [
-    { id: 'voice', label: 'AI Voice', icon: Volume2, description: 'Sound & Persona' },
     { id: 'booking', label: 'Booking', icon: CalendarCheck, description: 'Rules & Requirements' },
     { id: 'notifications', label: 'Alerts', icon: Bell, description: 'System Notifications' },
     { id: 'integrations', label: 'Integrations', icon: Link2, description: 'Connected Apps' },
@@ -270,13 +201,13 @@ const Settings = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex h-full flex-col overflow-hidden bg-[#f7f8fb] text-slate-950">
+      <div className="flex h-full flex-col overflow-hidden bg-[hsl(var(--ds-off-white))] text-slate-950">
 
         <div className="lg:hidden flex-none border-b border-slate-200 bg-white px-4 py-4">
           <div className="flex items-center justify-between gap-4">
           <div>
               <h1 className="text-lg font-black tracking-tight text-slate-950">Settings</h1>
-              <p className="mt-0.5 text-xs font-semibold text-slate-500">Voice, booking, alerts, and integrations</p>
+              <p className="mt-0.5 text-xs font-semibold text-slate-500">Booking, alerts, and integrations</p>
           </div>
           <button
             onClick={handleSaveAll}
@@ -366,31 +297,6 @@ const Settings = () => {
               )}
 
               <div className="space-y-6">
-                {activeSection === 'voice' && (
-                  <div className="space-y-6">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <h2 className="text-2xl font-black tracking-tight text-slate-950">AI Voice Setup</h2>
-                        <p className="mt-1 text-sm font-semibold text-slate-500">Select the voice, language, pacing, and opening messages.</p>
-                      </div>
-                      <button
-                        onClick={() => navigate('/dashboard/voice-model/method')}
-                        className="hidden h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black uppercase tracking-wider text-slate-500 shadow-sm transition hover:border-cyan-500 hover:text-cyan-700 sm:flex"
-                      >
-                        Advanced <ChevronRight size={12} />
-                      </button>
-                    </div>
-
-                    <VoiceSettingsContent
-                      settings={voiceSettings}
-                      availableVoices={availableVoices}
-                      onChange={handleVoiceChange}
-                      onNavigateToAdvanced={() => navigate('/dashboard/voice-model/method')}
-                      plan={userPlan}
-                    />
-                  </div>
-                )}
-
                 {activeSection === 'booking' && (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
@@ -456,11 +362,11 @@ const Settings = () => {
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #E2E8F0; /* Slate-200 */
+          background: rgb(var(--twc-slate-200)); /* Slate-200 */
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #CBD5E1; /* Slate-300 */
+          background: rgb(var(--twc-slate-300)); /* Slate-300 */
         }
         .scrollbar-hide::-webkit-scrollbar {
           display: none;

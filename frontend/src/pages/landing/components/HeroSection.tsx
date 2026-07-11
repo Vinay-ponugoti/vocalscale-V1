@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronRight, PhoneIncoming, CalendarCheck, Languages, Check } from 'lucide-react'
 import { type Variants } from 'framer-motion'
@@ -28,34 +27,6 @@ const transitionVariants: { item: Variants } = {
 }
 
 export function HeroSection() {
-    const videoRef = useRef<HTMLVideoElement>(null)
-    const videoContainerRef = useRef<HTMLDivElement>(null)
-    const [videoLoaded, setVideoLoaded] = useState(false)
-
-    // Lazy-load video when it enters viewport
-    useEffect(() => {
-        const container = videoContainerRef.current
-        if (!container) return
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting && !videoLoaded) {
-                    setVideoLoaded(true)
-                    observer.disconnect()
-                }
-            },
-            { rootMargin: '200px' }
-        )
-        observer.observe(container)
-        return () => observer.disconnect()
-    }, [videoLoaded])
-
-    useEffect(() => {
-        if (videoRef.current && videoLoaded) {
-            videoRef.current.playbackRate = 0.75
-        }
-    }, [videoLoaded])
-
     return (
         <>
             <Header />
@@ -153,23 +124,17 @@ export function HeroSection() {
                                 ...transitionVariants,
                             }}>
                             <div className="relative mt-10 md:mt-12 px-6 md:px-8">
-                                <div ref={videoContainerRef} className="inset-shadow-2xs ring-slate-900/10 bg-white relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-slate-300/50 p-1.5 md:p-2 shadow-2xl shadow-slate-200/50 ring-1 opacity-100">
-                                    {videoLoaded ? (
-                                        <video
-                                            ref={videoRef}
-                                            autoPlay
-                                            muted
-                                            loop
-                                            playsInline
-                                            preload="metadata"
-                                            crossOrigin="anonymous"
-                                            className="w-full h-auto rounded-xl border border-slate-200 shadow-sm"
-                                        >
-                                            <source src="https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/landing%20main.mp4" type="video/mp4" />
-                                        </video>
-                                    ) : (
-                                        <div className="w-full aspect-video rounded-xl border border-slate-200 shadow-sm bg-slate-100 animate-pulse" />
-                                    )}
+                                <div className="ring-slate-900/5 relative mx-auto w-full max-w-[90rem] overflow-hidden rounded-2xl border border-white/40 bg-white/20 p-1.5 md:p-2 shadow-2xl shadow-slate-300/40 ring-1 backdrop-blur-sm">
+                                    <div className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: '1.6' }}>
+                                        <iframe
+                                            src="https://app.supademo.com/embed/cmrghzf970kv5qm3zw80tfx92?embed_v=2&autoplay=1&utm_source=embed"
+                                            loading="lazy"
+                                            title="VocalScale AI Receptionist Demo — 24/7 Call Answering, Appointment Booking & Follow-ups"
+                                            allow="clipboard-write; autoplay"
+                                            allowFullScreen
+                                            className="absolute left-0 top-0 h-full w-full border-0"
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Product caption */}
@@ -251,7 +216,7 @@ export function HeroSection() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+                                <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
                                     <h3 className="text-xl font-bold text-slate-900 mb-6">Common phone workflows</h3>
                                     <div className="space-y-6">
                                         <div>

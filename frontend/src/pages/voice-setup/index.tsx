@@ -194,7 +194,7 @@ const VoiceSetup = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex h-full min-h-screen flex-col overflow-hidden bg-[#f7f8fb] text-slate-950">
+      <div className="flex h-full min-h-screen flex-col overflow-hidden bg-[hsl(var(--ds-off-white))] text-slate-950">
 
         <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-4 md:px-6 xl:px-8">
           <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">

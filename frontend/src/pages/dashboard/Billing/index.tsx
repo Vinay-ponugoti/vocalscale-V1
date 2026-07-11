@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import UsageBreakdown from './components/UsageBreakdown';
+import UsageAlert from './components/UsageAlert';
 import BillingHistory from './components/BillingHistory';
 import PaymentMethod from './components/PaymentMethod';
 import UpsellCard from './components/UpsellCard';
@@ -382,6 +383,15 @@ const Billing: React.FC = () => {
 
           {/* Mobile: Overview Tab | Desktop: Always Show */}
           <div className={`${activeTab === 'overview' ? 'block' : 'hidden md:block'}`}>
+            <div className="mb-6">
+              <UsageAlert
+                usedMinutes={normalizedUsage.used_minutes ?? normalizedUsage.minutes_used ?? 0}
+                totalMinutes={normalizedUsage.total_minutes ?? normalizedUsage.minutes_limit ?? 0}
+                overageMinutes={normalizedUsage.overage_minutes}
+                estimatedCost={normalizedUsage.estimated_cost}
+                billingPeriodStart={normalizedUsage.billing_period}
+              />
+            </div>
             <UsageBreakdown hasSubscription={hasSubscription} usage={normalizedUsage} />
           </div>
 
@@ -412,11 +422,11 @@ const Billing: React.FC = () => {
             background: transparent;
           }
           .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #E2E8F0;
+            background: rgb(var(--twc-slate-200));
             border-radius: 10px;
           }
           .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #CBD5E1;
+            background: rgb(var(--twc-slate-300));
             border-radius: 10px;
           }
            /* Hide Scrollbar for Horizontal Scroll Areas */

@@ -232,7 +232,7 @@ export function LiveCallDemo() {
                 )}
             </div>
 
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 md:p-8 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm">
                 {callState === 'idle' && (
                     <div className="flex flex-col items-center text-center py-6">
                         <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center mb-6 shadow-xl shadow-blue-500/20">

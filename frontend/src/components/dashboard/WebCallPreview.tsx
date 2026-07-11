@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Loader2, Mic, PhoneCall, PhoneOff } from 'lucide-react';
-import { env } from '../../../../config/env';
-import { getAuthTokenAsync } from '../../../../utils/sessionUtils';
+import { env } from '../../config/env';
+import { getAuthTokenAsync } from '../../utils/sessionUtils';
 
 type TranscriptEntry = { role: 'user' | 'assistant'; text: string };
 type CallState = 'idle' | 'connecting' | 'live' | 'ended' | 'error';

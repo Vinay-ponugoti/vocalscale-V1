@@ -126,6 +126,10 @@ export interface DoneEvent {
   intent?: string;
   skill_used?: string;
   suggested_questions?: string[];
+  images?: GeneratedImage[];
+  generation_id?: string;
+  available_presets?: Record<string, string>;
+  social_content?: SocialContent | null;
 }
 
 export interface ErrorEvent {

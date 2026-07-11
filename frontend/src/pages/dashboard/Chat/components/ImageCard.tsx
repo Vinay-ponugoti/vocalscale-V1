@@ -5,7 +5,7 @@
  * "Foundation" — Copy-to-Instagram ready UX.
  */
 
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Download,
   Expand,
@@ -220,22 +220,39 @@ const ImageStatusBadge = ({ status }: { status: string }) => {
 };
 
 // ─── Main ImageCard ───────────────────────────────────────────────────────────
+const normalizeImages = (items: GeneratedImage[] | undefined | null): GeneratedImage[] => {
+  if (!Array.isArray(items)) return [];
+  return items.filter((image): image is GeneratedImage => (
+    !!image &&
+    typeof image.url === 'string' &&
+    image.url.trim().length > 0
+  )).map((image) => ({
+    ...image,
+    preset: image.preset || 'image',
+  }));
+};
+
 const ImageCard = ({ images, generationId, sessionId, socialContent }: ImageCardProps) => {
   const [lightboxImage, setLightboxImage] = useState<GeneratedImage | null>(null);
   const [showSizeSelector, setShowSizeSelector] = useState(false);
   const [regenerating, setRegenerating] = useState<string | null>(null);
-  const [allImages, setAllImages] = useState<GeneratedImage[]>(images);
+  const [allImages, setAllImages] = useState<GeneratedImage[]>(() => normalizeImages(images));
 
-  const generatedPresets = new Set(allImages.map(img => img.preset));
+  useEffect(() => {
+    setAllImages(normalizeImages(images));
+  }, [images]);
+
+  const generatedPresets = new Set(allImages.map(img => img.preset || 'image'));
 
   const handleDownload = useCallback(async (image: GeneratedImage) => {
+    if (!image.url) return;
     try {
       const response = await fetch(image.url);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `vocalscale-${image.preset}-${image.dimensions || 'image'}.png`;
+      a.download = `vocalscale-${image.preset || 'image'}-${image.dimensions || 'image'}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -251,7 +268,7 @@ const ImageCard = ({ images, generationId, sessionId, socialContent }: ImageCard
     try {
       const result = await chatApi.regenerateImage(generationId, sessionId, [presetName]);
       if (result.images?.length > 0) {
-        setAllImages(prev => [...prev, ...result.images]);
+        setAllImages(prev => [...prev, ...normalizeImages(result.images)]);
       }
     } catch (err) {
       console.error('Regeneration failed:', err);

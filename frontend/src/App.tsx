@@ -41,6 +41,7 @@ const Privacy = lazyImport(() => import('./pages/landing/Privacy'));
 const NotFound = lazyImport(() => import('./pages/NotFound'));
 const Terms = lazyImport(() => import('./pages/landing/Terms'));
 const Contact = lazyImport(() => import('./pages/landing/Contact'));
+const FAQ = lazyImport(() => import('./pages/landing/FAQ'));
 
 // Blog Pages
 const BlogIndex = lazyImport(() => import('./pages/blog/index'));
@@ -54,6 +55,7 @@ const Reviews = lazyImport(() => import('./pages/dashboard/Reviews/index'));
 const Chat = lazyImport(() => import('./pages/dashboard/Chat'));
 const HelpCenter = lazyImport(() => import('./pages/dashboard/HelpCenter'));
 const Settings = lazyImport(() => import('./pages/dashboard/settings'));
+const Agents = lazyImport(() => import('./pages/dashboard/Agents'));
 
 const Billing = lazyImport(() => import('./pages/dashboard/Billing'));
 const Plans = lazyImport(() => import('./pages/dashboard/Billing/Plans'));
@@ -63,6 +65,9 @@ const SetupSubaccount = lazyImport(() => import('./pages/voice-setup/SetupSubacc
 const GetNewNumber = lazyImport(() => import('./pages/voice-setup/GetNewNumber'));
 const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
 const Knowledge = lazyImport(() => import('./pages/dashboard/Knowledge'));
+const Contacts = lazyImport(() => import('./pages/dashboard/Contacts'));
+const Insights = lazyImport(() => import('./pages/dashboard/Insights'));
+const Campaigns = lazyImport(() => import('./pages/dashboard/Campaigns'));
 
 
 function App() {
@@ -78,6 +83,7 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
             <Route path="/pricing" element={<Landing />} />
             <Route path="/features" element={<Landing />} />
             <Route path="/process" element={<Landing />} />
@@ -129,6 +135,7 @@ function App() {
                   <Route path="/dashboard/reviews" element={<Reviews />} />
                   <Route path="/dashboard/chat" element={<Chat />} />
                   <Route path="/dashboard/settings" element={<Settings />} />
+                  <Route path="/dashboard/agents" element={<Agents />} />
                   <Route path="/dashboard/billing" element={<Billing />} />
                   <Route path="/dashboard/billing/plans" element={<Plans />} />
                   <Route path="/dashboard/help" element={<HelpCenter />} />
@@ -138,7 +145,10 @@ function App() {
                   <Route path="/dashboard/voice-setup/buy" element={<GetNewNumber />} />
                   <Route path="/dashboard/business-details" element={<BusinessSetup />} />
                   <Route path="/dashboard/knowledge" element={<Knowledge />} />
-                  <Route path="/dashboard/agent" element={<Navigate to="/dashboard/settings" replace />} />
+                  <Route path="/dashboard/contacts" element={<Contacts />} />
+                  <Route path="/dashboard/insights" element={<Insights />} />
+                  <Route path="/dashboard/campaigns" element={<Campaigns />} />
+                  <Route path="/dashboard/agent" element={<Navigate to="/dashboard/agents" replace />} />
 
                   {/* Voice Model Setup Routes (Moved inside Dashboard) */}
                   <Route path="/dashboard/voice-model/*" element={

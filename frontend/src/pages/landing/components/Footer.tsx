@@ -15,7 +15,8 @@ export function Footer() {
       { label: 'AI SMS Follow-up Guide', href: '/blog/ai-sms-follow-up-converts-missed-calls' }
     ],
     Company: [
-      { label: 'Contact', href: '/contact' }
+      { label: 'Contact', href: '/contact' },
+      { label: 'FAQ', href: '/faq' }
     ],
     Support: [
       { label: 'Privacy Policy', href: '/privacy' },

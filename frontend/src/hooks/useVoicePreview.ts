@@ -4,6 +4,8 @@ interface UseVoicePreviewReturn {
     isLoading: boolean;
     isPlaying: boolean;
     error: string | null;
+    /** URL of the sample currently loading/playing, or null when idle. */
+    playingUrl: string | null;
     playVoice: (sampleUrl: string) => Promise<void>;
     stopVoice: () => void;
 }
@@ -12,6 +14,7 @@ export const useVoicePreview = (): UseVoicePreviewReturn => {
     const [isLoading, setIsLoading] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [playingUrl, setPlayingUrl] = useState<string | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const currentUrlRef = useRef<string | null>(null);
 
@@ -23,6 +26,7 @@ export const useVoicePreview = (): UseVoicePreviewReturn => {
         }
         setIsPlaying(false);
         currentUrlRef.current = null;
+        setPlayingUrl(null);
     }, []);
 
     const playVoice = useCallback(async (sampleUrl: string) => {
@@ -44,6 +48,7 @@ export const useVoicePreview = (): UseVoicePreviewReturn => {
             setIsLoading(true);
             setError(null);
             currentUrlRef.current = sampleUrl;
+            setPlayingUrl(sampleUrl);
 
             // Create and play audio from static URL
             const audio = new Audio(sampleUrl);
@@ -56,6 +61,7 @@ export const useVoicePreview = (): UseVoicePreviewReturn => {
             audio.onended = () => {
                 setIsPlaying(false);
                 currentUrlRef.current = null;
+                setPlayingUrl(null);
             };
 
             audio.onerror = () => {
@@ -63,6 +69,7 @@ export const useVoicePreview = (): UseVoicePreviewReturn => {
                 setIsPlaying(false);
                 setIsLoading(false);
                 currentUrlRef.current = null;
+                setPlayingUrl(null);
             };
 
             await audio.play();
@@ -72,6 +79,7 @@ export const useVoicePreview = (): UseVoicePreviewReturn => {
             setIsLoading(false);
             setIsPlaying(false);
             currentUrlRef.current = null;
+            setPlayingUrl(null);
         }
     }, [isPlaying, stopVoice]);
 
@@ -79,6 +87,7 @@ export const useVoicePreview = (): UseVoicePreviewReturn => {
         isLoading,
         isPlaying,
         error,
+        playingUrl,
         playVoice,
         stopVoice,
     };

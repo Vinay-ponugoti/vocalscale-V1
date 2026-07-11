@@ -159,7 +159,7 @@ const SetupSubaccount = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex min-h-screen flex-col bg-[#f7f8fb] text-slate-950">
+      <div className="flex min-h-screen flex-col bg-[hsl(var(--ds-off-white))] text-slate-950">
         <header className="border-b border-slate-200 bg-white px-4 py-4 md:px-6 xl:px-8">
           <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-4">
             <div className="flex items-center gap-4">

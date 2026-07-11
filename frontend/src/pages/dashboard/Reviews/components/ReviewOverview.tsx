@@ -175,31 +175,31 @@ export const ReviewOverview = ({ stats, loading, onSync, isSyncing }: ReviewOver
               {reviewVolumeData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={reviewVolumeData} barGap={4}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--twc-slate-200))" vertical={false} />
                     <XAxis
                       dataKey="day"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#64748B', fontSize: 11 }}
+                      tick={{ fill: 'rgb(var(--twc-slate-500))', fontSize: 11 }}
                       interval={reviewVolumeData.length > 14 ? Math.floor(reviewVolumeData.length / 7) : 0}
                     />
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#64748B', fontSize: 11 }}
+                      tick={{ fill: 'rgb(var(--twc-slate-500))', fontSize: 11 }}
                       allowDecimals={false}
                     />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: '#fff',
-                        border: '1px solid #E2E8F0',
+                        border: '1px solid rgb(var(--twc-slate-200))',
                         borderRadius: '8px',
                         boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                         fontSize: '12px',
                       }}
                     />
-                    <Bar dataKey="positive" fill="#10B981" radius={[4, 4, 0, 0]} name="Positive" stackId="a" />
-                    <Bar dataKey="negative" fill="#EF4444" radius={[4, 4, 0, 0]} name="Negative" stackId="a" />
+                    <Bar dataKey="positive" fill="rgb(var(--twc-emerald-500))" radius={[4, 4, 0, 0]} name="Positive" stackId="a" />
+                    <Bar dataKey="negative" fill="rgb(var(--twc-red-500))" radius={[4, 4, 0, 0]} name="Negative" stackId="a" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (

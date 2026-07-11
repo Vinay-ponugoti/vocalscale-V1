@@ -163,7 +163,7 @@ const GetNewNumber = () => {
   if (checkingSubaccount) {
     return (
       <DashboardLayout fullWidth>
-        <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-[#f7f8fb] p-6">
+        <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-[hsl(var(--ds-off-white))] p-6">
           <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50">
             <Loader2 className="h-7 w-7 animate-spin text-cyan-700" />
           </div>
@@ -180,7 +180,7 @@ const GetNewNumber = () => {
   if (error && error.includes('business account')) {
     return (
       <DashboardLayout fullWidth>
-        <div className="flex min-h-screen items-center justify-center bg-[#f7f8fb] p-6">
+        <div className="flex min-h-screen items-center justify-center bg-[hsl(var(--ds-off-white))] p-6">
           <div className="w-full max-w-md rounded-lg border border-rose-100 bg-white p-8 text-center shadow-sm">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
               <AlertCircle className="h-8 w-8" />
@@ -422,7 +422,7 @@ const GetNewNumber = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex h-full min-h-screen flex-col overflow-hidden bg-[#f7f8fb] text-slate-950">
+      <div className="flex h-full min-h-screen flex-col overflow-hidden bg-[hsl(var(--ds-off-white))] text-slate-950">
         {/* Progress Header */}
         <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-4 md:px-6 xl:px-8">
           <div className="flex items-center gap-6">

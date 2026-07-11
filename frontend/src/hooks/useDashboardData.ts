@@ -10,6 +10,9 @@ interface Call {
   caller_name: string;
   category: string;
   summary: string;
+  follow_up_required?: boolean;
+  phone_number?: string;
+  caller_phone?: string;
 }
 
 interface Appointment {
@@ -38,11 +41,14 @@ interface DashboardData {
     urgentTrend?: StatTrend;
     handled: number;
     handledTrend?: StatTrend;
+    missed: number;
+    missedTrend?: StatTrend;
     minutesSaved: number;
     minutesSavedTrend?: StatTrend;
     appointmentsTrend?: StatTrend;
   };
   recentCalls: Call[];
+  attentionCalls: Call[];
   appointments: Appointment[];
   chartData: ChartDataPoint[];
 }
@@ -64,9 +70,12 @@ export const useDashboardData = (selectedDate: Date, days: number = 7, timezone:
       }
 
       const rawData = await response.json();
+      const allCalls: Call[] = Array.isArray(rawData.recentCalls) ? rawData.recentCalls : [];
       return {
         stats: rawData.stats,
-        recentCalls: Array.isArray(rawData.recentCalls) ? (rawData.recentCalls as Call[]).slice(0, 6) : [],
+        recentCalls: allCalls.slice(0, 6),
+        // Full-period urgent / follow-up items for the "Needs attention" queue.
+        attentionCalls: allCalls.filter((c) => c.is_urgent || c.follow_up_required).slice(0, 5),
         appointments: Array.isArray(rawData.appointments) ? (rawData.appointments as Appointment[]).slice(0, 8) : [],
         chartData: Array.isArray(rawData.chartData) ? rawData.chartData : []
       };
@@ -83,14 +92,17 @@ export const useDashboardData = (selectedDate: Date, days: number = 7, timezone:
       total: 0,
       urgent: 0,
       handled: 0,
+      missed: 0,
       minutesSaved: 0,
       totalTrend: { value: 0, isPositive: true },
       urgentTrend: { value: 0, isPositive: true },
       handledTrend: { value: 0, isPositive: true },
+      missedTrend: { value: 0, isPositive: true },
       minutesSavedTrend: { value: 0, isPositive: true },
       appointmentsTrend: { value: 0, isPositive: true }
     },
     recentCalls: data?.recentCalls || [],
+    attentionCalls: data?.attentionCalls || [],
     appointments: data?.appointments || [],
     chartData: data?.chartData || [],
     error

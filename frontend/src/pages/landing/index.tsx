@@ -38,7 +38,7 @@ const Landing = () => {
   // SEO Configuration Map — keyword-aligned with high-intent search queries (2026)
   const seoConfig = {
     '/': {
-      title: "AI Receptionist & 24/7 Voice Agent for Small Business | VocalScale",
+      title: "AI Receptionist for Small Business | VocalScale",
       description: "VocalScale is the AI receptionist that answers every call 24/7, books appointments, and qualifies leads in 50+ languages. Contact us for pricing.",
       canonical: "https://vocalscale.com/"
     },

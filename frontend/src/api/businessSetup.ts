@@ -109,28 +109,52 @@ class BusinessSetupAPI {
   }
 
 
-  // Upload Knowledge Document for processing (calls Python knowledge processor directly)
-  async uploadKnowledgeDocument(file: File): Promise<{ status: string; filename: string; user_id: string; processing_status: string; message: string }> {
-    const url = `${env.KNOWLEDGE_API_URL}/upload`;
+  // Upload Knowledge Document for processing (calls Python knowledge processor directly).
+  // Uses XMLHttpRequest so we can report real upload progress (fetch can't).
+  async uploadKnowledgeDocument(
+    file: File,
+    onProgress?: (fraction: number) => void,
+    agentId?: string | null,
+  ): Promise<{ status: string; filename: string; user_id: string; processing_status: string; message: string }> {
+    const url = `${env.KNOWLEDGE_API_URL}/upload${agentId ? `?agent_id=${encodeURIComponent(agentId)}` : ''}`;
     const headers = await getAuthHeader();
 
-    const formData: any = new FormData();
+    const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        ...headers,
-      },
-      body: formData,
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url);
+      // Apply auth headers (do NOT set Content-Type — the browser sets the multipart boundary).
+      Object.entries(headers).forEach(([k, v]) => {
+        if (v != null) xhr.setRequestHeader(k, String(v));
+      });
+
+      xhr.upload.onprogress = (e) => {
+        if (onProgress && e.lengthComputable) onProgress(e.loaded / e.total);
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          onProgress?.(1);
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch {
+            resolve({ status: 'ok', filename: file.name, user_id: '', processing_status: 'processing', message: '' });
+          }
+        } else {
+          let detail = `HTTP ${xhr.status}: ${xhr.statusText}`;
+          try {
+            detail = JSON.parse(xhr.responseText).detail || detail;
+          } catch {
+            /* keep default */
+          }
+          reject(new Error(detail));
+        }
+      };
+      xhr.onerror = () => reject(new Error('Network error during upload'));
+      xhr.send(formData);
     });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ detail: 'Upload failed' }));
-      throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    return response.json();
   }
 
   // Poll Task Status
@@ -150,7 +174,7 @@ class BusinessSetupAPI {
   }
 
   // Get List of Knowledge Files (calls Python knowledge processor directly)
-  async getKnowledgeFiles(): Promise<Array<{
+  async getKnowledgeFiles(agentId?: string | null): Promise<Array<{
     id: string;
     filename: string;
     status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
@@ -160,8 +184,9 @@ class BusinessSetupAPI {
     fact_count?: number;
     doc_type?: string | null;
     error?: string;
+    agent_id?: string | null;
   }>> {
-    const url = `${env.KNOWLEDGE_API_URL}/files`;
+    const url = `${env.KNOWLEDGE_API_URL}/files${agentId ? `?agent_id=${encodeURIComponent(agentId)}` : ''}`;
     const headers = await getAuthHeader();
 
     const response = await fetch(url, {
@@ -174,6 +199,28 @@ class BusinessSetupAPI {
     }
     const data = await response.json();
     return data.files || [];
+  }
+
+  // Semantic search over the user's knowledge — the same retrieval the voice
+  // agent uses, so it shows exactly what the AI would answer.
+  async searchKnowledge(
+    query: string,
+    limit = 5,
+    agentId?: string | null,
+  ): Promise<Array<{ id: string; content: string; score: number; metadata?: Record<string, any> }>> {
+    const url = `${env.KNOWLEDGE_API_URL}/search${agentId ? `?agent_id=${encodeURIComponent(agentId)}` : ''}`;
+    const headers = await getAuthHeader();
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, limit }),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Search failed' }));
+      throw new Error(error.detail || `HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    return data.results || [];
   }
 
   // Delete a Knowledge File

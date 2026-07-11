@@ -22,7 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/Select"
-import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 interface ChartDataPoint {
@@ -44,7 +45,7 @@ interface CallVolumeChartProps {
 const chartConfig = {
   calls: {
     label: "Calls",
-    color: "#4285F4",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig
 
@@ -60,16 +61,24 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
 
   return (
     <Card className="rounded-2xl border-0 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.08)] overflow-hidden h-full flex flex-col pt-0 hover:border-transparent hover:shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
-      <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row px-6">
+      <CardHeader className="flex items-center gap-2 space-y-0 py-4 sm:flex-row px-6">
         <div className="grid flex-1 gap-1">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-blue-50 text-[#4285F4] ring-1 ring-[#4285F4]/10">
+            <div className="p-1.5 rounded-lg bg-blue-50 text-[hsl(var(--chart-1))] ring-1 ring-[hsl(var(--chart-1))]/10">
               <Activity size={16} strokeWidth={2.5} />
             </div>
             <CardTitle className="text-base font-black text-slate-900 uppercase tracking-tight">Call Volume</CardTitle>
           </div>
-          <CardDescription className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-            {totalCalls} {totalCalls === 1 ? 'call' : 'calls'} over {safeData.length} {safeData.length === 1 ? 'day' : 'days'}
+          <CardDescription className="flex flex-wrap items-center gap-x-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <span>
+              {totalCalls} {totalCalls === 1 ? 'call' : 'calls'} over {safeData.length} {safeData.length === 1 ? 'day' : 'days'}
+            </span>
+            <Link
+              to="/dashboard/insights"
+              className="inline-flex items-center gap-0.5 normal-case font-semibold tracking-normal text-blue-600 hover:text-blue-700"
+            >
+              View full performance <ArrowRight size={12} />
+            </Link>
           </CardDescription>
         </div>
 
@@ -100,9 +109,9 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
         </div>
       </CardHeader>
 
-      <CardContent className="px-4 pb-4 flex-1 flex flex-col min-h-[300px] sm:min-h-[400px] min-w-0 overflow-hidden">
+      <CardContent className="px-4 pb-4 flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
         {/* Quick Stats Integration - Tightened Gap */}
-        <div className="flex items-center gap-8 mb-4 px-6 pt-6">
+        <div className="flex items-center gap-8 mb-3 px-6 pt-3">
           <div className="flex flex-col">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Interactions</span>
             <span className="text-3xl font-black text-slate-900 tabular-nums tracking-tighter">{totalCalls}</span>
@@ -118,7 +127,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
 
         <ChartContainer
           config={chartConfig}
-          className="h-full w-full min-h-[300px]"
+          className="aspect-auto h-[230px] w-full sm:h-[250px] min-h-0"
         >
           <AreaChart data={safeData} margin={{ top: 10, right: 30, left: 10, bottom: 0 }}>
             <defs>
@@ -135,7 +144,7 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f1f5f9" />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgb(var(--twc-slate-100))" />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -149,10 +158,10 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
                 if (typeof value === 'string' && value.includes(',')) return value.split(',')[0];
                 return value;
               }}
-              tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 700 }}
+              tick={{ fill: 'rgb(var(--twc-slate-400))', fontSize: 10, fontWeight: 700 }}
             />
             <ChartTooltip
-              cursor={{ stroke: '#e2e8f0', strokeWidth: 1 }}
+              cursor={{ stroke: 'rgb(var(--twc-slate-200))', strokeWidth: 1 }}
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => value}

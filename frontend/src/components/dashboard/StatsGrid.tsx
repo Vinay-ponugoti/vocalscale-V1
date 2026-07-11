@@ -1,5 +1,6 @@
 import React from 'react';
-import { Phone, Calendar, AlertTriangle, Star, TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Phone, PhoneMissed, Calendar, AlertTriangle, Star, TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
 import { StarRating } from '../ui/StarRating';
 import {
   Card,
@@ -11,43 +12,55 @@ import { Badge } from '../ui/Badge';
 import { cn } from '../../lib/utils';
 import { GRID_GAP } from '../../constants/layout';
 
+interface StatTrend {
+  value: number;
+  isPositive: boolean;
+}
+
 interface StatsGridProps {
   stats: {
     total: number;
-    totalTrend?: { value: number; isPositive: boolean };
+    totalTrend?: StatTrend;
     urgent: number;
-    urgentTrend?: { value: number; isPositive: boolean };
+    urgentTrend?: StatTrend;
     handled: number;
-    handledTrend?: { value: number; isPositive: boolean };
+    handledTrend?: StatTrend;
+    missed?: number;
+    missedTrend?: StatTrend;
     minutesSaved?: number;
-    minutesSavedTrend?: { value: number; isPositive: boolean };
-    appointmentsTrend?: { value: number; isPositive: boolean };
+    minutesSavedTrend?: StatTrend;
+    appointmentsTrend?: StatTrend;
   };
   appointmentsCount: number;
   reviewsCount: number;
   reviewsToday: number;
   reviewRating: number;
-  reviewsTrend?: {
-    value: number;
-    isPositive: boolean;
-  };
+  reviewsTrend?: StatTrend;
 }
 
 interface StatCardProps {
   label: string;
   value: number | string;
   icon: LucideIcon;
-  trend?: {
-    value: number;
-    isPositive: boolean;
-  };
+  trend?: StatTrend;
   badge?: {
     text: string;
     variant: 'default' | 'secondary' | 'destructive' | 'outline';
   };
-  highlight?: boolean;
+  tint?: 'blue' | 'rose' | 'amber' | 'orange' | 'emerald';
   description?: string;
+  onClick?: () => void;
+  /** Suffix after the trend number; '%' by default, '' for absolute deltas. */
+  trendSuffix?: string;
 }
+
+const ICON_TINTS: Record<NonNullable<StatCardProps['tint']>, string> = {
+  blue: 'bg-blue-50 text-blue-600',
+  rose: 'bg-rose-50 text-rose-600',
+  amber: 'bg-amber-50 text-amber-500',
+  orange: 'bg-orange-50 text-orange-600',
+  emerald: 'bg-emerald-50 text-emerald-600',
+};
 
 const StatCard: React.FC<StatCardProps> = ({
   label,
@@ -55,47 +68,49 @@ const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   trend,
   badge,
-  highlight,
-  description
+  tint = 'blue',
+  description,
+  onClick,
+  trendSuffix = '%',
 }) => {
   return (
-    <Card className={`relative flex h-full min-h-[154px] flex-col overflow-hidden rounded-lg border border-slate-200 shadow-sm transition-colors duration-200 hover:border-slate-300 hover:shadow-sm ${highlight ? 'bg-orange-50/30' : 'bg-white'
-      }`}>
-      <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-3">
-        <CardTitle className="text-[12px] font-black text-charcoal-light tracking-[0.12em] uppercase leading-5">{label}</CardTitle>
-        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${highlight ? 'bg-orange-50 text-orange-600' : 'bg-blue-electric/10 text-blue-electric'
-          }`}>
+    <Card
+      onClick={onClick}
+      className={cn(
+        'relative flex h-full min-h-[116px] flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition duration-200 hover:border-slate-200',
+        onClick && 'cursor-pointer hover:shadow-md',
+      )}
+    >
+      <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 p-4 pb-1.5">
+        <CardTitle className="text-xs font-semibold uppercase tracking-wide text-slate-500 leading-5">{label}</CardTitle>
+        <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', ICON_TINTS[tint])}>
           <Icon className="h-4 w-4" strokeWidth={2.25} />
         </div>
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col justify-end">
+      <CardContent className="flex flex-1 flex-col justify-end px-4 pb-4 pt-0">
         <div className="flex min-w-0 flex-col gap-1">
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-charcoal">{value}</span>
+            <span className="text-[28px] leading-none font-semibold tracking-tight text-slate-900">{value}</span>
             {trend && (
-              <div className={`flex shrink-0 items-center gap-0.5 text-xs font-black ${trend.isPositive ? 'text-emerald-600' : 'text-rose-600'
-                }`}>
-                {trend.isPositive ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
+              <div
+                className={cn(
+                  'flex shrink-0 items-center gap-0.5 text-xs font-semibold',
+                  trend.isPositive ? 'text-emerald-600' : 'text-rose-600',
                 )}
-                <span>{trend.value}%</span>
+              >
+                {trend.isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                <span>{Math.abs(trend.value)}{trendSuffix}</span>
               </div>
             )}
           </div>
 
-          <div className="mt-2 flex min-h-6 items-center justify-between gap-3">
-            <p className="min-w-0 text-[11px] font-bold text-charcoal-light uppercase tracking-wider">{description || 'Total recorded'}</p>
-            {badge ? (
-              <Badge variant={badge.variant} className="shrink-0 rounded-md px-2 py-0.5 text-[10px] font-black uppercase">
+          <div className="mt-1 flex items-center justify-between gap-3">
+            <p className="min-w-0 text-[11px] font-medium text-slate-400">{description || 'Total recorded'}</p>
+            {badge && (
+              <Badge variant={badge.variant} className="shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase">
                 {badge.text}
               </Badge>
-            ) : highlight ? (
-              <Badge variant="destructive" className="shrink-0 rounded-md border-none bg-orange-100 px-2 py-0.5 text-[10px] font-black uppercase text-orange-600 hover:bg-orange-100">
-                Priority
-              </Badge>
-            ) : null}
+            )}
           </div>
         </div>
       </CardContent>
@@ -107,43 +122,41 @@ interface ReviewStatCardProps {
   totalReviews: number;
   reviewsToday: number;
   rating: number;
-  trend?: {
-    value: number;
-    isPositive: boolean;
-  };
+  trend?: StatTrend;
 }
 
 const ReviewStatCard: React.FC<ReviewStatCardProps> = ({ totalReviews, reviewsToday, rating, trend }) => {
   return (
-    <Card className="relative flex h-full min-h-[154px] flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition-colors duration-200 hover:border-slate-300 hover:shadow-sm">
-      <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-3">
-        <CardTitle className="text-[12px] font-black text-charcoal-light tracking-[0.12em] uppercase leading-5">Reviews</CardTitle>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
+    <Card className="relative flex h-full min-h-[116px] flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition duration-200 hover:border-slate-200">
+      <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 p-4 pb-1.5">
+        <CardTitle className="text-xs font-semibold uppercase tracking-wide text-slate-500 leading-5">Reviews</CardTitle>
+        <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', ICON_TINTS.amber)}>
           <Star className="h-4 w-4" strokeWidth={2.25} />
         </div>
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col justify-end">
-        <div className="flex min-w-0 flex-col gap-2">
+      <CardContent className="flex flex-1 flex-col justify-end px-4 pb-4 pt-0">
+        <div className="flex min-w-0 flex-col gap-1">
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-charcoal">{rating.toFixed(1)}</span>
+            <span className="text-[28px] leading-none font-semibold tracking-tight text-slate-900">{rating.toFixed(1)}</span>
             {trend && (
-              <div className={`flex shrink-0 items-center gap-0.5 text-xs font-black ${trend.isPositive ? 'text-emerald-600' : 'text-rose-600'
-                }`}>
-                {trend.isPositive ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
+              <div
+                className={cn(
+                  'flex shrink-0 items-center gap-0.5 text-xs font-semibold',
+                  trend.isPositive ? 'text-emerald-600' : 'text-rose-600',
                 )}
+              >
+                {trend.isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                 <span>{trend.value}%</span>
               </div>
             )}
           </div>
 
-          <StarRating rating={rating} size={15} className="min-h-[18px]" />
-
-          <div className="mt-1 flex min-h-6 items-center justify-between gap-3">
-            <p className="min-w-0 text-[11px] font-bold text-charcoal-light uppercase tracking-wider">{totalReviews} total</p>
-            <Badge variant="outline" className="shrink-0 rounded-md border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-black uppercase text-amber-700">
+          <div className="mt-1 flex min-h-6 items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <StarRating rating={rating} size={13} />
+              <span className="truncate text-[11px] font-medium text-slate-400">{totalReviews} total</span>
+            </div>
+            <Badge variant="outline" className="shrink-0 rounded-md border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase text-amber-700">
               {reviewsToday} Today
             </Badge>
           </div>
@@ -154,30 +167,46 @@ const ReviewStatCard: React.FC<ReviewStatCardProps> = ({ totalReviews, reviewsTo
 };
 
 const StatsGrid: React.FC<StatsGridProps> = ({ stats, appointmentsCount, reviewsCount, reviewsToday, reviewRating, reviewsTrend }) => {
+  const navigate = useNavigate();
+
   return (
-    <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4", GRID_GAP)}>
+    <div className={cn('grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5', GRID_GAP)}>
       <StatCard
         label="Total Calls"
         value={stats.total}
         icon={Phone}
         trend={stats.totalTrend}
         description="Recorded in period"
+        onClick={() => navigate('/dashboard/calls')}
+      />
+      <StatCard
+        label="Missed Calls"
+        value={stats.missed ?? 0}
+        icon={PhoneMissed}
+        trend={stats.missedTrend}
+        trendSuffix=""
+        tint="rose"
+        description={(stats.missed ?? 0) > 0 ? 'Potential lost revenue' : 'Nothing slipped through'}
+        onClick={() => navigate('/dashboard/calls')}
       />
       <StatCard
         label="Appointments"
         value={appointmentsCount}
         icon={Calendar}
         trend={stats.appointmentsTrend}
+        tint="emerald"
         badge={{ text: 'Upcoming', variant: 'secondary' }}
         description="Scheduled in period"
+        onClick={() => navigate('/dashboard/appointments')}
       />
       <StatCard
         label="Urgent Alerts"
         value={stats.urgent}
         icon={AlertTriangle}
         trend={stats.urgentTrend}
-        highlight
+        tint="orange"
         description="Requires attention"
+        onClick={() => navigate('/dashboard/calls')}
       />
       <ReviewStatCard
         totalReviews={reviewsCount}

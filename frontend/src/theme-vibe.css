@@ -1,0 +1,431 @@
+/* ============================================================
+   VocalScale dashboard theme — "Vibe Coded SaaS" (dark)
+   Palette utilities (bg-slate-*, text-blue-*, …) resolve through
+   the --twc-* variables below. :root holds the stock Tailwind
+   values so pre-login pages are unchanged; .vs-dark (set on the
+   dashboard shell) remaps everything to the dark green theme.
+   Generated from the Figma source palettes — edit ramps here.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap');
+
+/* .vs-light included so a light island (e.g. the event card) can sit inside a dark shell */
+:root,
+.vs-light {
+    --twc-white: 255 255 255;
+    --twc-slate-50: 248 250 252;
+    --twc-slate-100: 241 245 249;
+    --twc-slate-200: 226 232 240;
+    --twc-slate-300: 203 213 225;
+    --twc-slate-400: 148 163 184;
+    --twc-slate-500: 100 116 139;
+    --twc-slate-600: 71 85 105;
+    --twc-slate-700: 51 65 85;
+    --twc-slate-800: 30 41 59;
+    --twc-slate-900: 15 23 42;
+    --twc-slate-950: 2 6 23;
+    --twc-gray-50: 249 250 251;
+    --twc-gray-100: 243 244 246;
+    --twc-gray-200: 229 231 235;
+    --twc-gray-300: 209 213 219;
+    --twc-gray-400: 156 163 175;
+    --twc-gray-500: 107 114 128;
+    --twc-gray-600: 75 85 99;
+    --twc-gray-700: 55 65 81;
+    --twc-gray-800: 31 41 55;
+    --twc-gray-900: 17 24 39;
+    --twc-gray-950: 3 7 18;
+    --twc-zinc-50: 250 250 250;
+    --twc-zinc-100: 244 244 245;
+    --twc-zinc-200: 228 228 231;
+    --twc-zinc-300: 212 212 216;
+    --twc-zinc-400: 161 161 170;
+    --twc-zinc-500: 113 113 122;
+    --twc-zinc-600: 82 82 91;
+    --twc-zinc-700: 63 63 70;
+    --twc-zinc-800: 39 39 42;
+    --twc-zinc-900: 24 24 27;
+    --twc-zinc-950: 9 9 11;
+    --twc-blue-50: 239 246 255;
+    --twc-blue-100: 219 234 254;
+    --twc-blue-200: 191 219 254;
+    --twc-blue-300: 147 197 253;
+    --twc-blue-400: 96 165 250;
+    --twc-blue-500: 59 130 246;
+    --twc-blue-600: 37 99 235;
+    --twc-blue-700: 29 78 216;
+    --twc-blue-800: 30 64 175;
+    --twc-blue-900: 30 58 138;
+    --twc-blue-950: 23 37 84;
+    --twc-cyan-50: 236 254 255;
+    --twc-cyan-100: 207 250 254;
+    --twc-cyan-200: 165 243 252;
+    --twc-cyan-300: 103 232 249;
+    --twc-cyan-400: 34 211 238;
+    --twc-cyan-500: 6 182 212;
+    --twc-cyan-600: 8 145 178;
+    --twc-cyan-700: 14 116 144;
+    --twc-cyan-800: 21 94 117;
+    --twc-cyan-900: 22 78 99;
+    --twc-cyan-950: 8 51 68;
+    --twc-indigo-50: 238 242 255;
+    --twc-indigo-100: 224 231 255;
+    --twc-indigo-200: 199 210 254;
+    --twc-indigo-300: 165 180 252;
+    --twc-indigo-400: 129 140 248;
+    --twc-indigo-500: 99 102 241;
+    --twc-indigo-600: 79 70 229;
+    --twc-indigo-700: 67 56 202;
+    --twc-indigo-800: 55 48 163;
+    --twc-indigo-900: 49 46 129;
+    --twc-indigo-950: 30 27 75;
+    --twc-violet-50: 245 243 255;
+    --twc-violet-100: 237 233 254;
+    --twc-violet-200: 221 214 254;
+    --twc-violet-300: 196 181 253;
+    --twc-violet-400: 167 139 250;
+    --twc-violet-500: 139 92 246;
+    --twc-violet-600: 124 58 237;
+    --twc-violet-700: 109 40 217;
+    --twc-violet-800: 91 33 182;
+    --twc-violet-900: 76 29 149;
+    --twc-violet-950: 46 16 101;
+    --twc-purple-50: 250 245 255;
+    --twc-purple-100: 243 232 255;
+    --twc-purple-200: 233 213 255;
+    --twc-purple-300: 216 180 254;
+    --twc-purple-400: 192 132 252;
+    --twc-purple-500: 168 85 247;
+    --twc-purple-600: 147 51 234;
+    --twc-purple-700: 126 34 206;
+    --twc-purple-800: 107 33 168;
+    --twc-purple-900: 88 28 135;
+    --twc-purple-950: 59 7 100;
+    --twc-emerald-50: 236 253 245;
+    --twc-emerald-100: 209 250 229;
+    --twc-emerald-200: 167 243 208;
+    --twc-emerald-300: 110 231 183;
+    --twc-emerald-400: 52 211 153;
+    --twc-emerald-500: 16 185 129;
+    --twc-emerald-600: 5 150 105;
+    --twc-emerald-700: 4 120 87;
+    --twc-emerald-800: 6 95 70;
+    --twc-emerald-900: 6 78 59;
+    --twc-emerald-950: 2 44 34;
+    --twc-green-50: 240 253 244;
+    --twc-green-100: 220 252 231;
+    --twc-green-200: 187 247 208;
+    --twc-green-300: 134 239 172;
+    --twc-green-400: 74 222 128;
+    --twc-green-500: 34 197 94;
+    --twc-green-600: 22 163 74;
+    --twc-green-700: 21 128 61;
+    --twc-green-800: 22 101 52;
+    --twc-green-900: 20 83 45;
+    --twc-green-950: 5 46 22;
+    --twc-red-50: 254 242 242;
+    --twc-red-100: 254 226 226;
+    --twc-red-200: 254 202 202;
+    --twc-red-300: 252 165 165;
+    --twc-red-400: 248 113 113;
+    --twc-red-500: 239 68 68;
+    --twc-red-600: 220 38 38;
+    --twc-red-700: 185 28 28;
+    --twc-red-800: 153 27 27;
+    --twc-red-900: 127 29 29;
+    --twc-red-950: 69 10 10;
+    --twc-rose-50: 255 241 242;
+    --twc-rose-100: 255 228 230;
+    --twc-rose-200: 254 205 211;
+    --twc-rose-300: 253 164 175;
+    --twc-rose-400: 251 113 133;
+    --twc-rose-500: 244 63 94;
+    --twc-rose-600: 225 29 72;
+    --twc-rose-700: 190 18 60;
+    --twc-rose-800: 159 18 57;
+    --twc-rose-900: 136 19 55;
+    --twc-rose-950: 76 5 25;
+    --twc-amber-50: 255 251 235;
+    --twc-amber-100: 254 243 199;
+    --twc-amber-200: 253 230 138;
+    --twc-amber-300: 252 211 77;
+    --twc-amber-400: 251 191 36;
+    --twc-amber-500: 245 158 11;
+    --twc-amber-600: 217 119 6;
+    --twc-amber-700: 180 83 9;
+    --twc-amber-800: 146 64 14;
+    --twc-amber-900: 120 53 15;
+    --twc-amber-950: 69 26 3;
+    --twc-orange-50: 255 247 237;
+    --twc-orange-100: 255 237 213;
+    --twc-orange-200: 254 215 170;
+    --twc-orange-300: 253 186 116;
+    --twc-orange-400: 251 146 60;
+    --twc-orange-500: 249 115 22;
+    --twc-orange-600: 234 88 12;
+    --twc-orange-700: 194 65 12;
+    --twc-orange-800: 154 52 18;
+    --twc-orange-900: 124 45 18;
+    --twc-orange-950: 67 20 7;
+}
+
+/* Light shell: stock :root palette, same typography. Toggled via the
+   sun/moon button in the dashboard header (vs-dark <-> vs-light). */
+.vs-light {
+  color-scheme: light;
+  font-family: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Reset semantic tokens to light so vs-light works inside a vs-dark shell */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 217 91% 60%;
+
+  --ds-white: 0 0% 100%;
+  --ds-surface: 210 20% 98%;
+  --ds-off-white: 210 20% 97%;
+  --ds-border: 214 32% 91%;
+  --ds-ink: 222 47% 11%;
+  --ds-charcoal: 217 19% 27%;
+  --ds-stone: 215 14% 34%;
+  --ds-subtle-text: 215 16% 47%;
+  --ds-electric: 217 91% 60%;
+  --ds-electric-dark: 221 83% 53%;
+  --ds-electric-light: 214 100% 97%;
+  --ds-electric-tint: 217 91% 60% / 0.1;
+
+  --chart-1: 217 91% 60%;
+  --chart-2: 142 76% 36%;
+  --chart-3: 38 92% 50%;
+  --chart-4: 262 83% 58%;
+  --chart-5: 0 84% 60%;
+}
+.vs-light .font-sans { font-family: 'Geist', 'Inter', system-ui, sans-serif; }
+
+.vs-dark {
+  color-scheme: dark;
+  font-family: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+    --twc-white: 20 23 20; /* card #141714 */
+    --twc-slate-50: 26 30 26;
+    --twc-slate-100: 31 35 31;
+    --twc-slate-200: 33 37 33;
+    --twc-slate-300: 53 59 53;
+    --twc-slate-400: 128 128 128;
+    --twc-slate-500: 156 163 175;
+    --twc-slate-600: 176 183 176;
+    --twc-slate-700: 203 209 203;
+    --twc-slate-800: 226 230 226;
+    --twc-slate-900: 243 244 246;
+    --twc-slate-950: 249 250 251;
+    --twc-gray-50: 26 30 26;
+    --twc-gray-100: 31 35 31;
+    --twc-gray-200: 33 37 33;
+    --twc-gray-300: 53 59 53;
+    --twc-gray-400: 128 128 128;
+    --twc-gray-500: 156 163 175;
+    --twc-gray-600: 176 183 176;
+    --twc-gray-700: 203 209 203;
+    --twc-gray-800: 226 230 226;
+    --twc-gray-900: 243 244 246;
+    --twc-gray-950: 249 250 251;
+    --twc-zinc-50: 26 30 26;
+    --twc-zinc-100: 31 35 31;
+    --twc-zinc-200: 33 37 33;
+    --twc-zinc-300: 53 59 53;
+    --twc-zinc-400: 128 128 128;
+    --twc-zinc-500: 156 163 175;
+    --twc-zinc-600: 176 183 176;
+    --twc-zinc-700: 203 209 203;
+    --twc-zinc-800: 226 230 226;
+    --twc-zinc-900: 243 244 246;
+    --twc-zinc-950: 249 250 251;
+    --twc-blue-50: 22 48 31;
+    --twc-blue-100: 31 56 31;
+    --twc-blue-200: 39 82 47;
+    --twc-blue-300: 46 122 79;
+    --twc-blue-400: 54 211 153;
+    --twc-blue-500: 62 204 140;
+    --twc-blue-600: 62 204 140;
+    --twc-blue-700: 82 217 154;
+    --twc-blue-800: 127 228 182;
+    --twc-blue-900: 178 240 211;
+    --twc-blue-950: 216 247 232;
+    --twc-cyan-50: 22 48 31;
+    --twc-cyan-100: 31 56 31;
+    --twc-cyan-200: 39 82 47;
+    --twc-cyan-300: 46 122 79;
+    --twc-cyan-400: 54 211 153;
+    --twc-cyan-500: 62 204 140;
+    --twc-cyan-600: 62 204 140;
+    --twc-cyan-700: 82 217 154;
+    --twc-cyan-800: 127 228 182;
+    --twc-cyan-900: 178 240 211;
+    --twc-cyan-950: 216 247 232;
+    --twc-indigo-50: 27 24 64;
+    --twc-indigo-100: 37 32 89;
+    --twc-indigo-200: 48 42 117;
+    --twc-indigo-300: 77 64 214;
+    --twc-indigo-400: 141 133 229;
+    --twc-indigo-500: 172 167 233;
+    --twc-indigo-600: 172 167 233;
+    --twc-indigo-700: 188 184 238;
+    --twc-indigo-800: 206 203 243;
+    --twc-indigo-900: 224 222 247;
+    --twc-indigo-950: 240 239 251;
+    --twc-violet-50: 27 24 64;
+    --twc-violet-100: 37 32 89;
+    --twc-violet-200: 48 42 117;
+    --twc-violet-300: 77 64 214;
+    --twc-violet-400: 141 133 229;
+    --twc-violet-500: 172 167 233;
+    --twc-violet-600: 172 167 233;
+    --twc-violet-700: 188 184 238;
+    --twc-violet-800: 206 203 243;
+    --twc-violet-900: 224 222 247;
+    --twc-violet-950: 240 239 251;
+    --twc-purple-50: 27 24 64;
+    --twc-purple-100: 37 32 89;
+    --twc-purple-200: 48 42 117;
+    --twc-purple-300: 77 64 214;
+    --twc-purple-400: 141 133 229;
+    --twc-purple-500: 172 167 233;
+    --twc-purple-600: 172 167 233;
+    --twc-purple-700: 188 184 238;
+    --twc-purple-800: 206 203 243;
+    --twc-purple-900: 224 222 247;
+    --twc-purple-950: 240 239 251;
+    --twc-emerald-50: 31 56 31;
+    --twc-emerald-100: 39 68 39;
+    --twc-emerald-200: 47 85 47;
+    --twc-emerald-300: 47 168 114;
+    --twc-emerald-400: 54 211 153;
+    --twc-emerald-500: 62 204 140;
+    --twc-emerald-600: 62 204 140;
+    --twc-emerald-700: 82 217 154;
+    --twc-emerald-800: 127 228 182;
+    --twc-emerald-900: 178 240 211;
+    --twc-emerald-950: 216 247 232;
+    --twc-green-50: 31 56 31;
+    --twc-green-100: 39 68 39;
+    --twc-green-200: 47 85 47;
+    --twc-green-300: 47 168 114;
+    --twc-green-400: 54 211 153;
+    --twc-green-500: 62 204 140;
+    --twc-green-600: 62 204 140;
+    --twc-green-700: 82 217 154;
+    --twc-green-800: 127 228 182;
+    --twc-green-900: 178 240 211;
+    --twc-green-950: 216 247 232;
+    --twc-red-50: 51 20 24;
+    --twc-red-100: 70 24 30;
+    --twc-red-200: 92 31 39;
+    --twc-red-300: 138 42 53;
+    --twc-red-400: 232 85 95;
+    --twc-red-500: 226 58 69;
+    --twc-red-600: 226 58 69;
+    --twc-red-700: 234 92 102;
+    --twc-red-800: 241 135 144;
+    --twc-red-900: 247 179 184;
+    --twc-red-950: 251 217 220;
+    --twc-rose-50: 51 20 24;
+    --twc-rose-100: 70 24 30;
+    --twc-rose-200: 92 31 39;
+    --twc-rose-300: 138 42 53;
+    --twc-rose-400: 232 85 95;
+    --twc-rose-500: 226 58 69;
+    --twc-rose-600: 226 58 69;
+    --twc-rose-700: 234 92 102;
+    --twc-rose-800: 241 135 144;
+    --twc-rose-900: 247 179 184;
+    --twc-rose-950: 251 217 220;
+    --twc-amber-50: 51 39 15;
+    --twc-amber-100: 69 52 19;
+    --twc-amber-200: 92 69 23;
+    --twc-amber-300: 138 103 31;
+    --twc-amber-400: 255 214 107;
+    --twc-amber-500: 255 203 73;
+    --twc-amber-600: 255 203 73;
+    --twc-amber-700: 255 214 107;
+    --twc-amber-800: 255 226 145;
+    --twc-amber-900: 255 237 184;
+    --twc-amber-950: 255 246 220;
+    --twc-orange-50: 51 32 15;
+    --twc-orange-100: 69 42 19;
+    --twc-orange-200: 92 55 23;
+    --twc-orange-300: 138 79 31;
+    --twc-orange-400: 255 157 66;
+    --twc-orange-500: 255 136 27;
+    --twc-orange-600: 255 136 27;
+    --twc-orange-700: 255 165 82;
+    --twc-orange-800: 255 193 137;
+    --twc-orange-900: 255 220 188;
+    --twc-orange-950: 255 238 222;
+
+  /* shadcn semantic tokens */
+  --background: 140 37% 4%;        /* #060d08 page */
+  --foreground: 210 20% 98%;       /* #f9fafb */
+  --card: 120 7% 8%;               /* #141714 */
+  --card-foreground: 210 20% 98%;
+  --popover: 120 7% 8%;
+  --popover-foreground: 210 20% 98%;
+  --primary: 153 58% 52%;          /* #3ecc8c */
+  --primary-foreground: 140 37% 4%;
+  --secondary: 120 4% 16%;         /* #2c2e2d elevated control */
+  --secondary-foreground: 210 20% 94%;
+  --muted: 120 6% 12%;
+  --muted-foreground: 0 0% 50%;    /* #808080 */
+  --accent: 120 29% 17%;           /* #1f381f */
+  --accent-foreground: 152 61% 52%;
+  --destructive: 356 74% 56%;      /* #e23a45 */
+  --destructive-foreground: 210 20% 98%;
+  --success: 153 58% 52%;
+  --success-foreground: 140 37% 4%;
+  --warning: 43 100% 64%;          /* #ffcb49 */
+  --warning-foreground: 140 37% 4%;
+  --border: 120 6% 14%;            /* #212521 */
+  --input: 120 5% 22%;             /* #353b35 */
+  --ring: 153 58% 52%;
+
+  /* DS tokens */
+  --ds-white: 120 7% 8%;           /* card surface */
+  --ds-surface: 120 12% 6%;        /* #0e120e sidebar */
+  --ds-off-white: 140 37% 4%;      /* #060d08 page bg */
+  --ds-border: 120 6% 14%;         /* #212521 */
+  --ds-ink: 210 20% 98%;
+  --ds-charcoal: 120 3% 89%;
+  --ds-stone: 220 11% 65%;         /* #9ca3af */
+  --ds-subtle-text: 0 0% 50%;      /* #808080 */
+  --ds-electric: 153 58% 52%;      /* green accent */
+  --ds-electric-dark: 153 54% 46%;
+  --ds-electric-light: 120 29% 17%;/* #1f381f tint */
+  --ds-electric-tint: 153 58% 52% / 0.12;
+
+  /* Charts — fig2 palette */
+  --chart-1: 153 58% 52%;          /* green #3ecc8c */
+  --chart-2: 246 63% 78%;          /* lavender #aca7e9 */
+  --chart-3: 43 100% 64%;          /* amber #ffcb49 */
+  --chart-4: 245 64% 48%;          /* deep purple #392dca */
+  --chart-5: 356 74% 56%;          /* red #e23a45 */
+}
+
+/* Geist everywhere inside the shell, even where pages set font-sans */
+.vs-dark .font-sans { font-family: 'Geist', 'Inter', system-ui, sans-serif; }
+
+/* Dark scrollbars inside the shell */
+.vs-dark ::-webkit-scrollbar { width: 10px; height: 10px; }
+.vs-dark ::-webkit-scrollbar-thumb { background: #2c2e2d; border-radius: 8px; border: 2px solid #060d08; }
+.vs-dark ::-webkit-scrollbar-track { background: transparent; }

@@ -102,7 +102,7 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
         {/* ── Message body ── */}
         {isUser ? (
           // User bubble — dark slate, ChatGPT-style
-          <div className="inline-block bg-[#1e293b] text-white/95 px-5 py-3.5 rounded-2xl rounded-br-sm text-[15px] leading-relaxed max-w-full text-left shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+          <div className="inline-block bg-[rgb(var(--twc-slate-800))] text-white/95 px-5 py-3.5 rounded-2xl rounded-br-sm text-[15px] leading-relaxed max-w-full text-left shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
             {message.content}
           </div>
         ) : (

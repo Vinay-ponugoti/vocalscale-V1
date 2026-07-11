@@ -20,7 +20,6 @@ import {
 import type { Voice, VoiceSettingsProps } from '../../../../types/settings';
 import { useVoicePreview } from '../../../../hooks/useVoicePreview';
 import { api } from '../../../../lib/api';
-import { WebCallPreview } from './WebCallPreview';
 
 const LANGUAGES = [
   { value: 'en-US', label: 'English', hint: 'US, UK, AU, IN, NZ' },
@@ -368,7 +367,6 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             </p>
           </section>
 
-          <WebCallPreview />
 
           <section className="rounded-lg border border-slate-200 bg-white p-4">
             <label className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-950">

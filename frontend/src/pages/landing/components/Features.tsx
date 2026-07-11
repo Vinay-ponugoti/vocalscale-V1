@@ -236,7 +236,7 @@ export function Features() {
             <div
               key={index}
               className={cn(
-                "group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 md:p-8 lg:p-10 transition-all duration-300 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-200/50",
+                "group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 md:p-8 lg:p-10 shadow-sm transition-all duration-300 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-200/50",
                 feature.className
               )}
             >

@@ -10,7 +10,7 @@ const Reviews = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="scrollbar-hide h-full overflow-y-auto bg-[#f7f8fb] text-slate-950">
+      <div className="scrollbar-hide h-full overflow-y-auto bg-[hsl(var(--ds-off-white))] text-slate-950">
         <div className="mx-auto w-full max-w-[1500px] space-y-5 px-4 py-5 md:px-6 md:py-8 xl:px-8">
           <ConnectGoogleBusiness onVerified={sync.trigger} />
 

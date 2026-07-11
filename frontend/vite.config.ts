@@ -18,13 +18,13 @@ export default defineConfig(({ mode }) => {
     csp += ` img-src 'self' data: blob: https://*.google-analytics.com https://*.supabase.co https://*.googleapis.com https://*.googleusercontent.com;`;
     csp += ` media-src 'self' data: blob: https://*.r2.dev https://api.vocalscale.com https://*.supabase.co${isDev ? ' http://localhost:* http://127.0.0.1:*' : ''};`;
     // Always include the known production API origins; extend with env-var for extras
-    const prodOrigins = `'self' https://api.vocalscale.com https://billing.vocalscale.com https://knowledge.vocalscale.com https://*.supabase.co https://static.cloudflareinsights.com https://challenges.cloudflare.com https://www.google-analytics.com https://formsubmit.co https://api.web3forms.com`;
+    const prodOrigins = `'self' https://api.vocalscale.com https://billing.vocalscale.com https://knowledge.vocalscale.com https://*.supabase.co https://static.cloudflareinsights.com https://challenges.cloudflare.com https://www.google-analytics.com https://formsubmit.co https://api.web3forms.com https://*.supademo.com`;
     const extraOrigins = allowedOrigins !== 'self' ? ` ${allowedOrigins}` : '';
     // In dev, allow the local backend stack (api/payment/knowledge) and local Supabase over http.
     const devOrigins = isDev ? ' http://localhost:* http://127.0.0.1:* ws://localhost:*' : '';
     csp += ` connect-src ${prodOrigins}${extraOrigins}${devOrigins} ${isDev || allowInternet ? 'https:' : ''} wss:;`;
     csp += ` font-src 'self' data: https://fonts.gstatic.com;`;
-    csp += ` frame-src 'self' https://challenges.cloudflare.com;`;
+    csp += ` frame-src 'self' https://challenges.cloudflare.com https://*.supademo.com;`;
 
     return csp;
   };
