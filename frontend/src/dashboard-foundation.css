@@ -1,0 +1,295 @@
+/*
+ * VocalScale signed-in product foundation
+ * ----------------------------------------
+ * One restrained visual language for every authenticated route.  The app's
+ * existing Tailwind classes continue to work; this layer supplies the shared
+ * rhythm, surfaces and interaction character around them.
+ */
+
+.vs-app {
+  --vs-canvas: #f4f5f7;
+  --vs-canvas-deep: #ebeef2;
+  --vs-panel: #ffffff;
+  --vs-panel-soft: #f8f9fb;
+  --vs-ink: #15181e;
+  --vs-copy: #596171;
+  --vs-muted: #8a93a3;
+  --vs-line: #e2e5ea;
+  --vs-line-strong: #d3d8e0;
+  --vs-accent: #315efb;
+  --vs-accent-strong: #2449d8;
+  --vs-accent-soft: #edf1ff;
+  --vs-success: #16805a;
+  --vs-warning: #a76413;
+  --vs-danger: #c43f52;
+  --vs-radius-sm: 9px;
+  --vs-radius: 13px;
+  --vs-radius-lg: 18px;
+  --vs-shadow-card: 0 1px 2px rgba(20, 27, 40, 0.04), 0 7px 24px rgba(20, 27, 40, 0.035);
+  --vs-shadow-float: 0 18px 50px rgba(20, 27, 40, 0.13);
+
+  color: var(--vs-ink);
+  background: var(--vs-canvas);
+  font-family: 'Geist', 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-feature-settings: 'ss01' 1, 'cv02' 1, 'cv03' 1, 'cv04' 1;
+}
+
+/* A dark theme with the same blue-led product language, not a second brand. */
+.vs-app.vs-dark {
+  --vs-canvas: #101216;
+  --vs-canvas-deep: #0b0d10;
+  --vs-panel: #171a20;
+  --vs-panel-soft: #1c2027;
+  --vs-ink: #f5f7fb;
+  --vs-copy: #b1b8c5;
+  --vs-muted: #7f8795;
+  --vs-line: #292e37;
+  --vs-line-strong: #363d48;
+  --vs-accent: #6f8cff;
+  --vs-accent-strong: #91a6ff;
+  --vs-accent-soft: #202a50;
+  --vs-shadow-card: 0 1px 1px rgba(0, 0, 0, 0.16), 0 10px 30px rgba(0, 0, 0, 0.12);
+  --vs-shadow-float: 0 22px 60px rgba(0, 0, 0, 0.42);
+
+  --background: 225 16% 8%;
+  --foreground: 220 25% 97%;
+  --card: 222 15% 11%;
+  --card-foreground: 220 25% 97%;
+  --popover: 222 15% 11%;
+  --popover-foreground: 220 25% 97%;
+  --primary: 228 100% 72%;
+  --primary-foreground: 225 22% 10%;
+  --secondary: 220 14% 16%;
+  --secondary-foreground: 220 25% 94%;
+  --muted: 220 14% 16%;
+  --muted-foreground: 218 11% 66%;
+  --accent: 220 14% 18%;
+  --accent-foreground: 220 25% 97%;
+  --border: 220 14% 20%;
+  --input: 220 14% 22%;
+  --ring: 228 100% 72%;
+
+  --ds-white: 222 15% 11%;
+  --ds-surface: 225 17% 8%;
+  --ds-off-white: 225 16% 8%;
+  --ds-border: 220 14% 20%;
+  --ds-ink: 220 25% 97%;
+  --ds-charcoal: 218 17% 84%;
+  --ds-stone: 218 11% 66%;
+  --ds-subtle-text: 218 9% 52%;
+  --ds-electric: 228 100% 72%;
+  --ds-electric-dark: 228 100% 79%;
+  --ds-electric-light: 227 43% 22%;
+  --ds-electric-tint: 228 100% 72% / 0.13;
+
+  --twc-white: 23 26 32;
+  --twc-slate-50: 28 32 39;
+  --twc-slate-100: 33 38 46;
+  --twc-slate-200: 42 47 57;
+  --twc-slate-300: 57 64 77;
+  --twc-slate-400: 127 135 149;
+  --twc-slate-500: 168 176 190;
+  --twc-slate-600: 190 197 208;
+  --twc-slate-700: 213 218 226;
+  --twc-slate-800: 232 235 241;
+  --twc-slate-900: 245 247 251;
+  --twc-slate-950: 250 251 253;
+  --twc-gray-50: 28 32 39;
+  --twc-gray-100: 33 38 46;
+  --twc-gray-200: 42 47 57;
+  --twc-gray-300: 57 64 77;
+  --twc-gray-400: 127 135 149;
+  --twc-gray-500: 168 176 190;
+  --twc-gray-600: 190 197 208;
+  --twc-gray-700: 213 218 226;
+  --twc-gray-800: 232 235 241;
+  --twc-gray-900: 245 247 251;
+  --twc-gray-950: 250 251 253;
+  --twc-zinc-50: 28 32 39;
+  --twc-zinc-100: 33 38 46;
+  --twc-zinc-200: 42 47 57;
+  --twc-zinc-300: 57 64 77;
+  --twc-zinc-400: 127 135 149;
+  --twc-zinc-500: 168 176 190;
+  --twc-zinc-600: 190 197 208;
+  --twc-zinc-700: 213 218 226;
+  --twc-zinc-800: 232 235 241;
+  --twc-zinc-900: 245 247 251;
+  --twc-zinc-950: 250 251 253;
+  --twc-blue-50: 31 40 76;
+  --twc-blue-100: 36 49 94;
+  --twc-blue-200: 52 72 137;
+  --twc-blue-300: 93 121 235;
+  --twc-blue-400: 111 140 255;
+  --twc-blue-500: 111 140 255;
+  --twc-blue-600: 130 155 255;
+  --twc-blue-700: 158 177 255;
+  --twc-blue-800: 187 199 255;
+  --twc-blue-900: 216 223 255;
+  --twc-blue-950: 238 241 255;
+}
+
+.vs-app-shell {
+  background:
+    radial-gradient(circle at 82% -10%, rgba(49, 94, 251, 0.055), transparent 30rem),
+    var(--vs-canvas);
+}
+
+.vs-app-sidebar {
+  background: color-mix(in srgb, var(--vs-panel) 96%, transparent) !important;
+  border-color: var(--vs-line) !important;
+}
+
+.vs-app-sidebar::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 1px;
+  background: linear-gradient(transparent, var(--vs-line-strong) 16%, var(--vs-line-strong) 84%, transparent);
+  pointer-events: none;
+}
+
+.vs-app-header {
+  background: color-mix(in srgb, var(--vs-canvas) 88%, transparent) !important;
+  border-color: var(--vs-line) !important;
+  box-shadow: 0 1px 0 rgba(20, 27, 40, 0.025);
+}
+
+.vs-app-main {
+  position: relative;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+.vs-app-main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(circle, rgba(86, 96, 113, 0.12) 0.7px, transparent 0.7px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.22), transparent 260px);
+  pointer-events: none;
+}
+
+.vs-route-context {
+  min-width: 138px;
+}
+
+.vs-route-context__eyebrow {
+  color: var(--vs-muted);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.vs-route-context__title {
+  color: var(--vs-ink);
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+}
+
+.vs-app-main h1 {
+  color: var(--vs-ink);
+  font-weight: 650 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.vs-app-main h2,
+.vs-app-main h3,
+.vs-app-main h4 {
+  color: var(--vs-ink);
+  letter-spacing: -0.02em;
+}
+
+.vs-app-main p {
+  color: var(--vs-copy);
+}
+
+.vs-app-main :where(input, textarea, select) {
+  border-color: var(--vs-line) !important;
+  box-shadow: 0 1px 1px rgba(20, 27, 40, 0.025);
+}
+
+.vs-app-main :where(input, textarea, select):focus {
+  border-color: color-mix(in srgb, var(--vs-accent) 65%, white) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vs-accent) 11%, transparent) !important;
+}
+
+.vs-app-main table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.vs-app-main thead th {
+  color: var(--vs-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vs-app-main tbody tr {
+  transition: background-color 150ms ease;
+}
+
+.vs-app-main tbody tr:hover {
+  background: color-mix(in srgb, var(--vs-accent) 3.2%, transparent);
+}
+
+.vs-app-main .shadow-sm,
+.vs-app-main .shadow-premium-sm {
+  box-shadow: var(--vs-shadow-card) !important;
+}
+
+.vs-app :where(button, [role='button'], a) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vs-app :where(button, [role='button']):focus-visible,
+.vs-app a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--vs-accent) 72%, white);
+  outline-offset: 2px;
+}
+
+.vs-app ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.vs-app ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vs-app ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--vs-muted) 30%, transparent);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+@media (max-width: 767px) {
+  .vs-app-header {
+    height: 64px !important;
+    padding-inline: 12px !important;
+  }
+
+  .vs-app-main::before {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-app *,
+  .vs-app *::before,
+  .vs-app *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
