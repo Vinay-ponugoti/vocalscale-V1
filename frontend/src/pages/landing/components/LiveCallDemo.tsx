@@ -327,7 +327,7 @@ export function LiveCallDemo() {
                                     : 'bg-slate-900 text-white hover:bg-slate-800'
                             )}
                         >
-                            {isLive ? (<><PhoneOff className="w-4 h-4" /> End Call</>) : (<><PhoneCall className="w-4 h-4" /> Call Again</>)}
+                            {isLive ? (<><PhoneOff className="w-4 h-4" /> End Call</>) : (<><PhoneCall className="w-4 h-4" /> Talk to our AI</>)}
                         </button>
                     </div>
                 )}

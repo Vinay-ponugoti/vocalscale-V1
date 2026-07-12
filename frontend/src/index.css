@@ -1,5 +1,6 @@
 @import './components.css';
 @import './theme-vibe.css';
+@import './dashboard-foundation.css';
 
 @tailwind base;
 @tailwind components;

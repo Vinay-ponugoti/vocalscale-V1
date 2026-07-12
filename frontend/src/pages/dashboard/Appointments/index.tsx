@@ -811,7 +811,7 @@ const FullScreenAppointments: React.FC = () => {
                         )}
 
                         <div className={`h-full flex flex-col justify-start relative z-0 ${isMobile ? 'px-1.5 py-1' : 'px-2 py-1'}`}>
-                          <p className={`text-inherit font-medium truncate leading-tight ${isMobile ? 'text-[11px]' : 'text-xs'}`}>
+                          <p className={`!text-inherit font-medium truncate leading-tight ${isMobile ? 'text-[11px]' : 'text-xs'}`}>
                             {appt.customer_name}
                             {pos.rawHeight <= (isMobile ? 2.5 : 3.5) && (
                               <span className="font-normal">, {formatTime(getZonedTime(appt.start_time))}</span>
@@ -819,13 +819,13 @@ const FullScreenAppointments: React.FC = () => {
                           </p>
 
                           {pos.rawHeight > (isMobile ? 2.5 : 3.5) && (
-                            <p className={`text-inherit truncate font-normal ${isMobile ? 'text-[10px]' : 'text-[11px]'}`}>
+                            <p className={`!text-inherit truncate font-normal ${isMobile ? 'text-[10px]' : 'text-[11px]'}`}>
                               {formatTime(getZonedTime(appt.start_time))} – {formatTime(getZonedTime(appt.end_time))}
                             </p>
                           )}
 
                           {pos.rawHeight > (isMobile ? 5 : 6) && (
-                            <p className={`text-inherit mt-0.5 truncate font-normal ${isMobile ? 'text-[10px]' : 'text-[11px]'}`}>
+                            <p className={`!text-inherit mt-0.5 truncate font-normal ${isMobile ? 'text-[10px]' : 'text-[11px]'}`}>
                               {appt.title}
                             </p>
                           )}

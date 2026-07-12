@@ -55,7 +55,7 @@ interface DashboardLayoutProps {
 
 const SectionLabel = ({ label, sidebarOpen }: { label: string; sidebarOpen: boolean }) => (
   <h3 className={cn(
-    "px-6 mt-8 mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] transition-all duration-300 text-[hsl(var(--ds-subtle-text))]",
+    "px-5 mt-7 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 text-[hsl(var(--ds-subtle-text))]",
     sidebarOpen ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
   )}>
     {label}
@@ -78,21 +78,21 @@ const NavItem = ({
   return (
     <Link
       to={item.path}
-      className={`group relative flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-5'} py-2.5 mx-2 rounded-[10px] text-sm font-medium transition-all duration-300 no-underline
+      className={`group relative flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-4'} py-2.5 mx-2 rounded-[9px] text-[13px] font-medium transition-all duration-200 no-underline
         ${isActive
-          ? 'text-slate-900 bg-slate-100 shadow-sm'
-          : 'text-slate-400 hover:bg-slate-50 hover:text-slate-700'
+          ? 'text-slate-950 bg-blue-50 shadow-sm'
+          : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
         } `}
       onClick={onClick}
       title={isCollapsed ? item.label : undefined}
     >
       {/* Active Indicator Bar */}
       {isActive && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-emerald-400 rounded-r-full" />
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-blue-500 rounded-r-full" />
       )}
 
       <div className={`flex items-center gap-3.5 ${isCollapsed ? 'justify-center' : ''} `}>
-        <Icon size={17} strokeWidth={2.25} className={isActive ? 'text-emerald-400' : 'text-slate-400 group-hover:text-slate-600 transition-colors'} />
+        <Icon size={17} strokeWidth={2.1} className={isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-700 transition-colors'} />
         {!isCollapsed && <span className="transition-colors leading-relaxed py-0.5">{item.label}</span>}
       </div>
       {!isCollapsed && item.badge && (
@@ -117,7 +117,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
   const { searchQuery, setSearchQuery, clearSearch } = useSearch();
 
   const [theme, setTheme] = useState<'dark' | 'light'>(() =>
-    (localStorage.getItem('vs-theme') as 'dark' | 'light') || 'dark'
+    (localStorage.getItem('vs-theme') as 'dark' | 'light') || 'light'
   );
   const toggleTheme = () => setTheme(t => {
     const next = t === 'dark' ? 'light' : 'dark';
@@ -225,41 +225,67 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
     return location.pathname.startsWith(path);
   };
 
+  const routeTitle = (() => {
+    const routes: Array<[string, string]> = [
+      ['/dashboard/voice-setup/setup-subaccount', 'Connect number'],
+      ['/dashboard/voice-setup/numbers/', 'Number details'],
+      ['/dashboard/voice-setup/buy', 'Add phone number'],
+      ['/dashboard/voice-model/', 'Voice model'],
+      ['/dashboard/business-details', 'Business profile'],
+      ['/dashboard/appointments', 'Appointments'],
+      ['/dashboard/campaigns', 'Campaigns'],
+      ['/dashboard/knowledge', 'Knowledge'],
+      ['/dashboard/contacts/', 'Customer profile'],
+      ['/dashboard/contacts', 'Contacts'],
+      ['/dashboard/insights', 'Performance'],
+      ['/dashboard/voice-setup', 'Phone numbers'],
+      ['/dashboard/settings', 'Settings'],
+      ['/dashboard/billing', 'Billing'],
+      ['/dashboard/reviews', 'Reviews'],
+      ['/dashboard/agents', 'Agents'],
+      ['/dashboard/calls', 'Call logs'],
+      ['/dashboard/chat', 'Assistant'],
+      ['/dashboard/help', 'Help center'],
+      ['/dashboard', 'Overview'],
+    ];
+    return routes.find(([path]) => location.pathname.startsWith(path))?.[1] || 'Workspace';
+  })();
+
   const firstLetter = (userFullName || businessName).charAt(0).toUpperCase();
 
   return (
     <>
       <NavigationGuard isAuthenticated={!!user} />
       {/* Main Container - Using DS OffWhite for background */}
-      <div className={cn(themeClass, "h-screen h-[100dvh] flex font-sans overflow-hidden bg-[hsl(var(--ds-off-white))]")}>
+      <div className={cn(themeClass, "vs-app vs-app-shell h-screen h-[100dvh] flex font-sans overflow-hidden bg-[hsl(var(--ds-off-white))]")}>
 
         {/* SIDEBAR - Using DS White for surface */}
         <aside
           className={cn(
-            "hidden md:flex flex-col h-full transition-all duration-300 ease-in-out border-r border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-surface))]",
-            sidebarOpen ? 'w-[288px]' : 'w-[80px]'
+            "vs-app-sidebar relative hidden md:flex flex-col h-full transition-all duration-300 ease-in-out border-r border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-surface))]",
+            sidebarOpen ? 'w-[264px]' : 'w-[76px]'
           )}
           onDoubleClick={() => setSidebarOpen(o => !o)}
         >
 
           {/* Logo Header */}
           <div className={cn(
-            "h-20 flex items-center transition-all duration-300",
-            sidebarOpen ? 'justify-between px-8' : 'justify-center px-4'
+            "h-[72px] flex items-center transition-all duration-300 border-b border-slate-100",
+            sidebarOpen ? 'justify-between px-5' : 'justify-center px-3'
           )}>
             <Link
               to="/dashboard"
               className={cn(
                 "flex items-center transition-all duration-300 group cursor-pointer no-underline",
-                sidebarOpen ? 'px-6' : 'justify-center w-full px-4'
+                sidebarOpen ? 'px-1' : 'justify-center w-full px-2'
               )}
             >
               <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-10 h-10 flex-shrink-0 object-contain group-hover:scale-105 transition-transform" />
+                <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-9 h-9 flex-shrink-0 object-contain group-hover:scale-105 transition-transform" />
                 {sidebarOpen && (
                   <div className="flex flex-col">
-                    <span className="text-xl font-black tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">VocalScale</span>
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Reception Desk</span>
+                    <span className="text-[17px] font-semibold tracking-[-0.03em] text-slate-950 transition-colors">VocalScale</span>
+                    <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-[0.12em]">Operations desk</span>
                   </div>
                 )}
               </div>
@@ -457,7 +483,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
         <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
 
           {/* TOP NAVIGATION BAR — hidden for fullscreen pages like Chat */}
-          {!hideHeader && <header className="h-20 backdrop-blur-xl border-b border-[hsl(var(--ds-border))] shrink-0 z-50 px-2 md:px-10 flex items-center justify-between transition-all duration-300 bg-[hsl(var(--ds-off-white)/0.85)]">
+          {!hideHeader && <header className="vs-app-header h-[72px] backdrop-blur-xl border-b border-[hsl(var(--ds-border))] shrink-0 z-50 px-2 md:px-7 flex items-center justify-between transition-all duration-300 bg-[hsl(var(--ds-off-white)/0.85)]">
 
             {/* Mobile Menu Toggle - Always visible on mobile, positioned at start */}
             <button
@@ -473,8 +499,14 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
               <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-8 h-8 object-contain" />
             </div>
 
+            {/* Route context keeps users oriented on dense and nested workflows. */}
+            <div className="vs-route-context hidden lg:flex flex-col gap-1 mr-7">
+              <span className="vs-route-context__eyebrow">Workspace</span>
+              <span className="vs-route-context__title">{routeTitle}</span>
+            </div>
+
             {/* Left: Search (Always visible now, responsive width) */}
-            <div className="flex-1 max-w-2xl flex items-center">
+            <div className="flex-1 max-w-xl flex items-center">
               <div className="relative w-full group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
                   <Search size={18} strokeWidth={2.5} className="text-[hsl(var(--ds-subtle-text))] group-focus-within:text-blue-500 transition-colors" />
@@ -484,10 +516,10 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                   type="text"
                   role="searchbox"
                   aria-label="Search dashboard"
-                  placeholder="Search logs, appointments..."
+                  placeholder="Search calls, people, appointments…"
                   value={localSearch}
                   onChange={(event) => setLocalSearch(event.target.value)}
-                  className="w-full pl-11 pr-12 py-2.5 border rounded-xl text-sm font-medium transition-all shadow-sm focus:outline-none focus:ring-4 focus:ring-[hsl(var(--ds-electric-tint))] border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-white))] text-[hsl(var(--ds-ink))] focus:border-[hsl(var(--ds-electric))]"
+                  className="w-full pl-11 pr-12 py-2.5 border rounded-[10px] text-[13px] font-medium transition-all shadow-sm focus:outline-none focus:ring-4 focus:ring-[hsl(var(--ds-electric-tint))] border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-white))] text-[hsl(var(--ds-ink))] focus:border-[hsl(var(--ds-electric))]"
                 />
                 {/* Keyboard shortcut hint */}
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 px-1.5 py-0.5 rounded transition-opacity pointer-events-none border bg-[hsl(var(--ds-surface))] text-[hsl(var(--ds-stone))] border-[hsl(var(--ds-border))]">
@@ -613,7 +645,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
           {/* PAGE CONTENT */}
           <main
             className={cn(
-              "flex-1 bg-[hsl(var(--ds-off-white))]",
+              "vs-app-main flex-1 bg-[hsl(var(--ds-off-white))]",
               fullWidth ? 'p-0 overflow-hidden' : cn(PAGE_PADDING, "overflow-y-auto")
             )}
             onDoubleClick={() => {

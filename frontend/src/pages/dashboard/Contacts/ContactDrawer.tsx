@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   X, Phone, Loader2, Check, Pencil, Tag as TagIcon, Plus, CalendarCheck,
   ShoppingBag, MessageSquareText, Sparkles, PhoneOutgoing, CheckCircle2,
+  HeartPulse, Wrench, CalendarClock, MessageCircleMore,
 } from 'lucide-react';
 import { contactsAPI, type Contact, type CallMemory } from '../../../api/contacts';
 import { callsApi } from '../../../api/calls';
@@ -81,8 +82,8 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
     }
   };
 
-  const addTag = async () => {
-    const t = tagDraft.trim();
+  const addTagValue = async (value: string) => {
+    const t = value.trim();
     if (!contact || !t) return;
     const exists = contact.tags?.some((x) => x.toLowerCase() === t.toLowerCase());
     setTagDraft('');
@@ -93,6 +94,8 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
       /* ignore */
     }
   };
+
+  const addTag = () => addTagValue(tagDraft);
 
   const removeTag = async (tag: string) => {
     if (!contact) return;
@@ -120,12 +123,14 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
   const c = contact;
   const notesDirty = c ? (c.preferences?.notes ?? '') !== notesDraft : false;
 
-  const openAiCall = () => {
+  const openAiCall = (instruction?: string) => {
     if (!c) return;
     // Prefill with the contact's context so the owner just hits Call.
     const who = displayName(c);
     const returning = (c.total_calls ?? 0) > 1 ? ' They are a returning customer.' : '';
-    setAiInstruction(`Follow up with ${who}.${returning} Check in, see if they need anything, and help with whatever comes up.`);
+    setAiInstruction(
+      instruction || `Follow up with ${who}.${returning} Check in, see if they need anything, and help with whatever comes up.`,
+    );
     setAiResult(null);
     setAiCallOpen(true);
   };
@@ -228,9 +233,38 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
           {/* AI call action */}
           {c && (
             <section>
+              {!aiCallOpen && (
+                <div className="mb-3">
+                  <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    <Sparkles size={13} /> Suggested follow-ups
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <FollowUpPreset
+                      icon={HeartPulse}
+                      label="Dental recall"
+                      onClick={() => openAiCall(`Call ${displayName(c)} to schedule their routine dental recall. Be warm, offer available appointment times, and answer basic scheduling questions.`)}
+                    />
+                    <FollowUpPreset
+                      icon={CalendarClock}
+                      label="Appointment"
+                      onClick={() => openAiCall(`Call ${displayName(c)} to confirm or reschedule their upcoming appointment. Keep the conversation concise and helpful.`)}
+                    />
+                    <FollowUpPreset
+                      icon={Wrench}
+                      label="HVAC estimate"
+                      onClick={() => openAiCall(`Follow up with ${displayName(c)} about their HVAC estimate. Ask whether they have questions and help them choose the next step without being pushy.`)}
+                    />
+                    <FollowUpPreset
+                      icon={MessageCircleMore}
+                      label="General check-in"
+                      onClick={() => openAiCall()}
+                    />
+                  </div>
+                </div>
+              )}
               {!aiCallOpen ? (
                 <button
-                  onClick={openAiCall}
+                  onClick={() => openAiCall()}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
                 >
                   <PhoneOutgoing size={15} /> Have AI call {displayName(c).split(' ')[0]}
@@ -316,7 +350,21 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
                 </button>
               </span>
             </div>
-            <p className="mt-2 text-xs text-slate-400">Try “vip”, “regular”, or “no-show”.</p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {['Dental recall', 'No-show', 'HVAC estimate', 'Maintenance due', 'Urgent', 'VIP'].map((tag) => {
+                const exists = c?.tags?.some((current) => current.toLowerCase() === tag.toLowerCase());
+                return (
+                  <button
+                    key={tag}
+                    onClick={() => addTagValue(tag)}
+                    disabled={exists}
+                    className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-500 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-default disabled:opacity-35"
+                  >
+                    + {tag}
+                  </button>
+                );
+              })}
+            </div>
           </section>
 
           {/* Notes */}
@@ -417,4 +465,24 @@ const Stat = ({ label, value, accent }: { label: string; value: string; accent?:
     <div className={`truncate text-sm font-semibold ${accent ? 'text-blue-600' : 'text-slate-800'}`}>{value}</div>
     <div className="mt-0.5 text-[11px] uppercase tracking-wide text-slate-400">{label}</div>
   </div>
+);
+
+const FollowUpPreset = ({
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  icon: React.ElementType;
+  label: string;
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left text-xs font-semibold text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+  >
+    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+      <Icon size={14} />
+    </span>
+    {label}
+  </button>
 );

@@ -66,6 +66,7 @@ const GetNewNumber = lazyImport(() => import('./pages/voice-setup/GetNewNumber')
 const BusinessSetup = lazyImport(() => import('./pages/business-setup'));
 const Knowledge = lazyImport(() => import('./pages/dashboard/Knowledge'));
 const Contacts = lazyImport(() => import('./pages/dashboard/Contacts'));
+const ContactProfile = lazyImport(() => import('./pages/dashboard/Contacts/ContactProfile'));
 const Insights = lazyImport(() => import('./pages/dashboard/Insights'));
 const Campaigns = lazyImport(() => import('./pages/dashboard/Campaigns'));
 
@@ -146,6 +147,7 @@ function App() {
                   <Route path="/dashboard/business-details" element={<BusinessSetup />} />
                   <Route path="/dashboard/knowledge" element={<Knowledge />} />
                   <Route path="/dashboard/contacts" element={<Contacts />} />
+                  <Route path="/dashboard/contacts/:contactId" element={<ContactProfile />} />
                   <Route path="/dashboard/insights" element={<Insights />} />
                   <Route path="/dashboard/campaigns" element={<Campaigns />} />
                   <Route path="/dashboard/agent" element={<Navigate to="/dashboard/agents" replace />} />
