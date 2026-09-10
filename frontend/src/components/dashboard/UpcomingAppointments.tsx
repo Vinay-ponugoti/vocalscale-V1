@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, ArrowRight } from 'lucide-react';
 
@@ -23,10 +24,11 @@ const dayLabel = (d: Date) => {
  * right column answers "what did the AI book for me?" at a glance.
  */
 const UpcomingAppointments = ({ appointments }: { appointments: Appointment[] }) => {
+  const [renderedAt] = useState(() => Date.now());
   const upcoming = appointments
     .filter((a) => {
       const t = new Date(a.scheduled_at).getTime();
-      return !Number.isNaN(t) && t >= Date.now();
+      return !Number.isNaN(t) && t >= renderedAt;
     })
     .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime())
     .slice(0, 3);

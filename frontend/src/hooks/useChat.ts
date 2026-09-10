@@ -3,19 +3,18 @@
  * Handles streaming responses, session management, image generation, and social content.
  */
 
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatApi } from '../api/chat';
 import type {
   ChatMessage,
   FileAttachment,
-  BusinessContext,
+  CopilotContext,
   GeneratedImage,
   SocialContent,
   ModelOption,
 } from '../types/chat';
 import { useAuth } from '../context/AuthContext';
-import { useBusinessSetup } from '../context/BusinessSetupContext';
 
 // Image generation status shown to the user
 export type ImageStatus = 'analyzing' | 'generating' | 'complete' | null;
@@ -23,10 +22,9 @@ export type ImageStatus = 'analyzing' | 'generating' | 'complete' | null;
 /**
  * Hook for managing chat messages and streaming
  */
-export function useChat(sessionId: string | null) {
+export function useChat(sessionId: string | null, copilotContext?: CopilotContext) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const { state: businessState } = useBusinessSetup();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streamingContent, setStreamingContent] = useState('');
@@ -40,28 +38,6 @@ export function useChat(sessionId: string | null) {
   // Guard: when images arrive via stream, block the sync effect from overwriting
   // local messages (which already have images) with stale fetchedMessages (no images yet)
   const hasLocalImagesRef = useRef(false);
-
-  const businessContext = useMemo<BusinessContext | undefined>(() => {
-    const { data } = businessState;
-    if (!data?.business?.business_name) return undefined;
-    return {
-      business_name: data.business.business_name,
-      category: data.business.category,
-      phone: data.business.phone,
-      address: data.business.address,
-      description: data.business.description,
-      email: data.business.email,
-      website: data.business.website,
-      timezone: data.business.timezone,
-      services: data.services?.map(s => ({ name: s.name, price: s.price, description: s.description })),
-      business_hours: data.business_hours?.map(h => ({
-        day_of_week: h.day_of_week,
-        open_time: h.open_time,
-        close_time: h.close_time,
-        enabled: h.enabled,
-      })),
-    };
-  }, [businessState]);
 
   useEffect(() => { currentSessionIdRef.current = sessionId; }, [sessionId]);
 
@@ -116,6 +92,7 @@ export function useChat(sessionId: string | null) {
     if (!content.trim()) return null;
 
     try {
+      const activeSessionId = currentSessionIdRef.current;
       setIsStreaming(true);
       setError(null);
       setImageStatus(null);
@@ -125,7 +102,7 @@ export function useChat(sessionId: string | null) {
       const optimId = `optim-${Date.now()}`;
       setMessages(prev => [...prev, {
         id: optimId,
-        session_id: sessionId || 'temp',
+        session_id: activeSessionId || 'temp',
         role: 'user',
         content: content.trim(),
         timestamp: new Date().toISOString(),
@@ -145,12 +122,13 @@ export function useChat(sessionId: string | null) {
       await chatApi.sendMessageStream(
         {
           message: content.trim(),
-          session_id: sessionId || undefined,
+          session_id: activeSessionId || undefined,
           attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
-          business_context: businessContext,
           model: model,
           aspect_ratio: aspectRatio,
           image_style: imageStyle,
+          surface: copilotContext?.surface,
+          entity_id: copilotContext?.entityId,
         },
         // onChunk
         (chunk) => {
@@ -160,6 +138,7 @@ export function useChat(sessionId: string | null) {
         // onDone
         (data) => {
           returnedSessionId = data.session_id || null;
+          if (returnedSessionId) currentSessionIdRef.current = returnedSessionId;
           receivedSuggestedQuestions = data.suggested_questions;
           if (data.images?.length && receivedImages.length === 0) {
             receivedImages = data.images;
@@ -198,7 +177,7 @@ export function useChat(sessionId: string | null) {
 
       const assistantMessage: ChatMessage = {
         id: `resp-${Date.now()}`,
-        session_id: returnedSessionId || sessionId || 'temp',
+        session_id: returnedSessionId || activeSessionId || 'temp',
         role: 'assistant',
         content: fullResponse,
         timestamp: new Date().toISOString(),
@@ -237,7 +216,7 @@ export function useChat(sessionId: string | null) {
         }
       }, 800);
 
-      return returnedSessionId || sessionId;
+      return returnedSessionId || activeSessionId;
 
     } catch (err) {
       console.error('[useChat] sendMessage error:', err);
@@ -248,7 +227,7 @@ export function useChat(sessionId: string | null) {
       setIsStreaming(false);
       // Note: intentionally NOT clearing imageStatus here so 'complete' badge remains visible
     }
-  }, [sessionId, pendingFiles, queryClient, businessContext]);
+  }, [sessionId, pendingFiles, queryClient, copilotContext?.surface, copilotContext?.entityId]);
 
   const stopGenerating = useCallback(() => {
     if (isStreaming) {

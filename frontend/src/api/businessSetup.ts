@@ -61,7 +61,7 @@ class BusinessSetupAPI {
 
   // Update business details only
   async updateBusinessDetails(data: Partial<BusinessDetails>): Promise<BusinessDetails> {
-    return this.request('/business/details', {
+    return this.request('/business-details', {
       method: 'PUT',
       body: JSON.stringify(data),
     });
@@ -69,7 +69,7 @@ class BusinessSetupAPI {
 
   // Update business hours
   async updateBusinessHours(hours: BusinessHour[]): Promise<{ success: boolean }> {
-    return this.request('/business/hours', {
+    return this.request('/business-hours', {
       method: 'PUT',
       body: JSON.stringify(hours),
     });

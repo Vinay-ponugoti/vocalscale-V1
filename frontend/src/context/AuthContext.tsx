@@ -78,7 +78,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const data = await response.json();
         if (mounted.current) {
           setProfile(data);
-          setProfile(data);
         }
       }
     } catch (err) {
@@ -166,9 +165,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             // Sync tokens if this is a fresh login or session check
             syncGoogleTokens(validatedSession);
-
-            // Unified profile refresh for all users
-            refreshProfile(validatedSession);
 
             // Unified profile refresh for all users
             refreshProfile(validatedSession);

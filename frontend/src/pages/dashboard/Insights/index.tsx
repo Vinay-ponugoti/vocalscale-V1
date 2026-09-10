@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, Tooltip, CartesianGrid,
@@ -43,9 +44,12 @@ const BOOKING_VALUE_KEY = 'vs-avg-booking-value';
 
 const Insights = () => {
   const [days, setDays] = useState(30);
-  const [data, setData] = useState<CallInsights | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { data, isLoading: loading, error: queryError } = useQuery<CallInsights>({
+    queryKey: ['call-insights', days],
+    queryFn: () => insightsAPI.getCallInsights(days),
+    staleTime: 60_000,
+  });
+  const error = queryError instanceof Error ? queryError.message : '';
   const [bookingValue, setBookingValue] = useState(() => {
     const v = Number(localStorage.getItem(BOOKING_VALUE_KEY));
     return Number.isFinite(v) && v > 0 ? v : 0;
@@ -59,19 +63,6 @@ const Insights = () => {
     localStorage.setItem(BOOKING_VALUE_KEY, String(v));
     setEditingValue(false);
   };
-
-  useEffect(() => {
-    let alive = true;
-    setLoading(true);
-    insightsAPI
-      .getCallInsights(days)
-      .then((d) => alive && (setData(d), setError('')))
-      .catch((e) => alive && setError(e instanceof Error ? e.message : 'Failed to load insights'))
-      .finally(() => alive && setLoading(false));
-    return () => {
-      alive = false;
-    };
-  }, [days]);
 
   const s = data?.summary;
 

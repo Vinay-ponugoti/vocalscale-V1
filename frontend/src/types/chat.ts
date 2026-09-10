@@ -96,6 +96,25 @@ export interface ChatRequest {
   model?: ModelOption;
   aspect_ratio?: string;
   image_style?: string;
+  surface?: CopilotSurface;
+  entity_id?: string;
+}
+
+export type CopilotSurface =
+  | 'overview'
+  | 'calls'
+  | 'call_detail'
+  | 'contacts'
+  | 'campaigns'
+  | 'appointments'
+  | 'agents'
+  | 'knowledge'
+  | 'performance'
+  | 'general';
+
+export interface CopilotContext {
+  surface: CopilotSurface;
+  entityId?: string;
 }
 
 export type ModelOption = 'auto' | 'gemini-2.0-flash' | 'gemini-2.5-pro' | 'imagen-4';

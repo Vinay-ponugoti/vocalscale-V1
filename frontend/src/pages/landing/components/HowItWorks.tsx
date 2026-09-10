@@ -217,10 +217,10 @@ export function HowItWorks() {
         {/* Bottom Stats */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
-            { value: '99.9%', label: 'Uptime SLA' },
-            { value: '<2s', label: 'Avg Response' },
-            { value: '50+', label: 'Integrations' },
-            { value: '24/7', label: 'Availability' }
+            { value: 'Live', label: 'Browser Test Call' },
+            { value: 'Searchable', label: 'Call Records' },
+            { value: '2', label: 'Voice Providers' },
+            { value: '24/7', label: 'Coverage Option' }
           ].map((stat) => (
             <div key={stat.label} className="space-y-1">
               <div className="text-2xl md:text-3xl font-black text-slate-900">{stat.value}</div>

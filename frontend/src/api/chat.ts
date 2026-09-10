@@ -181,7 +181,8 @@ class ChatAPI {
                 }
               }
 
-            } catch {
+            } catch (parseError) {
+              if (!(parseError instanceof SyntaxError)) throw parseError;
               console.warn('[ChatAPI] Failed to parse SSE data:', line);
               currentEventType = '';
             }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3, Timer, CheckCircle2, Calendar, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BarChart3, Timer, CheckCircle2, Calendar, AlertCircle, ChevronLeft, ChevronRight, ArrowDownLeft, ArrowUpRight, ReceiptText } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/Card';
 import { callsApi } from '../../../../api/calls';
@@ -16,6 +16,14 @@ interface UsageData {
   estimated_cost?: number;
   total_calls?: number;
   calls_count?: number;
+  billable_minutes?: number;
+  inbound_minutes?: number;
+  outbound_minutes?: number;
+  inbound_calls?: number;
+  outbound_calls?: number;
+  pending_calls?: number;
+  overage_rate?: number;
+  last_updated_at?: string;
 }
 
 interface CallItem {
@@ -25,6 +33,7 @@ interface CallItem {
   caller_name?: string;
   caller_phone?: string;
   duration_seconds: number;
+  direction?: 'inbound' | 'outbound';
 }
 
 interface UsageBreakdownProps {
@@ -41,6 +50,12 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
   const overageMinutes = usage?.overage_minutes ?? Math.max(0, usedMinutes - totalMinutes);
   const estimatedCost = usage?.estimated_cost ?? (overageMinutes * 0.089);
   const totalCalls = usage?.total_calls ?? usage?.calls_count ?? 0;
+  const inboundMinutes = usage?.inbound_minutes ?? 0;
+  const outboundMinutes = usage?.outbound_minutes ?? 0;
+  const inboundCalls = usage?.inbound_calls ?? 0;
+  const outboundCalls = usage?.outbound_calls ?? 0;
+  const pendingCalls = usage?.pending_calls ?? 0;
+  const overageRate = usage?.overage_rate ?? 0.089;
   const successRate = usage?.success_rate ?? (totalCalls > 0 ? 0 : 100);
   const avgDurationFormatted = usage?.avg_duration_seconds
     ? `${Math.floor(usage.avg_duration_seconds / 60)}m ${Math.round(usage.avg_duration_seconds % 60)}s`
@@ -173,11 +188,23 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
           {/* Minute Distribution Card */}
           <Card className="border border-slate-100 shadow-sm bg-white">
             <CardContent className="p-6">
-              <h3 className="font-black text-charcoal uppercase text-[10px] tracking-widest mb-5">Distribution</h3>
+              <h3 className="font-black text-charcoal uppercase text-[10px] tracking-widest mb-5">Billable minute split</h3>
               <div className="flex flex-col gap-5">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl bg-emerald-50 p-3 ring-1 ring-emerald-100">
+                    <div className="mb-2 flex items-center gap-1.5 text-emerald-700"><ArrowDownLeft size={13} /><span className="text-[9px] font-black uppercase tracking-wider">Inbound</span></div>
+                    <p className="text-lg font-black text-slate-900">{inboundMinutes.toFixed(2)}m</p>
+                    <p className="text-[9px] font-bold text-emerald-700/70">{inboundCalls} calls</p>
+                  </div>
+                  <div className="rounded-xl bg-violet-50 p-3 ring-1 ring-violet-100">
+                    <div className="mb-2 flex items-center gap-1.5 text-violet-700"><ArrowUpRight size={13} /><span className="text-[9px] font-black uppercase tracking-wider">Outbound</span></div>
+                    <p className="text-lg font-black text-slate-900">{outboundMinutes.toFixed(2)}m</p>
+                    <p className="text-[9px] font-bold text-violet-700/70">{outboundCalls} calls</p>
+                  </div>
+                </div>
                 <div>
                   <div className="flex justify-between text-[11px] mb-2">
-                    <span className="font-bold text-charcoal-medium">Minutes Usage</span>
+                    <span className="font-bold text-charcoal-medium">Combined plan usage</span>
                     <span className="text-charcoal font-black">
                       {usedMinutes.toFixed(2)}m
                       <span className="text-[9px] text-charcoal-light font-bold ml-1">
@@ -185,11 +212,9 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                       </span>
                     </span>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-600 rounded-full transition-all duration-1000"
-                      style={{ width: `${usagePercent}%` }}
-                    ></div>
+                  <div className="flex h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${usedMinutes > 0 ? (inboundMinutes / usedMinutes) * usagePercent : 0}%` }} />
+                    <div className="h-full bg-violet-500 transition-all duration-1000" style={{ width: `${usedMinutes > 0 ? (outboundMinutes / usedMinutes) * usagePercent : 0}%` }} />
                   </div>
                 </div>
 
@@ -201,6 +226,10 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                       : '$0.00'}
                   </span>
                 </div>
+                <p className="text-[9px] leading-relaxed text-slate-400">
+                  Both inbound and outbound connected seconds count toward your plan. Overage is ${overageRate.toFixed(3)}/minute.
+                  {pendingCalls > 0 ? ` ${pendingCalls} call${pendingCalls === 1 ? '' : 's'} still processing.` : ''}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -244,6 +273,7 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                   <tr className="text-[9px] font-black text-charcoal-light uppercase tracking-widest border-b border-slate-100">
 
                     <th className="pb-3">Date & Time</th>
+                    <th className="pb-3">Direction</th>
                     <th className="pb-3">Caller</th>
                     <th className="pb-3">Duration</th>
                   </tr>
@@ -278,6 +308,12 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
                             </div>
                           </td>
                           <td className="py-4">
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[9px] font-black uppercase tracking-wider ${call.direction === 'outbound' ? 'bg-violet-50 text-violet-700' : 'bg-emerald-50 text-emerald-700'}`}>
+                              {call.direction === 'outbound' ? <ArrowUpRight size={10} /> : <ArrowDownLeft size={10} />}
+                              {call.direction === 'outbound' ? 'Outbound' : 'Inbound'}
+                            </span>
+                          </td>
+                          <td className="py-4">
                             <div className="flex flex-col">
                               <span className="font-bold text-charcoal">{call.caller_name || 'Unknown'}</span>
                               <span className="text-[10px] text-slate-400 font-mono">{call.caller_phone}</span>
@@ -294,6 +330,22 @@ const UsageBreakdown: React.FC<UsageBreakdownProps> = ({ usage }) => {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="border border-slate-100 bg-slate-50/60 shadow-sm">
+        <CardContent className="p-5">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center">
+            <div className="flex items-center gap-3 md:w-56">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm ring-1 ring-slate-100"><ReceiptText size={17} /></span>
+              <div><p className="text-xs font-black text-slate-900">How your bill is calculated</p><p className="text-[10px] text-slate-500">One transparent usage flow</p></div>
+            </div>
+            <div className="grid flex-1 grid-cols-1 gap-2 text-[10px] font-bold text-slate-600 sm:grid-cols-3">
+              <div className="rounded-xl bg-white px-4 py-3 ring-1 ring-slate-100"><span className="mr-2 text-blue-600">1</span>Connected call seconds are recorded</div>
+              <div className="rounded-xl bg-white px-4 py-3 ring-1 ring-slate-100"><span className="mr-2 text-blue-600">2</span>Inbound + outbound use plan minutes</div>
+              <div className="rounded-xl bg-white px-4 py-3 ring-1 ring-slate-100"><span className="mr-2 text-blue-600">3</span>Only minutes above the limit add overage</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div >
   );
 };

@@ -12,7 +12,6 @@ export function Footer() {
       { label: 'Blog', href: '/blog' },
       { label: 'Multilingual AI Receptionists', href: '/blog/multilingual-ai-receptionists-immigrant-markets' },
       { label: 'Dental Practice Case Study', href: '/blog/dental-practice-case-study-89-percent' },
-      { label: 'AI SMS Follow-up Guide', href: '/blog/ai-sms-follow-up-converts-missed-calls' }
     ],
     Company: [
       { label: 'Contact', href: '/contact' },
@@ -39,7 +38,7 @@ export function Footer() {
             </Link>
             <p className="text-slate-500 mb-4 text-sm leading-relaxed font-medium">
               The 24/7 AI receptionist for small businesses. VocalScale's AI voice agent answers every call,
-              books appointments, and qualifies leads in 50+ languages. Contact us for pricing.
+              books appointments, routes urgent calls, and keeps searchable records. Contact us for pricing.
             </p>
             <p className="text-slate-400 text-xs leading-relaxed font-medium mb-8">
               Trusted by medical practices, law firms, real estate teams, and home-service contractors across the US, Canada, UK, and Australia.

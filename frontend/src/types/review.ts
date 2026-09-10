@@ -11,6 +11,8 @@ export interface Review {
   source?: 'google_business' | 'google_places' | 'yelp' | 'tripadvisor';
   sentiment?: 'Positive' | 'Neutral' | 'Negative';
   original_timestamp?: string;
+  response?: string;
+  responded_at?: string;
 }
 
 export interface ReviewStats {

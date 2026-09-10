@@ -1,88 +1,61 @@
-import * as React from "react"
-import { ChevronDown } from "lucide-react"
-import { cn } from "../../lib/utils"
+import * as React from 'react';
+import { ChevronDown } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
-export interface SelectProps {
-    children: React.ReactNode
-    value?: string
-    onValueChange?: (value: string) => void
+type SelectContextValue = {
+  value?: string;
+  onValueChange?: (value: string) => void;
+};
+
+const SelectContext = React.createContext<SelectContextValue>({});
+
+export interface SelectProps extends SelectContextValue {
+  children: React.ReactNode;
 }
 
-export const Select = ({ children, value, onValueChange }: SelectProps) => {
-    return (
-        <div className="relative inline-block w-full">
-            {React.Children.map(children, (child) => {
-                if (React.isValidElement(child)) {
-                    return React.cloneElement(child as React.ReactElement<SelectContentProps>, {
-                        value,
-                        onValueChange
-                    })
-                }
-                return child
-            })}
-        </div>
-    )
-}
+export const Select = ({ children, value, onValueChange }: SelectProps) => (
+  <SelectContext.Provider value={{ value, onValueChange }}>
+    <div className="relative inline-block w-full">{children}</div>
+  </SelectContext.Provider>
+);
 
-export const SelectTrigger = React.forwardRef<
-    HTMLButtonElement,
-    React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, children, ...props }, ref) => (
+export const SelectTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
+  ({ className, children, ...props }, ref) => (
     <button
-        ref={ref}
-        className={cn(
-            "flex h-10 w-full items-center justify-between rounded-[10px] border border-slate-200 bg-white px-3.5 py-2 text-[13px] font-medium shadow-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/15 focus:border-blue-400 disabled:cursor-not-allowed disabled:opacity-50",
-            className
-        )}
-        {...props}
+      ref={ref}
+      type="button"
+      className={cn(
+        'flex h-10 w-full items-center justify-between rounded-[10px] border border-slate-200 bg-white px-3.5 py-2 text-[13px] font-medium shadow-sm ring-offset-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/15 disabled:cursor-not-allowed disabled:opacity-50',
+        className,
+      )}
+      {...props}
     >
-        {children}
-        <ChevronDown className="h-4 w-4 opacity-50" />
+      {children}
+      <ChevronDown className="h-4 w-4 opacity-50" />
     </button>
-))
-SelectTrigger.displayName = "SelectTrigger"
+  ),
+);
+SelectTrigger.displayName = 'SelectTrigger';
 
-interface SelectValueProps {
-    placeholder?: string
-    value?: string
-}
+export const SelectValue = ({ placeholder }: { placeholder?: string }) => {
+  const { value } = React.useContext(SelectContext);
+  return <span>{value || placeholder}</span>;
+};
 
-export const SelectValue = ({ placeholder, value }: SelectValueProps) => {
-    return <span>{value || placeholder}</span>
-}
+export const SelectContent = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+  const { value, onValueChange } = React.useContext(SelectContext);
+  return (
+    <select
+      aria-label="Select option"
+      className={cn('absolute inset-0 h-full w-full cursor-pointer opacity-0', className)}
+      value={value}
+      onChange={(event) => onValueChange?.(event.target.value)}
+    >
+      {children}
+    </select>
+  );
+};
 
-interface SelectContentProps {
-    children: React.ReactNode
-    className?: string
-    value?: string
-    onValueChange?: (value: string) => void
-}
-
-export const SelectContent = ({ children, className, value, onValueChange }: SelectContentProps) => {
-    // Simplification: We use a hidden select for functionality and style the trigger
-    // In a real shadcn/ui project, this would be a Radix Popover
-    return (
-        <select
-            className={cn(
-                "absolute inset-0 opacity-0 cursor-pointer w-full h-full",
-                className
-            )}
-            value={value}
-            onChange={(e) => onValueChange(e.target.value)}
-        >
-            {children}
-        </select>
-    )
-}
-
-interface SelectItemProps {
-    value: string
-    children: React.ReactNode
-    className?: string
-}
-
-export const SelectItem = ({ value, children, className }: SelectItemProps) => (
-    <option value={value} className={cn("", className)}>
-        {children}
-    </option>
-)
+export const SelectItem = ({ value, children, className }: { value: string; children: React.ReactNode; className?: string }) => (
+  <option value={value} className={className}>{children}</option>
+);

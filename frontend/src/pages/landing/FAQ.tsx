@@ -17,11 +17,11 @@ const faqs = [
   },
   {
     question: 'What languages does VocalScale support?',
-    answer: 'VocalScale answers calls in 50+ languages, detecting the caller\'s language automatically so you don\'t miss business from non-English speakers.'
+    answer: 'VocalScale supports multilingual call flows. Language availability depends on the configured speech and voice models, so we confirm the required languages during setup.'
   },
   {
-    question: 'Is VocalScale HIPAA compliant for medical practices?',
-    answer: 'Yes. VocalScale offers HIPAA-aware call flows for medical and dental offices, including secure handling of patient information during scheduling calls.'
+    question: 'Can VocalScale handle protected health information?',
+    answer: 'No. The current service is not tailored for protected health information or other regulated healthcare workflows. Do not use it for those interactions.'
   },
   {
     question: 'How long does it take to set up an AI receptionist?',
@@ -34,7 +34,7 @@ export default function FAQPage() {
     <div className="min-h-screen bg-white selection:bg-blue-100 selection:text-blue-900 relative overflow-hidden">
       <SEO
         title="AI Receptionist FAQ | VocalScale"
-        description="Answers to the most common questions about VocalScale's AI receptionist: call handling, appointment booking, languages, HIPAA compliance, and setup time."
+        description="Answers to common questions about VocalScale call handling, appointment booking, language support, data handling, and setup time."
         canonical="https://vocalscale.com/faq"
       />
       <SchemaMarkup schema={faqSchema(faqs)} type="FAQPage" />

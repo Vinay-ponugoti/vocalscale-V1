@@ -10,7 +10,7 @@ export const PageTracking = () => {
 
     // GA4 page_view for SPA route changes (initial load is tracked by the
     // gtag('config') call in index.html)
-    const gtag = (window as any).gtag;
+    const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
     if (typeof gtag === 'function') {
       gtag('event', 'page_view', {
         page_path: location.pathname + location.search,

@@ -1,20 +1,22 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  Megaphone, Users, Upload, X, Search, Plus, Play, Pause, Square, Loader2,
+  Megaphone, Users, Upload, X, Search, Plus, Play, Loader2,
   CheckCircle2, AlertCircle, Phone, ChevronRight, ChevronLeft, Clock, CalendarClock,
+  FileSpreadsheet, Download, ShieldCheck, Eye, Pause, RotateCcw,
 } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
-import { contactsAPI } from '../../../api/contacts';
-import { callsApi } from '../../../api/calls';
-import { campaignsAPI, type Campaign, type CampaignRow } from '../../../api/campaigns';
+import { campaignsAPI, type Campaign, type CampaignRow, type CampaignImportResult, type CampaignPreview } from '../../../api/campaigns';
 import { useQuery } from '@tanstack/react-query';
 
 interface Recipient {
   key: string;
   contactId?: string;
+  prospectId?: string;
   name: string;
   phone: string;
+  eligible?: boolean;
+  blockedReason?: string;
 }
 
 const TEMPLATES = [
@@ -64,9 +66,7 @@ const formatDateTime = (iso?: string | null) => {
   return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 };
 
-const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-type View = 'list' | 'builder' | 'run' | 'detail';
+type View = 'list' | 'builder' | 'detail';
 
 const Campaigns = () => {
   const location = useLocation();
@@ -89,18 +89,22 @@ const Campaigns = () => {
   const [query, setQuery] = useState('');
   const [pasteOpen, setPasteOpen] = useState(false);
   const [pasteText, setPasteText] = useState('');
+  const [importOpen, setImportOpen] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importResult, setImportResult] = useState<CampaignImportResult | null>(null);
+  const [importing, setImporting] = useState(false);
   const [launchError, setLaunchError] = useState('');
   const [launching, setLaunching] = useState(false);
   const [scheduleMode, setScheduleMode] = useState<'now' | 'later'>('now');
   const [scheduleAt, setScheduleAt] = useState('');
-
-  // Run state
-  const [runCampaign, setRunCampaign] = useState<Campaign | null>(null);
-  const [rows, setRows] = useState<CampaignRow[]>([]);
-  const [running, setRunning] = useState(false);
-  const [paused, setPaused] = useState(false);
-  const [activeRowId, setActiveRowId] = useState<string | null>(null);
-  const control = useRef({ paused: false, stopped: false });
+  const [goal, setGoal] = useState('Book a short human consultation with the owner or manager.');
+  const [offer, setOffer] = useState('A personalized missed-call workflow review and a no-pressure demo.');
+  const [disclosure, setDisclosure] = useState("This is VocalScale's AI assistant using an artificial voice, calling for the sales demonstration you requested.");
+  const [questions, setQuestions] = useState('How are unanswered and after-hours calls handled?\nWould improving response time help the team?');
+  const [guardrails, setGuardrails] = useState('Never invent savings, losses, or business facts.\nRespect opt-outs immediately.\nDo not pressure the prospect.');
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [campaignPreview, setCampaignPreview] = useState<CampaignPreview | null>(null);
+  const [previewing, setPreviewing] = useState(false);
 
   // History state
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -108,10 +112,10 @@ const Campaigns = () => {
   const [detail, setDetail] = useState<{ campaign: Campaign; rows: CampaignRow[] } | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
 
-  const { data: contacts = [], isLoading: loadingContacts } = useQuery({
-    queryKey: ['campaign-contacts'],
-    queryFn: () => contactsAPI.listContacts(),
-    staleTime: 60_000,
+  const { data: prospects = [], isLoading: loadingProspects, refetch: refetchProspects } = useQuery({
+    queryKey: ['campaign-prospects'],
+    queryFn: () => campaignsAPI.listProspects(),
+    staleTime: 30_000,
   });
 
   const loadCampaigns = async () => {
@@ -149,24 +153,64 @@ const Campaigns = () => {
     }
   };
 
-  const filteredContacts = useMemo(() => {
+  const updateCampaignStatus = async (id: string, status: 'paused' | 'scheduled' | 'stopped') => {
+    setCampaigns((prev) => prev.map((c) => (c.id === id ? { ...c, status } : c)));
+    try {
+      await campaignsAPI.setStatus(id, status);
+    } catch (err) {
+      setLaunchError(err instanceof Error ? err.message : 'Could not update campaign');
+    } finally {
+      loadCampaigns();
+    }
+  };
+
+  const retryCampaign = async (id: string) => {
+    try {
+      await campaignsAPI.retry(id);
+      await loadCampaigns();
+    } catch (err) {
+      setLaunchError(err instanceof Error ? err.message : 'Could not retry campaign rows');
+    }
+  };
+
+  const filteredProspects = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return contacts;
-    return contacts.filter(
-      (c) => (c.display_name || '').toLowerCase().includes(q) || (c.phone_number || '').toLowerCase().includes(q),
-    );
-  }, [contacts, query]);
+    if (!q) return prospects;
+    return prospects.filter((p) => [p.business_name, p.phone_number, p.city, p.category].some((v) => (v || '').toLowerCase().includes(q)));
+  }, [prospects, query]);
 
   const selectedList = Object.values(selected);
-  const canLaunch = selectedList.length > 0 && instruction.trim().length >= 5 && instruction.length <= 500 && !launching;
+  const canPreview = selectedList.length > 0 && instruction.trim().length >= 5 && instruction.length <= 500 && !previewing;
+  const canLaunch = canPreview && !!campaignPreview?.summary.ready && !launching;
 
-  const toggleContact = (id: string, cname: string, phone: string) => {
+  const toggleProspect = (id: string) => {
+    const prospect = prospects.find((p) => p.id === id);
+    if (!prospect) return;
     setSelected((prev) => {
       const next = { ...prev };
       if (next[id]) delete next[id];
-      else next[id] = { key: id, contactId: id, name: cname || 'Customer', phone };
+      else next[id] = { key: id, prospectId: id, name: prospect.business_name, phone: prospect.phone_number, eligible: prospect.ai_call_eligible, blockedReason: prospect.blocked_reason };
       return next;
     });
+    setCampaignPreview(null);
+  };
+
+  const runImport = async (mode: 'preview' | 'commit') => {
+    if (!importFile && !pasteText.trim()) {
+      setLaunchError('Choose an Excel/CSV file or paste business rows first.');
+      return;
+    }
+    setImporting(true);
+    setLaunchError('');
+    try {
+      const result = await campaignsAPI.importProspects({ file: importFile || undefined, paste: importFile ? undefined : pasteText, mode });
+      setImportResult(result);
+      if (mode === 'commit') await refetchProspects();
+    } catch (err) {
+      setLaunchError(err instanceof Error ? err.message : 'Could not import businesses');
+    } finally {
+      setImporting(false);
+    }
   };
 
   const addPasted = () => {
@@ -189,86 +233,44 @@ const Campaigns = () => {
         added[key] = { key, name: rname || 'Customer', phone };
       });
     setSelected((prev) => ({ ...prev, ...added }));
+    setCampaignPreview(null);
     setPasteText('');
     setPasteOpen(false);
   };
 
-  const removeSelected = (key: string) =>
+  const removeSelected = (key: string) => {
+    setCampaignPreview(null);
     setSelected((prev) => {
       const next = { ...prev };
       delete next[key];
       return next;
     });
-
-  // Persisted sequential dialer: each result is PATCHed to the server so the
-  // run survives refresh and outcomes can be joined later.
-  const dial = async (campaign: Campaign, queue: CampaignRow[]) => {
-    setRunning(true);
-    setPaused(false);
-    control.current = { paused: false, stopped: false };
-
-    const markRow = async (row: CampaignRow, patch: Partial<CampaignRow>) => {
-      setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, ...patch } : r)));
-      try {
-        await campaignsAPI.updateRow(row.id, {
-          status: (patch.status ?? row.status) as CampaignRow['status'],
-          call_id: patch.call_id ?? undefined,
-          error: patch.error ?? undefined,
-        });
-      } catch {
-        /* local state still reflects it; server misses one beat */
-      }
-    };
-
-    let stopped = false;
-    for (let i = 0; i < queue.length; i++) {
-      if (control.current.stopped) {
-        stopped = true;
-        break;
-      }
-      while (control.current.paused && !control.current.stopped) await delay(300);
-      if (control.current.stopped) {
-        stopped = true;
-        break;
-      }
-
-      const row = queue[i];
-      setActiveRowId(row.id);
-      await markRow(row, { status: 'calling' });
-      try {
-        const res = await callsApi.startOutboundCall(row.phone_number, campaign.instruction, row.recipient_name);
-        await markRow(row, { status: 'called', call_id: res?.call_id });
-      } catch (err) {
-        await markRow(row, { status: 'failed', error: err instanceof Error ? err.message : 'Call failed' });
-      }
-      if (i < queue.length - 1) await delay(2500);
-    }
-
-    if (stopped) {
-      // Mark whatever never dialed as skipped.
-      const pending = queue.filter((r) => {
-        const current = rowsRef.current.find((x) => x.id === r.id);
-        return (current?.status ?? r.status) === 'queued';
-      });
-      for (const r of pending) await markRow(r, { status: 'skipped' });
-    }
-
-    try {
-      await campaignsAPI.setStatus(campaign.id, stopped ? 'stopped' : 'completed');
-    } catch {
-      /* non-fatal */
-    }
-    setActiveRowId(null);
-    setRunning(false);
-    setPaused(false);
-    loadCampaigns();
   };
 
-  // dial() reads latest row state through a ref to avoid stale closures.
-  const rowsRef = useRef<CampaignRow[]>([]);
-  useEffect(() => {
-    rowsRef.current = rows;
-  }, [rows]);
+  const buildPayload = (scheduledISO?: string) => ({
+    name: name.trim() || `Campaign — ${new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`,
+    instruction: instruction.trim(),
+    goal: goal.trim(),
+    offer: offer.trim(),
+    disclosure_text: disclosure.trim(),
+    qualification_criteria: questions.split('\n').map((v) => v.trim()).filter(Boolean),
+    guardrails: guardrails.split('\n').map((v) => v.trim()).filter(Boolean),
+    recipients: selectedList.map((r) => ({ contact_id: r.contactId, prospect_id: r.prospectId, name: r.name, phone: r.phone })),
+    scheduled_at: scheduledISO,
+  });
+
+  const previewCalls = async () => {
+    if (!canPreview) return;
+    setPreviewing(true);
+    setLaunchError('');
+    try {
+      setCampaignPreview(await campaignsAPI.preview(buildPayload()));
+    } catch (err) {
+      setLaunchError(err instanceof Error ? err.message : 'Could not preview campaign');
+    } finally {
+      setPreviewing(false);
+    }
+  };
 
   const launch = async () => {
     if (!canLaunch) return;
@@ -291,23 +293,12 @@ const Campaigns = () => {
     setLaunching(true);
     setLaunchError('');
     try {
-      const { campaign, rows: serverRows } = await campaignsAPI.create({
-        name: name.trim() || `Campaign — ${new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`,
-        instruction: instruction.trim(),
-        recipients: selectedList.map((r) => ({ contact_id: r.contactId, name: r.name, phone: r.phone })),
-        scheduled_at: scheduledISO,
-      });
+      await campaignsAPI.create(buildPayload(scheduledISO));
 
-      if (campaign.status === 'scheduled') {
-        // Server will dial at the scheduled time — no browser run.
-        await loadCampaigns();
-        setView('list');
-      } else {
-        setRunCampaign(campaign);
-        setRows(serverRows);
-        setView('run');
-        dial(campaign, serverRows);
-      }
+      // All runs, including "send now", are executed by the server-owned
+      // scheduler. Closing this page cannot interrupt outbound calls.
+      await loadCampaigns();
+      setView('list');
     } catch (err) {
       setLaunchError(err instanceof Error ? err.message : 'Could not start the campaign');
     } finally {
@@ -332,117 +323,14 @@ const Campaigns = () => {
     setInstruction('');
     setName('');
     setLaunchError('');
+    setCampaignPreview(null);
     setView('builder');
   };
-
-  const counts = {
-    called: rows.filter((r) => r.status === 'called').length,
-    failed: rows.filter((r) => r.status === 'failed').length,
-    skipped: rows.filter((r) => r.status === 'skipped').length,
-  };
-  const progress = rows.length
-    ? Math.round((rows.filter((r) => r.status !== 'queued' && r.status !== 'calling').length / rows.length) * 100)
-    : 0;
 
   return (
     <DashboardLayout fullWidth>
       <div className="scrollbar-hide h-full overflow-y-auto bg-[hsl(var(--ds-off-white))] text-slate-950">
         <div className="mx-auto w-full max-w-[1100px] space-y-5 px-4 py-6 md:px-6 md:py-8">
-          {/* ---------- RUN VIEW ---------- */}
-          {view === 'run' && runCampaign && (
-            <>
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h1 className="text-2xl font-semibold text-slate-900">
-                    {running ? 'Campaign running…' : 'Campaign complete'}
-                  </h1>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {runCampaign.name} · {counts.called} called · {counts.failed} failed
-                    {counts.skipped ? ` · ${counts.skipped} skipped` : ''} of {rows.length}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {running ? (
-                    <>
-                      <button
-                        onClick={() => {
-                          control.current.paused = !control.current.paused;
-                          setPaused(control.current.paused);
-                        }}
-                        className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                      >
-                        {paused ? <Play size={15} /> : <Pause size={15} />}
-                        {paused ? 'Resume' : 'Pause'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          control.current.stopped = true;
-                          control.current.paused = false;
-                          setPaused(false);
-                        }}
-                        className="flex items-center gap-1.5 rounded-xl bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-700"
-                      >
-                        <Square size={14} /> Stop
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => setView('list')}
-                        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                      >
-                        History
-                      </button>
-                      <button
-                        onClick={startNew}
-                        className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                      >
-                        <Plus size={15} /> New campaign
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-slate-100 bg-white p-4">
-                <div className="mb-2 flex items-center justify-between text-xs font-medium text-slate-500">
-                  <span>{progress}% complete</span>
-                  {running && !paused && (
-                    <span className="flex items-center gap-1.5 text-blue-600">
-                      <Loader2 size={12} className="animate-spin" /> dialing
-                    </span>
-                  )}
-                  {paused && <span className="text-amber-600">paused</span>}
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${progress}%` }} />
-                </div>
-              </div>
-
-              <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
-                <ul className="divide-y divide-slate-100">
-                  {rows.map((r) => (
-                    <li key={r.id} className={`flex items-center gap-3 px-5 py-3 ${r.id === activeRowId ? 'bg-blue-50/40' : ''}`}>
-                      <RowStatusIcon status={r.status} />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-slate-800">{r.recipient_name || 'Customer'}</p>
-                        <p className="truncate text-xs text-slate-400">{formatPhone(r.phone_number)}</p>
-                      </div>
-                      <span className="shrink-0 text-right">
-                        <RowStatusLabel status={r.status} />
-                        {r.error && <span className="block max-w-[180px] truncate text-[11px] text-rose-500">{r.error}</span>}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <p className="text-center text-xs text-slate-400">
-                This run is saved — check outcomes anytime from campaign history, even after closing this page.
-              </p>
-            </>
-          )}
-
           {/* ---------- DETAIL VIEW ---------- */}
           {view === 'detail' && (
             <>
@@ -599,16 +487,13 @@ const Campaigns = () => {
                               )}
                             </div>
                           </button>
-                          {isScheduled ? (
-                            <button
-                              onClick={() => cancelCampaign(cm.id)}
-                              className="mr-3 shrink-0 rounded-lg px-2.5 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
-                            >
-                              Cancel
-                            </button>
-                          ) : (
-                            <ChevronRight size={16} className="mr-4 shrink-0 text-slate-300" />
-                          )}
+                          <div className="mr-3 flex shrink-0 items-center gap-1">
+                            {(cm.status === 'scheduled' || cm.status === 'running') && <button title="Pause" onClick={() => updateCampaignStatus(cm.id, 'paused')} className="rounded-lg p-1.5 text-slate-400 hover:bg-amber-50 hover:text-amber-600"><Pause size={14} /></button>}
+                            {cm.status === 'paused' && <button title="Resume" onClick={() => updateCampaignStatus(cm.id, 'scheduled')} className="rounded-lg p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600"><Play size={14} /></button>}
+                            {(cm.status === 'paused' || cm.status === 'stopped') && <button title="Retry blocked or failed rows" onClick={() => retryCampaign(cm.id)} className="rounded-lg p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600"><RotateCcw size={14} /></button>}
+                            {isScheduled && <button title="Stop" onClick={() => cancelCampaign(cm.id)} className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 hover:bg-rose-50 hover:text-rose-600">Stop</button>}
+                            <ChevronRight size={16} className="text-slate-300" />
+                          </div>
                         </li>
                       );
                     })}
@@ -650,13 +535,45 @@ const Campaigns = () => {
                           </span>
                         )}
                       </h2>
-                      <button
-                        onClick={() => setPasteOpen((v) => !v)}
-                        className="flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700"
-                      >
-                        <Upload size={13} /> Paste a list
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => setPasteOpen((v) => !v)} className="flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700">
+                          <Upload size={13} /> Paste
+                        </button>
+                        <button onClick={() => setImportOpen((v) => !v)} className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
+                          <FileSpreadsheet size={13} /> Import Excel / CSV
+                        </button>
+                      </div>
                     </div>
+
+                    {importOpen && (
+                      <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs font-semibold text-emerald-800 hover:bg-emerald-50">
+                            <FileSpreadsheet size={15} /> {importFile?.name || 'Choose .xlsx, .csv or .tsv'}
+                            <input type="file" accept=".xlsx,.csv,.tsv" className="hidden" onChange={(e) => { setImportFile(e.target.files?.[0] || null); setImportResult(null); }} />
+                          </label>
+                          <button onClick={() => campaignsAPI.download('import-template', 'vocalscale_campaign_import_template.csv')} className="flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-medium text-slate-600 hover:bg-white">
+                            <Download size={14} /> Template
+                          </button>
+                          <button onClick={() => campaignsAPI.download('export', 'vocalscale_campaign_prospects.csv')} className="flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-medium text-slate-600 hover:bg-white">
+                            <Download size={14} /> Export saved
+                          </button>
+                        </div>
+                        <p className="mt-2 text-[11px] text-slate-500">Imports business knowledge and consent records. A public phone number does not count as permission for an AI call.</p>
+                        <div className="mt-3 flex gap-2">
+                          <button disabled={importing || !importFile} onClick={() => runImport('preview')} className="rounded-lg border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700 disabled:opacity-50">Preview file</button>
+                          <button disabled={importing || !importResult?.summary.valid} onClick={() => runImport('commit')} className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Save valid businesses</button>
+                          {importing && <Loader2 size={16} className="animate-spin text-emerald-600" />}
+                        </div>
+                        {importResult && (
+                          <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
+                            {[['Rows', importResult.summary.total], ['Valid', importResult.summary.valid], ['Invalid', importResult.summary.invalid], ['Duplicates', importResult.summary.duplicates], ['Callable', importResult.summary.ai_call_eligible], ['Blocked', importResult.summary.blocked]].map(([label, value]) => (
+                              <div key={String(label)} className="rounded-lg bg-white p-2 text-center"><div className="text-base font-bold text-slate-800">{value}</div><div className="text-[10px] uppercase text-slate-400">{label}</div></div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {pasteOpen && (
                       <div className="mb-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -695,21 +612,22 @@ const Campaigns = () => {
                       />
                     </div>
 
+                    <div className="mb-2 flex items-center justify-between"><span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Business knowledge base</span><span className="text-[11px] text-slate-400">{prospects.filter((p) => p.ai_call_eligible).length} callable</span></div>
                     <div className="max-h-72 overflow-y-auto rounded-xl border border-slate-100">
-                      {loadingContacts ? (
+                      {loadingProspects ? (
                         <div className="p-6 text-center text-sm text-slate-400">Loading contacts…</div>
-                      ) : filteredContacts.length === 0 ? (
+                      ) : filteredProspects.length === 0 ? (
                         <div className="p-6 text-center text-sm text-slate-400">
-                          No contacts. Paste a list above to add recipients.
+                          No saved businesses. Use Import Excel / CSV above.
                         </div>
                       ) : (
                         <ul className="divide-y divide-slate-50">
-                          {filteredContacts.map((c) => {
-                            const checked = !!selected[c.id];
+                          {filteredProspects.map((p) => {
+                            const checked = !!selected[p.id];
                             return (
-                              <li key={c.id}>
+                              <li key={p.id}>
                                 <button
-                                  onClick={() => toggleContact(c.id, c.display_name, c.phone_number)}
+                                  onClick={() => toggleProspect(p.id)}
                                   className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition hover:bg-slate-50"
                                 >
                                   <span
@@ -720,15 +638,10 @@ const Campaigns = () => {
                                     {checked && <CheckCircle2 size={12} className="text-white" />}
                                   </span>
                                   <span className="min-w-0 flex-1">
-                                    <span className="block truncate text-sm text-slate-700">
-                                      {c.display_name && c.display_name !== 'Unknown'
-                                        ? c.display_name
-                                        : formatPhone(c.phone_number)}
-                                    </span>
-                                    <span className="block truncate text-xs text-slate-400">
-                                      {formatPhone(c.phone_number)}
-                                    </span>
+                                    <span className="block truncate text-sm text-slate-700">{p.business_name}</span>
+                                    <span className="block truncate text-xs text-slate-400">{formatPhone(p.phone_number)}{p.city ? ` · ${p.city}` : ''}{p.category ? ` · ${p.category}` : ''}</span>
                                   </span>
+                                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${p.ai_call_eligible ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`} title={p.blocked_reason}>{p.ai_call_eligible ? 'Ready' : 'Needs consent'}</span>
                                 </button>
                               </li>
                             );
@@ -791,7 +704,7 @@ const Campaigns = () => {
                     </div>
                     <textarea
                       value={instruction}
-                      onChange={(e) => setInstruction(e.target.value)}
+                      onChange={(e) => { setInstruction(e.target.value); setCampaignPreview(null); }}
                       rows={5}
                       maxLength={500}
                       placeholder="Describe the goal of the call in plain English…"
@@ -801,6 +714,18 @@ const Campaigns = () => {
                       <span>{instruction.trim().length < 5 ? 'At least 5 characters' : 'Applied to every call'}</span>
                       <span>{instruction.length}/500</span>
                     </div>
+                    <button onClick={() => setAdvancedOpen((v) => !v)} className="mt-4 flex w-full items-center justify-between border-t border-slate-100 pt-3 text-xs font-semibold text-blue-600">
+                      Better call knowledge <span>{advancedOpen ? 'Hide' : 'Customize'}</span>
+                    </button>
+                    {advancedOpen && (
+                      <div className="mt-3 space-y-3">
+                        <Field label="Success goal" value={goal} onChange={(v) => { setGoal(v); setCampaignPreview(null); }} />
+                        <Field label="Offer" value={offer} onChange={(v) => { setOffer(v); setCampaignPreview(null); }} />
+                        <Field label="AI disclosure" value={disclosure} onChange={(v) => { setDisclosure(v); setCampaignPreview(null); }} />
+                        <Field label="Qualification questions — one per line" value={questions} onChange={(v) => { setQuestions(v); setCampaignPreview(null); }} rows={3} />
+                        <Field label="Guardrails — one per line" value={guardrails} onChange={(v) => { setGuardrails(v); setCampaignPreview(null); }} rows={3} />
+                      </div>
+                    )}
                   </div>
 
                   <div className="rounded-2xl border border-slate-100 bg-white p-5">
@@ -840,6 +765,21 @@ const Campaigns = () => {
                     )}
 
                     <button
+                      onClick={previewCalls}
+                      disabled={!canPreview}
+                      className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {previewing ? <Loader2 size={16} className="animate-spin" /> : <Eye size={16} />} Preview every call
+                    </button>
+                    {campaignPreview && (
+                      <div className="mb-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
+                        <div className="flex items-center justify-between text-xs"><span className="font-semibold text-emerald-700">{campaignPreview.summary.ready} ready</span><span className="font-semibold text-amber-700">{campaignPreview.summary.blocked} blocked</span></div>
+                        {campaignPreview.rows.slice(0, 3).map((row) => <p key={row.row} className="mt-1 truncate text-[11px] text-slate-500">{row.ready ? '✓' : '⚠'} {row.business_name || row.phone}: {row.blocked_reason || 'brief ready'}</p>)}
+                        {campaignPreview.summary.blocked > 0 && <p className="mt-2 text-[11px] text-amber-700">Blocked rows are saved for review but will not be dialed.</p>}
+                      </div>
+                    )}
+
+                    <button
                       onClick={launch}
                       disabled={!canLaunch || (scheduleMode === 'later' && !scheduleAt)}
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
@@ -855,10 +795,10 @@ const Campaigns = () => {
                     </button>
                     {launchError && <p className="mt-2 text-xs text-rose-600">{launchError}</p>}
                     <p className="mt-2 flex items-start gap-1.5 text-[11px] text-slate-400">
-                      <AlertCircle size={13} className="mt-0.5 shrink-0" />
+                      <ShieldCheck size={13} className="mt-0.5 shrink-0" />
                       {scheduleMode === 'later'
-                        ? 'Runs automatically at the scheduled time — no need to keep this open. Counts toward plan minutes.'
-                        : 'Calls dial one at a time and count toward your plan minutes. The run is saved to history.'}
+                        ? 'Runs automatically at the scheduled time. Live consent and do-not-call status are checked again before dialing.'
+                        : 'Review is required first. Only businesses with documented written AI-call consent can be dialed.'}
                     </p>
                   </div>
                 </div>
@@ -879,6 +819,8 @@ const RowStatusIcon = ({ status }: { status: CampaignRow['status'] }) => {
       return <CheckCircle2 size={16} className="shrink-0 text-emerald-500" />;
     case 'failed':
       return <AlertCircle size={16} className="shrink-0 text-rose-500" />;
+    case 'blocked':
+      return <ShieldCheck size={16} className="shrink-0 text-amber-500" />;
     case 'skipped':
       return <ChevronRight size={16} className="shrink-0 text-slate-300" />;
     default:
@@ -892,6 +834,7 @@ const RowStatusLabel = ({ status }: { status: CampaignRow['status'] }) => {
     calling: { cls: 'text-blue-600', label: 'Calling…' },
     called: { cls: 'text-emerald-600', label: 'Called' },
     failed: { cls: 'text-rose-600', label: 'Failed' },
+    blocked: { cls: 'text-amber-600', label: 'Blocked' },
     skipped: { cls: 'text-slate-400', label: 'Skipped' },
   };
   const { cls, label } = map[status];
@@ -900,6 +843,7 @@ const RowStatusLabel = ({ status }: { status: CampaignRow['status'] }) => {
 
 const StatusChip = ({ status }: { status: Campaign['status'] }) => {
   const map: Record<Campaign['status'], string> = {
+    draft: 'bg-slate-100 text-slate-600',
     scheduled: 'bg-blue-50 text-blue-700',
     running: 'bg-blue-50 text-blue-700',
     paused: 'bg-amber-50 text-amber-700',
@@ -912,6 +856,13 @@ const StatusChip = ({ status }: { status: Campaign['status'] }) => {
     </span>
   );
 };
+
+const Field = ({ label, value, onChange, rows = 2 }: { label: string; value: string; onChange: (value: string) => void; rows?: number }) => (
+  <label className="block">
+    <span className="mb-1 block text-[11px] font-semibold text-slate-500">{label}</span>
+    <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows} className="w-full resize-y rounded-xl border border-slate-200 p-2.5 text-xs text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+  </label>
+);
 
 const SentimentChip = ({ sentiment }: { sentiment: string }) => {
   const s = sentiment.toLowerCase();

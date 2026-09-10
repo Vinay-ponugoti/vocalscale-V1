@@ -5,8 +5,7 @@ import { motion } from 'framer-motion';
 import AuthLayout from '../layouts/AuthLayout';
 import { useToast } from '../../hooks/useToast';
 import Button from '../../components/ui/Button';
-
-const ACCESS_REQUEST_ENDPOINT = 'https://formsubmit.co/ajax/ponugotivinay.v@gmail.com';
+import { env } from '../../config/env';
 
 const Signup = () => {
   const { showToast } = useToast();
@@ -30,7 +29,7 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(ACCESS_REQUEST_ENDPOINT, {
+      const response = await fetch(`${env.API_URL}/leads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,9 +38,8 @@ const Signup = () => {
         body: JSON.stringify({
           email: email.trim().toLowerCase(),
           business_name: businessName.trim() || 'Not provided',
-          source: 'Signup page',
-          _subject: 'VocalScale — New signup / waitlist request',
-          _template: 'table',
+          source: 'website_waitlist',
+          website: '',
         }),
       });
 

@@ -6,6 +6,8 @@ import FAQItem from '../../components/FAQItem';
 import { SEO } from '../../components/SEO';
 import SchemaMarkup from '../../components/SchemaMarkup';
 import { useToast } from '@/hooks/useToast';
+import { env } from '@/config/env';
+import { getAuthHeader } from '@/lib/api';
 // FloatingChat removed
 
 const VIDEO_URL = "https://pub-9dafe3dccf8841b8811d008bbb1d80ce.r2.dev/landing.mp4";
@@ -138,21 +140,18 @@ const HelpCenter = () => {
     setIsSubmitting(true);
 
     try {
-      const selectedType = ticketTypes.find(t => t.value === ticketData.ticketType);
-      
-      const response = await fetch("https://formsubmit.co/ajax/support@vocalscale.com", {
+      const headers = await getAuthHeader();
+      const response = await fetch(`${env.API_URL}/help/tickets`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          ...headers,
         },
         body: JSON.stringify({
           email: ticketData.email,
-          _subject: `New Support Ticket: ${selectedType?.label || 'General'} - ${ticketData.subject || 'No Subject'}`,
-          _template: "table",
-          'Ticket Type': selectedType?.label || 'General',
-          'Subject': ticketData.subject || 'No Subject',
-          'Message': ticketData.message
+          category: ticketData.ticketType,
+          subject: ticketData.subject,
+          message: ticketData.message,
         })
       });
 
@@ -172,8 +171,8 @@ const HelpCenter = () => {
           });
         }, 2000);
       } else {
-        const data = await response.json();
-        throw new Error(data.message || 'Something went wrong');
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Something went wrong');
       }
     } catch (error) {
       console.error("Form submission error:", error);

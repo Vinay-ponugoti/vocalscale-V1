@@ -8,8 +8,7 @@ import {
   CheckCircle,
   AlertCircle,
   ShieldCheck,
-  Clock,
-  ShieldAlert
+  Clock
 } from 'lucide-react';
 import { env } from '../../config/env';
 import { getAuthHeader } from '../../lib/api';
@@ -336,7 +335,7 @@ const SetupSubaccount = () => {
                         Active subscription required to create a phone provider account.
                       </p>
                       <button
-                        onClick={() => navigate('/dashboard/plans')}
+                        onClick={() => navigate('/dashboard/billing/plans')}
                         className="text-xs font-bold text-cyan-700 hover:underline"
                       >
                         Browse Plans
