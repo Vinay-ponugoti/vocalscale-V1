@@ -43,6 +43,7 @@ class ReviewAPI {
         if (params.limit) queryParams.append('limit', params.limit.toString());
         if (params.search) queryParams.append('search', params.search);
         if (params.source) queryParams.append('source', params.source);
+        if (!params.limit) queryParams.append('limit', '50');
 
         const queryString = queryParams.toString();
         const endpoint = `/reviews/list${queryString ? `?${queryString}` : ''}`;
@@ -82,6 +83,7 @@ class ReviewAPI {
         reviewsVerified?: boolean;
         businessAccountId?: string | null;
         lastSyncedAt?: string | null;
+        demoMode?: boolean;
     }> {
         return this.request('/integrations/google-calendar/status');
     }
@@ -90,7 +92,7 @@ class ReviewAPI {
         return this.request(`/integrations/google-calendar/connect?feature=${feature}`, { method: 'POST' });
     }
 
-    async verifyConnection(): Promise<{ connected: boolean; verified: boolean; accountId?: string; error?: string }> {
+    async verifyConnection(): Promise<{ connected: boolean; verified: boolean; accountId?: string; error?: string; demoMode?: boolean }> {
         return this.request('/reviews/verify', { method: 'POST' });
     }
 

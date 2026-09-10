@@ -316,10 +316,10 @@ const Knowledge = () => {
             <div className="rounded-2xl border border-slate-100 bg-white p-5">
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-blue-600" />
-                <h2 className="text-sm font-semibold text-slate-800">Test what your AI knows</h2>
+                <h2 className="text-sm font-semibold text-slate-800">Test knowledge retrieval</h2>
               </div>
               <p className="mt-1 text-xs text-slate-500">
-                Ask a question the way a customer would. You’ll see the exact answer your AI would give.
+                Ask a question the way a customer would. You’ll see the verified answers and source passages available to the agent.
               </p>
               <form onSubmit={handleSearch} className="mt-3 flex gap-2">
                 <div className="relative flex-1">
@@ -353,7 +353,14 @@ const Knowledge = () => {
                     {results.map((r) => (
                       <div key={r.id} className="rounded-xl border border-slate-100 bg-slate-50 p-3">
                         <div className="flex items-start justify-between gap-3">
-                          <p className="text-sm text-slate-700">{r.content}</p>
+                          <div className="min-w-0">
+                            <p className="text-sm text-slate-700">{r.content}</p>
+                            <p className="mt-2 text-xs font-medium text-slate-400">
+                              {r.metadata?.type === 'fact' ? 'Verified answer' : 'Source passage'}
+                              {r.metadata?.source_filename ? ` · ${String(r.metadata.source_filename)}` : ''}
+                              {typeof r.metadata?.chunk_index === 'number' ? ` · Section ${Number(r.metadata.chunk_index) + 1}` : ''}
+                            </p>
+                          </div>
                           <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
                             {Math.round((r.score ?? 0) * 100)}% match
                           </span>

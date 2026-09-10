@@ -163,7 +163,7 @@ const Plans: React.FC = () => {
       '750 AI minutes included (~250 calls)',
       'Extra minutes: $0.089/min',
       '24/7 call answering & smart routing',
-      'Appointment booking — Google Calendar & Outlook',
+      'Appointment booking with Google Calendar sync',
       'Natural AI voices in 7 languages',
       'Call transcripts, summaries & recordings',
       '1 local phone number',
@@ -177,8 +177,8 @@ const Plans: React.FC = () => {
       'Custom knowledge base trained on your business',
       'Up to 5 phone numbers',
       'Sentiment analysis & lead scoring',
-      'CRM integrations — HubSpot, Salesforce, Pipedrive',
-      'Automated SMS follow-up on missed calls',
+      'Multiple agents and phone-number assignments',
+      'Performance insights and call outcome reporting',
       'Priority 24/7 support'
     ];
     if (name === 'Elite') return [

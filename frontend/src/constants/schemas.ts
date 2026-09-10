@@ -5,7 +5,7 @@ export const organizationSchema = {
     "alternateName": "VocalScale AI Receptionist",
     "url": "https://vocalscale.com",
     "logo": "https://vocalscale.com/logo.png",
-    "description": "VocalScale provides AI-powered voice agents and 24/7 AI receptionists for small businesses, handling customer calls, appointment scheduling, and inquiries in 50+ languages.",
+    "description": "VocalScale provides AI-powered voice agents for small businesses, handling customer calls, appointment scheduling, transfers, and searchable call records.",
     "sameAs": [
         "https://www.linkedin.com/company/vocalscale",
         "https://twitter.com/vocalscale"
@@ -73,7 +73,7 @@ export const productSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "VocalScale AI Receptionist",
-    "description": "AI receptionist and 24/7 AI voice agent for small businesses. Answers calls, books appointments, qualifies leads, and integrates with your CRM and calendar in 50+ languages.",
+    "description": "AI receptionist for small businesses. Answers calls, books appointments, qualifies leads, and connects with Google Calendar.",
     "url": "https://vocalscale.com/",
     "image": "https://vocalscale.com/logo.png",
     "applicationCategory": "BusinessApplication",
@@ -100,15 +100,15 @@ export const productSchema = {
     ],
     "featureList": [
         "24/7 AI Receptionist & Live Call Answering",
-        "AI Appointment Scheduling with Google Calendar & Outlook",
+        "AI Appointment Scheduling with Google Calendar",
         "Smart Call Routing and Warm Transfer",
         "Natural Language Conversations with Human-like AI Voices",
-        "50+ Languages & Multi-Accent Support",
-        "CRM Integration (HubSpot, Salesforce, Pipedrive)",
+        "Configurable Multilingual Call Flows",
+        "Business Knowledge Retrieval",
         "Real-time Analytics & Sentiment Analysis",
         "Custom Knowledge Base Training",
-        "HIPAA-aware Configurations for Healthcare",
-        "Live Call Transcripts, Recordings & SMS Follow-up"
+        "Urgent Call Transfer Rules",
+        "Live Call Transcripts, Recordings & Summaries"
     ]
 };
 

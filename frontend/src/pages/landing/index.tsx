@@ -39,12 +39,12 @@ const Landing = () => {
   const seoConfig = {
     '/': {
       title: "AI Receptionist for Small Business | VocalScale",
-      description: "VocalScale is the AI receptionist that answers every call 24/7, books appointments, and qualifies leads in 50+ languages. Contact us for pricing.",
+      description: "VocalScale is an AI receptionist for answering calls, booking appointments, routing urgent requests, and keeping searchable call records.",
       canonical: "https://vocalscale.com/"
     },
     '/features': {
       title: "AI Receptionist Features: 24/7 Call Answering, AI Scheduling & CRM | VocalScale",
-      description: "Explore VocalScale's AI phone agent features — 24/7 call answering, smart appointment booking, 50+ languages, CRM and calendar integrations, and HIPAA-aware healthcare workflows.",
+      description: "Explore VocalScale call answering, appointment booking, business knowledge, call transfer, and Google Calendar workflows.",
       canonical: "https://vocalscale.com/features"
     },
     '/pricing': {

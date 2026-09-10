@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, TrendingUp, Zap, ArrowUpRight } from 'lucide-react';
 
@@ -15,6 +16,7 @@ interface Props {
  * The projection linearly extrapolates current usage across the billing cycle.
  */
 const UsageAlert = ({ usedMinutes, totalMinutes, overageMinutes = 0, estimatedCost = 0, billingPeriodStart }: Props) => {
+  const [renderedAt] = useState(() => Date.now());
   if (!totalMinutes || totalMinutes <= 0) return null;
 
   const pct = (usedMinutes / totalMinutes) * 100;
@@ -25,7 +27,7 @@ const UsageAlert = ({ usedMinutes, totalMinutes, overageMinutes = 0, estimatedCo
   if (billingPeriodStart) {
     const start = new Date(billingPeriodStart).getTime();
     if (!Number.isNaN(start)) {
-      daysElapsed = Math.max(0.5, (Date.now() - start) / 86_400_000);
+      daysElapsed = Math.max(0.5, (renderedAt - start) / 86_400_000);
       const cycleDays = 30;
       projected = daysElapsed > 0 ? (usedMinutes / daysElapsed) * cycleDays : usedMinutes;
     }

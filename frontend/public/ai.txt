@@ -1,15 +1,17 @@
 # VocalScale AI Context
-# This file provides context for AI agents and LLMs visiting vocalscale.ai
+# This file provides context for AI agents and LLMs visiting vocalscale.com
 
 Site-Name: VocalScale
-Description: The AI-Powered Front Desk for Small Business. VocalScale automates customer calls with human-like intelligence, handling bookings, answering questions, and integrating with calendars/CRMs.
+Description: AI receptionist for small service businesses. VocalScale answers calls, follows booking rules, routes calls, and provides reviewable transcripts.
 Key-Features:
-  - 24/7 AI Receptionist
-  - Human-like Voice Technology (HD Models)
-  - Automated Scheduling & Calendar Sync
-  - Multi-language Support (50+ languages)
-  - SOC 2 Bank-Level Security
-Target-Audience: Small business owners, dental clinics, salons, Law firms, and service providers.
+  - AI call answering
+  - Appointment booking following business rules
+  - Call routing and transfers
+  - Business knowledge base
+  - Reviewable call transcripts
+Target-Audience: Small service businesses.
 Core-Values: Efficiency, Professionalism, Human-centric AI.
-API-Access: Managed subaccounts for Twilio/Vapi integrations.
-Contact: contact@vocalscale.ai
+Language-Support: Multilingual call flows depend on the configured speech and voice models. Required languages are confirmed during setup.
+Data-Restrictions: Do not use the service for protected health information or other regulated healthcare workflows. See the Terms of Service at https://vocalscale.com/terms.
+Pricing: Contact VocalScale for pricing based on call volume, scheduling complexity, handoff rules, and support needs.
+Contact: support@vocalscale.com

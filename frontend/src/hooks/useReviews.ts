@@ -2,23 +2,25 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reviewApi } from '../api/reviewApi';
 import type { ReviewStats, AISummaryData } from '../types/review';
 
+const REVIEWS_QUERY_VERSION = 'inbox-v2';
+
 export const useReviews = (days: number = 30) => {
     const queryClient = useQueryClient();
 
     const statsQuery = useQuery<ReviewStats>({
-        queryKey: ['reviews', 'stats', days],
+        queryKey: ['reviews', REVIEWS_QUERY_VERSION, 'stats', days],
         queryFn: () => reviewApi.getStats(days),
         staleTime: 5 * 60 * 1000,
     });
 
     const reviewsQuery = useQuery({
-        queryKey: ['reviews', 'list', {}],
+        queryKey: ['reviews', REVIEWS_QUERY_VERSION, 'list', {}],
         queryFn: () => reviewApi.getReviews(),
         staleTime: 2 * 60 * 1000,
     });
 
     const summaryQuery = useQuery<AISummaryData>({
-        queryKey: ['reviews', 'summary'],
+        queryKey: ['reviews', REVIEWS_QUERY_VERSION, 'summary'],
         queryFn: () => reviewApi.getAISummary(),
         staleTime: 10 * 60 * 1000,
     });
@@ -26,12 +28,19 @@ export const useReviews = (days: number = 30) => {
     const regenerateSummaryMutation = useMutation({
         mutationFn: () => reviewApi.regenerateSummary(),
         onSuccess: (newData) => {
-            queryClient.setQueryData(['reviews', 'summary'], newData);
+            queryClient.setQueryData(['reviews', REVIEWS_QUERY_VERSION, 'summary'], newData);
         },
     });
 
     const syncReviewsMutation = useMutation({
         mutationFn: () => reviewApi.syncReviews(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['reviews'] });
+        },
+    });
+
+    const respondMutation = useMutation({
+        mutationFn: ({ reviewId, text }: { reviewId: string; text: string }) => reviewApi.postResponse(reviewId, text),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['reviews'] });
         },
@@ -61,6 +70,11 @@ export const useReviews = (days: number = 30) => {
             trigger: () => syncReviewsMutation.mutate(),
             isSyncing: syncReviewsMutation.isPending,
             error: syncReviewsMutation.error,
+        },
+        respond: {
+            submit: (reviewId: string, text: string) => respondMutation.mutateAsync({ reviewId, text }),
+            isSubmitting: respondMutation.isPending,
+            error: respondMutation.error,
         },
         refresh: () => {
             queryClient.invalidateQueries({ queryKey: ['reviews'] });

@@ -192,8 +192,8 @@ export function Features() {
     },
     {
       icon: MessageSquare,
-      title: 'SMS Follow-up',
-      description: 'Send confirmations, links, or next steps after a call so the conversation does not disappear into memory.',
+      title: 'Actionable call outcomes',
+      description: 'See whether a call booked, transferred, needs follow-up, or ended without resolution.',
       iconBg: 'bg-slate-50 border border-slate-100',
       iconColor: 'text-slate-800'
     },

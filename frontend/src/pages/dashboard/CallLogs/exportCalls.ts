@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx';
 import { parseISO } from 'date-fns';
 import { toZonedTime, format as formatTZ } from 'date-fns-tz';
 import { env } from '../../../config/env';
@@ -115,6 +114,9 @@ const HEADERS = [
 // Returns the number of rows exported (0 = nothing in range).
 export const exportCallsToExcel = async (range: ExportRange, timezone: string): Promise<number> => {
   const calls = await fetchAllCallsInRange(range);
+  // XLSX is large; load it only after the user explicitly starts an export so
+  // ordinary call-log navigation stays fast on small devices and connections.
+  const XLSX = await import('xlsx');
 
   const rows = calls.map((call) => {
     const zoned = toZonedTime(parseISO(call.created_at), timezone);

@@ -1,10 +1,11 @@
 import React from 'react';
-import { AlertTriangle, Bot, CheckCircle2, Clock, FileText, Flag, Loader2, Phone, PhoneMissed, PhoneOutgoing, Share } from 'lucide-react';
+import { AlertTriangle, Bot, CheckCircle2, Clock, FileText, Flag, Loader2, Phone, PhoneMissed, PhoneOutgoing, Share, Sparkles } from 'lucide-react';
 import type { CallLog } from '../types';
 import { format, parseISO } from 'date-fns';
 import { Button } from '../../../../components/ui/Button';
 import { Badge } from '../../../../components/ui/Badge';
 import { callsApi } from '../../../../api/calls';
+import { openCopilot } from '../../../../lib/copilot';
 
 interface LogDetailsProps {
   log: CallLog;
@@ -236,6 +237,19 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
           </div>
 
           <div className="flex gap-2 sm:shrink-0 sm:items-center">
+            <Button
+              size="sm"
+              onClick={() => openCopilot({
+                surface: 'call_detail',
+                entityId: log.id,
+                title: `Call with ${log.caller_name || 'Unknown caller'}`,
+                prompt: 'Analyze this call and identify the caller intent, outcome, missed opportunity, next best action, and any exact lines that should sound more natural.',
+              })}
+              className="h-9 rounded-lg bg-blue-600 text-xs font-semibold text-white shadow-none hover:bg-blue-700 sm:h-8"
+            >
+              <Sparkles size={15} className="mr-2" />
+              Analyze call
+            </Button>
             <Button variant="outline" size="sm" onClick={handleShare} className="h-9 rounded-lg text-xs font-semibold sm:h-8">
               <Share size={15} className="mr-2" />
               {shareLabel || 'Share'}

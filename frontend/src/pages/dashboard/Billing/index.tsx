@@ -36,7 +36,15 @@ interface UsageData {
   success_rate?: number;
   overage_minutes?: number;
   estimated_cost?: number;
+  overage_rate?: number;
   billing_period?: string;
+  billable_minutes?: number;
+  inbound_minutes?: number;
+  outbound_minutes?: number;
+  inbound_calls?: number;
+  outbound_calls?: number;
+  pending_calls?: number;
+  last_updated_at?: string;
 }
 
 const toNumber = (value: unknown, fallback = 0) => {
@@ -70,6 +78,13 @@ const normalizeUsage = (usage: UsageData | null, planLimit = 0): UsageData => {
     success_rate: toNumber(usage?.success_rate, usage?.total_calls || usage?.calls_count ? 0 : 100),
     overage_minutes: overageMinutes,
     estimated_cost: toNumber(usage?.estimated_cost, overageMinutes * 0.089),
+    overage_rate: toNumber(usage?.overage_rate, 0.089),
+    billable_minutes: toNumber(usage?.billable_minutes, usedMinutes),
+    inbound_minutes: toNumber(usage?.inbound_minutes, 0),
+    outbound_minutes: toNumber(usage?.outbound_minutes, 0),
+    inbound_calls: toNumber(usage?.inbound_calls, 0),
+    outbound_calls: toNumber(usage?.outbound_calls, 0),
+    pending_calls: toNumber(usage?.pending_calls, 0),
   };
 };
 
@@ -302,7 +317,7 @@ const Billing: React.FC = () => {
             </div>
             <div className="flex-1">
               <div className="flex justify-between items-center mb-0.5">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Minutes Usage</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Billable Minutes</p>
                 <span className={`text-[10px] font-black ${overageMinutes > 0 ? 'text-amber-600' : 'text-slate-600'}`}>
                   {usedMinutes.toFixed(2)} / {totalMinutes}
                 </span>
@@ -318,6 +333,9 @@ const Billing: React.FC = () => {
                   style={{ width: `${usagePercentage}%` }}
                 />
               </div>
+              <p className="mt-1 text-[9px] font-bold text-slate-400">
+                {(normalizedUsage.inbound_minutes ?? 0).toFixed(2)}m inbound · {(normalizedUsage.outbound_minutes ?? 0).toFixed(2)}m outbound
+              </p>
             </div>
           </div>
 

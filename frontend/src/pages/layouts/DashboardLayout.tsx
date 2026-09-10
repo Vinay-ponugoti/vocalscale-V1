@@ -19,14 +19,14 @@ import {
   Layers,
   CreditCard,
   Star,
-  Brain,
   BookOpen,
   Bot,
   Users,
   TrendingUp,
   Megaphone,
   Sun,
-  Moon
+  Moon,
+  Sparkles
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -38,6 +38,8 @@ import ProfileDropdown from '../../components/dashboard/ProfileDropdown';
 import { NavigationGuard } from '../../utils/navigationGuard';
 import { cn } from '../../lib/utils';
 import { PAGE_PADDING } from '../../constants/layout';
+import CopilotDrawer from '../../components/copilot/CopilotDrawer';
+import { openCopilot, surfaceForPath } from '../../lib/copilot';
 
 
 // 30% Charcoal / Slate
@@ -250,6 +252,12 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
     ];
     return routes.find(([path]) => location.pathname.startsWith(path))?.[1] || 'Workspace';
   })();
+  const searchPlaceholder = location.pathname.startsWith('/dashboard/calls')
+    ? 'Search caller, phone, or summary…'
+    : location.pathname.startsWith('/dashboard/appointments')
+      ? 'Search appointments…'
+      : null;
+  const callDetailMatch = location.pathname.match(/^\/dashboard\/calls\/([^/]+)/);
 
   const firstLetter = (userFullName || businessName).charAt(0).toUpperCase();
 
@@ -316,11 +324,6 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
               item={{ path: '/dashboard/insights', label: 'Performance', icon: TrendingUp }}
               isCollapsed={!sidebarOpen}
               isActive={isActive('/dashboard/insights')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/chat', label: 'Assistant Chat', icon: Brain }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/chat')}
             />
 
             <SectionLabel label="Operations" sidebarOpen={sidebarOpen} />
@@ -505,8 +508,8 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
               <span className="vs-route-context__title">{routeTitle}</span>
             </div>
 
-            {/* Left: Search (Always visible now, responsive width) */}
-            <div className="flex-1 max-w-xl flex items-center">
+            {/* Search only appears on pages wired to the shared query. */}
+            {searchPlaceholder ? <div className="flex-1 max-w-xl flex items-center">
               <div className="relative w-full group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
                   <Search size={18} strokeWidth={2.5} className="text-[hsl(var(--ds-subtle-text))] group-focus-within:text-blue-500 transition-colors" />
@@ -516,7 +519,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                   type="text"
                   role="searchbox"
                   aria-label="Search dashboard"
-                  placeholder="Search calls, people, appointments…"
+                  placeholder={searchPlaceholder}
                   value={localSearch}
                   onChange={(event) => setLocalSearch(event.target.value)}
                   className="w-full pl-11 pr-12 py-2.5 border rounded-[10px] text-[13px] font-medium transition-all shadow-sm focus:outline-none focus:ring-4 focus:ring-[hsl(var(--ds-electric-tint))] border-[hsl(var(--ds-border))] bg-[hsl(var(--ds-white))] text-[hsl(var(--ds-ink))] focus:border-[hsl(var(--ds-electric))]"
@@ -526,7 +529,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                   <span className="text-[10px] font-bold">⌘ K</span>
                 </div>
                 {/* Clear button */}
-                {searchQuery && (
+                {localSearch && (
                   <button
                     onClick={clearSearch}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-colors text-[hsl(var(--ds-subtle-text))]"
@@ -536,7 +539,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                   </button>
                 )}
               </div>
-            </div>
+            </div> : <div className="flex-1" />}
 
             {/* Secondary Nav / Filters Slot */}
             {secondaryNav && (
@@ -550,6 +553,20 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
 
               {/* Icon Actions */}
               <div className="flex items-center gap-1 border-r pr-2 md:pr-4 border-[hsl(var(--ds-border))]">
+                <button
+                  type="button"
+                  onClick={() => openCopilot({
+                    surface: surfaceForPath(location.pathname),
+                    entityId: callDetailMatch?.[1],
+                    title: routeTitle,
+                  })}
+                  className="flex h-10 items-center justify-center gap-2 rounded-xl border border-blue-100 bg-blue-50 px-2.5 text-xs font-bold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100 sm:px-3"
+                  aria-label="Ask VocalScale Copilot"
+                  title="Ask VocalScale Copilot"
+                >
+                  <Sparkles size={16} />
+                  <span className="hidden xl:inline">Ask VocalScale</span>
+                </button>
                 <button
                   onClick={toggleTheme}
                   aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
@@ -685,11 +702,6 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                     isActive={isActive('/dashboard/insights')}
                     onClick={() => setMobileMenuOpen(false)}
                   />
-                  <NavItem
-                    item={{ path: '/dashboard/chat', label: 'Assistant Chat', icon: Brain }}
-                    isActive={isActive('/dashboard/chat')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
                 </div>
 
                 <div>
@@ -779,6 +791,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
         )}
+        <CopilotDrawer />
       </div>
     </>
   );

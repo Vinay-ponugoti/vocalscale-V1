@@ -12,7 +12,7 @@ export function Pricing() {
       description: 'For owners and small teams that need dependable phone coverage without adding another seat at the desk.',
       features: [
         '24/7 call answering for routine requests',
-        'Books appointments into Google Calendar & Outlook',
+        'Books appointments with Google Calendar sync',
         'Voice options and multilingual support',
         'Full call transcripts, summaries & recordings',
         '1 local business number',
@@ -33,8 +33,8 @@ export function Pricing() {
         'Custom knowledge base for your business',
         'Up to 5 phone numbers',
         'Sentiment analysis & automatic lead scoring',
-        'CRM sync — HubSpot, Salesforce, Pipedrive',
-        'SMS follow-up for missed calls',
+        'Multiple agents and phone-number assignments',
+        'Performance insights and call outcome reporting',
         'Priority 24/7 support'
       ],
       cta: 'Contact Us',
@@ -180,7 +180,7 @@ export function Pricing() {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />
-                    <span><strong>Integrations:</strong> Connect calendars, CRM records, and reporting workflows</span>
+                    <span><strong>Integrations:</strong> Connect Google Calendar and approved reporting workflows</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-slate-800 mt-0.5 shrink-0" />

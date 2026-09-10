@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { SEO } from '@/components/SEO';
 import { useToast } from '@/hooks/useToast';
+import { env } from '@/config/env';
 
 const faqs = [
   {
@@ -24,7 +25,6 @@ const faqs = [
   }
 ];
 
-const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY as string | undefined;
 const DEFAULT_CALENDLY_URL = 'https://calendly.com/ponugotivinay-v/free-consultation';
 const CALENDLY_URL = (import.meta.env.VITE_CALENDLY_URL as string | undefined) || DEFAULT_CALENDLY_URL;
 
@@ -68,40 +68,30 @@ export default function Contact() {
       return;
     }
 
-    if (!WEB3FORMS_ACCESS_KEY) {
-      showToast('Web3Forms access key is missing. Add it to your environment settings.', 'error');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch(`${env.API_URL}/leads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          access_key: WEB3FORMS_ACCESS_KEY,
-          subject: 'New Pricing Call Request from VocalScale',
-          from_name: 'VocalScale Contact Form',
-          name: formData.name,
           email: formData.email,
+          contact_name: formData.name,
+          business_name: '',
+          source: 'pricing_contact',
           phone: formData.phone,
-          website: formData.website || 'Not provided',
-          message: formData.problem || 'No problem statement provided',
-          botcheck: ''
+          company_url: formData.website,
+          message: formData.problem,
+          website: '',
         })
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
-      }
-
-      if (!data.success) {
         throw new Error(data.message || 'Something went wrong');
       }
 

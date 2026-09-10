@@ -6,7 +6,7 @@ import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { useReviews } from '../../../hooks/useReviews';
 
 const Reviews = () => {
-  const { stats, reviews, summary, sync } = useReviews();
+  const { stats, reviews, summary, sync, respond } = useReviews();
 
   return (
     <DashboardLayout fullWidth>
@@ -30,6 +30,8 @@ const Reviews = () => {
             reviews={reviews.data}
             loading={reviews.loading}
             isPaid={reviews.isPaid || stats.data?.isPaid}
+            onRespond={respond.submit}
+            isResponding={respond.isSubmitting}
           />
         </div>
       </div>
