@@ -107,9 +107,9 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
           top-20 md:top-12
           md:w-[420px] 
           bg-white 
-          rounded-2xl 
+          rounded-xl 
           shadow-2xl 
-          border border-gray-200
+          border border-slate-200
           z-50 
           overflow-hidden 
           flex flex-col 
@@ -120,7 +120,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
         {/* ═══════════════════════════════════════════════════════════
             HEADER
         ═══════════════════════════════════════════════════════════ */}
-        <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+        <div className="px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
           <div className="flex items-center justify-between">
             {/* Title */}
             <div className="flex items-center gap-3">
@@ -128,10 +128,10 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
                 <Bell className="text-blue-600" size={18} />
               </div>
               <div>
-                <h2 className="font-bold text-gray-900 text-lg">
+                <h2 className="font-bold text-slate-900 text-lg">
                   Notifications
                 </h2>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-slate-500">
                   {notifications.length === 0
                     ? 'No new notifications'
                     : `${notifications.length} unread`
@@ -148,7 +148,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
                   className="
                     flex items-center gap-1.5 
                     text-xs font-medium 
-                    text-gray-500 hover:text-blue-600 
+                    text-slate-500 hover:text-blue-600 
                     px-3 py-1.5 
                     rounded-lg 
                     hover:bg-blue-50 
@@ -164,8 +164,8 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
                 onClick={onClose}
                 className="
                   p-2 
-                  text-gray-400 hover:text-gray-600 
-                  hover:bg-gray-100 
+                  text-slate-400 hover:text-slate-600 
+                  hover:bg-slate-100 
                   rounded-xl 
                   transition-all
                 "
@@ -186,7 +186,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-gray-500 mt-3">Loading...</p>
+              <p className="text-sm text-slate-500 mt-3">Loading...</p>
             </div>
           ) : notifications.length === 0 ? (
             /* Empty State */
@@ -194,10 +194,10 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
               <div className="p-5 bg-gradient-to-br from-green-50 to-emerald-100 rounded-full mb-4">
                 <BellOff className="text-green-500" size={36} />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-slate-900">
                 All caught up!
               </h3>
-              <p className="text-sm text-gray-500 mt-1 text-center max-w-[200px]">
+              <p className="text-sm text-slate-500 mt-1 text-center max-w-[200px]">
                 You have no new notifications at the moment
               </p>
             </div>
@@ -208,10 +208,10 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
                 <div key={dateKey} className="mb-4 last:mb-0">
                   {/* Date Group Header */}
                   <div className="flex items-center gap-2 px-2 mb-2">
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                       {formatDateGroup(groupedNotifications[dateKey][0].created_at)}
                     </span>
-                    <div className="flex-1 h-px bg-gray-100" />
+                    <div className="flex-1 h-px bg-slate-100" />
                   </div>
 
                   {/* Notifications in Group */}
@@ -235,7 +235,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
             FOOTER (Optional)
         ═══════════════════════════════════════════════════════════ */}
         {notifications.length > 5 && (
-          <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/80">
+          <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/80">
             <button className="
               w-full 
               text-center 
@@ -279,7 +279,7 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
         group 
         relative 
         bg-white 
-        border border-gray-100 
+        border border-slate-100 
         rounded-xl 
         p-4 
         hover:border-blue-200 
@@ -312,11 +312,11 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <h4 className="font-semibold text-gray-900 text-sm">
+                <h4 className="font-semibold text-slate-900 text-sm">
                   {isBooking ? 'New Booking' : 'Action Req'}
                 </h4>
                 <span className={`
-                  text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md
+                  text-[11px] font-bold uppercase px-1.5 py-0.5 rounded-md
                   ${isBooking
                     ? 'bg-blue-100 text-blue-700'
                     : 'bg-orange-100 text-orange-700'
@@ -325,13 +325,13 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
                   {notification.category}
                 </span>
               </div>
-              <p className="text-sm text-gray-700 font-medium truncate">
+              <p className="text-sm text-slate-700 font-medium truncate">
                 {notification.caller_name}
               </p>
             </div>
 
             {/* Time */}
-            <div className="flex items-center gap-1 text-gray-400 shrink-0">
+            <div className="flex items-center gap-1 text-slate-400 shrink-0">
               <Clock size={11} />
               <span className="text-[10px] font-medium">
                 {format(parseISO(notification.created_at), 'h:mm a')}
@@ -341,7 +341,7 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
 
           {/* Phone */}
           {notification.caller_phone && (
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               {notification.caller_phone}
             </p>
           )}
@@ -351,11 +351,11 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
             <div className="
               mt-2.5 
               p-2.5 
-              bg-gray-50 
+              bg-slate-50 
               rounded-lg 
-              border border-gray-100
+              border border-slate-100
             ">
-              <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
+              <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
                 {notification.notes || notification.summary}
               </p>
             </div>
@@ -387,9 +387,9 @@ const NotificationCard: React.FC<NotificationCardProps> = React.memo(({
             top-3 right-3 
             p-1.5
             rounded-lg 
-            bg-gray-50
-            border border-transparent md:border-gray-100 
-            text-gray-400 
+            bg-slate-50
+            border border-transparent md:border-slate-100 
+            text-slate-400 
             hover:text-green-600 
             hover:border-green-300 
             hover:bg-green-50 

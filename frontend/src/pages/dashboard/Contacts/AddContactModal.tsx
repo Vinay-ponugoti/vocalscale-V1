@@ -57,7 +57,7 @@ export const AddContactModal = ({ onClose, onCreated }: Props) => {
 
       <form
         onSubmit={submit}
-        className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="relative w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl"
       >
         {/* Header */}
         <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">

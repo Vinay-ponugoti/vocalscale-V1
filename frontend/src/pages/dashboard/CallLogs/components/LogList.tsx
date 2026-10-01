@@ -2,7 +2,8 @@ import React from 'react';
 import {
   Clock, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, Flame, PhoneCall, PhoneMissed, PhoneOutgoing, Search
 } from 'lucide-react';
-import type { CallLog } from '../types';
+import { type CallLog, callStatusLabel, callCategoryLabel } from '../types';
+import { EmptyState } from '../../../../components/ui/EmptyState';
 import { parseISO, isToday, isYesterday } from 'date-fns';
 import { toZonedTime, format as formatTZ } from 'date-fns-tz';
 import { Badge } from '../../../../components/ui/Badge';
@@ -68,13 +69,13 @@ const LogList: React.FC<LogListProps> = ({
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'Booking':
-        return <Badge variant="default" className="border-cyan-100 bg-cyan-50 text-cyan-700 shadow-none hover:bg-cyan-50 text-[11px] font-semibold">Booking</Badge>;
+        return <Badge variant="default" className="border-blue-100 bg-blue-50 text-blue-700 shadow-none hover:bg-blue-50 text-[11px] font-semibold">Appointment</Badge>;
       case 'Inquiry':
         return <Badge variant="default" className="border-slate-200 bg-slate-50 text-slate-700 shadow-none hover:bg-slate-50 text-[11px] font-semibold">Inquiry</Badge>;
       case 'Urgent':
         return <Badge variant="destructive" className="border-rose-100 bg-rose-50 text-rose-700 shadow-none hover:bg-rose-50 text-[11px] font-semibold">Urgent</Badge>;
       default:
-        return <Badge variant="secondary" className="border-slate-200 bg-slate-50 text-slate-600 shadow-none hover:bg-slate-50 text-[11px] font-semibold">{type || 'General'}</Badge>;
+        return <Badge variant="secondary" className="border-slate-200 bg-slate-50 text-slate-600 shadow-none hover:bg-slate-50 text-[11px] font-semibold">{callCategoryLabel(type)}</Badge>;
     }
   };
 
@@ -83,7 +84,7 @@ const LogList: React.FC<LogListProps> = ({
 
     if (normalized.includes('missed') || normalized.includes('failed') || normalized.includes('no answer')) {
       return {
-        label: status || 'Missed',
+        label: callStatusLabel(status, 'Missed'),
         icon: PhoneMissed,
         className: 'bg-rose-50 text-rose-700 border-rose-100'
       };
@@ -91,14 +92,14 @@ const LogList: React.FC<LogListProps> = ({
 
     if (normalized.includes('completed') || normalized.includes('handled')) {
       return {
-        label: status || 'Completed',
+        label: callStatusLabel(status, 'Answered'),
         icon: CheckCircle2,
         className: 'bg-emerald-50 text-emerald-700 border-emerald-100'
       };
     }
 
     return {
-      label: status || 'Open',
+      label: callStatusLabel(status),
       icon: PhoneCall,
       className: 'bg-amber-50 text-amber-700 border-amber-100'
     };
@@ -159,12 +160,8 @@ const LogList: React.FC<LogListProps> = ({
 
       <div className="scrollbar-hide min-h-0 md:flex-1 md:overflow-y-auto md:overscroll-contain">
         {logs.length === 0 ? (
-          <div className="flex min-h-[360px] flex-col items-center justify-center p-8 text-center md:h-full">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
-              <Search className="text-slate-300" size={26} />
-            </div>
-            <h3 className="text-sm font-semibold text-slate-950">No calls found</h3>
-            <p className="mt-1 text-xs font-medium text-slate-500">Try a wider date range or reset filters.</p>
+          <div className="flex min-h-[360px] items-center justify-center md:h-full">
+            <EmptyState icon={Search} title="No calls found" description="Try a wider date range or reset the filters." />
           </div>
         ) : (
           <div className="space-y-2 p-3 md:space-y-0 md:divide-y md:divide-slate-100 md:p-0">
@@ -189,25 +186,25 @@ const LogList: React.FC<LogListProps> = ({
                     }
                   }}
                   className={`
-                    group relative cursor-pointer rounded-lg border border-slate-200 px-3 py-3 shadow-sm shadow-slate-200/50 transition-colors md:rounded-none md:border-0 md:px-4 md:shadow-none
+                    group relative cursor-pointer rounded-xl border border-slate-200 px-3 py-3 shadow-sm shadow-slate-200/50 transition-colors md:rounded-none md:border-0 md:px-4 md:shadow-none
                     ${isSelected
-                      ? 'bg-cyan-50/70 ring-1 ring-cyan-100 md:ring-0'
+                      ? 'bg-blue-50/70 ring-1 ring-blue-100 md:ring-0'
                       : 'bg-white hover:bg-slate-50'
                     }
                   `}
                 >
                   {isSelected && (
-                    <div className="absolute bottom-3 left-0 top-3 hidden w-1 rounded-r-full bg-cyan-600 md:block" />
+                    <div className="absolute bottom-3 left-0 top-3 hidden w-1 rounded-r-full bg-blue-600 md:block" />
                   )}
 
                   <div className="flex items-start gap-2.5 sm:gap-3">
                     <div className={`
                       flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors sm:h-9 sm:w-9
                       ${isOutbound
-                        ? 'border-indigo-100 bg-indigo-50 text-indigo-600'
+                        ? 'border-blue-100 bg-blue-50 text-blue-600'
                         : isSelected
-                          ? 'border-cyan-100 bg-white text-cyan-700'
-                          : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-cyan-100 group-hover:bg-cyan-50 group-hover:text-cyan-700'
+                          ? 'border-blue-100 bg-white text-blue-700'
+                          : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-blue-100 group-hover:bg-blue-50 group-hover:text-blue-700'
                       }
                     `}>
                       {isOutbound ? <PhoneOutgoing size={18} /> : <PhoneCall size={18} />}
@@ -216,7 +213,7 @@ const LogList: React.FC<LogListProps> = ({
                       <div className="min-w-0 flex-1 space-y-1.5">
                       <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
                         <h3 className="min-w-0 truncate text-sm font-semibold tracking-tight text-slate-950">
-                          {log.caller_name || 'Anonymous Caller'}
+                          {log.caller_name || 'Unknown caller'}
                         </h3>
                         <span className="shrink-0 text-xs font-semibold text-slate-500">
                           {formatLogDate(log.created_at)}
@@ -225,7 +222,7 @@ const LogList: React.FC<LogListProps> = ({
 
                       <div className="flex min-w-0 flex-wrap items-center gap-1.5">
                         {isOutbound && (
-                          <Badge variant="outline" className="gap-1 border-indigo-100 bg-indigo-50 text-[11px] font-semibold text-indigo-700 shadow-none">
+                          <Badge variant="outline" className="gap-1 border-blue-100 bg-blue-50 text-[11px] font-semibold text-blue-700 shadow-none">
                             <PhoneOutgoing size={11} />
                             Outbound
                           </Badge>

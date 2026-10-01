@@ -60,22 +60,22 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
   const totalCalls = safeData.reduce((sum, d) => sum + d.calls, 0);
 
   return (
-    <Card className="rounded-2xl border-0 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.08)] overflow-hidden h-full flex flex-col pt-0 hover:border-transparent hover:shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
-      <CardHeader className="flex items-center gap-2 space-y-0 py-4 sm:flex-row px-6">
+    <Card className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden h-full flex flex-col pt-0">
+      <CardHeader className="flex flex-col gap-3 space-y-0 p-4 sm:flex-row sm:items-center">
         <div className="grid flex-1 gap-1">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-blue-50 text-[hsl(var(--chart-1))] ring-1 ring-[hsl(var(--chart-1))]/10">
-              <Activity size={16} strokeWidth={2.5} />
-            </div>
-            <CardTitle className="text-base font-black text-slate-900 uppercase tracking-tight">Call Volume</CardTitle>
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+              <Activity size={15} />
+            </span>
+            <CardTitle className="text-sm font-semibold text-slate-900">Call volume</CardTitle>
           </div>
-          <CardDescription className="flex flex-wrap items-center gap-x-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <CardDescription className="flex flex-wrap items-center gap-x-3 pl-9 text-xs text-slate-500">
             <span>
               {totalCalls} {totalCalls === 1 ? 'call' : 'calls'} over {safeData.length} {safeData.length === 1 ? 'day' : 'days'}
             </span>
             <Link
               to="/dashboard/insights"
-              className="inline-flex items-center gap-0.5 normal-case font-semibold tracking-normal text-blue-600 hover:text-blue-700"
+              className="inline-flex items-center gap-0.5 font-semibold text-blue-600 hover:text-blue-700"
             >
               View full performance <ArrowRight size={12} />
             </Link>
@@ -85,22 +85,22 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
         <div className="flex items-center gap-4 sm:ml-auto">
           {trend && (
             <div className={cn(
-              "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-widest",
+              "hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold",
               trend.isPositive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
             )}>
               {trend.isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-              {trend.value}% Trend
+              {trend.value}% vs previous
             </div>
           )}
 
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
-              className="w-[140px] rounded-xl text-[11px] font-black uppercase tracking-tight border-slate-200"
+              className="w-[140px] rounded-lg text-xs font-medium border-slate-200"
               aria-label="Select time range"
             >
-              <SelectValue placeholder="Select Range" />
+              <SelectValue placeholder="Time range" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl">
+            <SelectContent className="rounded-lg">
               <SelectItem value="24h">Last 24 hours</SelectItem>
               <SelectItem value="7d">Last 7 days</SelectItem>
               <SelectItem value="30d">Last 30 days</SelectItem>
@@ -111,15 +111,15 @@ const CallVolumeChart: React.FC<CallVolumeChartProps> = ({ data, timeRange, setT
 
       <CardContent className="px-4 pb-4 flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
         {/* Quick Stats Integration - Tightened Gap */}
-        <div className="flex items-center gap-8 mb-3 px-6 pt-3">
+        <div className="flex items-center gap-8 mb-3 px-2 pt-1">
           <div className="flex flex-col">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Interactions</span>
-            <span className="text-3xl font-black text-slate-900 tabular-nums tracking-tighter">{totalCalls}</span>
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Total calls</span>
+            <span className="text-3xl font-semibold text-slate-900 tabular-nums tracking-tighter">{totalCalls}</span>
           </div>
           <div className="h-10 w-px bg-slate-100" />
           <div className="flex flex-col">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Avg per Period</span>
-            <span className="text-3xl font-black text-slate-900 tabular-nums tracking-tighter">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Average</span>
+            <span className="text-3xl font-semibold text-slate-900 tabular-nums tracking-tighter">
               {safeData.length > 0 ? (totalCalls / safeData.length).toFixed(1) : 0}
             </span>
           </div>

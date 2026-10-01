@@ -17,8 +17,9 @@ import StatusStrip from '../../components/dashboard/StatusStrip';
 import SetupChecklist from '../../components/dashboard/SetupChecklist';
 import NeedsAttention from '../../components/dashboard/NeedsAttention';
 import UpcomingAppointments from '../../components/dashboard/UpcomingAppointments';
-import { PAGE_PADDING } from '../../constants/layout';
-import { cn } from '../../lib/utils';
+import { PAGE_CONTAINER } from '../../constants/layout';
+import { PageHeader } from '../../components/ui/PageHeader';
+import { Button } from '../../components/ui/Button';
 import { reviewApi } from '../../api/reviewApi';
 
 const Home = () => {
@@ -106,54 +107,38 @@ const Home = () => {
   const isInitialLoading = loading && !isPlaceholderData;
 
   return (
-    <DashboardLayout fullWidth>
-      <div className={cn("w-full animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full space-y-5", PAGE_PADDING)}>
-
-        {/* --- Header Section --- */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-                {greeting}
-                {businessName ? <span className="text-slate-400"> — {businessName}</span> : ''}
-              </h1>
-              {isPlaceholderData && (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full animate-pulse">
-                  <Clock size={12} className="animate-spin-slow" />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider">Updating...</span>
-                </div>
-              )}
-            </div>
-            <p className="mt-1 text-sm text-slate-500">
-              Call coverage, bookings, and follow-up for your phone desk.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Date Navigation Controls */}
-            <button
-              onClick={handlePrev}
-              className="p-2 bg-white border border-white-light text-charcoal-medium rounded-lg hover:bg-white-light hover:text-charcoal transition-all active:scale-95 shadow-sm"
-            >
-              <ArrowLeft size={20} strokeWidth={2.5} />
-            </button>
-
-            {/* Custom Calendar Picker */}
-            <CalendarPicker
-              date={selectedDate}
-              setDate={(date) => setSelectedDate(toZonedTime(date, timezone))}
-              maxDate={toZonedTime(new Date(), timezone)}
-            />
-
-            <button
-              onClick={handleNext}
-              disabled={isBusinessToday}
-              className="p-2 bg-white border border-white-light text-charcoal-medium rounded-lg hover:bg-white-light hover:text-charcoal transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-            >
-              <ArrowRight size={20} strokeWidth={2.5} />
-            </button>
-          </div>
-        </div>
+    <DashboardLayout>
+      <div className={PAGE_CONTAINER}>
+        <PageHeader
+          title={
+            <>
+              {greeting}
+              {businessName ? <span className="text-slate-400"> — {businessName}</span> : ''}
+            </>
+          }
+          meta={isPlaceholderData && (
+            <span className="flex items-center gap-1.5 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">
+              <Clock size={12} />
+              Updating…
+            </span>
+          )}
+          description="Calls, appointments, and follow-ups your agent handled."
+          actions={
+            <>
+              <Button variant="outline" size="icon" onClick={handlePrev} aria-label="Previous day">
+                <ArrowLeft size={16} />
+              </Button>
+              <CalendarPicker
+                date={selectedDate}
+                setDate={(date) => setSelectedDate(toZonedTime(date, timezone))}
+                maxDate={toZonedTime(new Date(), timezone)}
+              />
+              <Button variant="outline" size="icon" onClick={handleNext} disabled={isBusinessToday} aria-label="Next day">
+                <ArrowRight size={16} />
+              </Button>
+            </>
+          }
+        />
 
         {/* --- Live status: number, agent, minutes --- */}
         <StatusStrip />
@@ -177,10 +162,10 @@ const Home = () => {
               />
             </div>
 
-            <div className="grid min-w-0 grid-cols-1 items-start gap-4 md:gap-6 lg:gap-8 xl:grid-cols-3 2xl:grid-cols-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-4 lg:gap-6 xl:grid-cols-3">
 
-              {/* --- LEFT: CHART & CALLS --- */}
-              <div className="min-w-0 space-y-4 md:space-y-6 lg:space-y-8 xl:col-span-2 2xl:col-span-3">
+              {/* --- LEFT: CHART --- */}
+              <div className="min-w-0 xl:col-span-2">
 
                 {/* Real Chart */}
                 <CallVolumeChart
@@ -192,7 +177,7 @@ const Home = () => {
               </div>
 
               {/* --- RIGHT: ACTION QUEUE, TRANSCRIPTS, APPOINTMENTS --- */}
-              <div className="min-w-0 space-y-4 xl:col-span-1 2xl:col-span-1">
+              <div className="min-w-0 space-y-4 lg:space-y-6">
                 <NeedsAttention calls={attentionCalls} />
                 <RecentTranscripts calls={recentCalls} />
                 <UpcomingAppointments appointments={appointments} />

@@ -164,7 +164,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   // ─── Dropdown panels ──────────────────────────────────────────────────────
 
   const ModelMenu = () => (
-    <div className="absolute left-0 bottom-[calc(100%+8px)] w-52 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-gray-200/80 dark:border-zinc-700/80 py-1.5 z-50 overflow-hidden">
+    <div className="absolute left-0 bottom-[calc(100%+8px)] w-52 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-slate-200/80 dark:border-zinc-700/80 py-1.5 z-50 overflow-hidden">
       {MODELS.map((m) => (
         <button
           key={m.value}
@@ -189,7 +189,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   );
 
   const AspectMenu = () => (
-    <div className="absolute left-0 bottom-[calc(100%+8px)] w-28 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-gray-200/80 dark:border-zinc-700/80 py-1 z-50">
+    <div className="absolute left-0 bottom-[calc(100%+8px)] w-28 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-slate-200/80 dark:border-zinc-700/80 py-1 z-50">
       {ASPECT_RATIOS.map((r) => (
         <button
           key={r}
@@ -208,7 +208,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   );
 
   const StyleMenu = () => (
-    <div className="absolute left-0 bottom-[calc(100%+8px)] w-40 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-gray-200/80 dark:border-zinc-700/80 py-1 z-50">
+    <div className="absolute left-0 bottom-[calc(100%+8px)] w-40 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-slate-200/80 dark:border-zinc-700/80 py-1 z-50">
       {IMAGE_STYLES.map((s) => (
         <button
           key={s}
@@ -231,8 +231,8 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 
       {/* ── Slash command palette — floats above ── */}
       {showSlash && (
-        <div className="mb-2 w-72 bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-gray-200/80 dark:border-zinc-700 overflow-hidden">
-          <p className="px-4 py-2.5 text-[10px] font-semibold text-zinc-400 uppercase tracking-widest border-b border-gray-100 dark:border-zinc-800">
+        <div className="mb-2 w-72 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-slate-200/80 dark:border-zinc-700 overflow-hidden">
+          <p className="px-4 py-2.5 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider border-b border-slate-100 dark:border-zinc-800">
             Quick actions
           </p>
           {SLASH_COMMANDS
@@ -268,9 +268,9 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       {/* ── Main pill container ── */}
       <div
         className={cn(
-          // Zola signature: rounded-3xl, popover bg, blur, border, subtle shadow
+          // Zola signature: rounded-xl, popover bg, blur, border, subtle shadow
           'relative flex flex-col w-full',
-          'rounded-3xl border border-zinc-200/80 dark:border-zinc-700/60',
+          'rounded-xl border border-zinc-200/80 dark:border-zinc-700/60',
           'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl',
           'shadow-[0_2px_20px_rgba(0,0,0,0.06)]',
           'transition-all duration-200',
@@ -310,7 +310,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{file.name}</p>
-                        <p className="text-[10px] text-zinc-400 uppercase tracking-wide">
+                        <p className="text-[11px] text-zinc-400 uppercase tracking-wider">
                           {file.name.split('.').pop() || 'file'}
                         </p>
                       </div>

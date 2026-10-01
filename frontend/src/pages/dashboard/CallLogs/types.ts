@@ -26,3 +26,24 @@ export interface CallLogFilters {
   dateRange: string;
   direction: string;
 }
+
+// Display names for raw API values, so every screen says the same thing.
+const STATUS_LABELS: Record<string, string> = {
+  completed: 'Answered',
+  handled: 'Answered',
+  'action req': 'Needs attention',
+  'action required': 'Needs attention',
+  'in progress': 'In progress',
+  pending: 'Pending',
+  missed: 'Missed',
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  booking: 'Appointment',
+};
+
+export const callStatusLabel = (status?: string, fallback = 'Open') =>
+  status ? STATUS_LABELS[status.toLowerCase()] ?? status : fallback;
+
+export const callCategoryLabel = (category?: string) =>
+  category ? CATEGORY_LABELS[category.toLowerCase()] ?? category : 'General';

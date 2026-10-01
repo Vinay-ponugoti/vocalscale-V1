@@ -75,9 +75,9 @@ const PaymentMethod: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 ring-1 ring-blue-500/10">
             <CreditCard size={20} strokeWidth={2.5} />
           </div>
-          <h2 className="text-xl font-black text-charcoal tracking-tight uppercase">Payment Method</h2>
+          <h2 className="text-base font-semibold text-slate-900">Payment method</h2>
         </div>
-        <div className="h-32 rounded-2xl border border-slate-200 bg-slate-50/50 flex items-center justify-center">
+        <div className="h-32 rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-center">
           <Loader2 className="animate-spin text-blue-600" size={24} strokeWidth={2.5} />
         </div>
       </div>
@@ -90,7 +90,7 @@ const PaymentMethod: React.FC = () => {
         <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 ring-1 ring-blue-500/10">
           <CreditCard size={20} strokeWidth={2.5} />
         </div>
-        <h2 className="text-xl font-black text-charcoal tracking-tight uppercase">Payment Method</h2>
+        <h2 className="text-base font-semibold text-slate-900">Payment method</h2>
       </div>
 
       {/* Status toast */}
@@ -105,21 +105,21 @@ const PaymentMethod: React.FC = () => {
         </div>
       )}
 
-      <div className="flex flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-all">
+      <div className="flex flex-col gap-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         {!paymentMethod ? (
           /* ── Empty state ── */
           <div className="flex flex-col items-center justify-center py-4 gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200 ring-1 ring-slate-100">
+            <div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center text-slate-200 ring-1 ring-slate-100">
               <CreditCard size={32} strokeWidth={1.5} />
             </div>
             <div className="text-center">
-              <p className="text-sm font-black text-charcoal uppercase tracking-tight">No payment method</p>
-              <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Add a card to enable auto-recharge</p>
+              <p className="text-sm font-semibold text-slate-900 uppercase tracking-tight">No payment method</p>
+              <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Add a card to enable auto-recharge</p>
             </div>
             <button
               onClick={handleUpdateCard}
               disabled={updatingCard}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-[11px] font-semibold uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50"
             >
               {updatingCard ? <Loader2 size={14} strokeWidth={3} className="animate-spin" /> : <Plus size={14} strokeWidth={3} />}
               {updatingCard ? 'Opening...' : 'Add New Card'}
@@ -132,18 +132,18 @@ const PaymentMethod: React.FC = () => {
               <div className="flex gap-4">
                 <div className="flex h-12 w-16 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 p-2 shadow-inner ring-1 ring-slate-200/50">
                   {paymentMethod.brand ? (
-                    <span className="text-[11px] font-black text-charcoal uppercase italic tracking-tighter">{paymentMethod.brand}</span>
+                    <span className="text-[11px] font-semibold text-slate-900 uppercase italic tracking-tighter">{paymentMethod.brand}</span>
                   ) : (
-                    <CreditCard className="text-charcoal-muted" size={24} />
+                    <CreditCard className="text-slate-600" size={24} />
                   )}
                 </div>
                 <div>
-                  <p className="text-base font-black text-charcoal capitalize">
+                  <p className="text-base font-semibold text-slate-900 capitalize">
                     {paymentMethod.brand} <span className="text-slate-400 mx-1">••••</span> {paymentMethod.last4}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[9px] font-black text-slate-500 uppercase tracking-wider">Default</span>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Default</span>
+                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                       Expires {paymentMethod.exp_month}/{paymentMethod.exp_year?.toString().slice(-2)}
                     </p>
                   </div>
@@ -155,7 +155,7 @@ const PaymentMethod: React.FC = () => {
               <button
                 onClick={handleUpdateCard}
                 disabled={updatingCard}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[10px] font-black text-blue-600 hover:bg-blue-50 transition-all uppercase tracking-widest disabled:opacity-50"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] font-semibold text-blue-600 hover:bg-blue-50 transition-all uppercase tracking-wider disabled:opacity-50"
               >
                 {updatingCard ? <Loader2 size={12} strokeWidth={2.5} className="animate-spin" /> : <RefreshCw size={12} strokeWidth={2.5} />}
                 Update Card <ExternalLink size={10} strokeWidth={2.5} className="ml-0.5 opacity-50" />
@@ -168,7 +168,7 @@ const PaymentMethod: React.FC = () => {
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black text-white bg-rose-600 hover:bg-rose-700 transition-all uppercase tracking-widest disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white bg-rose-600 hover:bg-rose-700 transition-all uppercase tracking-wider disabled:opacity-50"
                   >
                     {deleting ? <Loader2 size={12} strokeWidth={2.5} className="animate-spin" /> : <Trash2 size={12} strokeWidth={2.5} />}
                     {deleting ? 'Removing...' : 'Confirm'}
@@ -176,7 +176,7 @@ const PaymentMethod: React.FC = () => {
                   <button
                     onClick={() => setDeleteConfirm(false)}
                     disabled={deleting}
-                    className="px-3 py-1.5 rounded-lg text-[10px] font-black text-slate-500 hover:bg-slate-50 transition-all uppercase tracking-widest"
+                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-500 hover:bg-slate-50 transition-all uppercase tracking-wider"
                   >
                     Cancel
                   </button>
@@ -184,7 +184,7 @@ const PaymentMethod: React.FC = () => {
               ) : (
                 <button
                   onClick={() => setDeleteConfirm(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[10px] font-black text-rose-600 hover:bg-rose-50 transition-all uppercase tracking-widest"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] font-semibold text-rose-600 hover:bg-rose-50 transition-all uppercase tracking-wider"
                 >
                   <Trash2 size={12} strokeWidth={2.5} /> Remove
                 </button>

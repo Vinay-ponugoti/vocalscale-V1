@@ -6,8 +6,15 @@ import {
 } from 'recharts';
 import {
   TrendingUp, AlertCircle, Smile, Meh, Frown, Download, Pencil,
+  Phone, PhoneIncoming, PhoneMissed, Clock3, CalendarCheck, DollarSign,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { StatCard } from '../../../components/ui/StatCard';
+import { EmptyState } from '../../../components/ui/EmptyState';
+import { Button } from '../../../components/ui/Button';
+import { PAGE_CONTAINER, GRID_GAP } from '../../../constants/layout';
 import { insightsAPI, type CallInsights } from '../../../api/insights';
 
 const PERIODS = [
@@ -147,65 +154,78 @@ const Insights = () => {
   };
 
   return (
-    <DashboardLayout fullWidth>
-      <div className="scrollbar-hide h-full overflow-y-auto bg-[hsl(var(--ds-off-white))] text-slate-950">
-        <div className="mx-auto w-full max-w-[1100px] space-y-5 px-4 py-6 md:px-6 md:py-8">
-          {/* Header */}
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-950">Performance &amp; ROI</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              What your AI receptionist handled — and what it’s worth to your business.
-            </p>
-          </div>
+    <DashboardLayout>
+      <div className={PAGE_CONTAINER}>
+          <PageHeader
+            title="Performance"
+            description="What your agent handled, and what it’s worth to your business."
+            actions={
+              <>
+                <div className="inline-flex gap-0.5 rounded-lg border border-slate-200 bg-slate-50 p-0.5">
+                  {PERIODS.map((p) => (
+                    <button
+                      key={p.value}
+                      onClick={() => setDays(p.value)}
+                      className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${
+                        days === p.value ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-900'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+                <Button variant="outline" onClick={exportCSV} disabled={!data || !hasCalls}>
+                  <Download size={15} /> Export CSV
+                </Button>
+              </>
+            }
+          />
 
           {error && (
-            <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
+            <div className="rounded-lg border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-600">{error}</div>
           )}
 
           {loading ? (
             <SkeletonBody />
           ) : !hasCalls ? (
-            <div className="flex flex-col items-center rounded-xl border border-slate-100 bg-white px-6 py-16 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                <TrendingUp size={22} />
-              </div>
-              <p className="mt-4 text-sm font-medium text-slate-700">No call data yet</p>
-              <p className="mt-1 max-w-sm text-sm text-slate-400">
-                Once your AI starts taking calls, this page shows answered vs missed, minutes handled, peak hours, and
-                more.
-              </p>
+            <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+              <EmptyState
+                icon={TrendingUp}
+                title="No call data yet"
+                description="Once your agent starts taking calls, this page shows answered vs missed calls, minutes, peak hours, and more."
+              />
             </div>
           ) : (
             <>
-              {/* KPI cards — fig2 metric style: muted label over a big bold value */}
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-                <Kpi label="Total calls" value={String(s!.total_calls)} />
-                <Kpi label="Answered rate" value={`${s!.answered_rate}%`} sub={`${s!.answered} handled`} />
-                <Kpi
-                  label="Missed calls"
+              <div className={`grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 ${GRID_GAP}`}>
+                <StatCard icon={Phone} label="Total calls" value={s!.total_calls.toLocaleString()} description={`Last ${data?.period_days ?? days} days`} />
+                <StatCard icon={PhoneIncoming} tint="emerald" label="Answer rate" value={`${s!.answered_rate}%`} description={`${s!.answered} answered`} />
+                <StatCard
+                  icon={PhoneMissed}
+                  tint="rose"
+                  label="Missed"
                   value={String(s!.missed)}
-                  sub={s!.missed > 0 ? 'recoverable revenue' : 'none missed'}
+                  description={s!.missed > 0 ? 'Recoverable revenue' : 'None missed'}
                 />
-                <Kpi
-                  label="Minutes handled"
+                <StatCard
+                  icon={Clock3}
+                  tint="slate"
+                  label="Minutes"
                   value={String(s!.minutes_handled)}
-                  sub={`avg ${fmtDuration(s!.avg_duration_seconds)}/call`}
+                  description={`Avg ${fmtDuration(s!.avg_duration_seconds)} per call`}
                 />
-                <Kpi label="Bookings" value={String(s!.bookings)} sub={`${s!.booking_rate}% of calls`} />
+                <StatCard icon={CalendarCheck} tint="emerald" label="Appointments" value={String(s!.bookings)} description={`Booked · ${s!.booking_rate}% of calls`} />
 
-                {/* Revenue captured — bookings × user-set average booking value */}
-                <div className="rounded-xl border border-emerald-100 bg-white p-4 shadow-sm">
-                  <div className="text-[13px] font-medium text-slate-400">Revenue captured</div>
-                  {bookingValue > 0 ? (
-                    <div className="mt-2 text-[26px] leading-8 font-bold tracking-tight text-emerald-600">
-                      ${revenueCaptured.toLocaleString()}
-                    </div>
-                  ) : (
-                    <div className="mt-2 text-[26px] leading-8 font-bold tracking-tight text-slate-300">$—</div>
-                  )}
-                  {editingValue ? (
-                    <div className="mt-1 flex items-center gap-1">
-                      <span className="text-[11px] text-slate-400">$</span>
+
+                <StatCard
+                  icon={DollarSign}
+                  tint="emerald"
+                  label="Revenue"
+                  value={bookingValue > 0 ? `$${revenueCaptured.toLocaleString()}` : '$—'}
+                  valueClassName={bookingValue > 0 ? 'text-emerald-600' : 'text-slate-300'}
+                  description={editingValue ? (
+                    <span className="flex items-center gap-1">
+                      $
                       <input
                         autoFocus
                         value={valueDraft}
@@ -217,62 +237,30 @@ const Insights = () => {
                         onBlur={saveBookingValue}
                         inputMode="numeric"
                         placeholder="150"
-                        className="w-16 rounded border border-emerald-300 px-1.5 py-0.5 text-[11px] outline-none focus:ring-2 focus:ring-emerald-100"
+                        className="w-16 rounded border border-emerald-300 px-1.5 py-0.5 text-xs outline-none focus:ring-2 focus:ring-emerald-100"
                       />
-                      <span className="text-[11px] text-slate-400">/booking</span>
-                    </div>
+                      per appointment
+                    </span>
                   ) : (
                     <button
                       onClick={() => {
                         setValueDraft(bookingValue ? String(bookingValue) : '');
                         setEditingValue(true);
                       }}
-                      className="mt-1 flex items-center gap-1 text-[11px] font-medium text-emerald-700 hover:text-emerald-800"
+                      className="flex items-center gap-1 font-medium text-emerald-700 hover:text-emerald-800"
                     >
                       <Pencil size={10} />
-                      {bookingValue > 0 ? `$${bookingValue}/booking` : 'Set booking value'}
+                      {bookingValue > 0 ? `$${bookingValue} per appointment` : 'Set appointment value'}
                     </button>
                   )}
-                </div>
+                />
               </div>
 
               {/* Row: calls over time + outcomes */}
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              <div className={`grid grid-cols-1 lg:grid-cols-3 ${GRID_GAP}`}>
                 {/* Hero chart — fig2 Analytics style: big number + controls inside the card */}
-                <div className="rounded-xl border border-slate-200 bg-white shadow-sm lg:col-span-2">
-                  <div className="flex flex-wrap items-start justify-between gap-3 px-5 pt-5">
-                    <div>
-                      <p className="text-[13px] font-medium text-slate-400">Total calls</p>
-                      <div className="mt-1 flex items-baseline gap-2">
-                        <span className="text-3xl font-bold tracking-tight text-slate-950">{s!.total_calls.toLocaleString()}</span>
-                        <span className="text-xs text-slate-400">answered vs missed, by day</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="inline-flex items-center rounded-[7px] border border-slate-300 p-0.5">
-                        {PERIODS.map((p) => (
-                          <button
-                            key={p.value}
-                            onClick={() => setDays(p.value)}
-                            className={`rounded px-2.5 py-1 text-xs font-medium transition ${
-                              days === p.value ? 'bg-slate-200 text-slate-950' : 'text-slate-400 hover:text-slate-700'
-                            }`}
-                          >
-                            {p.label}
-                          </button>
-                        ))}
-                      </div>
-                      <button
-                        onClick={exportCSV}
-                        disabled={!data || !hasCalls}
-                        title="Download CSV"
-                        className="flex h-7 w-7 items-center justify-center rounded-[7px] border border-slate-300 text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <Download size={13} />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="px-3 pb-4 pt-3">
+                <ChartCard className="lg:col-span-2" title="Calls over time" subtitle="Answered vs missed, by day">
+                  <div>
                   <ResponsiveContainer width="100%" height={240}>
                     <AreaChart data={dayChart} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
                       <defs>
@@ -295,7 +283,7 @@ const Insights = () => {
                   </ResponsiveContainer>
                   <Legend items={[{ c: COLORS.answered, l: 'Answered' }, { c: COLORS.missed, l: 'Missed' }]} />
                   </div>
-                </div>
+                </ChartCard>
 
                 <ChartCard title="Call outcomes" subtitle="How calls resolved">
                   <ResponsiveContainer width="100%" height={200}>
@@ -323,8 +311,8 @@ const Insights = () => {
               </div>
 
               {/* Row: peak hours + sentiment/category */}
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                <ChartCard className="lg:col-span-2" title="Peak call hours" subtitle="When your customers call most">
+              <div className={`grid grid-cols-1 lg:grid-cols-3 ${GRID_GAP}`}>
+                <ChartCard className="lg:col-span-2" title="Peak call hours" subtitle="When people call most">
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={hourChart} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgb(var(--twc-slate-100))" />
@@ -336,7 +324,7 @@ const Insights = () => {
                   </ResponsiveContainer>
                 </ChartCard>
 
-                <div className="space-y-4">
+                <div className="space-y-4 lg:space-y-6">
                   <ChartCard title="Sentiment" subtitle="How callers felt">
                     <div className="space-y-3 pt-1">
                       <SentimentBar icon={Smile} color={COLORS.positive} label="Positive" value={sentiment.positive} total={sentiment.total} />
@@ -346,11 +334,13 @@ const Insights = () => {
                   </ChartCard>
 
                   {s!.follow_ups > 0 && (
-                    <div className="flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50 p-4">
+                    <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
                       <AlertCircle size={18} className="mt-0.5 shrink-0 text-amber-500" />
                       <div>
-                        <p className="text-sm font-semibold text-amber-800">{s!.follow_ups} calls need follow-up</p>
-                        <p className="text-xs text-amber-700">Review these in Call Logs so no lead slips through.</p>
+                        <p className="text-sm font-semibold text-amber-800">{s!.follow_ups} calls need attention</p>
+                        <p className="text-xs text-amber-700">
+                          Review them in <Link to="/dashboard/calls" className="font-semibold underline">Call logs</Link> so nothing slips through.
+                        </p>
                       </div>
                     </div>
                   )}
@@ -372,7 +362,6 @@ const Insights = () => {
               )}
             </>
           )}
-        </div>
       </div>
     </DashboardLayout>
   );
@@ -384,22 +373,6 @@ const tooltipStyle = {
   fontSize: 12,
   boxShadow: '0 4px 12px rgba(15,23,42,0.08)',
 } as const;
-
-const Kpi = ({
-  label,
-  value,
-  sub,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-}) => (
-  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-    <div className="text-[13px] font-medium text-slate-400">{label}</div>
-    <div className="mt-2 text-[26px] leading-8 font-bold tracking-tight text-slate-950">{value}</div>
-    {sub && <div className="mt-1 text-[11px] text-slate-400">{sub}</div>}
-  </div>
-);
 
 const ChartCard = ({
   title,
@@ -413,9 +386,9 @@ const ChartCard = ({
   className?: string;
 }) => (
   <div className={`rounded-xl border border-slate-200 bg-white p-5 shadow-sm ${className}`}>
-    <div className="mb-3">
-      <h3 className="text-[15px] font-semibold text-slate-900">{title}</h3>
-      {subtitle && <p className="mt-0.5 text-xs text-slate-400">{subtitle}</p>}
+    <div className="mb-4">
+      <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+      {subtitle && <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>}
     </div>
     {children}
   </div>
@@ -465,8 +438,8 @@ const SentimentBar = ({
 
 const SkeletonBody = () => (
   <div className="space-y-4">
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-      {[0, 1, 2, 3, 4].map((i) => (
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+      {[0, 1, 2, 3, 4, 5].map((i) => (
         <div key={i} className="h-28 animate-pulse rounded-xl bg-white" />
       ))}
     </div>

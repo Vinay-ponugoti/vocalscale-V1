@@ -186,11 +186,11 @@ export const VoicePicker = ({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
                       <span className="truncate text-sm font-semibold text-slate-900">{voice.name}</span>
-                      <span className={cn('rounded px-1.5 py-0.5 text-[10px] font-bold uppercase', badge.className)}>
+                      <span className={cn('rounded px-1.5 py-0.5 text-[11px] font-bold uppercase', badge.className)}>
                         {badge.label}
                       </span>
                       {voice.is_premium && (
-                        <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase text-amber-600">
+                        <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-bold uppercase text-amber-600">
                           <Sparkles size={9} /> Pro
                         </span>
                       )}

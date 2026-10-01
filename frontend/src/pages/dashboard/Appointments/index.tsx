@@ -4,13 +4,17 @@ import { DashboardLayout } from '../../layouts/DashboardLayout';
 import { useSearch } from '../../../hooks/useSearch';
 import { useBusinessSetup } from '../../../context/BusinessSetupContext';
 import AppointmentSchedule from '../../../components/dashboard/AppointmentSchedule';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { EmptyState } from '../../../components/ui/EmptyState';
+import { Button } from '../../../components/ui/Button';
+import { WORKSPACE_CONTAINER } from '../../../constants/layout';
 import {
   format, addDays, startOfWeek, isSameDay,
   getHours, getMinutes, setHours, setMinutes, addMinutes
 } from 'date-fns';
 import {
   ChevronLeft, ChevronRight, Plus, Clock, Moon, Sun,
-  X, Layers, FileText, GripVertical, MapPin, Phone, Trash2, Pencil
+  X, Layers, FileText, GripVertical, MapPin, Phone, Trash2, Pencil, Loader2, AlertTriangle
 } from 'lucide-react';
 
 import {
@@ -477,11 +481,9 @@ const FullScreenAppointments: React.FC = () => {
   if (isInitialLoading) {
     return (
       <DashboardLayout fullWidth>
-        <div className="h-full w-full flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 rounded-full animate-spin mx-auto" style={{ borderColor: DS.border, borderTopColor: DS.electric }} />
-            <p className="mt-4 font-medium" style={{ color: DS.stone }}>Loading appointments...</p>
-          </div>
+        <div className="flex h-full w-full flex-col items-center justify-center gap-3">
+          <Loader2 className="animate-spin text-blue-600" size={28} />
+          <p className="text-sm font-medium text-slate-600">Loading appointments…</p>
         </div>
       </DashboardLayout>
     );
@@ -490,38 +492,38 @@ const FullScreenAppointments: React.FC = () => {
   if (error) {
     return (
       <DashboardLayout fullWidth>
-        <div className="h-full w-full flex items-center justify-center">
-          <div className="text-center max-w-md px-6">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: DS.dangerBg }}>
-              <span className="text-2xl">⚠️</span>
-            </div>
-            <h3 className="text-lg font-bold mb-2" style={{ color: DS.ink }}>Unable to load appointments</h3>
-            <p className="mb-6" style={{ color: DS.stone }}>{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 text-white rounded-lg transition-colors"
-              style={{ backgroundColor: DS.electric }}
-            >
-              Retry
-            </button>
-          </div>
-        </div>
+        <EmptyState
+          icon={AlertTriangle}
+          tone="danger"
+          title="Couldn't load appointments"
+          description={error}
+          action={<Button variant="outline" onClick={() => window.location.reload()}>Try again</Button>}
+          className="h-full"
+        />
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full h-full flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-
-        {/* Header removed — content moves up */}
+      <div className={WORKSPACE_CONTAINER}>
+        <PageHeader
+          title="Appointments"
+          description="Appointments your agent booked. Drag to reschedule, click to see details."
+          actions={
+            <Button onClick={() => setIsNewModalOpen(true)} className="hidden lg:inline-flex">
+              <Plus size={16} /> New appointment
+            </Button>
+          }
+        />
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
 
         {/* Toolbar — Google Calendar style: Today · chevrons · big month title | options · view · create */}
         <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 ${isMobile ? 'px-4 py-2' : 'px-6 py-3'} border-b`} style={{ borderColor: DS.border, backgroundColor: DS.white }}>
           <div className="flex items-center w-full sm:w-auto gap-1 sm:gap-2">
             <button
               onClick={() => setCurrentDate(toZonedTime(new Date(), timezone))}
-              className="px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full border transition-colors hover:bg-slate-50"
+              className="h-9 px-3 text-xs sm:text-[13px] font-semibold rounded-lg border transition-colors hover:bg-slate-50"
               style={{ color: DS.ink, borderColor: 'rgb(var(--twc-slate-300))', backgroundColor: DS.white }}
             >
               Today
@@ -529,18 +531,18 @@ const FullScreenAppointments: React.FC = () => {
             <button
               onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? -1 : -7))}
               aria-label="Previous"
-              className="p-2 rounded-full transition-colors hover:bg-slate-100"
+              className="p-2 rounded-lg transition-colors hover:bg-slate-100"
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: DS.stone }} />
             </button>
             <button
               onClick={() => setCurrentDate(d => addDays(d, viewMode === 'day' ? 1 : 7))}
               aria-label="Next"
-              className="p-2 rounded-full transition-colors hover:bg-slate-100"
+              className="p-2 rounded-lg transition-colors hover:bg-slate-100"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: DS.stone }} />
             </button>
-            <h2 className="ml-1 sm:ml-2 text-base sm:text-xl font-normal whitespace-nowrap" style={{ color: DS.ink }}>
+             <h2 className="ml-1 sm:ml-2 text-base sm:text-lg font-semibold whitespace-nowrap" style={{ color: DS.ink }}>
               {viewMode === 'day'
                 ? format(currentDate, 'MMMM d, yyyy')
                 : format(weekStart, 'MMMM yyyy')
@@ -552,7 +554,7 @@ const FullScreenAppointments: React.FC = () => {
             <button
               onClick={() => setShow24Hours(!show24Hours)}
               title={show24Hours ? "Show business hours" : "Show 24 hours"}
-              className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-slate-100"
+              className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition-colors hover:bg-slate-100"
               style={{ color: show24Hours ? DS.electric : DS.stone }}
             >
               {show24Hours ? <Moon size={17} /> : <Sun size={17} />}
@@ -560,7 +562,7 @@ const FullScreenAppointments: React.FC = () => {
             <button
               onClick={() => setTimeFormat(f => f === '12h' ? '24h' : '12h')}
               title={`Switch to ${timeFormat === '12h' ? '24h' : '12h'} format`}
-              className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-slate-100"
+              className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition-colors hover:bg-slate-100"
               style={{ color: DS.stone }}
             >
               <Clock size={17} />
@@ -569,7 +571,7 @@ const FullScreenAppointments: React.FC = () => {
               <button
                 onClick={() => setShowWeekend(!showWeekend)}
                 title={showWeekend ? "Hide weekends" : "Show weekends"}
-                className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-slate-100"
+                className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg transition-colors hover:bg-slate-100"
                 style={{ color: showWeekend ? DS.stone : DS.electric }}
               >
                 <Layers size={17} />
@@ -577,12 +579,12 @@ const FullScreenAppointments: React.FC = () => {
             )}
 
             {/* View switcher */}
-            <div className="ml-1 flex p-0.5 rounded-full border" style={{ borderColor: 'rgb(var(--twc-slate-300))' }}>
+            <div className="ml-1 flex gap-0.5 rounded-lg border border-slate-200 bg-slate-50 p-0.5">
               {(['day', 'week'] as const).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
-                  className={`px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium rounded-full transition-all capitalize ${viewMode === mode ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
+                  className={`px-3 sm:px-4 py-1 text-xs sm:text-[13px] font-semibold rounded-md transition-all capitalize ${viewMode === mode ? 'bg-white shadow-sm ring-1 ring-slate-200' : 'hover:text-slate-900'}`}
                   style={{ color: viewMode === mode ? DS.electric : DS.stone }}
                 >
                   {mode}
@@ -590,14 +592,6 @@ const FullScreenAppointments: React.FC = () => {
               ))}
             </div>
 
-            <button
-              onClick={() => setIsNewModalOpen(true)}
-              className="hidden lg:flex flex-shrink-0 items-center gap-2 ml-1 pl-3 pr-4 h-10 text-white rounded-2xl shadow-md transition-all active:scale-95 text-sm font-medium"
-              style={{ backgroundColor: DS.electric }}
-            >
-              <Plus size={18} />
-              Create
-            </button>
           </div>
         </div>
 
@@ -626,7 +620,7 @@ const FullScreenAppointments: React.FC = () => {
                   style={{ borderColor: DS.border }}
                 >
                   <span
-                    className="text-[10px] md:text-[11px] font-medium uppercase tracking-wide"
+                    className="text-[11px] md:text-[11px] font-medium uppercase tracking-wider"
                     style={{ color: isToday ? DS.electric : DS.subtleText }}
                   >
                     {format(day, 'EEE')}
@@ -881,7 +875,7 @@ const FullScreenAppointments: React.FC = () => {
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                   {/* vs-light: the event card is always the white surface, in both themes */}
                   <div
-                    className="vs-light pointer-events-auto relative overflow-hidden rounded-2xl text-left shadow-2xl ring-1 ring-black/10 sm:my-8 sm:w-full sm:max-w-4xl animate-in fade-in zoom-in-95 duration-200"
+                    className="vs-light pointer-events-auto relative overflow-hidden rounded-xl text-left shadow-2xl ring-1 ring-black/10 sm:my-8 sm:w-full sm:max-w-4xl animate-in fade-in zoom-in-95 duration-200"
                     style={{ backgroundColor: DS.white, transform: `translate(${dialogPos.x}px, ${dialogPos.y}px)` }}
                     onClick={(e) => e.stopPropagation()}
                   >
@@ -971,7 +965,7 @@ const FullScreenAppointments: React.FC = () => {
                                 {selectedApptData.status}
                               </span>
                               {isNightAppointment(selectedApptData) && (
-                                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-600">
+                                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-600">
                                   <Moon size={10} />
                                   Night
                                 </span>
@@ -1083,7 +1077,7 @@ const FullScreenAppointments: React.FC = () => {
                             <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: DS.stone }}>Notes</h3>
                           </div>
                           {noteStatus === 'saved' && (
-                            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgb(var(--twc-emerald-500))' }}>Saved</span>
+                            <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgb(var(--twc-emerald-500))' }}>Saved</span>
                           )}
                         </div>
                         <textarea
@@ -1122,7 +1116,7 @@ const FullScreenAppointments: React.FC = () => {
             />
             <div
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-              rounded-2xl shadow-2xl border z-[101] 
+              rounded-xl shadow-2xl border z-[101] 
               w-full max-w-md overflow-hidden"
               style={{ backgroundColor: DS.white, borderColor: DS.border }}
               onClick={(e) => e.stopPropagation()}
@@ -1144,7 +1138,7 @@ const FullScreenAppointments: React.FC = () => {
 
               <form onSubmit={handleCreateAppointment} className="p-5 space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: DS.stone }}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: DS.stone }}>
                     Customer Name
                   </label>
                   <input
@@ -1159,7 +1153,7 @@ const FullScreenAppointments: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: DS.stone }}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: DS.stone }}>
                     Start Time
                   </label>
                   <input
@@ -1173,7 +1167,7 @@ const FullScreenAppointments: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: DS.stone }}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: DS.stone }}>
                     Type
                   </label>
                   <select
@@ -1191,7 +1185,7 @@ const FullScreenAppointments: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: DS.stone }}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: DS.stone }}>
                     Notes
                   </label>
                   <textarea
@@ -1210,7 +1204,7 @@ const FullScreenAppointments: React.FC = () => {
                     className="flex-1 px-4 py-2.5 text-white rounded-xl font-medium transition-colors shadow-lg active:scale-95"
                     style={{ backgroundColor: DS.electric }}
                   >
-                    Create Appointment
+                    Create appointment
                   </button>
                   <button
                     type="button"
@@ -1239,7 +1233,7 @@ const FullScreenAppointments: React.FC = () => {
                   { color: 'bg-amber-500', label: 'Pending' },
                   { color: 'bg-purple-500', label: 'Strategy' },
                   { color: 'bg-emerald-500', label: 'Consultation' },
-                  { color: 'bg-gray-400', label: 'Canceled' },
+                  { color: 'bg-slate-400', label: 'Canceled' },
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-1.5">
                     <div className={`w-3 h-3 rounded ${item.color}`} />
@@ -1247,8 +1241,8 @@ const FullScreenAppointments: React.FC = () => {
                   </div>
                 ))}
                 <div className="flex items-center gap-1.5 ml-2 pl-2" style={{ borderLeftColor: DS.border }}>
-                  <Moon className="w-3 h-3 text-indigo-400" />
-                  <span style={{ color: DS.charcoal }}>Night Appointment</span>
+                  <Moon className="w-3 h-3 text-blue-400" />
+                  <span style={{ color: DS.charcoal }}>Night appointment</span>
                 </div>
               </div>
               <div className="text-xs" style={{ color: DS.subtleText }}>
@@ -1258,12 +1252,14 @@ const FullScreenAppointments: React.FC = () => {
           </footer>
         )}
 
+        </div>
+
         {/* Floating Action Button for Mobile */}
         {isMobile && (
           <button
             onClick={() => setIsNewModalOpen(true)}
-            className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-2xl flex items-center justify-center z-[60] active:scale-90 transition-transform"
-            style={{ boxShadow: '0 8px 30px rgba(79, 70, 229, 0.4)' }}
+            className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center z-[60] active:scale-90 transition-transform"
+            aria-label="New appointment"
           >
             <Plus size={28} />
           </button>

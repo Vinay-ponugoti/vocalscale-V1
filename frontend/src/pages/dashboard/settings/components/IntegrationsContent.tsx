@@ -19,7 +19,7 @@ const Toggle: React.FC<{ active: boolean; onChange: () => void; disabled?: boole
             type="button"
             onClick={onChange}
             disabled={disabled}
-            className={`relative inline-flex items-center rounded-full transition focus:outline-none ${sizeClasses} ${active ? 'bg-cyan-600' : 'bg-slate-200'} ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+            className={`relative inline-flex items-center rounded-full transition focus:outline-none ${sizeClasses} ${active ? 'bg-blue-600' : 'bg-slate-200'} ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
         >
             <span className={`transform rounded-full bg-white shadow-sm transition ${knobClasses}`} />
         </button>
@@ -195,7 +195,7 @@ const IntegrationsContent = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-cyan-600/30 border-t-cyan-600" />
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-600/30 border-t-blue-600" />
             </div>
         );
     }
@@ -212,10 +212,10 @@ const IntegrationsContent = () => {
             )}
 
             <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <div className="rounded-lg border border-slate-200 bg-white p-5">
+                <div className="rounded-xl border border-slate-200 bg-white p-5">
                     <div className="flex items-start justify-between gap-4">
                         <div className="flex items-start gap-3">
-                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${isCalendarConnected ? 'border-cyan-200 bg-cyan-50 text-cyan-700' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
+                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${isCalendarConnected ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
                                 <Calendar className="h-5 w-5" />
                             </div>
                             <div>
@@ -224,7 +224,7 @@ const IntegrationsContent = () => {
                             </div>
                         </div>
                         {connecting === 'calendar' || disconnecting === 'calendar' ? (
-                            <RefreshCw className="h-5 w-5 animate-spin text-cyan-600" />
+                            <RefreshCw className="h-5 w-5 animate-spin text-blue-600" />
                         ) : (
                             <Toggle
                                 active={!!isCalendarConnected}
@@ -254,7 +254,7 @@ const IntegrationsContent = () => {
                                     href="https://calendar.google.com"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1.5 font-semibold text-cyan-700 hover:text-cyan-800"
+                                    className="inline-flex items-center gap-1.5 font-semibold text-blue-700 hover:text-blue-800"
                                 >
                                     Open Calendar
                                     <ExternalLink className="h-3.5 w-3.5" />
@@ -264,10 +264,10 @@ const IntegrationsContent = () => {
                     )}
                 </div>
 
-                <div className="rounded-lg border border-slate-200 bg-white p-5">
+                <div className="rounded-xl border border-slate-200 bg-white p-5">
                     <div className="flex items-start justify-between gap-4">
                         <div className="flex items-start gap-3">
-                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${isReviewsConnected ? 'border-cyan-200 bg-cyan-50 text-cyan-700' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
+                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${isReviewsConnected ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
                                 <MessageSquareText className="h-5 w-5" />
                             </div>
                             <div>
@@ -276,7 +276,7 @@ const IntegrationsContent = () => {
                             </div>
                         </div>
                         {connecting === 'reviews' || disconnecting === 'reviews' ? (
-                            <RefreshCw className="h-5 w-5 animate-spin text-cyan-600" />
+                            <RefreshCw className="h-5 w-5 animate-spin text-blue-600" />
                         ) : (
                             <Toggle
                                 active={!!isReviewsConnected}

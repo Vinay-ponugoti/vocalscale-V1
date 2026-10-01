@@ -27,7 +27,7 @@ const SentimentBadge = ({ sentiment }: { sentiment?: string }) => {
     Negative: 'bg-red-50 text-red-600 border-red-100',
   };
   return (
-    <Badge variant="outline" className={`${styles[sentiment] || ''} font-bold text-[10px] uppercase tracking-wider rounded-lg px-2 py-0.5`}>
+    <Badge variant="outline" className={`${styles[sentiment] || ''} font-bold text-[11px] uppercase tracking-wider rounded-lg px-2 py-0.5`}>
       {sentiment}
     </Badge>
   );
@@ -99,10 +99,9 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="mb-4 h-10 w-64 animate-pulse rounded-lg bg-slate-100"></div>
         <div className="grid grid-cols-1 gap-6">
           <div className="space-y-4">
-            {[1, 2, 3].map(i => <div key={i} className="h-48 animate-pulse rounded-lg border border-slate-200 bg-white"></div>)}
+            {[1, 2, 3].map(i => <div key={i} className="h-48 animate-pulse rounded-xl border border-slate-200 bg-white"></div>)}
           </div>
         </div>
       </div>
@@ -110,25 +109,25 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
   }
 
   return (
-    <div className="space-y-5 select-none">
-      <div className="flex flex-col justify-between gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center">
+    <div className="space-y-4">
+      <div className="flex flex-col justify-between gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50 text-cyan-700">
-            <Layers className="h-5 w-5" />
-          </div>
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <Layers className="h-4 w-4" />
+          </span>
           <div>
-            <h2 className="text-xl font-black tracking-tight text-slate-950 md:text-2xl">Review Inbox</h2>
-            <p className="text-sm font-medium text-slate-500">Prioritize feedback and respond from one place</p>
+            <h2 className="text-base font-semibold text-slate-950">Review inbox</h2>
+            <p className="text-sm text-slate-500">Prioritize feedback and reply from one place.</p>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative group flex-1 sm:flex-none">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-cyan-700" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-700" />
             <input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm font-semibold text-slate-950 shadow-sm transition-all placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10 sm:w-64"
-              placeholder="Filter reviews..."
+              className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-4 text-sm text-slate-950 shadow-sm transition-all placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:w-64"
+              placeholder="Search reviews…"
               type="text"
             />
           </div>
@@ -138,7 +137,7 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
               <select
                 value={ratingFilter}
                 onChange={(event) => setRatingFilter(event.target.value as typeof ratingFilter)}
-                className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-8 pr-7 text-xs font-bold text-slate-600 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 sm:w-[128px]"
+                className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-8 pr-7 text-xs font-semibold text-slate-600 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-[128px]"
               >
                 <option value="all">All ratings</option>
                 <option value="5">5 stars</option>
@@ -150,7 +149,7 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
             <select
               value={sortBy}
               onChange={(event) => setSortBy(event.target.value as typeof sortBy)}
-              className="h-10 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 sm:flex-none"
+              className="h-10 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:flex-none"
             >
               <option value="newest">Newest first</option>
               <option value="lowest">Lowest rating</option>
@@ -160,7 +159,7 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
         {([
           { value: 'all', label: 'All reviews', count: inboxCounts.all },
           { value: 'needs-reply', label: 'Needs reply', count: inboxCounts.needsReply },
@@ -190,15 +189,15 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-5">
-        <div className="space-y-4 2xl:space-y-6">
+      <div className="grid grid-cols-1 gap-4">
+        <div className="space-y-4">
           {filteredReviews.length === 0 ? (
-            <Card className="rounded-lg border-dashed border-slate-200 bg-white shadow-sm">
+            <Card className="rounded-xl border-dashed border-slate-200 bg-white shadow-sm">
               <CardContent className="py-12 sm:py-20 flex flex-col items-center justify-center text-center">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-slate-100 sm:h-16 sm:w-16">
                   <Layers className="h-6 w-6 text-slate-300 sm:h-8 sm:w-8" />
                 </div>
-                <h3 className="text-base font-black tracking-tight text-slate-950 sm:text-lg">
+                <h3 className="text-base font-semibold tracking-tight text-slate-950 sm:text-lg">
                   {reviews.length === 0 ? 'No feedback yet' : 'No matching reviews'}
                 </h3>
                 <p className="text-slate-500 max-w-[240px] sm:max-w-xs mt-1 text-xs sm:text-sm">
@@ -211,14 +210,14 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
               </CardContent>
             </Card>
           ) : filteredReviews.map(review => (
-            <Card key={review.id} className="group rounded-lg border-slate-200 shadow-sm transition-colors hover:border-cyan-100 hover:bg-cyan-50/20">
+            <Card key={review.id} className="group rounded-lg border-slate-200 shadow-sm transition-colors hover:border-blue-100 hover:bg-blue-50/20">
               <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
                 <div className="flex items-center gap-4">
                   <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${review.color} text-lg font-bold shadow-sm`}>
                     {review.initials}
                   </div>
                   <div>
-                    <CardTitle className="text-base font-black tracking-tight text-slate-950">{review.name}</CardTitle>
+                    <CardTitle className="text-base font-semibold tracking-tight text-slate-950">{review.name}</CardTitle>
                     <div className="mt-1 flex items-center gap-2">
                       <StarRating rating={review.rating} />
                       <span className="w-1 h-1 rounded-full bg-slate-300"></span>
@@ -237,7 +236,7 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
                         )}
                       </span>
                       {review.source?.startsWith('google') && (
-                        <span className="hidden items-center gap-1 rounded-md border border-blue-100 bg-blue-50 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-blue-600 sm:flex">
+                        <span className="hidden items-center gap-1 rounded-md border border-blue-100 bg-blue-50 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-blue-600 sm:flex">
                           <MapPin className="h-2.5 w-2.5" /> Google
                         </span>
                       )}
@@ -247,7 +246,7 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
                 <div className="flex items-center gap-2">
                   {review.sentiment && <SentimentBadge sentiment={review.sentiment} />}
                   {review.critical && (
-                    <Badge variant="destructive" className="bg-red-50 text-red-600 border-red-100 hover:bg-red-50 animate-pulse font-black text-[10px] uppercase tracking-wider rounded-lg px-2.5 py-1">
+                    <Badge variant="destructive" className="bg-red-50 text-red-600 border-red-100 hover:bg-red-50 animate-pulse font-semibold text-[11px] uppercase tracking-wider rounded-lg px-2.5 py-1">
                       Priority
                     </Badge>
                   )}
@@ -265,16 +264,16 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
                   <div className="mb-5 rounded-lg border border-emerald-100 bg-emerald-50/50 p-3.5">
                     <div className="mb-1.5 flex items-center gap-2">
                       <CheckCircle className="h-3.5 w-3.5 text-emerald-600" />
-                      <p className="text-[10px] font-black uppercase tracking-wider text-emerald-700">Response from owner</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">Response from owner</p>
                     </div>
                     <p className="text-sm font-medium leading-6 text-slate-650">{review.response}</p>
                   </div>
                 )}
 
                 {replyingTo === review.id && (
-                  <div className="mb-5 rounded-lg border border-cyan-100 bg-cyan-50/40 p-3.5">
+                  <div className="mb-5 rounded-lg border border-blue-100 bg-blue-50/40 p-3.5">
                     <div className="mb-2 flex items-center justify-between">
-                      <p className="text-xs font-black text-slate-900">Reply publicly on Google</p>
+                      <p className="text-xs font-semibold text-slate-900">Reply publicly on Google</p>
                       <button onClick={() => setReplyingTo(null)} className="rounded-md p-1 text-slate-400 hover:bg-white hover:text-slate-700" aria-label="Cancel reply"><X className="h-4 w-4" /></button>
                     </div>
                     <textarea
@@ -283,7 +282,7 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
                       rows={3}
                       maxLength={1000}
                       placeholder="Write a professional response…"
-                      className="w-full resize-none rounded-lg border border-slate-200 bg-white p-3 text-sm font-medium leading-5 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                      className="w-full resize-none rounded-lg border border-slate-200 bg-white p-3 text-sm font-medium leading-5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     />
                     {replyError && <p className="mt-1.5 text-xs font-semibold text-rose-600">{replyError}</p>}
                     <div className="mt-2 flex items-center justify-between gap-3">
@@ -292,7 +291,7 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
                         size="sm"
                         disabled={!replyText.trim() || isResponding}
                         onClick={() => void submitReply(review.id)}
-                        className="h-8 gap-2 rounded-md bg-cyan-700 px-3 text-xs font-bold text-white hover:bg-cyan-800"
+                        className="h-8 gap-2 rounded-md bg-blue-700 px-3 text-xs font-bold text-white hover:bg-blue-800"
                       >
                         <Send className="h-3.5 w-3.5" />
                         {isResponding ? 'Saving…' : 'Publish reply'}
@@ -304,18 +303,18 @@ export const RecentReviews = ({ reviews, loading, isPaid, onRespond, isRespondin
                 <div className="flex items-center justify-between border-t border-slate-100 pt-5">
                   {review.replied ? (
                     <div className="flex items-center gap-3">
-                      <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 border-emerald-100/50 font-bold uppercase tracking-wider text-[10px] rounded-lg px-3 py-1.5 flex items-center gap-2">
+                      <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 border-emerald-100/50 font-semibold uppercase tracking-wider text-[11px] rounded-lg px-3 py-1.5 flex items-center gap-2">
                         <CheckCircle className="w-3.5 h-3.5" strokeWidth={3} />
                         Responded
                       </Badge>
                     </div>
                   ) : isPaid ? (
                     <div className="flex items-center gap-2">
-                      <Button onClick={() => openReply(review, true)} size="sm" className="flex h-9 items-center gap-2 rounded-md bg-cyan-700 px-4 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-cyan-800">
+                      <Button onClick={() => openReply(review, true)} size="sm" className="flex h-9 items-center gap-2 rounded-md bg-blue-700 px-4 text-[11px] font-semibold uppercase tracking-wider text-white hover:bg-blue-800">
                         <FileText className="w-4 h-4" />
-                        {review.critical ? 'Draft Apology' : 'Smart Reply'}
+                        {review.critical ? 'Draft apology' : 'Suggest reply'}
                       </Button>
-                      <Button onClick={() => openReply(review, false)} variant="outline" size="sm" className="flex h-9 items-center gap-2 rounded-md border-slate-200 px-4 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                      <Button onClick={() => openReply(review, false)} variant="outline" size="sm" className="flex h-9 items-center gap-2 rounded-md border-slate-200 px-4 text-[11px] font-semibold uppercase tracking-wider text-slate-600">
                         <Reply className="w-4 h-4" />
                         Manual
                       </Button>

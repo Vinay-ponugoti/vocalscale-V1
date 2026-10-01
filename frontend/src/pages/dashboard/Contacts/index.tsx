@@ -13,6 +13,11 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { StatCard } from '../../../components/ui/StatCard';
+import { EmptyState } from '../../../components/ui/EmptyState';
+import { Button } from '../../../components/ui/Button';
+import { PAGE_CONTAINER } from '../../../constants/layout';
 import { contactsAPI, type Contact } from '../../../api/contacts';
 import { AddContactModal } from './AddContactModal';
 import { avatarColor, displayName, formatPhone, initials, relativeDate } from './utils';
@@ -51,7 +56,7 @@ const contactStatus = (contact: Contact) => {
 const nextAction = (contact: Contact) => {
   if (isPriority(contact)) return 'Call now';
   if (needsFollowUp(contact)) return 'Follow up';
-  if ((contact.total_calls ?? 0) <= 1) return 'Review lead';
+  if ((contact.total_calls ?? 0) <= 1) return 'Review';
   return 'View history';
 };
 
@@ -139,38 +144,30 @@ const Contacts = () => {
   };
 
   return (
-    <DashboardLayout fullWidth>
-      <div className="scrollbar-hide h-full overflow-y-auto bg-[hsl(var(--ds-off-white))] text-slate-950">
-        <div className="mx-auto w-full max-w-[1240px] space-y-6 px-4 py-6 md:px-6 md:py-8 lg:px-8">
-          {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-blue-600">Customer workspace</div>
-              <h1 className="text-3xl font-semibold text-slate-900">Contacts</h1>
-              <p className="mt-1.5 max-w-2xl text-sm text-slate-500">
-                See who needs attention, remember every conversation, and take the next useful action.
-              </p>
-            </div>
-            <button
-              onClick={() => setAdding(true)}
-              className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-[10px] bg-blue-600 px-4 text-[13px] font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:self-auto"
-            >
-              <UserPlus size={15} /> New contact
-            </button>
-          </div>
+    <DashboardLayout>
+      <div className={PAGE_CONTAINER}>
+          <PageHeader
+            title="Contacts"
+            description="Everyone who has called your agent, with their history and next step."
+            actions={
+              <Button onClick={() => setAdding(true)}>
+                <UserPlus size={15} /> New contact
+              </Button>
+            }
+          />
 
           {/* A compact answer to: where should I spend time today? */}
           {!loading && contacts.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              <MetricCard icon={Users} label="All contacts" value={contacts.length} note="Known callers" active={activeView === 'all'} onClick={() => setActiveView('all')} />
-              <MetricCard icon={UserRoundPlus} label="New leads" value={newCount} note="One conversation" active={activeView === 'new'} onClick={() => setActiveView('new')} />
-              <MetricCard icon={Clock3} label="Follow-up" value={followUpCount} note="Ready for action" active={activeView === 'follow-up'} onClick={() => setActiveView('follow-up')} />
-              <MetricCard icon={Siren} label="Priority" value={priorityCount} note="Urgent or VIP" tone="rose" active={activeView === 'priority'} onClick={() => setActiveView('priority')} />
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+              <StatCard icon={Users} label="All contacts" value={contacts.length} description="Everyone who called" active={activeView === 'all'} onClick={() => setActiveView('all')} />
+              <StatCard icon={UserRoundPlus} label="New" value={newCount} description="Called once" active={activeView === 'new'} onClick={() => setActiveView('new')} />
+              <StatCard icon={Clock3} label="Follow-up" value={followUpCount} tint="amber" description="Ready for a callback" active={activeView === 'follow-up'} onClick={() => setActiveView('follow-up')} />
+              <StatCard icon={Siren} label="Priority" value={priorityCount} tint="rose" description="Urgent or VIP" active={activeView === 'priority'} onClick={() => setActiveView('priority')} />
             </div>
           )}
 
           {/* Toolbar */}
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <div className="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 md:px-5">
               <div className="flex flex-wrap items-center gap-2">
                 <SmartViewButton label="All" count={contacts.length} active={activeView === 'all'} onClick={() => setActiveView('all')} />
@@ -187,17 +184,13 @@ const Contacts = () => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search by name, number, or tag…"
-                  className="w-full rounded-[10px] border border-slate-200 bg-slate-50/70 py-2.5 pl-9 pr-3 text-[13px] text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                  className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-[13px] text-slate-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
-              <button
-                onClick={load}
-                className="flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-medium text-slate-600 transition hover:bg-slate-50"
-                title="Refresh"
-              >
+              <Button variant="outline" onClick={load} title="Refresh">
                 <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
                 <span className="hidden sm:inline">Refresh</span>
-              </button>
+              </Button>
               </div>
 
             {allTags.length > 0 && (
@@ -233,7 +226,7 @@ const Contacts = () => {
             </div>
 
             {error && (
-              <div className="m-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
+              <div className="m-4 rounded-lg border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-600">{error}</div>
             )}
 
           {/* List */}
@@ -251,30 +244,18 @@ const Contacts = () => {
                 ))}
               </ul>
             ) : contacts.length === 0 ? (
-              <div className="flex flex-col items-center px-6 py-16 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                  <Users size={22} />
-                </div>
-                <p className="mt-4 text-sm font-medium text-slate-700">No contacts yet</p>
-                <p className="mt-1 max-w-sm text-sm text-slate-400">
-                  As customers call your AI, they’re saved here automatically — with their call history, so returning
-                  callers are recognised.
-                </p>
-                <button
-                  onClick={() => setAdding(true)}
-                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
-                >
-                  <UserPlus size={16} /> Add your first contact
-                </button>
-              </div>
+              <EmptyState
+                icon={Users}
+                title="No contacts yet"
+                description="Callers are saved here automatically when your agent answers, so returning callers are recognised."
+                action={<Button onClick={() => setAdding(true)}><UserPlus size={15} /> New contact</Button>}
+              />
             ) : filtered.length === 0 ? (
-              <div className="px-6 py-14 text-center text-sm text-slate-400">
-                No contacts match “{query || activeTag}”.
-              </div>
+              <EmptyState icon={Search} title="No matching contacts" description={`Nothing matches “${query || activeTag}”.`} />
             ) : (
               <>
-                <div className="hidden grid-cols-[minmax(0,1.4fr)_minmax(120px,.65fr)_110px_120px_24px] gap-4 border-b border-slate-100 bg-slate-50/70 px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400 md:grid">
-                  <span>Customer</span><span>Status</span><span>Calls</span><span>Next action</span><span />
+                <div className="hidden grid-cols-[minmax(0,1.4fr)_minmax(120px,.65fr)_110px_120px_24px] gap-4 border-b border-slate-100 bg-slate-50/70 px-5 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 md:grid">
+                  <span>Contact</span><span>Status</span><span>Calls</span><span>Next action</span><span />
                 </div>
                 <ul className="divide-y divide-slate-100">
                   {filtered.map((c) => {
@@ -331,7 +312,6 @@ const Contacts = () => {
             )}
           </div>
           </div>
-        </div>
       </div>
 
       {adding && <AddContactModal onClose={() => setAdding(false)} onCreated={handleCreated} />}
@@ -377,40 +357,6 @@ const SmartViewButton = ({
   >
     {label}
     <span className={active ? 'text-white/60' : 'text-slate-400'}>{count}</span>
-  </button>
-);
-
-const MetricCard = ({
-  icon: Icon,
-  label,
-  value,
-  note,
-  tone = 'blue',
-  active,
-  onClick,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: number;
-  note: string;
-  tone?: 'blue' | 'rose';
-  active: boolean;
-  onClick: () => void;
-}) => (
-  <button
-    onClick={onClick}
-    className={`group flex min-h-[104px] items-start justify-between rounded-2xl border bg-white p-4 text-left shadow-sm transition ${
-      active ? 'border-blue-300 ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'
-    }`}
-  >
-    <div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">{label}</div>
-      <div className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-slate-900">{value}</div>
-      <div className="mt-1 text-[11px] text-slate-400">{note}</div>
-    </div>
-    <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${tone === 'rose' ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-blue-600'}`}>
-      <Icon size={16} strokeWidth={2.1} />
-    </div>
   </button>
 );
 

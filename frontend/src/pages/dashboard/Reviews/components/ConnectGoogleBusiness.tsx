@@ -38,9 +38,9 @@ export const ConnectGoogleBusiness = ({ onVerified }: ConnectGoogleBusinessProps
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-sm font-black text-slate-950">Google Business connected</p>
+              <p className="text-sm font-semibold text-slate-950">Google Business connected</p>
               {status?.demoMode && (
-                <span className="rounded-md border border-blue-100 bg-blue-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-blue-600">Local demo data</span>
+                <span className="rounded-md border border-blue-100 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-blue-600">Local demo data</span>
               )}
             </div>
             <p className="mt-0.5 truncate text-xs font-medium text-slate-500">
@@ -62,16 +62,16 @@ export const ConnectGoogleBusiness = ({ onVerified }: ConnectGoogleBusinessProps
   };
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-cyan-100 bg-cyan-50/50 p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+    <div className="flex flex-col gap-4 rounded-xl border border-blue-100 bg-blue-50/50 p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-cyan-100 bg-white text-cyan-700">
-          {isConnected ? <AlertTriangle className="h-5 w-5" /> : <Link2 className="h-5 w-5" />}
-        </div>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-blue-600 ring-1 ring-blue-100">
+          {isConnected ? <AlertTriangle className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+        </span>
         <div>
-          <h3 className="text-base font-black tracking-tight text-slate-950">
+          <h3 className="text-base font-semibold tracking-tight text-slate-950">
             {isConnected ? 'Finish connecting Google Business' : 'Connect your Google Business account'}
           </h3>
-          <p className="mt-0.5 max-w-xl text-sm font-medium text-slate-600">
+          <p className="mt-0.5 max-w-xl text-sm text-slate-600">
             {isConnected
               ? 'Google is linked, but we still need to verify which business location to manage.'
               : 'Sign in with the Google account that manages your Business Profile to pull in reviews and reply to them.'}
@@ -83,15 +83,15 @@ export const ConnectGoogleBusiness = ({ onVerified }: ConnectGoogleBusinessProps
         <Button
           onClick={handleVerify}
           disabled={isVerifying}
-          className="h-10 shrink-0 gap-2 rounded-md bg-cyan-700 px-5 font-bold text-white hover:bg-cyan-800"
+          className="shrink-0"
         >
           {isVerifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-          {isVerifying ? 'Verifying...' : 'Verify business'}
+          {isVerifying ? 'Verifying…' : 'Verify business'}
         </Button>
       ) : (
         <Button
           onClick={() => connect('reviews')}
-          className="h-10 shrink-0 gap-2 rounded-md bg-cyan-700 px-5 font-bold text-white hover:bg-cyan-800"
+          className="shrink-0"
         >
           <Link2 className="h-4 w-4" />
           Connect Google Business

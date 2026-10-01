@@ -59,7 +59,7 @@ const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLI
     {...props}
     className={`
       w-full px-4 py-3 bg-white border border-slate-200 text-slate-950 text-sm font-medium rounded-lg
-      focus:ring-2 focus:ring-cyan-500/10 focus:border-cyan-500 focus:bg-white
+      focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white
       transition-all duration-200 placeholder:text-slate-400
       disabled:opacity-50 disabled:cursor-not-allowed
       ${props.className || ''}
@@ -74,7 +74,7 @@ const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HT
     {...props}
     className={`
       w-full px-4 py-3 bg-white border border-slate-200 text-slate-950 text-sm font-medium rounded-lg
-      focus:ring-2 focus:ring-cyan-500/10 focus:border-cyan-500 focus:bg-white
+      focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white
       transition-all duration-200 cursor-pointer appearance-none
       disabled:opacity-50 disabled:cursor-not-allowed
       ${props.className || ''}
@@ -89,7 +89,7 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttribu
     {...props}
     className={`
       w-full px-4 py-3 bg-white border border-slate-200 text-slate-950 text-sm font-medium rounded-lg
-      focus:ring-2 focus:ring-cyan-500/10 focus:border-cyan-500 focus:bg-white
+      focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white
       transition-all duration-200 placeholder:text-slate-400 resize-none
       disabled:opacity-50 disabled:cursor-not-allowed
       ${props.className || ''}
@@ -99,7 +99,7 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttribu
 TextArea.displayName = 'TextArea';
 
 const Label = ({ children, optional }: { children: React.ReactNode, optional?: boolean }) => (
-  <label className="mb-2 block text-sm font-bold leading-none text-slate-800 peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+  <label className="mb-2 block text-sm font-semibold leading-none text-slate-800 peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
     {children}
     {optional && <span className="ml-2 text-xs font-semibold text-slate-400">(Optional)</span>}
   </label>
@@ -116,7 +116,7 @@ interface SearchResultProps {
 const SearchResultCard = ({ business, onSelect }: SearchResultProps) => (
   <button
     onClick={() => onSelect(business)}
-    className="group flex w-full items-start gap-4 rounded-lg border border-slate-200 bg-white p-2 text-left transition-colors hover:border-cyan-300 hover:bg-cyan-50/30"
+    className="group flex w-full items-start gap-4 rounded-lg border border-slate-200 bg-white p-2 text-left transition-colors hover:border-blue-300 hover:bg-blue-50/30"
   >
     {/* Image Section */}
     <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md border border-slate-200 bg-slate-100">
@@ -136,9 +136,9 @@ const SearchResultCard = ({ business, onSelect }: SearchResultProps) => (
     {/* Content Section */}
     <div className="min-w-0 flex-1 py-1">
       <div className="flex items-start justify-between gap-2 mb-1">
-        <h3 className="truncate pr-2 text-base font-bold text-slate-950 transition-colors group-hover:text-cyan-800">{business.name}</h3>
+        <h3 className="truncate pr-2 text-base font-semibold text-slate-950 transition-colors group-hover:text-blue-800">{business.name}</h3>
         {business.types?.[0] && (
-          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full uppercase tracking-wider shrink-0">
+          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[11px] font-bold rounded-full uppercase tracking-wider shrink-0">
             {business.types[0].replace(/_/g, ' ')}
           </span>
         )}
@@ -154,7 +154,7 @@ const SearchResultCard = ({ business, onSelect }: SearchResultProps) => (
           {business.user_ratings_total ? `(${business.user_ratings_total} reviews)` : '(New)'}
         </span>
         <div className="flex items-center gap-1.5 ml-auto mr-2">
-          <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-cyan-700 opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-blue-700 opacity-0 transition-opacity group-hover:opacity-100">
             Select <Check className="h-3 w-3" />
           </span>
         </div>
@@ -376,16 +376,16 @@ export const BusinessDetails: React.FC = () => {
       {/* Search Result Overlay */}
       {showSearch && (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-white/75 px-4 pt-[12vh] backdrop-blur-md animate-in fade-in duration-200">
-          <div className="flex max-h-[74vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl shadow-slate-200/70 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+          <div className="flex max-h-[74vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-slate-200/70 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
 
             {/* Header */}
             <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white p-4">
               <div className="flex items-center gap-3">
-                <div className="rounded-md bg-cyan-50 p-2 text-cyan-700">
+                <div className="rounded-md bg-blue-50 p-2 text-blue-700">
                   <Search className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-950">Search Businesses</h3>
+                  <h3 className="text-sm font-semibold text-slate-950">Search businesses</h3>
                   <p className="text-xs font-medium text-slate-500">Select your business to sync details.</p>
                 </div>
               </div>
@@ -425,13 +425,13 @@ export const BusinessDetails: React.FC = () => {
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
                     <AlertCircle className="h-7 w-7" />
                   </div>
-                  <h4 className="mb-1 font-bold text-slate-950">Connection did not complete</h4>
+                  <h4 className="mb-1 font-semibold text-slate-950">Connection did not complete</h4>
                   <p className="mb-5 max-w-md text-sm font-medium leading-6 text-slate-500">{searchError}</p>
                   <div className="flex flex-wrap items-center justify-center gap-2">
                     <button
                       onClick={handleSearch}
                       disabled={isSearching || !searchQuery.trim()}
-                      className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-cyan-700 px-4 text-xs font-bold text-white transition-colors hover:bg-cyan-800 disabled:bg-slate-100 disabled:text-slate-400"
+                      className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 text-[13px] font-semibold text-white transition-colors hover:bg-blue-800 disabled:bg-slate-100 disabled:text-slate-400"
                     >
                       {isSearching && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                       Try Again
@@ -441,7 +441,7 @@ export const BusinessDetails: React.FC = () => {
                         setShowSearch(false);
                         setSearchError('');
                       }}
-                      className="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50"
+                      className="inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-4 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50"
                     >
                       Enter Manually
                     </button>
@@ -464,14 +464,14 @@ export const BusinessDetails: React.FC = () => {
                   <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-slate-100">
                     <Search className="w-8 h-8 text-slate-300" />
                   </div>
-                  <h4 className="mb-1 font-bold text-slate-950">No businesses found</h4>
+                  <h4 className="mb-1 font-semibold text-slate-950">No businesses found</h4>
                   <p className="mb-6 max-w-[220px] text-xs font-medium text-slate-500">We could not find any matches for "{searchQuery}". Try a different spelling or location.</p>
                   <button
                     onClick={() => {
                       setShowSearch(false);
                       setSearchError('');
                     }}
-                    className="rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50"
+                    className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50"
                   >
                     Enter Manually
                   </button>
@@ -485,8 +485,8 @@ export const BusinessDetails: React.FC = () => {
       {isPopulating && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-white/80 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="flex flex-col items-center">
-            <Loader2 className="mb-4 h-10 w-10 animate-spin text-cyan-700" />
-            <p className="text-[11px] font-black uppercase tracking-widest text-slate-950">Syncing Business Data...</p>
+            <Loader2 className="mb-4 h-10 w-10 animate-spin text-blue-700" />
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-950">Syncing business data…</p>
           </div>
         </div>
       )}
@@ -496,9 +496,9 @@ export const BusinessDetails: React.FC = () => {
         {/* AI Smart Connect Section — guarded by initialLoaded to prevent race condition on refresh */}
         {!initialLoaded || loading ? (
           /* Still loading from API — show skeleton placeholder, NOT the setup form */
-          <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-white p-8 animate-pulse">
+          <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-8 animate-pulse">
             <div className="flex items-start gap-4 mb-8">
-              <div className="w-12 h-12 rounded-2xl bg-slate-200" />
+              <div className="w-12 h-12 rounded-xl bg-slate-200" />
               <div className="space-y-2 flex-1">
                 <div className="h-5 w-40 bg-slate-200 rounded" />
                 <div className="h-4 w-64 bg-slate-200 rounded" />
@@ -511,16 +511,16 @@ export const BusinessDetails: React.FC = () => {
           null
         ) : (
           /* First-time setup — show AI Smart Connect search */
-          <div className="rounded-lg border border-cyan-100 bg-white p-5 shadow-sm">
+          <div className="rounded-xl border border-blue-100 bg-white p-5 shadow-sm">
 
               {/* Header */}
               <div className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div className="flex items-start gap-4">
-                  <div className="shrink-0 rounded-md border border-cyan-100 bg-cyan-50 p-3 text-cyan-700">
+                  <div className="shrink-0 rounded-md border border-blue-100 bg-blue-50 p-3 text-blue-700">
                     <Building2 className="h-5 w-5" />
                   </div>
                   <div>
-                    <h4 className="text-base font-black tracking-tight text-slate-950">Google Business Connect</h4>
+                    <h4 className="text-base font-semibold tracking-tight text-slate-950">Import from Google</h4>
                     <p className="mt-1 text-sm font-medium leading-6 text-slate-500">
                       Pull in verified business details, contact info, and hours from Google Places.
                     </p>
@@ -532,21 +532,21 @@ export const BusinessDetails: React.FC = () => {
               <div className="relative max-w-3xl">
                 <div className="grid gap-2 sm:block group/search">
                   <div className="relative">
-                    <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within/search:text-cyan-600" />
+                    <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within/search:text-blue-600" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                       placeholder="Search for your business (e.g. 'Coffee Shop New York')"
-                      className="w-full rounded-lg border border-slate-200 bg-white py-3.5 pl-12 pr-4 text-base text-slate-950 shadow-sm transition-all placeholder:text-slate-400 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 sm:pr-32"
+                      className="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-12 pr-4 text-base text-slate-950 shadow-sm transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:pr-32"
                     />
                   </div>
                   <div className="sm:absolute sm:bottom-2 sm:right-2 sm:top-2">
                     <button
                       onClick={handleSearch}
                       disabled={isSearching || !searchQuery.trim()}
-                      className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-cyan-700 px-5 text-sm font-bold text-white transition-colors hover:bg-cyan-800 disabled:bg-slate-100 disabled:text-slate-400 sm:h-full sm:w-auto"
+                      className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 disabled:bg-slate-100 disabled:text-slate-400 sm:h-full sm:w-auto"
                     >
                       {isSearching ? (
                         <>
@@ -566,11 +566,11 @@ export const BusinessDetails: React.FC = () => {
           </div>
         )}
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           {/* Business Name Section */}
           <div className="group">
-            <Label>Company Name</Label>
+            <Label>Business name</Label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                 <Building2 size={18} />
@@ -588,7 +588,7 @@ export const BusinessDetails: React.FC = () => {
 
           {/* Industry Section */}
           <div className="group">
-            <Label>Industry Vertical</Label>
+            <Label>Industry</Label>
             <div className="relative">
               <Select
                 name="industry"
@@ -619,7 +619,7 @@ export const BusinessDetails: React.FC = () => {
 
           {/* Website Section */}
           <div className="group">
-            <Label optional>Business Website</Label>
+            <Label optional>Website</Label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                 <Globe size={18} />
@@ -640,7 +640,7 @@ export const BusinessDetails: React.FC = () => {
 
             {/* Phone */}
             <div className="group">
-              <Label>Support Line</Label>
+              <Label>Phone number</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                   <Phone size={18} />
@@ -658,7 +658,7 @@ export const BusinessDetails: React.FC = () => {
 
             {/* Email */}
             <div className="group">
-              <Label>Email Contact</Label>
+              <Label>Email</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                   <Mail size={18} />
@@ -676,7 +676,7 @@ export const BusinessDetails: React.FC = () => {
 
             {/* Timezone */}
             <div className="group">
-              <Label>Business Timezone</Label>
+              <Label>Time zone</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                   <Globe size={18} />
@@ -713,7 +713,7 @@ export const BusinessDetails: React.FC = () => {
 
           {/* Address */}
           <div className="group lg:col-span-2">
-            <Label optional>Physical Address</Label>
+            <Label optional>Address</Label>
             <div className="relative">
               <div className="absolute top-3 left-3 pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                 <MapPin size={18} />
@@ -733,14 +733,14 @@ export const BusinessDetails: React.FC = () => {
           </div>
 
           {/* Configuration Tip */}
-          <div className="flex gap-4 rounded-lg border border-cyan-100 bg-cyan-50/70 p-4 text-slate-700 lg:col-span-2">
-            <div className="shrink-0 rounded-md border border-cyan-100 bg-white p-2 text-cyan-700">
+          <div className="flex gap-4 rounded-lg border border-blue-100 bg-blue-50/70 p-4 text-slate-700 lg:col-span-2">
+            <div className="shrink-0 rounded-md border border-blue-100 bg-white p-2 text-blue-700">
               <Info size={18} />
             </div>
             <div>
-              <h4 className="mb-1 text-sm font-bold text-slate-950">Agent context</h4>
+              <h4 className="mb-1 text-sm font-semibold text-slate-950">Agent context</h4>
               <p className="text-xs font-medium leading-relaxed text-slate-600">
-                Customizing the AI personality and knowledge base happens in the upcoming configuration stages.
+                You can set your agent’s personality and knowledge base on the Agents and Knowledge base pages.
               </p>
             </div>
           </div>

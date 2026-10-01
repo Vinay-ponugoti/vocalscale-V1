@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Upload, FileText, Trash2, Loader2, CheckCircle2, AlertCircle, Clock, Search, Sparkles } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { Button } from '../../../components/ui/Button';
+import { PAGE_CONTAINER } from '../../../constants/layout';
 import { businessSetupAPI } from '../../../api/businessSetup';
 import { agentsAPI, type Agent } from '../../../api/agents';
 
@@ -221,23 +224,18 @@ const Knowledge = () => {
   const agentNameById = new Map(agents.map((a) => [a.id, a.name]));
 
   return (
-    <DashboardLayout fullWidth>
-      <div className="scrollbar-hide h-full overflow-y-auto bg-[hsl(var(--ds-off-white))] text-slate-950">
-        <div className="mx-auto w-full max-w-[1100px] space-y-6 px-4 py-6 md:px-6 md:py-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-slate-900">Knowledge base</h1>
-              <p className="mt-1 text-sm text-slate-500">
-                Upload documents or images. Your AI reads them to answer customer calls accurately.
-              </p>
-            </div>
-            {agents.length > 0 && (
-              <label className="flex shrink-0 flex-col gap-1 text-xs font-medium text-slate-500 sm:items-end">
+    <DashboardLayout>
+      <div className={PAGE_CONTAINER}>
+          <PageHeader
+            title="Knowledge base"
+            description="Upload documents or images. Your agent reads them to answer calls accurately."
+            actions={agents.length > 0 && (
+              <label className="flex items-center gap-2 text-xs font-medium text-slate-500">
                 Knowledge for
                 <select
                   value={selectedAgent}
                   onChange={(e) => setSelectedAgent(e.target.value)}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-normal text-slate-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                 >
                   <option value={ALL_AGENTS}>All agents (business-wide)</option>
                   {agents.map((a) => (
@@ -249,7 +247,7 @@ const Knowledge = () => {
                 </select>
               </label>
             )}
-          </div>
+          />
 
           <div
             onDragOver={(e) => {
@@ -261,7 +259,7 @@ const Knowledge = () => {
               setDragging(false);
             }}
             onDrop={handleDrop}
-            className={`rounded-2xl border-2 border-dashed p-8 text-center transition ${
+            className={`rounded-xl border-2 border-dashed p-8 text-center transition ${
               dragging ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-white'
             }`}
           >
@@ -276,7 +274,7 @@ const Knowledge = () => {
             />
             <label
               htmlFor="kb-upload"
-              className="mx-auto flex w-fit cursor-pointer items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+              className="mx-auto flex h-10 w-fit cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 text-[13px] font-semibold text-white transition hover:bg-blue-700"
             >
               {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
               {uploading ? 'Uploading…' : 'Upload documents or images'}
@@ -309,17 +307,19 @@ const Knowledge = () => {
                 </div>
               </div>
             )}
-            {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+            {error && <p className="mt-3 text-sm text-rose-600">{error}</p>}
           </div>
 
           {hasReady && (
-            <div className="rounded-2xl border border-slate-100 bg-white p-5">
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-center gap-2">
-                <Sparkles size={16} className="text-blue-600" />
-                <h2 className="text-sm font-semibold text-slate-800">Test knowledge retrieval</h2>
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                  <Sparkles size={15} />
+                </span>
+                <h2 className="text-sm font-semibold text-slate-900">Test your knowledge base</h2>
               </div>
               <p className="mt-1 text-xs text-slate-500">
-                Ask a question the way a customer would. You’ll see the verified answers and source passages available to the agent.
+                Ask a question the way a caller would. You’ll see the verified answers and source passages available to the agent.
               </p>
               <form onSubmit={handleSearch} className="mt-3 flex gap-2">
                 <div className="relative flex-1">
@@ -328,30 +328,26 @@ const Knowledge = () => {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="e.g. Do you deliver on Sundays?"
-                    className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                    className="h-10 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
-                <button
-                  type="submit"
-                  disabled={searching || !query.trim()}
-                  className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-                >
+                <Button type="submit" disabled={searching || !query.trim()}>
                   {searching ? <Loader2 size={15} className="animate-spin" /> : <Search size={15} />}
                   Ask
-                </button>
+                </Button>
               </form>
 
-              {searchError && <p className="mt-3 text-sm text-red-600">{searchError}</p>}
+              {searchError && <p className="mt-3 text-sm text-rose-600">{searchError}</p>}
 
               {results && !searchError && (
                 results.length === 0 ? (
-                  <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                    Your AI didn’t find anything for that. Consider uploading a document that covers it.
+                  <p className="mt-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                    Your agent didn’t find anything for that. Consider uploading a document that covers it.
                   </p>
                 ) : (
                   <div className="mt-4 space-y-2">
                     {results.map((r) => (
-                      <div key={r.id} className="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                      <div key={r.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-sm text-slate-700">{r.content}</p>
@@ -373,23 +369,23 @@ const Knowledge = () => {
             </div>
           )}
 
-          <div className="rounded-2xl border border-slate-100 bg-white">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
             {loading ? (
               <div className="flex items-center justify-center p-10 text-slate-400">
                 <Loader2 className="animate-spin" />
               </div>
             ) : visibleFiles.length === 0 ? (
               <div className="p-8 text-center md:p-10">
-                <p className="text-sm font-medium text-slate-600">No documents yet</p>
-                <p className="mt-1 text-sm text-slate-400">
-                  Add anything your AI should know to answer customer calls. For example:
+                <p className="text-sm font-semibold text-slate-950">No documents yet</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Add anything your agent should know to answer calls. For example:
                 </p>
                 <div className="mx-auto mt-5 grid max-w-lg grid-cols-2 gap-3">
                   {EXAMPLE_TILES.map((tile) => (
                     <button
                       key={tile.label}
                       onClick={() => inputRef.current?.click()}
-                      className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-blue-400 hover:bg-blue-50"
+                      className="flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left transition hover:border-blue-400 hover:bg-blue-50"
                     >
                       <span className="text-xl leading-none">{tile.emoji}</span>
                       <span>
@@ -418,20 +414,20 @@ const Knowledge = () => {
                             </span>
                           )}
                           {selectedAgent === ALL_AGENTS && f.agent_id && (
-                            <span className="rounded bg-indigo-50 px-1.5 py-0.5 font-medium text-indigo-600">
+                            <span className="rounded bg-blue-50 px-1.5 py-0.5 font-medium text-blue-600">
                               {agentNameById.get(f.agent_id) ?? 'Agent-specific'}
                             </span>
                           )}
                           {f.status === 'COMPLETED' && (
                             <span className="font-medium text-emerald-600">
                               {(f.fact_count ?? 0) > 0
-                                ? `${f.fact_count} answers your AI learned`
+                                ? `${f.fact_count} answers learned`
                                 : `${f.chunk_count ?? 0} sections indexed`}
                             </span>
                           )}
                         </p>
                         {f.status === 'FAILED' && (
-                          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-red-600">
+                          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-rose-600">
                             <span>{f.error || 'We couldn’t read this file. Try re-uploading it.'}</span>
                             <button
                               onClick={() => inputRef.current?.click()}
@@ -447,7 +443,7 @@ const Knowledge = () => {
                       <StatusBadge status={f.status} />
                       <button
                         onClick={() => handleDelete(f)}
-                        className="text-slate-400 transition hover:text-red-600"
+                        className="text-slate-400 transition hover:text-rose-600"
                         aria-label="Delete document"
                       >
                         <Trash2 size={16} />
@@ -458,12 +454,11 @@ const Knowledge = () => {
               </ul>
             )}
           </div>
-        </div>
       </div>
 
       {pendingDelete && (
         <div className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-4">
-          <div className="flex items-center gap-4 rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-lg">
+          <div className="flex items-center gap-4 rounded-lg bg-slate-900 px-4 py-3 text-sm text-white shadow-lg">
             <span className="truncate">
               Deleted <span className="font-medium">{pendingDelete.filename}</span>
             </span>

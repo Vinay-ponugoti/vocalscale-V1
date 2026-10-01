@@ -71,9 +71,9 @@ const BillingHistory: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 ring-1 ring-blue-500/10">
             <CalendarDays size={20} strokeWidth={2.5} />
           </div>
-          <h2 className="text-xl font-black text-charcoal tracking-tight uppercase">Billing History</h2>
+          <h2 className="text-base font-semibold text-slate-900">Invoices</h2>
         </div>
-        <div className="h-[400px] rounded-3xl border border-slate-200 bg-slate-50/50 flex items-center justify-center">
+        <div className="h-[400px] rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-center">
           <Loader2 className="animate-spin text-blue-600" size={32} strokeWidth={2.5} />
         </div>
       </div>
@@ -87,21 +87,21 @@ const BillingHistory: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 ring-1 ring-blue-500/10">
             <CalendarDays size={20} strokeWidth={2.5} />
           </div>
-          <h2 className="text-xl font-black text-charcoal tracking-tight uppercase">Billing History</h2>
+          <h2 className="text-base font-semibold text-slate-900">Invoices</h2>
         </div>
         {invoices.length > 0 && (
-          <button className="text-[10px] font-black text-blue-600 hover:text-blue-700 transition-colors uppercase tracking-widest px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100">View All</button>
+          <button className="text-xs font-semibold text-blue-600 transition-colors hover:text-blue-700">View all</button>
         )}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm flex-1 min-h-[400px] flex flex-col">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm flex-1 min-h-[400px] flex flex-col">
         {invoices.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-4 p-12">
-            <div className="w-20 h-20 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-200 ring-1 ring-slate-100">
+            <div className="w-20 h-20 rounded-xl bg-slate-50 flex items-center justify-center text-slate-200 ring-1 ring-slate-100">
               <Receipt size={40} strokeWidth={1.5} />
             </div>
             <div className="text-center">
-              <p className="text-base font-black text-charcoal uppercase tracking-tight">No invoices yet</p>
+              <p className="text-base font-semibold text-slate-900 uppercase tracking-tight">No invoices yet</p>
               <p className="text-xs font-bold text-slate-400 mt-2 max-w-[240px] leading-relaxed">Your billing history will appear here once you have an active subscription.</p>
             </div>
           </div>
@@ -109,7 +109,7 @@ const BillingHistory: React.FC = () => {
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-slate-100 bg-slate-50/50 sticky top-0 z-10">
-                <tr className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                <tr className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                   <th className="px-6 py-5">Date</th>
                   <th className="px-6 py-5">Description</th>
                   <th className="px-6 py-5">Status</th>
@@ -122,22 +122,22 @@ const BillingHistory: React.FC = () => {
                   <tr key={inv.stripe_invoice_id || index} className="hover:bg-slate-50/50 transition-all group">
                     <td className="px-6 py-5">
                       <div className="flex flex-col">
-                        <span className="font-black text-charcoal">{safeFormatDate(inv.created_at, 'MMM d, yyyy')}</span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{safeFormatDate(inv.created_at, 'EEEE')}</span>
+                        <span className="font-semibold text-slate-900">{safeFormatDate(inv.created_at, 'MMM d, yyyy')}</span>
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{safeFormatDate(inv.created_at, 'EEEE')}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-5 font-bold text-charcoal-medium truncate max-w-[200px]">
+                    <td className="px-6 py-5 font-bold text-slate-700 truncate max-w-[200px]">
                       Invoice #{inv.stripe_invoice_id ? inv.stripe_invoice_id.slice(-4) : '....'}
                     </td>
                     <td className="px-6 py-5">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ring-1 ${inv.status === 'paid'
+                      <span className={`px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider ring-1 ${inv.status === 'paid'
                         ? 'bg-emerald-50 text-emerald-600 ring-emerald-500/10'
                         : 'bg-amber-50 text-amber-600 ring-amber-500/10'
                         }`}>
                         {inv.status}
                       </span>
                     </td>
-                    <td className="px-6 py-5 font-black text-charcoal text-sm">
+                    <td className="px-6 py-5 font-semibold text-slate-900 text-sm">
                       {formatCurrency(inv.amount_paid, inv.currency)}
                     </td>
                     <td className="px-6 py-5 text-right">
@@ -164,21 +164,21 @@ const BillingHistory: React.FC = () => {
 
         {total > pageSize && (
           <div className="p-4 border-t border-slate-100 bg-slate-50/30 flex items-center justify-between">
-            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
               Page {page} of {totalPages}
             </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage(prev => Math.max(1, prev - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white border border-slate-200 text-charcoal hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 rounded-xl text-[11px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-900 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 Previous
               </button>
               <button
                 onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={page === totalPages}
-                className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white border border-slate-200 text-charcoal hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 rounded-xl text-[11px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-900 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 Next
               </button>

@@ -3,6 +3,10 @@ import {
   Save, Bell, AlertTriangle, CheckCircle, CalendarCheck, Link2
 } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { SectionNav } from '../../../components/ui/SectionNav';
+import { Button } from '../../../components/ui/Button';
+import { PAGE_CONTAINER } from '../../../constants/layout';
 import { api } from '../../../lib/api';
 import { businessSetupAPI } from '../../../api/businessSetup';
 import { BookingRequirementsContent } from './components/BookingRequirementsContent';
@@ -29,7 +33,7 @@ const Settings = () => {
   const [savingAll, setSavingAll] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [activeSection, setActiveSection] = useState('booking');
+  const [activeSection, setActiveSection] = useState<'booking' | 'notifications' | 'integrations'>('booking');
 
   useEffect(() => {
     const anyChanges = unsavedChangesRef.current.notifications ||
@@ -194,188 +198,70 @@ const Settings = () => {
   };
 
   const sections = [
-    { id: 'booking', label: 'Booking', icon: CalendarCheck, description: 'Rules & Requirements' },
-    { id: 'notifications', label: 'Alerts', icon: Bell, description: 'System Notifications' },
-    { id: 'integrations', label: 'Integrations', icon: Link2, description: 'Connected Apps' },
-  ];
+    { id: 'booking', label: 'Booking', icon: CalendarCheck, description: 'What to collect from callers' },
+    { id: 'notifications', label: 'Notifications', icon: Bell, description: 'Alerts, emails, and transfers' },
+    { id: 'integrations', label: 'Integrations', icon: Link2, description: 'Connected apps' },
+  ] as const;
+
+  const sectionHeaders = {
+    booking: { title: 'Booking requirements', description: 'The details your agent collects before booking an appointment.' },
+    notifications: { title: 'Notifications', description: 'Call alerts, appointment emails, and call transfer behaviour.' },
+    integrations: { title: 'Integrations', description: 'Connected apps and calendar sync.' },
+  } as const;
 
   return (
-    <DashboardLayout fullWidth>
-      <div className="flex h-full flex-col overflow-hidden bg-[hsl(var(--ds-off-white))] text-slate-950">
+    <DashboardLayout>
+      <div className={PAGE_CONTAINER}>
+        <PageHeader
+          title="Settings"
+          description="Booking rules, notifications, and connected apps."
+          actions={
+            <Button onClick={handleSaveAll} disabled={savingAll || !hasUnsavedChanges}>
+              <Save size={15} className={savingAll ? 'animate-pulse' : ''} />
+              {savingAll ? 'Saving…' : 'Save changes'}
+            </Button>
+          }
+        />
 
-        <div className="lg:hidden flex-none border-b border-slate-200 bg-white px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-          <div>
-              <h1 className="text-lg font-black tracking-tight text-slate-950">Settings</h1>
-              <p className="mt-0.5 text-xs font-semibold text-slate-500">Booking, alerts, and integrations</p>
+        {message && (
+          <div className={`flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium ${message.type === 'success'
+            ? 'border-emerald-100 bg-emerald-50 text-emerald-800'
+            : 'border-rose-100 bg-rose-50 text-rose-800'
+            }`}>
+            {message.type === 'success' ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
+            {message.text}
           </div>
-          <button
-            onClick={handleSaveAll}
-            disabled={savingAll || !hasUnsavedChanges}
-              className={`flex h-10 items-center gap-2 rounded-lg px-4 text-xs font-black uppercase tracking-wider transition ${savingAll || !hasUnsavedChanges
-              ? 'cursor-not-allowed bg-slate-100 text-slate-400'
-              : 'bg-cyan-600 text-white shadow-sm shadow-cyan-200 hover:bg-cyan-700'
-              }`}
-          >
-            {savingAll ? (
-              <div className="w-3.5 h-3.5 border-2 border-slate-400/30 border-t-slate-400 rounded-full animate-spin" />
-            ) : (
-              <Save size={14} />
-            )}
-            {savingAll ? 'Saving...' : 'Save'}
-          </button>
-          </div>
-        </div>
+        )}
 
-        <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[240px_minmax(0,1fr)] lg:gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
+          <SectionNav<typeof activeSection> items={sections} active={activeSection} onChange={setActiveSection} />
 
-          <div className="flex w-full shrink-0 flex-col border-b border-slate-200 bg-white lg:w-72 lg:border-b-0 lg:border-r">
-            <div className="hidden border-b border-slate-100 p-6 lg:block">
-              <h1 className="text-2xl font-black tracking-tight text-slate-950">Settings</h1>
-              <p className="mt-1 text-xs font-semibold text-slate-500">Control center</p>
-            </div>
-
-            <div className="custom-scrollbar flex gap-1.5 overflow-x-auto px-4 py-3 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:p-4">
-              {sections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`group flex shrink-0 items-center gap-3 rounded-lg border p-3 text-left transition lg:w-full ${activeSection === section.id
-                    ? 'border-cyan-200 bg-cyan-50 text-cyan-950'
-                    : 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-800'
-                    }`}
-                >
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-lg transition ${activeSection === section.id
-                    ? 'bg-cyan-600 text-white'
-                    : 'bg-slate-100 text-slate-400 group-hover:text-cyan-600'
-                    }`}>
-                    <section.icon size={16} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className={`text-sm font-black tracking-tight ${activeSection === section.id ? 'text-slate-950' : 'text-slate-700'
-                      }`}>{section.label}</p>
-                    <p className={`hidden truncate text-xs font-semibold lg:block ${activeSection === section.id ? 'text-cyan-700' : 'text-slate-400'}`}>{section.description}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-auto hidden border-t border-slate-100 p-5 lg:block">
-              <button
-                onClick={handleSaveAll}
-                disabled={savingAll || !hasUnsavedChanges}
-                className={`flex h-11 w-full items-center justify-center gap-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition ${savingAll || !hasUnsavedChanges
-                    ? 'cursor-not-allowed border border-slate-200 bg-slate-50 text-slate-300'
-                    : 'bg-cyan-600 text-white shadow-sm shadow-cyan-200 hover:bg-cyan-700'
-                  }
-              `}
-              >
-                {savingAll ? (
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <Save size={16} />
-                )}
-                {savingAll ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
-
-          {/* --- Main Content Area --- */}
-          <div className="custom-scrollbar flex-1 overflow-y-auto p-4 md:p-6 2xl:p-8">
-            <div className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
-              {message && (
-                <div className={`flex items-center gap-3 rounded-lg border p-4 shadow-sm animate-in fade-in slide-in-from-top-2 ${message.type === 'success'
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-100'
-                  : 'bg-rose-50 text-rose-800 border-rose-100'
-                  }`}>
-                  <div className={`p-1.5 rounded-full ${message.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>
-                    {message.type === 'success' ? <CheckCircle size={14} /> : <AlertTriangle size={14} />}
-                  </div>
-                  <span className="font-bold text-[10px] uppercase tracking-wider">{message.text}</span>
-                </div>
-              )}
-
-              <div className="space-y-6">
-                {activeSection === 'booking' && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-2xl font-black tracking-tight text-slate-950">Booking Requirements</h2>
-                        <p className="mt-1 text-sm font-semibold text-slate-500">Appointment intake fields and validation rules.</p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          window.dispatchEvent(new CustomEvent('booking-requirements-add-trigger'));
-                        }}
-                        className="hidden h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black uppercase tracking-wider text-slate-500 shadow-sm transition hover:border-cyan-500 hover:text-cyan-700 sm:flex"
-                      >
-                        Add Field
-                      </button>
-                    </div>
-                    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60 lg:p-6">
-                      <BookingRequirementsContent />
-                    </div>
-                  </div>
-                )}
-
-                {activeSection === 'notifications' && (
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-2xl font-black tracking-tight text-slate-950">Notification Alerts</h2>
-                      <p className="mt-1 text-sm font-semibold text-slate-500">Call alerts, booking emails, and transfer behavior.</p>
-                    </div>
-                    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60 lg:p-6">
-                      <NotificationSettingsContent
-                        settings={notifications}
-                        onChange={handleNotificationChange}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {activeSection === 'integrations' && (
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-2xl font-black tracking-tight text-slate-950">Integrations</h2>
-                      <p className="mt-1 text-sm font-semibold text-slate-500">Connected apps and calendar sync.</p>
-                    </div>
-                    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60 lg:p-6">
-                      <IntegrationsContent />
-                    </div>
-                  </div>
-                )}
+          <div className="min-w-0 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-base font-semibold text-slate-950">{sectionHeaders[activeSection].title}</h2>
+                <p className="mt-0.5 text-sm text-slate-500">{sectionHeaders[activeSection].description}</p>
               </div>
-
-              {/* Mobile Bottom Space */}
-              <div className="lg:hidden h-20" />
+              {activeSection === 'booking' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hidden sm:inline-flex"
+                  onClick={() => window.dispatchEvent(new CustomEvent('booking-requirements-add-trigger'))}
+                >
+                  Add field
+                </Button>
+              )}
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              {activeSection === 'booking' && <BookingRequirementsContent />}
+              {activeSection === 'notifications' && (
+                <NotificationSettingsContent settings={notifications} onChange={handleNotificationChange} />
+              )}
+              {activeSection === 'integrations' && <IntegrationsContent />}
             </div>
           </div>
         </div>
-
-        <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-          height: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgb(var(--twc-slate-200)); /* Slate-200 */
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgb(var(--twc-slate-300)); /* Slate-300 */
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
       </div>
     </DashboardLayout>
   );

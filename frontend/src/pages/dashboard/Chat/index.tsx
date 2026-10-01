@@ -40,12 +40,12 @@ const Chat = () => {
     <DashboardLayout fullWidth>
       <div className="h-full flex flex-col bg-white min-w-0">
 
-        {/* Unique branded sub-header */}
-        <div className="flex items-center justify-between gap-3 px-4 md:px-6 py-3 border-b border-gray-100 bg-white shrink-0">
+        {/* Page header (full-height chat layout) */}
+        <div className="flex items-center justify-between gap-3 px-4 md:px-6 lg:px-8 py-3 border-b border-slate-200 bg-white shrink-0">
           {/* Left: assistant identity */}
           <div className="min-w-0">
-            <p className="text-sm font-bold text-gray-900 leading-none truncate">AI Assistant</p>
-            <p className="text-[11px] text-gray-400 leading-none mt-1 truncate">Knows your business</p>
+            <h1 className="text-base font-semibold text-slate-900 leading-none truncate">Copilot</h1>
+            <p className="text-xs text-slate-500 leading-none mt-1 truncate">Ask anything about your business</p>
           </div>
 
           {/* Right: history + tab switcher + new chat */}
@@ -55,8 +55,8 @@ const Chat = () => {
               className={cn(
                 'flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg border transition-colors',
                 historyOpen
-                  ? 'text-gray-900 bg-gray-100 border-gray-200'
-                  : 'text-gray-700 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                  ? 'text-slate-900 bg-slate-100 border-slate-200'
+                  : 'text-slate-700 bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300'
               )}
               title="Chat history"
             >
@@ -64,12 +64,12 @@ const Chat = () => {
               <span className="hidden sm:inline">History</span>
             </button>
 
-            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+            <div className="flex items-center bg-slate-100 rounded-lg p-0.5">
               <button
                 onClick={() => setActiveTab('chat')}
                 className={cn(
                   'flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all',
-                  activeTab === 'chat' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  activeTab === 'chat' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 )}
               >
                 <MessageSquare size={14} />
@@ -79,7 +79,7 @@ const Chat = () => {
                 onClick={() => setActiveTab('analytics')}
                 className={cn(
                   'flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all',
-                  activeTab === 'analytics' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  activeTab === 'analytics' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 )}
               >
                 <BarChart3 size={14} />
@@ -90,7 +90,7 @@ const Chat = () => {
             {activeTab === 'chat' && (
               <button
                 onClick={handleNewChat}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors"
                 title="New chat"
               >
                 <SquarePen size={15} />
@@ -104,12 +104,12 @@ const Chat = () => {
         <div className="flex-1 min-h-0 flex">
           {/* History sidebar */}
           {historyOpen && (
-            <aside className="w-72 max-w-[85vw] shrink-0 border-r border-gray-100 bg-gray-50/60 flex flex-col">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Conversations</p>
+            <aside className="w-72 max-w-[85vw] shrink-0 border-r border-slate-100 bg-slate-50/60 flex flex-col">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Conversations</p>
                 <button
                   onClick={() => setHistoryOpen(false)}
-                  className="p-1 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                  className="p-1 rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
                   aria-label="Close history"
                 >
                   <X size={14} />
@@ -117,33 +117,33 @@ const Chat = () => {
               </div>
               <div className="flex-1 overflow-y-auto p-2 space-y-1">
                 {sessionsLoading ? (
-                  <p className="px-3 py-4 text-sm text-gray-400">Loading…</p>
+                  <p className="px-3 py-4 text-sm text-slate-400">Loading…</p>
                 ) : sessions.length === 0 ? (
-                  <p className="px-3 py-4 text-sm text-gray-400">No conversations yet. Start chatting and they'll appear here.</p>
+                  <p className="px-3 py-4 text-sm text-slate-400">No conversations yet. Start chatting and they'll appear here.</p>
                 ) : (
                   sessions.map(s => (
                     <div
                       key={s.id}
                       className={cn(
                         'group relative rounded-lg transition-colors',
-                        sessionId === s.id ? 'bg-white shadow-sm ring-1 ring-gray-200' : 'hover:bg-white/80'
+                        sessionId === s.id ? 'bg-white shadow-sm ring-1 ring-slate-200' : 'hover:bg-white/80'
                       )}
                     >
                       <button
                         onClick={() => openSession(s.id)}
                         className="w-full text-left px-3 py-2.5 pr-9"
                       >
-                        <p className="text-sm font-medium text-gray-800 truncate">{s.title || 'Untitled chat'}</p>
-                        <p className="mt-0.5 text-xs text-gray-400 truncate">
+                        <p className="text-sm font-medium text-slate-800 truncate">{s.title || 'Untitled chat'}</p>
+                        <p className="mt-0.5 text-xs text-slate-400 truncate">
                           {s.last_message || `${s.message_count} messages`}
                         </p>
-                        <p className="mt-0.5 text-[10px] text-gray-400">
+                        <p className="mt-0.5 text-[10px] text-slate-400">
                           {formatDistanceToNow(new Date(s.updated_at), { addSuffix: true })}
                         </p>
                       </button>
                       <button
                         onClick={() => handleDeleteSession(s.id)}
-                        className="absolute right-2 top-2.5 p-1 rounded-md text-gray-300 opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 transition-all"
+                        className="absolute right-2 top-2.5 p-1 rounded-md text-slate-300 opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 transition-all"
                         title="Delete conversation"
                       >
                         <Trash2 size={13} />

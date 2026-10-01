@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Check, PhoneCall, Star, Shield, ArrowLeft, Loader2, AlertCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { PAGE_CONTAINER } from '../../../constants/layout';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { billingApi } from '../../../api/billing';
 
@@ -111,7 +113,7 @@ const Plans: React.FC = () => {
     const catalog = [
       {
         name: 'Starter',
-        description: 'For solo pros & small teams. A 24/7 AI receptionist that never misses a call.',
+        description: 'For solo pros & small teams. A 24/7 agent that never misses a call.',
         monthlyPrice: 399,
         originalMonthlyPrice: 499,
         annualPrice: 319,
@@ -198,45 +200,40 @@ const Plans: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className={PAGE_CONTAINER}>
 
         {isFetching ? (
           <div className="flex-1 flex items-center justify-center min-h-[60vh]">
-            <Loader2 size={32} className="text-charcoal animate-spin" />
+            <Loader2 size={32} className="text-slate-900 animate-spin" />
           </div>
         ) : (
           <>
             {error && (
-              <div className="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-xl">
+              <div className="flex items-center justify-between rounded-lg border border-rose-100 bg-rose-50 p-4">
                 <div className="flex items-center gap-3">
-                  <AlertCircle size={20} className="text-red-600" />
-                  <p className="text-red-700 text-sm font-medium">{error}</p>
+                  <AlertCircle size={20} className="text-rose-600" />
+                  <p className="text-rose-700 text-sm font-medium">{error}</p>
                 </div>
-                <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700">
+                <button onClick={() => setError(null)} className="text-rose-500 hover:text-rose-700">
                   <X size={16} />
                 </button>
               </div>
             )}
 
             {/* Header */}
-            <div className="flex flex-col gap-4">
               <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-charcoal-light hover:text-charcoal transition-colors w-fit group"
+                onClick={() => navigate('/dashboard/billing')}
+                className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-slate-500 transition hover:text-slate-900"
               >
-                <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                <span className="text-xs font-black uppercase tracking-widest">Back</span>
+                <ArrowLeft size={15} /> Back to billing
               </button>
 
-              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-                <div>
-                  <h1 className="text-3xl font-black text-charcoal tracking-tight">Select Plan</h1>
-                  <p className="text-charcoal-light text-sm font-medium mt-2">Upgrade your AI capabilities instantly.</p>
-                </div>
-
-                {/* Toggle */}
-                <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-200 h-fit">
-                  <span className={cn("text-[10px] font-black transition-colors uppercase tracking-widest", !isAnnual ? "text-slate-900" : "text-slate-400")}>Monthly</span>
+              <PageHeader
+                title="Plans"
+                description="Choose the plan that fits your call volume. Change or cancel anytime."
+                actions={
+                <div className="flex h-10 items-center gap-3 rounded-lg border border-slate-200 bg-white px-3">
+                  <span className={cn("text-xs font-semibold transition-colors", !isAnnual ? "text-slate-900" : "text-slate-400")}>Monthly</span>
                   <button
                     onClick={() => setIsAnnual(!isAnnual)}
                     className="relative w-12 h-6 rounded-full bg-slate-100 border border-slate-200 p-1 transition-colors hover:border-blue-400"
@@ -249,39 +246,39 @@ const Plans: React.FC = () => {
                     />
                   </button>
                   <div className="flex items-center gap-2">
-                    <span className={cn("text-[10px] font-black transition-colors uppercase tracking-widest", isAnnual ? "text-slate-900" : "text-slate-400")}>Annual</span>
-                    <span className="px-2 py-0.5 bg-blue-100/50 text-blue-600 text-[9px] font-black uppercase tracking-tighter rounded-md border border-blue-200">
+                    <span className={cn("text-xs font-semibold transition-colors", isAnnual ? "text-slate-900" : "text-slate-400")}>Annual</span>
+                    <span className="rounded-md border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[11px] font-semibold text-blue-700">
                       Save up to 40%
                     </span>
                   </div>
                 </div>
-              </div>
-            </div>
+                }
+              />
 
             {plans.length > 0 ? (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                 {plans.map((plan) => (
                   <div
                     key={plan.name}
                     className={cn(
                       "group relative p-1 rounded-[1.75rem] transition-all duration-500",
-                      plan.popular ? "bg-gradient-to-b from-blue-200 to-indigo-200 shadow-xl shadow-blue-200/50" : "bg-transparent border border-transparent",
+                      plan.popular ? "bg-gradient-to-b from-blue-200 to-blue-200 shadow-xl shadow-blue-200/50" : "bg-transparent border border-transparent",
                       plan.current && "opacity-75" // Lock UI simple
                     )}
                   >
                     <div className={cn(
-                      "relative bg-white rounded-[1.6rem] p-6 h-full flex flex-col border",
+                      "relative bg-white rounded-xl p-6 h-full flex flex-col border",
                       plan.popular ? "border-white/50" : "border-slate-200 shadow-lg shadow-slate-200/50"
                     )}>
                       {plan.current && (
-                        <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg">
+                        <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white text-[11px] font-semibold uppercase tracking-wider rounded-full shadow-lg">
                           <Shield size={12} />
                           Active Subscription
                         </div>
                       )}
 
                       {!plan.current && plan.popular && (
-                        <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg shadow-blue-500/30">
+                        <div className="absolute top-0 right-12 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 bg-blue-600 text-white text-[11px] font-semibold uppercase tracking-wider rounded-full shadow-lg shadow-blue-500/30">
                           <Star className="w-3 h-3 fill-current" />
                           Most Popular
                         </div>
@@ -294,7 +291,7 @@ const Plans: React.FC = () => {
                         )}>
                           <plan.icon className="w-5 h-5" strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-xl font-black tracking-tight text-slate-900 mb-1">{plan.name}</h3>
+                        <h3 className="text-xl font-semibold tracking-tight text-slate-900 mb-1">{plan.name}</h3>
                         <p className="text-slate-600 font-medium text-xs leading-relaxed">{plan.description}</p>
                       </div>
 
@@ -302,25 +299,25 @@ const Plans: React.FC = () => {
                         <div className="flex flex-col gap-1">
                           {!isAnnual && !!plan.originalMonthlyPrice && plan.originalMonthlyPrice > plan.monthlyPrice && (
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-slate-400 line-through decoration-slate-400/50 decoration-2">
+                              <span className="text-sm font-semibold text-slate-400 line-through decoration-slate-400/50 decoration-2">
                                 ${plan.originalMonthlyPrice}
                               </span>
-                              <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase rounded border border-emerald-200">
+                              <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-600 text-[11px] font-semibold uppercase rounded border border-emerald-200">
                                 {Math.round((1 - plan.monthlyPrice / plan.originalMonthlyPrice) * 100)}% OFF
                               </span>
                             </div>
                           )}
                           <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-black text-charcoal tracking-tighter">$</span>
-                            <span className="text-4xl font-black text-charcoal tracking-tighter">
+                            <span className="text-2xl font-semibold text-slate-900 tracking-tighter">$</span>
+                            <span className="text-4xl font-semibold text-slate-900 tracking-tighter">
                               {Math.round(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
                             </span>
-                            <span className="text-slate-500 font-bold ml-1 text-sm">/mo</span>
+                            <span className="text-slate-500 font-semibold ml-1 text-sm">/mo</span>
                           </div>
                         </div>
 
                         {isAnnual && !plan.contactUs && (
-                          <p className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1">Billed annually</p>
+                          <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-wider mt-1">Billed annually</p>
                         )}
                       </div>
 
@@ -348,12 +345,12 @@ const Plans: React.FC = () => {
                           }
                         }}
                         className={cn(
-                          "w-full rounded-xl h-12 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-blue-500/10 flex items-center justify-center gap-2",
+                          "w-full rounded-xl h-12 text-[11px] font-semibold uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-blue-500/10 flex items-center justify-center gap-2",
                           plan.current
                             ? "bg-slate-50 text-slate-400 border border-slate-200 cursor-default"
                             : plan.popular
                               ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"
-                              : "bg-slate-900 hover:bg-slate-800 text-white shadow-slate-900/20"
+                              : "bg-blue-600 hover:bg-blue-700 text-white shadow-slate-900/20"
                         )}
                       >
                         {loading === plan.name ? <Loader2 size={16} className="animate-spin" /> : plan.cta}
@@ -364,20 +361,20 @@ const Plans: React.FC = () => {
 
                 {/* Enterprise — sits beside the plans, custom/contact */}
                 <div className="group relative p-1 rounded-[1.75rem]">
-                  <div className="relative bg-gradient-to-br from-charcoal to-charcoal-dark text-white rounded-[1.6rem] p-6 h-full flex flex-col border border-charcoal-dark shadow-lg shadow-slate-900/20">
+                  <div className="relative bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-xl p-6 h-full flex flex-col border border-slate-900 shadow-lg shadow-slate-900/20">
                     <div className="mb-4">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-white/10 text-white border border-white/10">
                         <Shield className="w-5 h-5" strokeWidth={1.5} />
                       </div>
-                      <h3 className="text-xl font-black tracking-tight mb-1">Enterprise</h3>
+                      <h3 className="text-xl font-semibold tracking-tight mb-1">Enterprise</h3>
                       <p className="text-white/60 font-medium text-xs leading-relaxed">Maximum power for high-volume businesses and agencies.</p>
                     </div>
 
                     <div className="mb-5">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-black tracking-tighter">Custom</span>
+                        <span className="text-4xl font-semibold tracking-tighter">Custom</span>
                       </div>
-                      <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em] mt-1">Tailored to your volume</p>
+                      <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider mt-1">Tailored to your volume</p>
                     </div>
 
                     <div className="space-y-2.5 mb-5 flex-grow">
@@ -393,7 +390,7 @@ const Plans: React.FC = () => {
 
                     <button
                       onClick={() => { window.location.href = 'mailto:sales@vocalscale.com'; }}
-                      className="w-full rounded-xl h-12 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 bg-white text-charcoal hover:bg-white/90 flex items-center justify-center gap-2"
+                      className="w-full rounded-xl h-12 text-[11px] font-semibold uppercase tracking-wider transition-all active:scale-95 bg-white text-slate-900 hover:bg-white/90 flex items-center justify-center gap-2"
                     >
                       Contact Sales
                     </button>
@@ -406,20 +403,20 @@ const Plans: React.FC = () => {
                   <Shield size={40} className="text-emerald-600" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">You're on the Professional Plan</h3>
+                  <h3 className="text-lg font-semibold text-slate-900">You're on the Professional plan</h3>
                   <p className="text-slate-600 font-medium max-w-md mx-auto">
-                    You're currently using our most powerful standard plan. All features are unlocked and your AI is running at full capacity.
+                    You're currently using our most powerful standard plan. All features are unlocked for your agents.
                   </p>
                 </div>
-                <div className="flex items-center gap-4 py-3 px-6 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="flex items-center gap-4 py-3 px-6 bg-slate-50 rounded-xl border border-slate-100">
                   <div className="flex flex-col items-start gap-1">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Current Status</span>
-                    <span className="text-sm font-black text-emerald-600 uppercase">Active & Secured</span>
+                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Current Status</span>
+                    <span className="text-sm font-semibold text-emerald-600 uppercase">Active & Secured</span>
                   </div>
                   <div className="w-px h-8 bg-slate-200 mx-2" />
                   <div className="flex flex-col items-start gap-1">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Next Billing</span>
-                    <span className="text-sm font-black text-slate-900 uppercase">
+                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Next Billing</span>
+                    <span className="text-sm font-semibold text-slate-900 uppercase">
                       {subscription.next_billing ? new Date(subscription.next_billing).toLocaleDateString() : 'N/A'}
                     </span>
                   </div>

@@ -21,10 +21,10 @@ const EmptyState = ({ onSuggestionClick }: EmptyStateProps) => {
   return (
     <div className="h-full flex flex-col items-center justify-center px-6 py-10 overflow-y-auto [&::-webkit-scrollbar]:w-0 scrollbar-none bg-white">
       {/* ── Headline ── */}
-      <h2 className="text-2xl font-bold text-gray-900 tracking-tight text-center mb-2">
+      <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center mb-2">
         How can I help your business today?
       </h2>
-      <p className="text-gray-500 text-sm text-center max-w-sm leading-relaxed mb-8">
+      <p className="text-slate-500 text-sm text-center max-w-sm leading-relaxed mb-8">
         I know your products, customers, and goals. Ask me anything — or pick a suggestion below.
       </p>
 
@@ -35,9 +35,9 @@ const EmptyState = ({ onSuggestionClick }: EmptyStateProps) => {
             key={idx}
             onClick={() => onSuggestionClick(text)}
             className={cn(
-              'px-4 py-3 text-left text-sm text-gray-600',
-              'bg-white border border-gray-200 rounded-xl',
-              'hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900',
+              'px-4 py-3 text-left text-sm text-slate-600',
+              'bg-white border border-slate-200 rounded-xl',
+              'hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900',
               'transition-colors duration-150',
             )}
           >

@@ -189,7 +189,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="flex items-center gap-2 text-sm font-semibold text-slate-950">
-                  <Mic2 className="h-4 w-4 text-cyan-600" />
+                  <Mic2 className="h-4 w-4 text-blue-600" />
                   Voice catalog
                 </div>
                 <p className="mt-1 text-xs font-medium text-slate-500">
@@ -210,7 +210,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                   placeholder="Search name, accent, model, style"
                   value={voiceSearch}
                   onChange={(event) => setVoiceSearch(event.target.value)}
-                  className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium text-slate-950 outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+                  className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium text-slate-950 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                 />
               </div>
 
@@ -245,19 +245,19 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                   type="button"
                   onClick={() => onChange({ voice_id: voice.id, model_name: voice.name || '' })}
                   className={`m-1 rounded-lg border p-3 text-left transition ${selected
-                    ? 'border-cyan-500 bg-cyan-50 ring-2 ring-cyan-100'
+                    ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-100'
                     : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                     }`}
                 >
                   <div className="flex items-start gap-3">
-                    <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${selected ? 'bg-cyan-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${selected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
                       {selected ? <Check className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                     </span>
 
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
                         <span className="truncate text-sm font-semibold text-slate-950">{voice.name}</span>
-                        <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase ${gender === 'male'
+                        <span className={`rounded-md px-1.5 py-0.5 text-[11px] font-bold uppercase ${gender === 'male'
                           ? 'bg-blue-50 text-blue-700'
                           : gender === 'female'
                             ? 'bg-rose-50 text-rose-700'
@@ -286,7 +286,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                         }
                       }}
                       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition ${playing
-                        ? 'bg-cyan-600 text-white'
+                        ? 'bg-blue-600 text-white'
                         : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900'
                         }`}
                     >
@@ -322,14 +322,14 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
         </section>
 
         <aside className="space-y-4">
-          <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60">
+          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500">
                 <Volume2 className="h-5 w-5" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-slate-500">Current selection</p>
-                <h3 className="mt-1 truncate text-xl font-black tracking-tight text-slate-950">
+                <h3 className="mt-1 truncate text-xl font-semibold tracking-tight text-slate-950">
                   {selectedVoice?.name || 'Not set'}
                 </h3>
                 <p className="mt-1 text-sm font-medium text-slate-600">{voiceDescription(selectedVoice)}</p>
@@ -351,7 +351,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
               type="button"
               onClick={handleGreetingPreview}
               disabled={!selectedVoice?.provider_voice_id || (playingVoiceId === GREETING_PREVIEW_ID && isLoading)}
-              className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-slate-950 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+              className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-blue-600 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
             >
               {playingVoiceId === GREETING_PREVIEW_ID && isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -368,9 +368,9 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
           </section>
 
 
-          <section className="rounded-lg border border-slate-200 bg-white p-4">
+          <section className="rounded-xl border border-slate-200 bg-white p-4">
             <label className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-950">
-              <Globe2 className="h-4 w-4 text-cyan-600" />
+              <Globe2 className="h-4 w-4 text-blue-600" />
               Language
             </label>
             <div className="grid gap-2">
@@ -384,7 +384,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                     type="button"
                     onClick={() => handleLanguageChange(language.value)}
                     className={`flex items-center justify-between rounded-lg border px-3 py-2 text-left transition ${active
-                      ? 'border-cyan-500 bg-cyan-50'
+                      ? 'border-blue-500 bg-blue-50'
                       : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                       }`}
                   >
@@ -392,7 +392,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                       <span className="block text-sm font-semibold text-slate-950">{language.label}</span>
                       <span className="block text-xs font-medium text-slate-500">{language.hint}</span>
                     </span>
-                    <span className={`rounded-md px-2 py-1 text-xs font-bold ${active ? 'bg-cyan-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className={`rounded-md px-2 py-1 text-xs font-bold ${active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
                       {count}
                     </span>
                   </button>
@@ -404,11 +404,11 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
       </div>
 
       <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-white p-5">
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
           <label className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-950">
-            <Gauge className="h-4 w-4 text-cyan-600" />
+            <Gauge className="h-4 w-4 text-blue-600" />
             Speaking speed
-            <span className="ml-auto rounded-md bg-cyan-50 px-2 py-1 text-xs font-bold text-cyan-700">
+            <span className="ml-auto rounded-md bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700">
               {settings.speaking_speed.toFixed(1)}x
             </span>
           </label>
@@ -421,7 +421,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
               step="0.1"
               value={settings.speaking_speed}
               onChange={(event) => onChange({ speaking_speed: parseFloat(event.target.value) })}
-              className="h-2 min-w-0 flex-1 cursor-pointer accent-cyan-600"
+              className="h-2 min-w-0 flex-1 cursor-pointer accent-blue-600"
             />
             <span className="text-xs font-bold text-slate-400">1.5x</span>
           </div>
@@ -430,9 +430,9 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 xl:col-span-2">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 xl:col-span-2">
           <label className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-950">
-            <Clock className="h-4 w-4 text-cyan-600" />
+            <Clock className="h-4 w-4 text-blue-600" />
             Conversation tone
           </label>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -444,12 +444,12 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
                   type="button"
                   onClick={() => onChange({ conversation_tone: value })}
                   className={`rounded-lg border p-3 text-left transition ${active
-                    ? 'border-cyan-500 bg-cyan-50'
+                    ? 'border-blue-500 bg-blue-50'
                     : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                     }`}
                 >
                   <span className="flex items-center gap-2 text-sm font-semibold text-slate-950">
-                    <Icon className={`h-4 w-4 ${active ? 'text-cyan-600' : 'text-slate-400'}`} />
+                    <Icon className={`h-4 w-4 ${active ? 'text-blue-600' : 'text-slate-400'}`} />
                     {label}
                   </span>
                   <span className="mt-1 block text-xs font-medium text-slate-500">{description}</span>
@@ -461,9 +461,9 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
       </section>
 
       <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <div className="rounded-lg border border-slate-200 bg-white p-5">
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
           <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-950">
-            <Volume2 className="h-4 w-4 text-cyan-600" />
+            <Volume2 className="h-4 w-4 text-blue-600" />
             First message
           </label>
           <textarea
@@ -471,16 +471,16 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             placeholder="Hi, thanks for calling. How can I help today?"
             value={settings.custom_greeting}
             onChange={(event) => onChange({ custom_greeting: event.target.value })}
-            className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium leading-6 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+            className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium leading-6 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
           />
           <p className="mt-2 text-right text-xs font-semibold text-slate-400">
             {settings.custom_greeting?.length || 0}/500
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5">
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
           <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-950">
-            <ChevronDown className="h-4 w-4 text-cyan-600" />
+            <ChevronDown className="h-4 w-4 text-blue-600" />
             After-hours message
           </label>
           <textarea
@@ -488,7 +488,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
             placeholder="We are currently closed, but I can still take a message or help with scheduling."
             value={settings.after_hours_greeting}
             onChange={(event) => onChange({ after_hours_greeting: event.target.value })}
-            className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium leading-6 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+            className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium leading-6 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
           />
           <p className="mt-2 text-right text-xs font-semibold text-slate-400">
             {settings.after_hours_greeting?.length || 0}/500
@@ -496,7 +496,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
         </div>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+      <section className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
             <ToggleLeft className="h-5 w-5" />
@@ -511,7 +511,7 @@ export const VoiceSettingsContent: React.FC<VoiceSettingsProps> = ({
         <button
           type="button"
           onClick={() => onChange({ is_active: !settings.is_active })}
-          className={`relative h-8 w-14 rounded-full transition ${settings.is_active ? 'bg-cyan-600' : 'bg-slate-300'}`}
+          className={`relative h-8 w-14 rounded-full transition ${settings.is_active ? 'bg-blue-600' : 'bg-slate-300'}`}
           aria-pressed={settings.is_active}
         >
           <span

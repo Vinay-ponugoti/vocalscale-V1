@@ -47,7 +47,7 @@ const PRESETS = [
 const CustomInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => (
   <input
     {...props}
-    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-950 transition-all placeholder:text-slate-400 hover:bg-white focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-500/10"
+    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-950 transition-all placeholder:text-slate-400 hover:bg-white focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/10"
   />
 );
 
@@ -55,7 +55,7 @@ const CustomToggle: React.FC<{ active: boolean; onChange?: () => void; label?: s
   <button
     type="button"
     onClick={onChange}
-    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none ${active ? 'bg-cyan-700' : 'bg-slate-200'}`}
+    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none ${active ? 'bg-blue-700' : 'bg-slate-200'}`}
     aria-pressed={active}
     aria-label={label || 'Toggle status'}
   >
@@ -68,7 +68,7 @@ const CustomToggle: React.FC<{ active: boolean; onChange?: () => void; label?: s
 const PresetButton: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => (
   <button
     onClick={onClick}
-    className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm transition-colors hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800"
+    className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800"
   >
     {label}
   </button>
@@ -147,12 +147,12 @@ export const BusinessHoursSettings: React.FC = () => {
     <div className="space-y-5 font-sans">
 
       {/* Presets Section */}
-      <div className="flex flex-col justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-50 text-cyan-700">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-50 text-blue-700">
             <CalendarClock size={16} />
           </div>
-          <span className="text-sm font-black tracking-tight text-slate-950">Quick Presets</span>
+          <span className="text-sm font-semibold tracking-tight text-slate-950">Quick presets</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((preset, idx) => (
@@ -174,7 +174,7 @@ export const BusinessHoursSettings: React.FC = () => {
             <div
               key={day.key}
               className={`
-                relative rounded-lg border p-5 transition-colors
+                relative rounded-xl border p-5 transition-colors
                 ${isEnabled
                   ? 'border-slate-200 bg-white shadow-sm'
                   : 'border-slate-200 bg-slate-50/80'
@@ -183,7 +183,7 @@ export const BusinessHoursSettings: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <span className={`text-sm font-bold leading-none ${isEnabled ? 'text-slate-950' : 'text-slate-400'}`}>
+                  <span className={`text-sm font-semibold leading-none ${isEnabled ? 'text-slate-950' : 'text-slate-400'}`}>
                     {day.label}
                   </span>
                   {!isEnabled && (
@@ -203,7 +203,7 @@ export const BusinessHoursSettings: React.FC = () => {
               {isEnabled && (
                 <div className="grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
                   <div>
-                    <label className="mb-1.5 block text-sm font-bold leading-none text-slate-500">Opens</label>
+                    <label className="mb-1.5 block text-sm font-semibold leading-none text-slate-500">Opens</label>
                     <CustomInput
                       type="time"
                       value={hours[index]?.open_time || ''}
@@ -211,7 +211,7 @@ export const BusinessHoursSettings: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-sm font-bold leading-none text-slate-500">Closes</label>
+                    <label className="mb-1.5 block text-sm font-semibold leading-none text-slate-500">Closes</label>
                     <CustomInput
                       type="time"
                       value={hours[index]?.close_time || ''}
@@ -226,14 +226,14 @@ export const BusinessHoursSettings: React.FC = () => {
       </div>
 
       {/* Agent Behavior Tip */}
-      <div className="flex items-start gap-4 rounded-lg border border-cyan-100 bg-cyan-50/70 p-4 text-slate-700">
-        <div className="shrink-0 rounded-md border border-cyan-100 bg-white p-2 shadow-sm">
-          <Clock size={18} className="text-cyan-700" />
+      <div className="flex items-start gap-4 rounded-lg border border-blue-100 bg-blue-50/70 p-4 text-slate-700">
+        <div className="shrink-0 rounded-md border border-blue-100 bg-white p-2 shadow-sm">
+          <Clock size={18} className="text-blue-700" />
         </div>
         <div>
-          <p className="mb-0.5 text-sm font-black tracking-tight text-slate-950">After-Hours Handling</p>
+          <p className="mb-0.5 text-sm font-semibold tracking-tight text-slate-950">After-Hours Handling</p>
           <p className="text-sm font-medium leading-relaxed text-slate-600">
-            When calls arrive outside active windows, the AI will automatically switch to voicemail mode or route to emergency contacts based on your priority handling settings.
+            When calls arrive outside active windows, your agent will automatically switch to voicemail mode or route to emergency contacts based on your priority handling settings.
           </p>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
+import { PageHeader } from '../../components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -164,11 +165,11 @@ const GetNewNumber = () => {
     return (
       <DashboardLayout fullWidth>
         <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-[hsl(var(--ds-off-white))] p-6">
-          <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50">
-            <Loader2 className="h-7 w-7 animate-spin text-cyan-700" />
+          <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-blue-100 bg-blue-50">
+            <Loader2 className="h-7 w-7 animate-spin text-blue-700" />
           </div>
           <div className="text-center">
-            <h3 className="mb-1 text-base font-black tracking-tight text-slate-950">Verifying account</h3>
+            <h3 className="mb-1 text-base font-semibold tracking-tight text-slate-950">Verifying account</h3>
             <p className="text-sm font-medium text-slate-500">Checking provider setup before number search.</p>
           </div>
         </div>
@@ -181,11 +182,11 @@ const GetNewNumber = () => {
     return (
       <DashboardLayout fullWidth>
         <div className="flex min-h-screen items-center justify-center bg-[hsl(var(--ds-off-white))] p-6">
-          <div className="w-full max-w-md rounded-lg border border-rose-100 bg-white p-8 text-center shadow-sm">
+          <div className="w-full max-w-md rounded-xl border border-rose-100 bg-white p-8 text-center shadow-sm">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
               <AlertCircle className="h-8 w-8" />
             </div>
-            <h2 className="mb-3 text-2xl font-black tracking-tight text-slate-950">Status mismatch</h2>
+            <h2 className="mb-3 text-2xl font-semibold tracking-tight text-slate-950">Status mismatch</h2>
             <p className="mb-8 text-sm font-medium leading-6 text-slate-500">{error}</p>
             <div className="flex flex-col gap-3">
               <button
@@ -194,15 +195,15 @@ const GetNewNumber = () => {
                   setCheckingSubaccount(true);
                   checkSubaccountStatus();
                 }}
-                className="flex h-11 w-full items-center justify-center rounded-md bg-slate-950 px-4 text-xs font-bold text-white transition-colors hover:bg-slate-800"
+                className="flex h-10 w-full items-center justify-center rounded-lg bg-blue-600 px-4 text-[13px] font-semibold text-white transition-colors hover:bg-blue-700"
               >
-                Retry Verification
+                Try again
               </button>
               <button
                 onClick={() => navigate('/dashboard/voice-setup')}
-                className="flex h-11 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50"
+                className="flex h-10 w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-4 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50"
               >
-                Return to Overview
+                Back to phone numbers
               </button>
             </div>
           </div>
@@ -422,39 +423,25 @@ const GetNewNumber = () => {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="flex h-full min-h-screen flex-col overflow-hidden bg-[hsl(var(--ds-off-white))] text-slate-950">
-        {/* Progress Header */}
-        <header className="shrink-0 border-b border-slate-200 bg-white px-4 py-4 md:px-6 xl:px-8">
-          <div className="flex items-center gap-6">
+      <div className="flex h-full flex-col overflow-hidden text-slate-950">
+        <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto pb-36">
+          <div className="mx-auto w-full max-w-7xl space-y-6 p-4 md:p-6 lg:p-8">
             <button
               onClick={() => navigate('/dashboard/voice-setup')}
-              className="group flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-950"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 transition hover:text-slate-900"
             >
-              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+              <ArrowLeft size={15} /> Back to phone numbers
             </button>
-            <div className="flex flex-col">
-              <h2 className="text-lg font-black tracking-tight text-slate-950">Get a Number</h2>
-              <p className="text-xs font-medium text-slate-500">Choose provider inventory and activate a line.</p>
-            </div>
-          </div>
-          <div className="hidden items-center gap-2 md:flex">
-            {[1, 2, 3].map((step) => (
-              <div
-                key={step}
-                className={`h-1.5 w-8 rounded-full transition-all ${step <= 2 ? 'bg-cyan-700' : 'bg-slate-200'}`}
-              />
-            ))}
-          </div>
-        </header>
+            <PageHeader
+              title="Add number"
+              description="Choose a provider, then pick a number for your agent to answer."
+            />
 
-        <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto pb-36">
-          <div className="mx-auto w-full max-w-[1500px] space-y-5 px-4 py-5 md:px-6 md:py-8 xl:px-8">
-
-            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-              <h1 className="mb-2 text-2xl font-black tracking-tight text-slate-950 md:text-3xl">
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h2 className="mb-1 text-base font-semibold text-slate-950">
                 Choose a business number
-              </h1>
-              <p className="max-w-3xl text-sm font-medium leading-6 text-slate-500">
+              </h2>
+              <p className="max-w-3xl text-sm leading-6 text-slate-500">
                 Search local or toll-free inventory from your selected provider. SignalWire offers a compatibility-first setup; Telnyx is better for lower call cost at scale.
               </p>
 
@@ -477,13 +464,13 @@ const GetNewNumber = () => {
                       setPageCache({});
                       setHasSearched(false);
                     }}
-                    className={`rounded-lg border p-4 text-left transition-colors ${
+                    className={`rounded-xl border p-4 text-left transition-colors ${
                       provider === p.id
-                        ? 'border-cyan-100 bg-cyan-50 text-cyan-900'
-                        : 'border-slate-200 bg-white text-slate-700 hover:border-cyan-200 hover:bg-cyan-50/30'
+                        ? 'border-blue-100 bg-blue-50 text-blue-900'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50/30'
                     }`}
                   >
-                    <span className="text-sm font-black tracking-tight">{p.label}</span>
+                    <span className="text-sm font-semibold tracking-tight">{p.label}</span>
                     <span className="mt-1 block text-xs font-medium text-slate-500">{p.desc}</span>
                   </button>
                 ))}
@@ -491,9 +478,9 @@ const GetNewNumber = () => {
             </div>
 
             {!checkingLimits && (
-              <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex flex-col gap-1">
-                  <h3 className="text-lg font-black tracking-tight text-slate-950">Use an existing provider number</h3>
+                  <h3 className="text-lg font-semibold tracking-tight text-slate-950">Use an existing provider number</h3>
                   <p className="text-sm font-medium leading-6 text-slate-500">
                     Type a number you already own with {provider === 'signalwire' ? 'SignalWire' : 'Telnyx'}. If it exists in the provider account, VocalScale will attach it with the real provider ID.
                   </p>
@@ -509,7 +496,7 @@ const GetNewNumber = () => {
                   <div>
                     <label className="mb-1 block text-xs font-bold text-slate-500">Phone Number</label>
                     <input
-                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10"
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10"
                       placeholder="+12065550123"
                       value={manualPhoneNumber}
                       onChange={(e) => setManualPhoneNumber(e.target.value)}
@@ -518,7 +505,7 @@ const GetNewNumber = () => {
                   <div>
                     <label className="mb-1 block text-xs font-bold text-slate-500">Label</label>
                     <input
-                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10"
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10"
                       placeholder="Main line"
                       value={manualFriendlyName}
                       onChange={(e) => setManualFriendlyName(e.target.value)}
@@ -527,7 +514,7 @@ const GetNewNumber = () => {
                   <div>
                     <label className="mb-1 block text-xs font-bold text-slate-500">Provider SID</label>
                     <input
-                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10"
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10"
                       placeholder="Optional"
                       value={manualProviderSid}
                       onChange={(e) => setManualProviderSid(e.target.value)}
@@ -538,7 +525,7 @@ const GetNewNumber = () => {
                       type="button"
                       onClick={handleImportExistingNumber}
                       disabled={importingExisting || limitReached || !manualPhoneNumber.trim()}
-                      className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-cyan-700 px-5 text-xs font-bold text-white transition-colors hover:bg-cyan-800 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
+                      className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
                     >
                       {importingExisting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                       Use Number
@@ -556,7 +543,7 @@ const GetNewNumber = () => {
                     <ShieldAlert size={28} />
                   </div>
                   <div>
-                    <h3 className="mb-2 text-xl font-black tracking-tight text-slate-950">Number limit reached</h3>
+                    <h3 className="mb-2 text-xl font-semibold tracking-tight text-slate-950">Number limit reached</h3>
                     <p className="mx-auto max-w-lg text-sm font-medium leading-6 text-slate-600">
                       {limitMessage} Upgrade your plan to add more phone numbers.
                     </p>
@@ -564,13 +551,13 @@ const GetNewNumber = () => {
                   <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                     <button
                       onClick={() => navigate('/dashboard/voice-setup')}
-                      className="h-10 rounded-md border border-slate-200 bg-white px-5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50"
+                      className="h-10 rounded-lg border border-slate-200 bg-white px-5 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50"
                     >
                       Dismiss
                     </button>
                     <Link
                       to="/dashboard/billing"
-                      className="flex h-10 items-center justify-center rounded-md bg-amber-500 px-5 text-xs font-bold text-white transition-colors hover:bg-amber-600"
+                      className="flex h-10 items-center justify-center rounded-lg bg-amber-500 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-amber-600"
                     >
                       Expand Plan
                     </Link>
@@ -580,20 +567,20 @@ const GetNewNumber = () => {
             ) : checkingLimits ? (
               <div className="flex items-center justify-center rounded-lg border border-slate-200 bg-white p-12 md:p-20">
                 <div className="flex flex-col items-center gap-4">
-                  <Loader2 className="h-9 w-9 animate-spin text-cyan-700" />
+                  <Loader2 className="h-9 w-9 animate-spin text-blue-700" />
                   <span className="text-xs font-bold text-slate-500">Checking quota...</span>
                 </div>
               </div>
             ) : (
               /* Search Card */
-              <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <div className="flex-grow relative group/input">
                     <div className="pointer-events-none absolute left-4 top-1/2 flex -translate-y-1/2 items-center">
-                      <MapPin className="h-5 w-5 text-slate-400 transition-colors group-focus-within/input:text-cyan-700" />
+                      <MapPin className="h-5 w-5 text-slate-400 transition-colors group-focus-within/input:text-blue-700" />
                     </div>
                     <input
-                      className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-11 pr-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/10"
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-11 pr-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10"
                       placeholder="Enter City, State, or area code (e.g. 212)"
                       type="text"
                       value={searchQuery}
@@ -604,7 +591,7 @@ const GetNewNumber = () => {
                   <button
                     onClick={startSearch}
                     disabled={searching}
-                    className="flex h-11 items-center justify-center gap-2 rounded-md bg-slate-950 px-6 text-xs font-bold text-white transition-colors hover:bg-slate-800 disabled:opacity-50"
+                    className="flex h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 text-[13px] font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
                   >
                     {searching ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -622,8 +609,8 @@ const GetNewNumber = () => {
             {/* Results Header */}
             {!limitReached && !checkingLimits && hasSearched && (
               <div className="flex items-center justify-between">
-                <h3 className="flex items-center gap-3 text-lg font-black tracking-tight text-slate-950">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50 text-cyan-700">
+                <h3 className="flex items-center gap-3 text-lg font-semibold tracking-tight text-slate-950">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-blue-700">
                     <Smartphone className="h-4 w-4" />
                   </div>
                   Available Numbers
@@ -670,14 +657,14 @@ const GetNewNumber = () => {
                       <div
                         key={item.phone_number}
                         onClick={() => setSelectedNumber(item)}
-                        className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-lg border p-5 transition-colors ${isSelected
-                          ? 'border-cyan-200 bg-cyan-50/60 shadow-sm ring-1 ring-cyan-100'
-                          : 'border-slate-200 bg-white hover:border-cyan-200 hover:bg-cyan-50/30'
+                        className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border p-5 transition-colors ${isSelected
+                          ? 'border-blue-200 bg-blue-50/60 shadow-sm ring-1 ring-blue-100'
+                          : 'border-slate-200 bg-white hover:border-blue-200 hover:bg-blue-50/30'
                           }`}
                       >
                         {/* Selection indicator */}
                         <div className={`absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full transition-all ${isSelected
-                          ? 'bg-cyan-700 text-white'
+                          ? 'bg-blue-700 text-white'
                           : 'border border-slate-200 text-transparent group-hover:text-slate-300'
                           }`}>
                           {isSelected && <Check className="h-4 w-4" strokeWidth={3} />}
@@ -686,38 +673,38 @@ const GetNewNumber = () => {
                         {/* Badge */}
                         <div className="mb-5 flex flex-wrap gap-2 pr-10">
                           {index === 0 && !item.badge && (
-                            <span className="rounded-md border border-cyan-100 bg-cyan-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-700">
+                            <span className="rounded-md border border-blue-100 bg-blue-50 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-blue-700">
                               Optimal Match
                             </span>
                           )}
                           {item.badge && (
-                            <span className="rounded-md border border-cyan-100 bg-cyan-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-700">
+                            <span className="rounded-md border border-blue-100 bg-blue-50 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-blue-700">
                               {item.badge}
                             </span>
                           )}
-                          <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                          <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                             Local
                           </span>
                         </div>
 
                         {/* Number */}
-                        <h4 className={`mb-2 text-2xl font-black tracking-tight ${isSelected ? 'text-cyan-800' : 'text-slate-950'
+                        <h4 className={`mb-2 text-2xl font-semibold tracking-tight ${isSelected ? 'text-blue-800' : 'text-slate-950'
                           }`}>
                           {item.number}
                         </h4>
 
                         {/* Location */}
-                        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
                           <MapPin className="h-3.5 w-3.5" />
                           {item.location}
                         </p>
 
                         {/* Price */}
                         <div className="mt-10 flex items-center justify-between border-t border-slate-200 pt-5">
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Monthly</span>
+                          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Monthly</span>
                           <div className="flex items-baseline gap-1">
                             <span className="text-xs font-bold text-slate-400">$</span>
-                            <span className="text-2xl font-black text-slate-950">{item.monthly_cost.toFixed(2)}</span>
+                            <span className="text-2xl font-semibold text-slate-950">{item.monthly_cost.toFixed(2)}</span>
                           </div>
                         </div>
                       </div>
@@ -725,12 +712,12 @@ const GetNewNumber = () => {
                   })}
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+                <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
                   <button
                     type="button"
                     onClick={() => searchNumbers(currentPage - 1)}
                     disabled={searching || currentPage === 1}
-                    className="flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Previous
@@ -742,7 +729,7 @@ const GetNewNumber = () => {
                     type="button"
                     onClick={() => searchNumbers(currentPage + 1)}
                     disabled={searching || !hasMorePages}
-                    className="flex h-10 items-center gap-2 rounded-md bg-slate-950 px-4 text-xs font-bold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex h-10 items-center gap-2 rounded-lg bg-blue-600 px-4 text-[13px] font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Next
                     <ArrowRight className="h-4 w-4" />
@@ -758,7 +745,7 @@ const GetNewNumber = () => {
                   <Search className="h-7 w-7 text-slate-300" />
                 </div>
                 <div className="text-center">
-                  <p className="mb-2 text-lg font-black tracking-tight text-slate-950">No numbers found</p>
+                  <p className="mb-2 text-lg font-semibold tracking-tight text-slate-950">No numbers found</p>
                   <p className="mx-auto max-w-[260px] text-sm font-medium leading-6 text-slate-500">
                     Provider inventory changes often. Try a nearby area code or search by city name.
                   </p>
@@ -768,12 +755,12 @@ const GetNewNumber = () => {
 
             {/* Empty State - Initial */}
             {!searching && numbers.length === 0 && !hasSearched && !limitReached && !checkingLimits && (
-              <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg border border-dashed border-slate-300 bg-white py-16 md:py-24">
+              <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-slate-300 bg-white py-16 md:py-24">
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
                   <MapPin className="h-7 w-7 text-slate-300" />
                 </div>
                 <div className="mx-auto max-w-sm space-y-2 px-4 text-center">
-                  <p className="text-xl font-black tracking-tight text-slate-950">Search for a number</p>
+                  <p className="text-xl font-semibold tracking-tight text-slate-950">Search for a number</p>
                   <p className="text-sm font-medium leading-6 text-slate-500">
                     Enter a city, state, ZIP code, or area code to check provider inventory.
                   </p>
@@ -786,25 +773,25 @@ const GetNewNumber = () => {
         {/* Dynamic Action Bar */}
         {!limitReached && !checkingLimits && (
           <div className="fixed bottom-5 left-1/2 z-50 w-[calc(100%-2rem)] max-w-4xl -translate-x-1/2 animate-in slide-in-from-bottom-8 duration-500">
-            <div className={`flex flex-col items-center justify-between gap-4 rounded-lg border border-slate-800 bg-slate-950 p-4 text-white shadow-xl transition-all sm:flex-row ${selectedNumber ? 'opacity-100 scale-100' : 'pointer-events-none scale-95 opacity-40 grayscale'}`}>
+            <div className={`flex flex-col items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-950 p-4 text-white shadow-xl transition-all sm:flex-row ${selectedNumber ? 'opacity-100 scale-100' : 'pointer-events-none scale-95 opacity-40 grayscale'}`}>
 
               {/* Selected Number Info */}
               <div className="flex w-full items-center gap-4 sm:w-auto">
                 {selectedNumber ? (
                   <div className="flex w-full items-center gap-4">
                     <div className="flex h-11 w-11 items-center justify-center rounded-md border border-white/10 bg-white/10">
-                      <Smartphone className="h-5 w-5 text-cyan-300" />
+                      <Smartphone className="h-5 w-5 text-blue-300" />
                     </div>
                     <div>
-                      <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-white/40">Selected Number</p>
-                      <h4 className="text-xl font-black leading-none tracking-tight text-white">{selectedNumber.number}</h4>
+                      <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-white/50">Selected number</p>
+                      <h4 className="text-xl font-semibold leading-none tracking-tight text-white">{selectedNumber.number}</h4>
                     </div>
                     <div className="hidden h-10 w-px bg-white/10 md:block" />
                     <div className="hidden md:block">
-                      <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-white/40">Price</p>
+                      <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-white/40">Price</p>
                       <div className="flex items-baseline gap-1">
-                        <span className="text-xl font-black text-white">${selectedNumber.monthly_cost.toFixed(2)}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/30">/ mo</span>
+                        <span className="text-xl font-semibold text-white">${selectedNumber.monthly_cost.toFixed(2)}</span>
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-white/30">/ mo</span>
                       </div>
                     </div>
                   </div>
@@ -813,7 +800,7 @@ const GetNewNumber = () => {
                     <div className="flex h-10 w-10 items-center justify-center rounded-md border border-white/10">
                       <Info className="h-4 w-4" />
                     </div>
-                    <p className="text-xs font-bold uppercase tracking-wider">Pick a number to continue</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider">Pick a number to continue</p>
                   </div>
                 )}
               </div>
@@ -823,16 +810,16 @@ const GetNewNumber = () => {
                 <button
                   onClick={handleActivate}
                   disabled={!selectedNumber || loading}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-cyan-600 px-6 text-xs font-bold text-white transition-colors hover:bg-cyan-700 disabled:bg-white/5 disabled:text-white/20 sm:w-auto"
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 text-[13px] font-semibold text-white transition-colors hover:bg-blue-700 disabled:bg-white/5 disabled:text-white/20 sm:w-auto"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Purchasing...
+                      Purchasing…
                     </>
                   ) : (
                     <>
-                      Buy Number
+                      Buy number
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}

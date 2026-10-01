@@ -141,7 +141,7 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
     setAiResult(null);
     try {
       await callsApi.startOutboundCall(c.phone_number, aiInstruction.trim(), displayName(c));
-      setAiResult({ ok: true, msg: 'Call placed — the result will appear in Call Logs.' });
+      setAiResult({ ok: true, msg: 'Call placed — the result will appear in Call logs.' });
       setAiCallOpen(false);
     } catch (err) {
       setAiResult({ ok: false, msg: err instanceof Error ? err.message : 'Could not place the call' });
@@ -235,7 +235,7 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
             <section>
               {!aiCallOpen && (
                 <div className="mb-3">
-                  <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
                     <Sparkles size={13} /> Suggested follow-ups
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -267,12 +267,12 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
                   onClick={() => openAiCall()}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
                 >
-                  <PhoneOutgoing size={15} /> Have AI call {displayName(c).split(' ')[0]}
+                  <PhoneOutgoing size={15} /> Call {displayName(c).split(' ')[0]}
                 </button>
               ) : (
                 <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-3">
                   <p className="mb-2 text-xs font-medium text-slate-600">
-                    What should the AI accomplish on this call?
+                    What should your agent accomplish on this call?
                   </p>
                   <textarea
                     value={aiInstruction}
@@ -314,7 +314,7 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
 
           {/* Tags */}
           <section>
-            <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
               <TagIcon size={13} /> Tags
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -369,7 +369,7 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
 
           {/* Notes */}
           <section>
-            <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
               <MessageSquareText size={13} /> Private notes
             </div>
             <textarea
@@ -399,7 +399,7 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
 
           {/* Timeline */}
           <section>
-            <div className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <div className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
               <Sparkles size={13} /> Call history
             </div>
 
@@ -411,7 +411,7 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
               </div>
             ) : memories.length === 0 ? (
               <p className="rounded-xl bg-slate-50 px-4 py-6 text-center text-sm text-slate-400">
-                No call summaries yet. They’ll appear here after your AI talks to this caller.
+                No call summaries yet. They’ll appear here after your agent talks to this contact.
               </p>
             ) : (
               <ol className="relative space-y-4 border-l border-slate-200 pl-5">
@@ -463,7 +463,7 @@ export const ContactDrawer = ({ contactId, seed, onClose, onUpdated }: Props) =>
 const Stat = ({ label, value, accent }: { label: string; value: string; accent?: boolean }) => (
   <div className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5">
     <div className={`truncate text-sm font-semibold ${accent ? 'text-blue-600' : 'text-slate-800'}`}>{value}</div>
-    <div className="mt-0.5 text-[11px] uppercase tracking-wide text-slate-400">{label}</div>
+    <div className="mt-0.5 text-[11px] uppercase tracking-wider text-slate-500">{label}</div>
   </div>
 );
 

@@ -83,7 +83,7 @@ const SectionBody = ({ body }: { body: string }) => {
         if (kv) {
           return (
             <div key={i} className="flex items-baseline gap-2 text-sm leading-6">
-              <span className="w-24 shrink-0 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <span className="w-24 shrink-0 text-xs font-semibold uppercase tracking-wider text-slate-500">
                 {kv[1]}
               </span>
               <span className="min-w-0 flex-1 break-words text-slate-800">{kv[2]}</span>
@@ -199,7 +199,7 @@ const DocCard = ({ doc, open, onToggle }: { doc: AgentContextDocument; open: boo
           <div className="grid gap-3 lg:grid-cols-2">
             {sections.map((section) => (
               <div key={section.id} className="rounded-lg border border-slate-200 bg-white p-3.5">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
                   {SECTION_LABELS[section.id] || section.id.replaceAll('-', ' ')}
                 </p>
                 <SectionBody body={section.body} />
@@ -236,7 +236,7 @@ export const GeneratedContext = ({
   const [openId, setOpenId] = useState('');
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white">
+    <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
         <div className="flex items-center gap-2">
           <FileText size={17} className="text-slate-400" />
