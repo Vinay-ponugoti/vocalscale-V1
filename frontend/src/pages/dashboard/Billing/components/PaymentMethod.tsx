@@ -164,7 +164,7 @@ const PaymentMethod: React.FC = () => {
 
               {deleteConfirm ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-slate-500">Are you sure?</span>
+                  <span className="text-xs font-medium text-slate-500">Are you sure?</span>
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
