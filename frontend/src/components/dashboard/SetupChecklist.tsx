@@ -72,8 +72,8 @@ const SetupChecklist = () => {
   const steps: Step[] = [
     {
       key: 'number',
-      label: 'Get a phone number',
-      hint: 'Your AI answers on this line',
+      label: 'Add a phone number',
+      hint: 'Your agent answers calls on this number',
       to: '/dashboard/voice-setup',
       done: numbers.length > 0,
     },
@@ -86,7 +86,7 @@ const SetupChecklist = () => {
     },
     {
       key: 'knowledge',
-      label: 'Upload business knowledge',
+      label: 'Fill your knowledge base',
       hint: 'Menu, FAQs, hours, policies',
       to: '/dashboard/knowledge',
       done: knowledgeFiles.length > 0,
@@ -109,14 +109,14 @@ const SetupChecklist = () => {
   };
 
   return (
-    <div className="rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50/80 to-white p-5">
+    <div className="rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/80 to-white p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
             <Rocket size={16} />
           </span>
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Finish setting up your AI receptionist</h3>
+            <h3 className="text-sm font-semibold text-slate-900">Finish setting up your agent</h3>
             <p className="text-xs text-slate-500">
               {doneCount} of {steps.length} done — a few minutes to go live
             </p>
@@ -145,7 +145,7 @@ const SetupChecklist = () => {
             key={s.key}
             to={s.to}
             className={cn(
-              'group flex items-center gap-2.5 rounded-xl border px-3 py-2.5 transition',
+              'group flex items-center gap-2.5 rounded-lg border px-3 py-2.5 transition',
               s.done
                 ? 'border-transparent bg-white/60 opacity-70'
                 : 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-sm',

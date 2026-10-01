@@ -60,7 +60,7 @@ const UsageAlert = ({ usedMinutes, totalMinutes, overageMinutes = 0, estimatedCo
       : `${Math.round(usedMinutes)} of ${totalMinutes} min used. A larger plan keeps your cost per minute lower.`;
 
   return (
-    <div className={`flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center ${tone.bg}`}>
+    <div className={`flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center ${tone.bg}`}>
       <div className="flex flex-1 items-start gap-3">
         <span className={`mt-0.5 shrink-0 ${tone.icon}`}>
           <Icon size={20} />
@@ -72,7 +72,7 @@ const UsageAlert = ({ usedMinutes, totalMinutes, overageMinutes = 0, estimatedCo
       </div>
       <Link
         to="/dashboard/billing/plans"
-        className="flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+        className="flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
       >
         Upgrade plan <ArrowUpRight size={15} />
       </Link>

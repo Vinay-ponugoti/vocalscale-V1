@@ -6,6 +6,10 @@ import {
   FileSpreadsheet, Download, ShieldCheck, Eye, Pause, RotateCcw,
 } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { EmptyState } from '../../../components/ui/EmptyState';
+import { Button } from '../../../components/ui/Button';
+import { PAGE_CONTAINER } from '../../../constants/layout';
 import { campaignsAPI, type Campaign, type CampaignRow, type CampaignImportResult, type CampaignPreview } from '../../../api/campaigns';
 import { useQuery } from '@tanstack/react-query';
 
@@ -328,9 +332,8 @@ const Campaigns = () => {
   };
 
   return (
-    <DashboardLayout fullWidth>
-      <div className="scrollbar-hide h-full overflow-y-auto bg-[hsl(var(--ds-off-white))] text-slate-950">
-        <div className="mx-auto w-full max-w-[1100px] space-y-5 px-4 py-6 md:px-6 md:py-8">
+    <DashboardLayout>
+      <div className={PAGE_CONTAINER}>
           {/* ---------- DETAIL VIEW ---------- */}
           {view === 'detail' && (
             <>
@@ -338,39 +341,37 @@ const Campaigns = () => {
                 onClick={() => setView('list')}
                 className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-800"
               >
-                <ChevronLeft size={16} /> All campaigns
+                <ChevronLeft size={16} /> Back to campaigns
               </button>
 
               {loadingDetail ? (
                 <div className="space-y-3">
                   {[0, 1, 2].map((i) => (
-                    <div key={i} className="h-16 animate-pulse rounded-2xl bg-white" />
+                    <div key={i} className="h-16 animate-pulse rounded-xl bg-white" />
                   ))}
                 </div>
               ) : !detail ? (
-                <div className="rounded-2xl border border-slate-100 bg-white p-10 text-center text-sm text-slate-400">
-                  Could not load this campaign.
+                <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <EmptyState icon={Megaphone} tone="danger" title="Couldn't load this campaign" description="Go back and try again." />
                 </div>
               ) : (
                 <>
-                  <div>
-                    <h1 className="text-2xl font-semibold text-slate-900">{detail.campaign.name}</h1>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {formatDate(detail.campaign.created_at)} · {detail.rows.length} recipients ·{' '}
-                      <StatusChip status={detail.campaign.status} />
-                    </p>
-                    <p className="mt-2 rounded-xl bg-slate-100/70 px-3 py-2 text-sm italic text-slate-600">
-                      “{detail.campaign.instruction}”
-                    </p>
-                  </div>
+                  <PageHeader
+                    title={detail.campaign.name}
+                    meta={<StatusChip status={detail.campaign.status} />}
+                    description={`${formatDate(detail.campaign.created_at)} · ${detail.rows.length} recipients`}
+                  />
+                  <p className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm italic text-slate-600 shadow-sm">
+                    “{detail.campaign.instruction}”
+                  </p>
 
-                  <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
+                  <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                     <ul className="divide-y divide-slate-100">
                       {detail.rows.map((r) => (
                         <li key={r.id} className="flex items-center gap-3 px-5 py-3.5">
                           <RowStatusIcon status={r.status} />
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium text-slate-800">{r.recipient_name || 'Customer'}</p>
+                            <p className="truncate text-sm font-medium text-slate-800">{r.recipient_name || 'Unnamed contact'}</p>
                             <p className="truncate text-xs text-slate-400">{formatPhone(r.phone_number)}</p>
                             {r.outcome?.summary && (
                               <p className="mt-0.5 truncate text-xs text-slate-500">{r.outcome.summary}</p>
@@ -402,50 +403,29 @@ const Campaigns = () => {
           {/* ---------- LIST VIEW ---------- */}
           {view === 'list' && (
             <>
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                    <Megaphone size={20} />
-                  </span>
-                  <div>
-                    <h1 className="text-2xl font-semibold text-slate-900">Outbound campaigns</h1>
-                    <p className="mt-1 text-sm text-slate-500">
-                      Have your AI call a list — reminders, win-backs, or lead follow-ups.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={startNew}
-                  className="flex shrink-0 items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
-                >
-                  <Plus size={16} /> <span className="hidden sm:inline">New campaign</span>
-                </button>
-              </div>
+              <PageHeader
+                title="Campaigns"
+                description="Have your agent call a list: reminders, win-backs, or follow-ups."
+                actions={<Button onClick={startNew}><Plus size={16} /> New campaign</Button>}
+              />
 
               {loadingList ? (
                 <div className="space-y-3">
                   {[0, 1, 2].map((i) => (
-                    <div key={i} className="h-20 animate-pulse rounded-2xl bg-white" />
+                    <div key={i} className="h-20 animate-pulse rounded-xl bg-white" />
                   ))}
                 </div>
               ) : campaigns.length === 0 ? (
-                <div className="flex flex-col items-center rounded-2xl border border-slate-100 bg-white px-6 py-16 text-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                    <Megaphone size={22} />
-                  </div>
-                  <p className="mt-4 text-sm font-medium text-slate-700">No campaigns yet</p>
-                  <p className="mt-1 max-w-sm text-sm text-slate-400">
-                    Pick a list of customers and give the AI one goal — it calls each of them and reports back here.
-                  </p>
-                  <button
-                    onClick={startNew}
-                    className="mt-5 flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
-                  >
-                    <Plus size={16} /> Create your first campaign
-                  </button>
+                <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <EmptyState
+                    icon={Megaphone}
+                    title="No campaigns yet"
+                    description="Pick a list of contacts and give your agent one goal. It calls each of them and reports back here."
+                    action={<Button onClick={startNew}><Plus size={16} /> New campaign</Button>}
+                  />
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
+                <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                   <ul className="divide-y divide-slate-100">
                     {campaigns.map((cm) => {
                       const called = cm.counts?.called ?? 0;
@@ -506,26 +486,18 @@ const Campaigns = () => {
           {/* ---------- BUILDER VIEW ---------- */}
           {view === 'builder' && (
             <>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setView('list')}
-                  className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-800"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                  <Megaphone size={20} />
-                </span>
-                <div>
-                  <h1 className="text-2xl font-semibold text-slate-900">New campaign</h1>
-                  <p className="mt-1 text-sm text-slate-500">Pick who to call and what the AI should accomplish.</p>
-                </div>
-              </div>
+              <button
+                onClick={() => setView('list')}
+                className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-800"
+              >
+                <ChevronLeft size={16} /> Back to campaigns
+              </button>
+              <PageHeader title="New campaign" description="Choose who to call and what your agent should accomplish." />
 
-              <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-5 lg:gap-6">
                 {/* LEFT: recipients */}
                 <div className="space-y-4 lg:col-span-3">
-                  <div className="rounded-2xl border border-slate-100 bg-white p-5">
+                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                     <div className="mb-3 flex items-center justify-between">
                       <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-800">
                         <Users size={16} className="text-slate-400" /> Recipients
@@ -568,7 +540,7 @@ const Campaigns = () => {
                         {importResult && (
                           <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
                             {[['Rows', importResult.summary.total], ['Valid', importResult.summary.valid], ['Invalid', importResult.summary.invalid], ['Duplicates', importResult.summary.duplicates], ['Callable', importResult.summary.ai_call_eligible], ['Blocked', importResult.summary.blocked]].map(([label, value]) => (
-                              <div key={String(label)} className="rounded-lg bg-white p-2 text-center"><div className="text-base font-bold text-slate-800">{value}</div><div className="text-[10px] uppercase text-slate-400">{label}</div></div>
+                              <div key={String(label)} className="rounded-lg bg-white p-2 text-center"><div className="text-base font-bold text-slate-800">{value}</div><div className="text-[11px] uppercase text-slate-400">{label}</div></div>
                             ))}
                           </div>
                         )}
@@ -612,7 +584,7 @@ const Campaigns = () => {
                       />
                     </div>
 
-                    <div className="mb-2 flex items-center justify-between"><span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Business knowledge base</span><span className="text-[11px] text-slate-400">{prospects.filter((p) => p.ai_call_eligible).length} callable</span></div>
+                    <div className="mb-2 flex items-center justify-between"><span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Business knowledge base</span><span className="text-[11px] text-slate-400">{prospects.filter((p) => p.ai_call_eligible).length} callable</span></div>
                     <div className="max-h-72 overflow-y-auto rounded-xl border border-slate-100">
                       {loadingProspects ? (
                         <div className="p-6 text-center text-sm text-slate-400">Loading contacts…</div>
@@ -678,9 +650,9 @@ const Campaigns = () => {
 
                 {/* RIGHT: name + objective + launch */}
                 <div className="space-y-4 lg:col-span-2">
-                  <div className="rounded-2xl border border-slate-100 bg-white p-5">
+                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                     <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-800">
-                      <Phone size={16} className="text-slate-400" /> What should the AI say?
+                      <Phone size={16} className="text-slate-400" /> What should your agent say?
                     </h2>
                     <input
                       value={name}
@@ -728,7 +700,7 @@ const Campaigns = () => {
                     )}
                   </div>
 
-                  <div className="rounded-2xl border border-slate-100 bg-white p-5">
+                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                     <div className="mb-3 flex items-center justify-between text-sm">
                       <span className="text-slate-500">Recipients</span>
                       <span className="font-semibold text-slate-900">{selectedList.length}</span>
@@ -805,7 +777,6 @@ const Campaigns = () => {
               </div>
             </>
           )}
-        </div>
       </div>
     </DashboardLayout>
   );

@@ -76,7 +76,7 @@ const CopyBtn = ({ text, label, icon }: { text: string; label: string; icon?: Re
         'flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all',
         copied
           ? 'bg-green-50 border-green-200 text-green-700'
-          : 'bg-white border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50'
+          : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50'
       )}
     >
       {copied ? <Check size={12} /> : (icon || <Copy size={12} />)}
@@ -99,11 +99,11 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
   const fullPackage = [content.caption, content.hashtags].filter(Boolean).join('\n\n');
 
   return (
-    <div className="mt-3 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden">
+    <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-gray-100">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-slate-100">
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
           <FileText size={12} className="text-blue-500" />
           Social Media Content
         </div>
@@ -116,7 +116,7 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
       </div>
 
       {/* Tab bar */}
-      <div className="flex border-b border-gray-100 bg-white">
+      <div className="flex border-b border-slate-100 bg-white">
         {tabs.filter(t => t.available).map(tab => (
           <button
             key={tab.key}
@@ -125,7 +125,7 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
               'flex items-center gap-1.5 px-4 py-2 text-xs font-semibold border-b-2 transition-colors',
               activeTab === tab.key
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-slate-500 hover:text-slate-700'
             )}
           >
             {tab.icon}{tab.label}
@@ -145,7 +145,7 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
       {/* Tab content */}
       <div className="p-4">
         {activeTab === 'caption' && content.caption && (
-          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+          <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
             {content.caption}
           </p>
         )}
@@ -166,7 +166,7 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
                 </span>
               ))}
             {!content.hashtags.includes('#') && (
-              <p className="text-sm text-gray-700 whitespace-pre-wrap">{content.hashtags}</p>
+              <p className="text-sm text-slate-700 whitespace-pre-wrap">{content.hashtags}</p>
             )}
           </div>
         )}
@@ -174,13 +174,13 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
         {activeTab === 'ideas' && content.ideas && (
           <ul className="space-y-2">
             {content.ideas.split('\n').filter(l => l.trim()).map((line, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-gray-700">
+              <li key={i} className="flex items-start gap-2.5 text-sm text-slate-700">
                 <span className="mt-0.5 w-5 h-5 flex-shrink-0 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-[10px] font-bold">
                   {i + 1}
                 </span>
                 <span className="flex-1">{line.replace(/^[•\-\d.]+\s*/, '')}</span>
                 <button
-                  className="flex-shrink-0 p-1 text-gray-400 hover:text-blue-500 transition-colors"
+                  className="flex-shrink-0 p-1 text-slate-400 hover:text-blue-500 transition-colors"
                   onClick={() => navigator.clipboard?.writeText(line.replace(/^[•\-\d.]+\s*/, ''))}
                   title="Copy this idea"
                 >
@@ -193,8 +193,8 @@ const SocialContentPanel = ({ content }: { content: SocialContent }) => {
       </div>
 
       {/* Footer tip */}
-      <div className="px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 border-t border-gray-100 flex items-center justify-between">
-        <span className="text-xs text-gray-500">
+      <div className="px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 border-t border-slate-100 flex items-center justify-between">
+        <span className="text-xs text-slate-500">
           💡 Tip: Click <strong>Copy for Instagram</strong> to copy caption + hashtags together
         </span>
       </div>
@@ -288,7 +288,7 @@ const ImageCard = ({ images, generationId, sessionId, socialContent }: ImageCard
           {allImages.map((image, idx) => (
             <div
               key={`${image.preset}-${idx}`}
-              className="group/img relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 shadow-sm hover:shadow-md transition-shadow"
+              className="group/img relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-sm hover:shadow-md transition-shadow"
             >
               <img
                 src={image.url}
@@ -339,7 +339,7 @@ const ImageCard = ({ images, generationId, sessionId, socialContent }: ImageCard
         {generationId && (
           <button
             onClick={() => setShowSizeSelector(!showSizeSelector)}
-            className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            className="flex items-center gap-2 text-sm text-slate-400 hover:text-slate-600 transition-colors"
           >
             <ImageIcon size={14} />
             <span>Generate other sizes</span>
@@ -349,10 +349,10 @@ const ImageCard = ({ images, generationId, sessionId, socialContent }: ImageCard
 
         {/* Size Selector Panel */}
         {showSizeSelector && (
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4">
             {Object.entries(PRESET_CATEGORIES).map(([categoryKey, category]) => (
               <div key={categoryKey}>
-                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {category.label}
                 </h4>
                 <div className="flex flex-wrap gap-2">
@@ -370,7 +370,7 @@ const ImageCard = ({ images, generationId, sessionId, socialContent }: ImageCard
                             ? 'bg-green-50 border-green-200 text-green-700 cursor-default'
                             : isRegenerating
                               ? 'bg-blue-50 border-blue-200 text-blue-600 cursor-wait'
-                              : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
+                              : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
                         )}
                       >
                         {isGenerated && <Check size={12} className="text-green-600" />}
@@ -404,7 +404,7 @@ const ImageCard = ({ images, generationId, sessionId, socialContent }: ImageCard
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); handleDownload(lightboxImage); }}
-            className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors"
+            className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 bg-white text-slate-900 text-sm font-medium rounded-lg hover:bg-slate-100 transition-colors"
           >
             <Download size={16} /> Download
           </button>

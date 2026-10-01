@@ -302,21 +302,21 @@ export default function Preview() {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
+      <div className="h-full w-full overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">
         <div className="w-full h-full flex flex-col">
           <ProgressBar step={4} totalSteps={4} title="Voice Preview" progress={100} />
 
           {/* Back Button */}
           <div className="mt-6 mb-2">
              <div 
-               className="flex items-center gap-2 text-slate-400 text-sm font-medium cursor-pointer hover:text-indigo-600 transition-colors w-fit"
+               className="flex items-center gap-2 text-slate-400 text-sm font-medium cursor-pointer hover:text-blue-600 transition-colors w-fit"
                onClick={() => navigate('/dashboard/voice-model/processing')}
              >
                 <ArrowRight size={16} className="rotate-180" /> Back
              </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm flex flex-col flex-1 min-h-0 relative overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm flex flex-col flex-1 min-h-0 relative overflow-hidden">
             
             <div className="text-center mb-6 relative z-10 shrink-0">
               <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-green-100 shadow-sm">
@@ -324,54 +324,54 @@ export default function Preview() {
                       <CheckCircle2 size={14} />
                   </div>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center justify-center gap-2">
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-1 flex items-center justify-center gap-2">
                   {aiVoiceBlob ? (
                       <>Voice Clone Complete! <span className="text-green-600"><CheckCircle2 size={20} /></span></>
                   ) : (
                       "Voice Setup Complete"
                   )}
               </h1>
-              <p className="text-gray-500 text-sm">Your digital twin is ready. Listen to the comparison below to verify the quality.</p>
+              <p className="text-slate-500 text-sm">Your digital twin is ready. Listen to the comparison below to verify the quality.</p>
             </div>
 
             <div className="grid lg:grid-cols-3 gap-6 items-stretch flex-1 min-h-0">
                 
                 {/* Left Column: Comparison Test */}
-                <div className="lg:col-span-2 border border-gray-200 rounded-2xl p-6 relative bg-slate-50/30 flex flex-col overflow-y-auto">
-                    <div className="absolute -top-3 left-6 bg-white px-2 font-bold text-gray-900 text-xs border border-gray-100 rounded shadow-sm">Comparison Test</div>
+                <div className="lg:col-span-2 border border-slate-200 rounded-xl p-6 relative bg-slate-50/30 flex flex-col overflow-y-auto">
+                    <div className="absolute -top-3 left-6 bg-white px-2 font-semibold text-slate-900 text-xs border border-slate-100 rounded shadow-sm">Comparison Test</div>
                     
                     {aiVoiceBlob ? (
-                        <div className="absolute top-6 right-6 bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full text-[10px] font-bold font-mono">
+                        <div className="absolute top-6 right-6 bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full text-[10px] font-semibold font-mono">
                             ✅ 98% Match
                         </div>
                     ) : (
-                        <div className="absolute top-6 right-6 bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-0.5 rounded-full text-[10px] font-bold font-mono">
+                        <div className="absolute top-6 right-6 bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-0.5 rounded-full text-[10px] font-semibold font-mono">
                             ⚠️ Simulation Mode
                         </div>
                     )}
 
                     <div className="mt-4 space-y-4">
                         {/* Original Voice Player */}
-                        <div className={`bg-white border transition-colors duration-300 rounded-xl p-4 ${isPlayingOriginal ? 'border-gray-300 shadow-md' : 'border-gray-200 shadow-sm'}`}>
+                        <div className={`bg-white border transition-colors duration-300 rounded-xl p-4 ${isPlayingOriginal ? 'border-slate-300 shadow-md' : 'border-slate-200 shadow-sm'}`}>
                             <div className="flex justify-between items-center mb-3">
-                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Your Original Voice</span>
-                                <Mic size={14} className="text-gray-400" />
+                                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Your Original Voice</span>
+                                <Mic size={14} className="text-slate-400" />
                             </div>
                             <div className="flex items-center gap-4">
                                 <button 
                                     onClick={toggleOriginal}
                                     disabled={!originalAudioRef.current}
-                                    className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-full flex items-center justify-center text-gray-700 hover:bg-gray-200 shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-8 h-8 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-200 shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isPlayingOriginal ? <Pause size={14} fill="currentColor" /> : <Play size={14} className="ml-0.5" fill="currentColor" />}
                                 </button>
                                 {/* Simple gray waveform dots */}
                                 <div className="flex-1 flex justify-between items-center px-2 opacity-30 h-6">
                                     {Array.from({ length: 30 }).map((_, i) => (
-                                        <div key={i} className={`w-1 h-1 bg-gray-800 rounded-full ${isPlayingOriginal ? 'animate-pulse' : ''}`} style={{ animationDelay: `${i * 0.05}s` }}></div>
+                                        <div key={i} className={`w-1 h-1 bg-slate-800 rounded-full ${isPlayingOriginal ? 'animate-pulse' : ''}`} style={{ animationDelay: `${i * 0.05}s` }}></div>
                                     ))}
                                 </div>
-                                <span className="text-[10px] font-mono text-gray-400">0:14</span>
+                                <span className="text-[10px] font-mono text-slate-400">0:14</span>
                             </div>
                         </div>
 
@@ -381,7 +381,7 @@ export default function Preview() {
                                  <Mic className={`text-blue-400 ${isPlayingClone ? 'animate-pulse' : ''}`} size={14} />
                             </div>
                             <div className="mb-3">
-                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">AI Clone Preview</span>
+                                <span className="text-[11px] font-semibold text-blue-600 uppercase tracking-wider">AI Clone Preview</span>
                             </div>
                             <div className="flex items-center gap-4">
                                 <button 
@@ -401,13 +401,13 @@ export default function Preview() {
                                         ></div>
                                     ))}
                                 </div>
-                                <span className="text-[10px] font-mono text-blue-600 font-bold">0:14</span>
+                                <span className="text-[10px] font-mono text-blue-600 font-semibold">0:14</span>
                             </div>
                         </div>
 
                         {/* Test Your Voice Section */}
-                        <div className="mt-4 border-t border-gray-200 pt-4">
-                            <h3 className="text-xs font-bold text-gray-900 mb-2">Test Your Voice</h3>
+                        <div className="mt-4 border-t border-slate-200 pt-4">
+                            <h3 className="text-xs font-semibold text-slate-900 mb-2">Test Your Voice</h3>
                             <div className="flex gap-2">
                                 <input 
                                     type="text" 
@@ -418,15 +418,15 @@ export default function Preview() {
                                             handleGenerate();
                                         }
                                     }}
-                                    className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                    className="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                                     placeholder="Type something for your AI to say..."
                                 />
                                 <button 
                                     onClick={handleGenerate}
                                     disabled={isGenerating || !testText.trim()}
-                                    className={`px-4 py-2 rounded-lg text-sm font-bold text-white transition-all flex items-center gap-2 ${
+                                    className={`px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all flex items-center gap-2 ${
                                         isGenerating || !testText.trim()
-                                        ? 'bg-gray-300 cursor-not-allowed' 
+                                        ? 'bg-slate-300 cursor-not-allowed' 
                                         : 'bg-blue-600 hover:bg-blue-700 shadow-md'
                                     }`}
                                 >
@@ -446,12 +446,12 @@ export default function Preview() {
                 </div>
 
                 {/* Right Column: Setup Progress */}
-                <div className="border border-gray-200 rounded-2xl p-6 bg-white h-full flex flex-col shadow-sm">
-                    <h3 className="font-bold text-gray-900 mb-4 text-sm">Setup Progress</h3>
+                <div className="border border-slate-200 rounded-xl p-6 bg-white h-full flex flex-col shadow-sm">
+                    <h3 className="font-semibold text-slate-900 mb-4 text-sm">Setup Progress</h3>
 
                     <div className="relative space-y-6 flex-1">
                         {/* Line connecting dots */}
-                        <div className="absolute left-[11px] top-2 bottom-10 w-0.5 bg-gray-100 -z-10"></div>
+                        <div className="absolute left-[11px] top-2 bottom-10 w-0.5 bg-slate-100 -z-10"></div>
 
                         {/* Steps */}
                         {[
@@ -465,14 +465,14 @@ export default function Preview() {
                               <div className={`w-6 h-6 rounded-full flex items-center justify-center border ring-4 ring-white ${
                                 item.status === 'complete' ? 'bg-green-100 text-green-600 border-white' : 
                                 item.status === 'current' ? 'bg-blue-600 text-white border-blue-200' : 
-                                'bg-gray-50 border-gray-200'
+                                'bg-slate-50 border-slate-200'
                               }`}>
                                 {item.status === 'complete' ? <CheckCircle2 size={14} /> : <span className="text-[10px]">{i+1}</span>}
                               </div>
                             </div>
                             <div className="pt-0.5">
-                              <p className={`text-xs font-bold ${item.status === 'current' ? 'text-blue-600' : 'text-gray-900'}`}>{item.title}</p>
-                              <p className="text-[10px] text-gray-400">
+                              <p className={`text-xs font-semibold ${item.status === 'current' ? 'text-blue-600' : 'text-slate-900'}`}>{item.title}</p>
+                              <p className="text-[10px] text-slate-400">
                                 {item.status === 'complete' ? 'Completed' : item.status === 'current' ? 'In Progress' : 'Pending'}
                               </p>
                             </div>
@@ -482,7 +482,7 @@ export default function Preview() {
 
                     <button 
                         onClick={handleComplete}
-                        className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-colors mt-auto shadow-md"
+                        className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors mt-auto shadow-md"
                     >
                         Go to Settings
                     </button>

@@ -52,10 +52,10 @@ function MessageContent({ content }: { content: string }) {
         p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
         ul: ({ children }) => <ul className="my-2 list-disc space-y-1 pl-5">{children}</ul>,
         ol: ({ children }) => <ol className="my-2 list-decimal space-y-1 pl-5">{children}</ol>,
-        strong: ({ children }) => <strong className="font-black text-slate-950">{children}</strong>,
-        h1: ({ children }) => <h3 className="mb-2 mt-3 text-sm font-black text-slate-950 first:mt-0">{children}</h3>,
-        h2: ({ children }) => <h3 className="mb-2 mt-3 text-sm font-black text-slate-950 first:mt-0">{children}</h3>,
-        h3: ({ children }) => <h3 className="mb-2 mt-3 text-sm font-black text-slate-950 first:mt-0">{children}</h3>,
+        strong: ({ children }) => <strong className="font-semibold text-slate-950">{children}</strong>,
+        h1: ({ children }) => <h3 className="mb-2 mt-3 text-sm font-semibold text-slate-950 first:mt-0">{children}</h3>,
+        h2: ({ children }) => <h3 className="mb-2 mt-3 text-sm font-semibold text-slate-950 first:mt-0">{children}</h3>,
+        h3: ({ children }) => <h3 className="mb-2 mt-3 text-sm font-semibold text-slate-950 first:mt-0">{children}</h3>,
         code: ({ children }) => <code className="rounded bg-slate-200/70 px-1 py-0.5 text-[12px] font-semibold">{children}</code>,
       }}
     >
@@ -77,7 +77,7 @@ function ConversationMessage({ message }: { message: ChatMessage }) {
         {isUser ? <UserRound size={13} /> : <Bot size={14} />}
       </div>
       <div className={`min-w-0 max-w-[86%] ${isUser ? 'text-right' : ''}`}>
-        <p className="mb-1 px-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
+        <p className="mb-1 px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
           {isUser ? 'You' : 'Copilot'}
         </p>
         <div className={`rounded-xl px-3.5 py-2.5 text-left text-[13px] font-medium leading-6 shadow-sm ${
@@ -144,7 +144,7 @@ function CopilotConversation({ request }: { request: CopilotOpenRequest }) {
             {isCallContext ? <ShieldCheck size={16} /> : <MessageSquareText size={16} />}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
               {isCallContext ? 'Trusted call context' : 'Current workspace'}
             </p>
             <p className="truncate text-xs font-bold capitalize text-slate-800">{surfaceLabel(request)}</p>
@@ -161,18 +161,18 @@ function CopilotConversation({ request }: { request: CopilotOpenRequest }) {
         {messages.length === 0 && !isStreaming && (
           <div className="py-2">
             <div className="mb-5 flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/20">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md shadow-blue-500/20">
                 <Sparkles size={18} />
               </div>
               <div>
-                <h3 className="text-base font-black tracking-tight text-slate-950">What should we improve?</h3>
+                <h3 className="text-base font-semibold tracking-tight text-slate-950">What should we improve?</h3>
                 <p className="mt-1 max-w-sm text-xs font-medium leading-5 text-slate-500">
                   Ask for an explanation or a draft. Copilot will not publish changes or launch actions without confirmation.
                 </p>
               </div>
             </div>
 
-            <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Suggested for this page</p>
+            <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Suggested for this page</p>
             <div className="space-y-2">
               {prompts.map((prompt) => (
                 <button
@@ -201,7 +201,7 @@ function CopilotConversation({ request }: { request: CopilotOpenRequest }) {
               <Bot size={14} />
             </div>
             <div className="min-w-0 max-w-[86%]">
-              <p className="mb-1 px-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Copilot</p>
+              <p className="mb-1 px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Copilot</p>
               <div className="rounded-xl rounded-tl-sm border border-blue-100 bg-white px-3.5 py-2.5 text-[13px] font-medium leading-6 text-slate-700 shadow-sm">
                 {streamingContent
                   ? <MessageContent content={streamingContent} />
@@ -300,14 +300,14 @@ export default function CopilotDrawer() {
           >
             <div className="flex h-[72px] shrink-0 items-center justify-between border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white px-4 sm:px-5">
               <div className="flex min-w-0 items-center gap-3">
-                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/20">
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md shadow-blue-500/20">
                   <Bot size={19} />
                   <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-500" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <h2 className="truncate text-sm font-black tracking-tight text-slate-950">VocalScale Copilot</h2>
-                    <span className="rounded-md border border-blue-100 bg-blue-50 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-blue-600">Beta</span>
+                    <h2 className="truncate text-sm font-semibold tracking-tight text-slate-950">VocalScale Copilot</h2>
+                    <span className="rounded-md border border-blue-100 bg-blue-50 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-blue-600">Beta</span>
                   </div>
                   <p className="mt-0.5 text-xs font-medium text-slate-500">Analyze, explain, and draft</p>
                 </div>

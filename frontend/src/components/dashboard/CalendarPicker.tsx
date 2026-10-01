@@ -42,12 +42,12 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({ date, setDate, maxDate 
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "flex items-center gap-2 px-4 py-2 bg-white border rounded-lg shadow-sm transition-all text-charcoal-medium hover:bg-white-light hover:text-charcoal active:scale-95",
-                    isOpen ? "border-blue-electric ring-2 ring-blue-electric/10" : "border-white-light"
+                    "flex h-10 items-center gap-2 px-3 bg-white border rounded-lg shadow-sm transition-all text-slate-700 hover:bg-slate-50 hover:text-slate-900",
+                    isOpen ? "border-blue-400 ring-2 ring-blue-100" : "border-slate-200"
                 )}
             >
-                <CalendarIcon size={18} className="text-charcoal-light" />
-                <span className="text-sm font-bold min-w-[100px] text-left">
+                <CalendarIcon size={16} className="text-slate-500" />
+                <span className="text-[13px] font-semibold min-w-[96px] text-left">
                     {format(date, 'MMM dd, yyyy')}
                 </span>
             </button>
@@ -59,7 +59,7 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({ date, setDate, maxDate 
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full mt-2 right-0 z-50 bg-white border border-slate-100 rounded-xl shadow-xl p-4 min-w-[320px]"
+                        className="absolute top-full mt-2 right-0 z-50 bg-white border border-slate-200 rounded-xl shadow-xl p-4 min-w-[320px]"
                     >
                         <DayPicker
                             mode="single"
@@ -70,9 +70,9 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({ date, setDate, maxDate 
                             className="p-0"
                             classNames={{
                                 day_button: "hover:bg-slate-100 rounded-full",
-                                selected: "bg-blue-electric text-white hover:bg-blue-electric/90",
-                                today: "text-blue-electric font-bold",
-                                chevron: "fill-blue-electric"
+                                selected: "bg-blue-600 text-white hover:bg-blue-600/90",
+                                today: "text-blue-600 font-bold",
+                                chevron: "fill-blue-600"
                             }}
                         />
                     </motion.div>

@@ -12,14 +12,14 @@ import type { Service as GlobalService } from '../../../types/business';
 const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
   <input
     {...props}
-    className={`block w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-950 transition-all duration-200 focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-500/10 ${props.className || ''}`}
+    className={`block w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-950 transition-all duration-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/10 ${props.className || ''}`}
   />
 );
 
 const TextArea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
   <textarea
     {...props}
-    className={`block w-full resize-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-950 transition-all duration-200 focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-500/10 ${props.className || ''}`}
+    className={`block w-full resize-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-950 transition-all duration-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/10 ${props.className || ''}`}
   />
 );
 
@@ -132,14 +132,14 @@ export const Services: React.FC = () => {
           setLocalServices(updated);
           syncToGlobal(updated);
         }}
-        className="group cursor-pointer rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-cyan-200 hover:bg-cyan-50/30"
+        className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/30"
       >
         <div className="flex items-start gap-3">
-          <div className="rounded-md border border-slate-200 bg-slate-50 p-2 text-slate-600 transition-colors group-hover:border-cyan-100 group-hover:bg-white group-hover:text-cyan-700">
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-2 text-slate-600 transition-colors group-hover:border-blue-100 group-hover:bg-white group-hover:text-blue-700">
             <Plus size={18} />
           </div>
           <div>
-            <h4 className="text-sm font-black tracking-tight text-slate-950">Add Service</h4>
+            <h4 className="text-sm font-semibold tracking-tight text-slate-950">Add service</h4>
             <p className="mt-0.5 text-sm font-medium text-slate-500">Add a new service item with pricing and details.</p>
           </div>
         </div>
@@ -148,8 +148,8 @@ export const Services: React.FC = () => {
       {/* Services List */}
       <div className="space-y-3 pt-1">
         <div className="flex items-center justify-between px-1">
-          <h3 className="flex items-center gap-2 text-sm font-black tracking-tight text-slate-950">
-            <FileText className="h-4 w-4 text-cyan-700" />
+          <h3 className="flex items-center gap-2 text-sm font-semibold tracking-tight text-slate-950">
+            <FileText className="h-4 w-4 text-blue-700" />
             Service Items
             <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-400">
               {localServices.length}
@@ -162,12 +162,12 @@ export const Services: React.FC = () => {
             <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="rounded-lg border border-slate-200 bg-white py-12 text-center shadow-sm"
+              className="rounded-xl border border-slate-200 bg-white py-12 text-center shadow-sm"
             >
               <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-50">
                 <FileText className="h-5 w-5 text-slate-300" />
               </div>
-              <p className="text-sm font-bold text-slate-500">No services listed yet</p>
+              <p className="text-sm font-semibold text-slate-500">No services listed yet</p>
               <p className="mt-1 text-xs font-medium text-slate-400">Click "Add Service" above to get started.</p>
             </m.div>
           ) : (
@@ -179,7 +179,7 @@ export const Services: React.FC = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className={`overflow-hidden rounded-lg border bg-white transition-colors ${service.isExpanded ? 'border-cyan-200 shadow-sm ring-1 ring-cyan-100' : 'border-slate-200 shadow-sm hover:border-slate-300'
+                  className={`overflow-hidden rounded-xl border bg-white transition-colors ${service.isExpanded ? 'border-blue-200 shadow-sm ring-1 ring-blue-100' : 'border-slate-200 shadow-sm hover:border-slate-300'
                     }`}
                 >
                   {/* Card Header */}
@@ -188,11 +188,11 @@ export const Services: React.FC = () => {
                     className="group flex cursor-pointer items-center justify-between p-4"
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md transition-colors ${service.isExpanded ? 'bg-cyan-700 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-cyan-50 group-hover:text-cyan-700'}`}>
+                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md transition-colors ${service.isExpanded ? 'bg-blue-700 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-700'}`}>
                         {service.isExpanded ? <Edit2 size={16} /> : <Check size={16} />}
                       </div>
                       <div>
-                        <h4 className={`text-sm font-bold ${!service.name ? 'text-slate-400 italic' : 'text-slate-950'}`}>
+                        <h4 className={`text-sm font-semibold ${!service.name ? 'text-slate-400 italic' : 'text-slate-950'}`}>
                           {service.name || 'New Service Item'}
                         </h4>
                         <div className="flex items-center gap-2 mt-0.5">
@@ -201,7 +201,7 @@ export const Services: React.FC = () => {
                               {service.duration}
                             </span>
                           )}
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                             ${service.amount}
                           </span>
                         </div>
@@ -237,7 +237,7 @@ export const Services: React.FC = () => {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-4">
                               <div>
-                                <label className="mb-1.5 block text-sm font-bold leading-none text-slate-500">Service Name</label>
+                                <label className="mb-1.5 block text-sm font-semibold leading-none text-slate-500">Service name</label>
                                 <Input
                                   value={service.name}
                                   onChange={(e) => updateService(service.id, 'name', e.target.value)}
@@ -246,7 +246,7 @@ export const Services: React.FC = () => {
                               </div>
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                  <label className="mb-1.5 block text-sm font-bold leading-none text-slate-500">Price ($)</label>
+                                  <label className="mb-1.5 block text-sm font-semibold leading-none text-slate-500">Price ($)</label>
                                   <Input
                                     type="number"
                                     value={service.amount}
@@ -255,7 +255,7 @@ export const Services: React.FC = () => {
                                   />
                                 </div>
                                 <div>
-                                  <label className="mb-1.5 block text-sm font-bold leading-none text-slate-500">Duration</label>
+                                  <label className="mb-1.5 block text-sm font-semibold leading-none text-slate-500">Duration</label>
                                   <Input
                                     value={service.duration || ''}
                                     onChange={(e) => updateService(service.id, 'duration', e.target.value)}
@@ -265,7 +265,7 @@ export const Services: React.FC = () => {
                               </div>
                             </div>
                             <div>
-                              <label className="mb-1.5 block text-sm font-bold leading-none text-slate-500">Description</label>
+                              <label className="mb-1.5 block text-sm font-semibold leading-none text-slate-500">Description</label>
                               <TextArea
                                 value={service.description || ''}
                                 onChange={(e) => updateService(service.id, 'description', e.target.value)}

@@ -34,7 +34,7 @@ const InlineCopyButton = ({ content }: { content: string }) => {
       onClick={handleCopy}
       className={cn(
         'p-1.5 rounded-md transition-all',
-        copied ? 'text-green-400 bg-green-400/10' : 'text-gray-400 hover:text-gray-200 hover:bg-white/10'
+        copied ? 'text-green-400 bg-green-400/10' : 'text-slate-400 hover:text-slate-200 hover:bg-white/10'
       )}
       title={copied ? 'Copied!' : 'Copy'}
     >
@@ -46,13 +46,13 @@ const InlineCopyButton = ({ content }: { content: string }) => {
 // ── Source chip ──────────────────────────────────────────────────────────────
 const SourceChip = ({ source }: { source: Source }) => (
   <div
-    className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs hover:border-blue-300 hover:shadow-sm transition-all cursor-default"
+    className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs hover:border-blue-300 hover:shadow-sm transition-all cursor-default"
     title={source.excerpt}
   >
     <div className="w-4 h-4 rounded-sm flex items-center justify-center bg-blue-50 text-blue-600 flex-shrink-0">
       <FileText size={10} />
     </div>
-    <span className="font-medium text-gray-700 truncate max-w-[140px]">
+    <span className="font-medium text-slate-700 truncate max-w-[140px]">
       {source.name || 'Document'}
     </span>
   </div>
@@ -92,8 +92,8 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
         {/* Assistant name + timestamp */}
         {!isUser && (
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-[13px] font-semibold text-gray-900">VocalScale AI</span>
-            <span className="text-[11px] text-gray-400">
+            <span className="text-[13px] font-semibold text-slate-900">VocalScale AI</span>
+            <span className="text-[11px] text-slate-400">
               {formatDistanceToNow(new Date(message.timestamp), { addSuffix: true })}
             </span>
           </div>
@@ -102,12 +102,12 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
         {/* ── Message body ── */}
         {isUser ? (
           // User bubble — dark slate, ChatGPT-style
-          <div className="inline-block bg-[rgb(var(--twc-slate-800))] text-white/95 px-5 py-3.5 rounded-2xl rounded-br-sm text-[15px] leading-relaxed max-w-full text-left shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+          <div className="inline-block bg-[rgb(var(--twc-slate-800))] text-white/95 px-5 py-3.5 rounded-xl rounded-br-sm text-[15px] leading-relaxed max-w-full text-left shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
             {message.content}
           </div>
         ) : (
           // Assistant — flat prose, no bubble
-          <div className="text-[15px] text-gray-800 leading-7 w-full">
+          <div className="text-[15px] text-slate-800 leading-7 w-full">
 
             {/* Streaming dots */}
             {isStreaming && !message.content && (
@@ -126,20 +126,20 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
                   ul: ({ children }) => <ul className="my-3 list-disc pl-6 space-y-1">{children}</ul>,
                   ol: ({ children }) => <ol className="my-3 list-decimal pl-6 space-y-1">{children}</ol>,
                   li: ({ children }) => <li className="pl-1">{children}</li>,
-                  h1: ({ children }) => <h1 className="text-xl font-bold mb-3 mt-6 text-gray-900">{children}</h1>,
-                  h2: ({ children }) => <h2 className="text-lg font-bold mb-2 mt-5 text-gray-900">{children}</h2>,
-                  h3: ({ children }) => <h3 className="text-base font-semibold mb-2 mt-4 text-gray-800">{children}</h3>,
+                  h1: ({ children }) => <h1 className="text-xl font-bold mb-3 mt-6 text-slate-900">{children}</h1>,
+                  h2: ({ children }) => <h2 className="text-lg font-bold mb-2 mt-5 text-slate-900">{children}</h2>,
+                  h3: ({ children }) => <h3 className="text-base font-semibold mb-2 mt-4 text-slate-800">{children}</h3>,
                   code: ({ children, className }) => {
                     const match = /language-(\w+)/.exec(className || '');
                     const isInline = !match && !String(children).includes('\n');
                     return isInline ? (
-                      <code className="px-1.5 py-0.5 rounded-md bg-gray-100 text-gray-800 text-[13px] font-mono border border-gray-200">
+                      <code className="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-800 text-[13px] font-mono border border-slate-200">
                         {children}
                       </code>
                     ) : (
-                      <div className="relative group/code my-4 rounded-xl overflow-hidden border border-gray-800/60 bg-[#1e1e2e]">
-                        <div className="flex items-center justify-between px-4 py-2 bg-[#16161e] border-b border-gray-700/50">
-                          <span className="text-[11px] text-gray-400 font-mono tracking-wide">
+                      <div className="relative group/code my-4 rounded-xl overflow-hidden border border-slate-800/60 bg-[#1e1e2e]">
+                        <div className="flex items-center justify-between px-4 py-2 bg-[#16161e] border-b border-slate-700/50">
+                          <span className="text-[11px] text-slate-400 font-mono tracking-wide">
                             {match?.[1] || 'code'}
                           </span>
                           <InlineCopyButton content={String(children).replace(/\n$/, '')} />
@@ -161,19 +161,19 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
                     </a>
                   ),
                   table: ({ children }) => (
-                    <div className="overflow-x-auto my-4 border border-gray-200 rounded-xl shadow-sm">
+                    <div className="overflow-x-auto my-4 border border-slate-200 rounded-xl shadow-sm">
                       <table className="w-full text-sm">{children}</table>
                     </div>
                   ),
-                  th: ({ children }) => <th className="bg-gray-50 px-4 py-2.5 text-left font-semibold text-gray-700 border-b border-gray-200 text-[13px]">{children}</th>,
-                  td: ({ children }) => <td className="px-4 py-2.5 border-b border-gray-100 last:border-0 text-gray-600">{children}</td>,
+                  th: ({ children }) => <th className="bg-slate-50 px-4 py-2.5 text-left font-semibold text-slate-700 border-b border-slate-200 text-[13px]">{children}</th>,
+                  td: ({ children }) => <td className="px-4 py-2.5 border-b border-slate-100 last:border-0 text-slate-600">{children}</td>,
                   blockquote: ({ children }) => (
-                    <blockquote className="border-l-[3px] border-blue-300 pl-4 py-0.5 my-4 text-gray-500 italic bg-blue-50/40 rounded-r-lg">
+                    <blockquote className="border-l-[3px] border-blue-300 pl-4 py-0.5 my-4 text-slate-500 italic bg-blue-50/40 rounded-r-lg">
                       {children}
                     </blockquote>
                   ),
-                  hr: () => <hr className="my-6 border-gray-200" />,
-                  strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                  hr: () => <hr className="my-6 border-slate-200" />,
+                  strong: ({ children }) => <strong className="font-semibold text-slate-900">{children}</strong>,
                 }}
               >
                 {message.content}
@@ -219,7 +219,7 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
                 'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs transition-all',
                 copied
                   ? 'bg-green-50 text-green-600 border border-green-200'
-                  : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+                  : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
               )}
               title={copied ? 'Copied!' : 'Copy'}
             >
@@ -227,7 +227,7 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
               <span className="font-medium">{copied ? 'Copied' : 'Copy'}</span>
             </button>
 
-            <div className="w-px h-4 bg-gray-200 mx-1" />
+            <div className="w-px h-4 bg-slate-200 mx-1" />
 
             {/* Thumbs */}
             <button
@@ -236,7 +236,7 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
                 'p-1.5 rounded-lg transition-all',
                 feedback === 'up'
                   ? 'text-green-600 bg-green-50'
-                  : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+                  : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
               )}
               title="Good response"
             >
@@ -248,20 +248,20 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
                 'p-1.5 rounded-lg transition-all',
                 feedback === 'down'
                   ? 'text-red-500 bg-red-50'
-                  : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+                  : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
               )}
               title="Bad response"
             >
               <ThumbsDown size={13} />
             </button>
             <button
-              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all"
               title="Regenerate"
             >
               <RotateCcw size={13} />
             </button>
             <button
-              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all"
               title="Share"
             >
               <Share size={13} />
@@ -273,14 +273,14 @@ const ChatMessage = ({ message, isStreaming }: ChatMessageProps) => {
         {isUser && !isStreaming && (
           <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
-              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all"
               title="Edit"
             >
               <Pencil size={12} />
             </button>
             <button
               onClick={handleCopyMessage}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all"
               title="Copy"
             >
               {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}

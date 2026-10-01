@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, Bot, CheckCircle2, Clock, FileText, Flag, Loader2, Phone, PhoneMissed, PhoneOutgoing, Share, Sparkles } from 'lucide-react';
-import type { CallLog } from '../types';
+import { type CallLog, callStatusLabel, callCategoryLabel } from '../types';
 import { format, parseISO } from 'date-fns';
 import { Button } from '../../../../components/ui/Button';
 import { Badge } from '../../../../components/ui/Badge';
@@ -86,18 +86,18 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
   const statusMeta = isMissed
     ? {
       icon: PhoneMissed,
-      label: log.status || 'Missed',
+      label: callStatusLabel(log.status, 'Missed'),
       className: 'bg-rose-50 text-rose-700 border-rose-100'
     }
     : isCompleted
       ? {
         icon: CheckCircle2,
-        label: log.status || 'Completed',
+        label: callStatusLabel(log.status, 'Answered'),
         className: 'bg-emerald-50 text-emerald-700 border-emerald-100'
       }
       : {
         icon: AlertTriangle,
-        label: log.status || 'Open',
+        label: callStatusLabel(log.status),
         className: 'bg-amber-50 text-amber-700 border-amber-100'
       };
   const StatusIcon = statusMeta.icon;
@@ -162,11 +162,11 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
   const buildCallText = () => {
     const lines = [
-      `Call with ${log.caller_name || 'Unknown Caller'}`,
+      `Call with ${log.caller_name || 'Unknown caller'}`,
       `Phone: ${log.phone_number || 'N/A'}`,
       `Date: ${formattedDate} ${formattedTime}`,
       `Status: ${statusMeta.label}`,
-      `Type: ${log.category || 'General'}`,
+      `Type: ${callCategoryLabel(log.category)}`,
       `Duration: ${durationLabel}`,
       log.lead_score ? `Lead score: ${log.lead_score}%` : null,
       '',
@@ -182,7 +182,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
   const handleShare = async () => {
     const shareUrl = window.location.href;
-    const title = `Call with ${log.caller_name || 'Unknown Caller'}`;
+    const title = `Call with ${log.caller_name || 'Unknown caller'}`;
 
     try {
       if (navigator.share) {
@@ -203,23 +203,23 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
   return (
     <div className="mx-auto flex min-h-full w-full max-w-7xl flex-col animate-in fade-in duration-300">
-      <div className="shrink-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm shadow-slate-200/60 sm:p-4">
+      <div className="shrink-0 rounded-xl border border-slate-200 bg-white p-3 shadow-sm shadow-slate-200/60 sm:p-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex min-w-0 items-start gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-sm font-black text-slate-700 sm:h-10 sm:w-10">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-700 sm:h-10 sm:w-10">
               {(log.caller_name || 'U').substring(0, 1).toUpperCase()}
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="max-w-full truncate text-lg font-black tracking-tight text-slate-950 sm:text-xl">
-                  {log.caller_name || 'Unknown Caller'}
-                </h1>
+                <h2 className="max-w-full truncate text-lg font-semibold tracking-tight text-slate-950">
+                  {log.caller_name || 'Unknown caller'}
+                </h2>
                 <Badge variant="outline" className={`gap-1 border text-xs font-semibold shadow-none ${statusMeta.className}`}>
                   <StatusIcon size={13} />
                   {statusMeta.label}
                 </Badge>
                 {isOutbound && (
-                  <Badge variant="outline" className="gap-1 border-indigo-100 bg-indigo-50 text-xs font-semibold text-indigo-700 shadow-none">
+                  <Badge variant="outline" className="gap-1 border-blue-100 bg-blue-50 text-xs font-semibold text-blue-700 shadow-none">
                     <PhoneOutgoing size={13} />
                     Outbound
                   </Badge>
@@ -260,19 +260,19 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
         <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
             <p className="text-xs font-semibold text-slate-500">Duration</p>
-            <p className="mt-0.5 text-base font-black text-slate-950">{durationLabel}</p>
+            <p className="mt-0.5 text-base font-semibold text-slate-950">{durationLabel}</p>
           </div>
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
             <p className="text-xs font-semibold text-slate-500">Type</p>
-            <p className="mt-0.5 truncate text-base font-black text-slate-950">{log.category || 'General'}</p>
+            <p className="mt-0.5 truncate text-base font-semibold text-slate-950">{callCategoryLabel(log.category)}</p>
           </div>
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
             <p className="text-xs font-semibold text-slate-500">Lead score</p>
-            <p className="mt-0.5 text-base font-black text-slate-950">{log.lead_score ? `${log.lead_score}%` : 'Not set'}</p>
+            <p className="mt-0.5 text-base font-semibold text-slate-950">{log.lead_score ? `${log.lead_score}%` : 'Not set'}</p>
           </div>
           <div className={`rounded-lg border p-2.5 ${isUrgent ? 'border-rose-100 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}>
             <p className={`text-xs font-semibold ${isUrgent ? 'text-rose-600' : 'text-slate-500'}`}>Next action</p>
-            <p className={`mt-0.5 truncate text-base font-black ${isUrgent ? 'text-rose-700' : 'text-slate-950'}`}>
+            <p className={`mt-0.5 truncate text-base font-semibold ${isUrgent ? 'text-rose-700' : 'text-slate-950'}`}>
               {isUrgent ? 'Follow up' : 'No action'}
             </p>
           </div>
@@ -281,9 +281,9 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
       <div className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-12">
         <div className="xl:col-span-8">
-          <section className="flex min-h-[420px] flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm shadow-slate-200/60 md:max-h-[720px] md:min-h-[520px]">
+          <section className="flex min-h-[420px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60 md:max-h-[720px] md:min-h-[520px]">
             <div className="flex shrink-0 flex-row items-center justify-between border-b border-slate-200 bg-white px-3 py-3 sm:px-4">
-              <h2 className="text-sm font-black tracking-tight text-slate-950 sm:text-base">Transcript</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-slate-950 sm:text-base">Transcript</h2>
               <Badge variant="outline" className="gap-1.5 rounded-lg border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                 Recorded
@@ -299,8 +299,8 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
                       return (
                         <div key={msg.id} className={`flex gap-2.5 sm:gap-3 ${isAI ? '' : 'flex-row-reverse'}`}>
-                          <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[10px] font-black sm:h-8 sm:w-8 ${isAI
-                            ? 'border-cyan-100 bg-cyan-50 text-cyan-700'
+                          <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[10px] font-semibold sm:h-8 sm:w-8 ${isAI
+                            ? 'border-blue-100 bg-blue-50 text-blue-700'
                             : 'border-slate-200 bg-slate-50 text-slate-700'
                             }`}>
                             {isAI ? <Bot size={14} /> : (log.caller_name || 'Unknown').substring(0, 1).toUpperCase()}
@@ -308,7 +308,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                           <div className={`max-w-[88%] space-y-1 sm:max-w-[86%] ${isAI ? '' : 'flex flex-col items-end'}`}>
                             <div className={`whitespace-pre-wrap rounded-lg px-3 py-2 text-[13px] font-medium leading-5 sm:text-sm ${isAI
                               ? 'rounded-tl-none border border-slate-200 bg-slate-50 text-slate-950'
-                              : 'rounded-tr-none border border-cyan-100 bg-cyan-50/60 text-slate-950'
+                              : 'rounded-tr-none border border-blue-100 bg-blue-50/60 text-slate-950'
                               }`}>
                               {msg.content}
                             </div>
@@ -359,20 +359,20 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
         </div>
 
         <div className="space-y-3 xl:col-span-4">
-          <section className="space-y-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/60">
+          <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/60">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-base font-black text-slate-700">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-base font-semibold text-slate-700">
                 {(log.caller_name || 'Unknown').substring(0, 2).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="truncate text-base font-black tracking-tight text-slate-950">{log.caller_name || 'Unknown Caller'}</h2>
+                <h2 className="truncate text-base font-semibold tracking-tight text-slate-950">{log.caller_name || 'Unknown caller'}</h2>
                 <p className="mt-1 truncate text-sm font-medium text-slate-500">{log.phone_number || 'No phone number'}</p>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2 pt-1">
               <Badge variant="secondary" className="rounded-lg border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-950">
-                {log.category || 'General'}
+                {callCategoryLabel(log.category)}
               </Badge>
               {log.tags?.map((tag, i) => (
                 <Badge key={i} variant="outline" className="rounded-lg border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500">
@@ -384,10 +384,10 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
           {/* AI follow-up call: type an instruction, the agent calls this customer */}
           {log.phone_number && (
-            <section className="overflow-hidden rounded-lg border border-indigo-100 bg-white shadow-sm shadow-slate-200/60">
-              <div className="flex items-center gap-2 border-b border-indigo-100 bg-indigo-50/50 px-4 py-3">
-                <PhoneOutgoing size={15} className="text-indigo-600" />
-                <h2 className="text-base font-black tracking-tight text-slate-950">AI follow-up call</h2>
+            <section className="overflow-hidden rounded-xl border border-blue-100 bg-white shadow-sm shadow-slate-200/60">
+              <div className="flex items-center gap-2 border-b border-blue-100 bg-blue-50/50 px-4 py-3">
+                <PhoneOutgoing size={15} className="text-blue-600" />
+                <h2 className="text-base font-semibold tracking-tight text-slate-950">Follow-up call</h2>
               </div>
               <div className="space-y-3 p-4">
                 {isMissed && !isOutbound && (
@@ -399,17 +399,17 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                     <span className="min-w-0">
                       <span className="block text-sm font-semibold text-rose-800">Missed call — recover it now</span>
                       <span className="block truncate text-xs text-rose-600">
-                        One click: the AI calls back, apologizes, and helps with what they needed.
+                        One click: your agent calls back, apologizes, and helps with what they needed.
                       </span>
                     </span>
                     <span className="flex shrink-0 items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white">
                       {sending ? <Loader2 size={13} className="animate-spin" /> : <PhoneOutgoing size={13} />}
-                      AI call back
+                      Call back now
                     </span>
                   </button>
                 )}
                 <p className="text-xs font-medium leading-5 text-slate-500">
-                  Tell the AI what to accomplish — it calls {log.caller_name && log.caller_name !== 'Unknown' ? log.caller_name : 'this customer'} right away and handles it.
+                  Tell the agent what to accomplish — it calls {log.caller_name && log.caller_name !== 'Unknown' ? log.caller_name : 'this contact'} right away and handles it.
                 </p>
                 <textarea
                   value={instruction}
@@ -418,7 +418,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                   maxLength={500}
                   disabled={sending}
                   placeholder='e.g. "Follow up about the appointment and confirm a time for next week"'
-                  className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-medium text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
+                  className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-medium text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                 />
                 {followUpError && <p className="text-xs font-semibold text-rose-600">{followUpError}</p>}
                 {followUpSuccess && (
@@ -429,7 +429,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                 <Button
                   onClick={handleFollowUpCall}
                   disabled={sending || instruction.trim().length < 5}
-                  className="h-10 w-full rounded-lg bg-indigo-600 text-sm font-semibold text-white shadow-none hover:bg-indigo-700 disabled:opacity-60"
+                  className="h-10 w-full rounded-lg bg-blue-600 text-sm font-semibold text-white shadow-none hover:bg-blue-700 disabled:opacity-60"
                 >
                   {sending ? (
                     <>
@@ -445,14 +445,14 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
             </section>
           )}
 
-          <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
+          <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
             <div className="border-b border-slate-200 bg-white px-4 py-3">
-              <h2 className="text-base font-black tracking-tight text-slate-950">Call details</h2>
+              <h2 className="text-base font-semibold tracking-tight text-slate-950">Call details</h2>
             </div>
             <div className="space-y-3 p-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-slate-500">Duration</span>
-                <span className="flex items-center gap-2 text-sm font-black text-slate-950">
+                <span className="flex items-center gap-2 text-sm font-semibold text-slate-950">
                   <Clock size={14} className="text-slate-400" />
                   {durationLabel}
                 </span>
@@ -467,8 +467,8 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
 
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-slate-500">Direction</span>
-                <span className="flex items-center gap-1.5 text-sm font-black text-slate-950">
-                  {isOutbound ? <PhoneOutgoing size={14} className="text-indigo-600" /> : <Phone size={14} className="text-slate-400" />}
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-slate-950">
+                  {isOutbound ? <PhoneOutgoing size={14} className="text-blue-600" /> : <Phone size={14} className="text-slate-400" />}
                   {isOutbound ? 'Outbound' : 'Inbound'}
                 </span>
               </div>
@@ -476,7 +476,7 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
               {log.objective && (
                 <div className="pt-1">
                   <span className="text-sm font-semibold text-slate-500">Objective</span>
-                  <p className="mt-1 rounded-lg border border-indigo-100 bg-indigo-50/50 p-2.5 text-sm font-medium leading-5 text-slate-950">
+                  <p className="mt-1 rounded-lg border border-blue-100 bg-blue-50/50 p-2.5 text-sm font-medium leading-5 text-slate-950">
                     {log.objective}
                   </p>
                 </div>
@@ -486,11 +486,11 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                 <div className="space-y-3 pt-1">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-slate-500">Lead score</span>
-                    <span className="text-sm font-black text-slate-950">{log.lead_score}%</span>
+                    <span className="text-sm font-semibold text-slate-950">{log.lead_score}%</span>
                   </div>
                   <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                     <div
-                      className="h-full rounded-full bg-cyan-600 transition-all duration-1000"
+                      className="h-full rounded-full bg-blue-600 transition-all duration-1000"
                       style={{ width: `${log.lead_score}%` }}
                     />
                   </div>
@@ -501,10 +501,10 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-sm font-semibold text-slate-500">Handled by</span>
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-[10px] font-black text-slate-600">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-[10px] font-semibold text-slate-600">
                       {log.handled_by.substring(0, 1).toUpperCase()}
                     </div>
-                    <span className="text-sm font-black tracking-tight text-slate-950">{log.handled_by}</span>
+                    <span className="text-sm font-semibold tracking-tight text-slate-950">{log.handled_by}</span>
                   </div>
                 </div>
               )}
@@ -517,10 +517,10 @@ const LogDetails: React.FC<LogDetailsProps> = ({ log }) => {
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-100">
                   <Flag size={14} />
                 </div>
-                <h4 className="text-sm font-semibold">Action required</h4>
+                <h4 className="text-sm font-semibold">Needs attention</h4>
               </div>
               <p className="line-clamp-2 text-sm font-medium leading-5 text-rose-700/80">
-                This call is flagged for manual follow-up. Keep it visible near the customer context so the next step is not missed.
+                This call is flagged for manual follow-up. Follow up with this contact so the next step is not missed.
               </p>
               <Button className="h-10 w-full rounded-lg bg-rose-600 text-sm font-semibold text-white shadow-none hover:bg-rose-700">
                 Mark follow-up handled

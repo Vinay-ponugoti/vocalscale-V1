@@ -16,7 +16,7 @@ import {
   Building2,
   Search,
   Gauge,
-  Layers,
+  Hash,
   CreditCard,
   Star,
   BookOpen,
@@ -42,8 +42,6 @@ import CopilotDrawer from '../../components/copilot/CopilotDrawer';
 import { openCopilot, surfaceForPath } from '../../lib/copilot';
 
 
-// 30% Charcoal / Slate
-
 interface DashboardLayoutProps {
   children: React.ReactNode;
   fullWidth?: boolean;
@@ -51,13 +49,67 @@ interface DashboardLayoutProps {
   hideHeader?: boolean;
 }
 
-// --- UI COMPONENTS ---
+type NavItemDef = { path: string; label: string; icon: React.ElementType };
 
-// --- UI COMPONENTS ---
+// Single source for the sidebar, the mobile menu and the top-bar breadcrumb.
+const NAV_SECTIONS: Array<{ label: string; items: NavItemDef[] }> = [
+  {
+    label: 'Overview',
+    items: [
+      { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/dashboard/insights', label: 'Performance', icon: TrendingUp },
+    ],
+  },
+  {
+    label: 'Activity',
+    items: [
+      { path: '/dashboard/calls', label: 'Call logs', icon: PhoneCall },
+      { path: '/dashboard/appointments', label: 'Appointments', icon: Calendar },
+      { path: '/dashboard/contacts', label: 'Contacts', icon: Users },
+      { path: '/dashboard/campaigns', label: 'Campaigns', icon: Megaphone },
+      { path: '/dashboard/reviews', label: 'Reviews', icon: Star },
+    ],
+  },
+  {
+    label: 'Agent setup',
+    items: [
+      { path: '/dashboard/agents', label: 'Agents', icon: Bot },
+      { path: '/dashboard/knowledge', label: 'Knowledge base', icon: BookOpen },
+      { path: '/dashboard/business-details', label: 'Business profile', icon: Building2 },
+      { path: '/dashboard/voice-setup', label: 'Phone numbers', icon: Hash },
+    ],
+  },
+  {
+    label: 'Account',
+    items: [
+      { path: '/dashboard/settings', label: 'Settings', icon: Settings },
+      { path: '/dashboard/billing', label: 'Billing', icon: CreditCard },
+      { path: '/dashboard/help', label: 'Help center', icon: HelpCircle },
+    ],
+  },
+];
+
+const NAV_ITEMS = NAV_SECTIONS.flatMap((section) => section.items.map((item) => ({ ...item, section: section.label })));
+
+// Child pages shown as "Parent › Child" in the top bar.
+const SUB_PAGES: Array<[string, string]> = [
+  ['/dashboard/voice-setup/setup-subaccount', 'Connect provider'],
+  ['/dashboard/voice-setup/numbers/', 'Number details'],
+  ['/dashboard/voice-setup/buy', 'Add number'],
+  ['/dashboard/billing/plans', 'Plans'],
+  ['/dashboard/contacts/', 'Contact'],
+  ['/dashboard/calls/', 'Call details'],
+];
+
+// Pages that are not in the sidebar: [path prefix, section, title].
+const EXTRA_PAGES: Array<[string, string, string]> = [
+  ['/dashboard/chat', 'Overview', 'Copilot'],
+  ['/dashboard/voice-model/', 'Agent setup', 'Voice model'],
+];
 
 const SectionLabel = ({ label, sidebarOpen }: { label: string; sidebarOpen: boolean }) => (
   <h3 className={cn(
-    "px-5 mt-7 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 text-[hsl(var(--ds-subtle-text))]",
+    "px-5 mt-6 mb-1.5 text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 text-slate-400",
     sidebarOpen ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
   )}>
     {label}
@@ -70,7 +122,7 @@ const NavItem = ({
   isActive,
   onClick
 }: {
-  item: { path: string; label: string; icon: React.ElementType; badge?: string | number; badgeColor?: string };
+  item: NavItemDef;
   isCollapsed?: boolean;
   isActive: boolean;
   onClick?: () => void;
@@ -80,9 +132,9 @@ const NavItem = ({
   return (
     <Link
       to={item.path}
-      className={`group relative flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-4'} py-2.5 mx-2 rounded-[9px] text-[13px] font-medium transition-all duration-200 no-underline
+      className={`group relative flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between px-4'} py-2 mx-2 rounded-lg text-[13px] font-medium transition-all duration-200 no-underline
         ${isActive
-          ? 'text-slate-950 bg-blue-50 shadow-sm'
+          ? 'text-slate-950 bg-blue-50'
           : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
         } `}
       onClick={onClick}
@@ -93,15 +145,10 @@ const NavItem = ({
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-blue-500 rounded-r-full" />
       )}
 
-      <div className={`flex items-center gap-3.5 ${isCollapsed ? 'justify-center' : ''} `}>
+      <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''} `}>
         <Icon size={17} strokeWidth={2.1} className={isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-700 transition-colors'} />
-        {!isCollapsed && <span className="transition-colors leading-relaxed py-0.5">{item.label}</span>}
+        {!isCollapsed && <span className="transition-colors leading-6">{item.label}</span>}
       </div>
-      {!isCollapsed && item.badge && (
-        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors ${isActive ? 'bg-emerald-100 text-emerald-700' : item.badgeColor || 'bg-emerald-100 text-emerald-700'} `}>
-          {item.badge}
-        </span>
-      )}
     </Link>
   );
 };
@@ -199,7 +246,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
   if (loading) {
     return (
       <div className={cn(themeClass, "h-screen w-full flex items-center justify-center bg-[hsl(var(--ds-off-white))]")}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -218,7 +265,7 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
   const userFullName = profile?.full_name || user?.full_name || user?.user_metadata?.full_name || userEmail;
 
   const hasActiveSubscription = subscription && (subscription.status === 'active' || subscription.status === 'trialing');
-  const subscriptionStatusLabel = subscription?.status === 'trialing' ? 'Trial Active' : 'Plan Active';
+  const subscriptionStatusLabel = subscription?.status === 'trialing' ? 'Trial active' : 'Plan active';
 
   const isActive = (path: string) => {
     if (path === '/dashboard') {
@@ -227,36 +274,33 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
     return location.pathname.startsWith(path);
   };
 
-  const routeTitle = (() => {
-    const routes: Array<[string, string]> = [
-      ['/dashboard/voice-setup/setup-subaccount', 'Connect number'],
-      ['/dashboard/voice-setup/numbers/', 'Number details'],
-      ['/dashboard/voice-setup/buy', 'Add phone number'],
-      ['/dashboard/voice-model/', 'Voice model'],
-      ['/dashboard/business-details', 'Business profile'],
-      ['/dashboard/appointments', 'Appointments'],
-      ['/dashboard/campaigns', 'Campaigns'],
-      ['/dashboard/knowledge', 'Knowledge'],
-      ['/dashboard/contacts/', 'Customer profile'],
-      ['/dashboard/contacts', 'Contacts'],
-      ['/dashboard/insights', 'Performance'],
-      ['/dashboard/voice-setup', 'Phone numbers'],
-      ['/dashboard/settings', 'Settings'],
-      ['/dashboard/billing', 'Billing'],
-      ['/dashboard/reviews', 'Reviews'],
-      ['/dashboard/agents', 'Agents'],
-      ['/dashboard/calls', 'Call logs'],
-      ['/dashboard/chat', 'Assistant'],
-      ['/dashboard/help', 'Help center'],
-      ['/dashboard', 'Overview'],
-    ];
-    return routes.find(([path]) => location.pathname.startsWith(path))?.[1] || 'Workspace';
-  })();
-  const searchPlaceholder = location.pathname.startsWith('/dashboard/calls')
-    ? 'Search caller, phone, or summary…'
-    : location.pathname.startsWith('/dashboard/appointments')
-      ? 'Search appointments…'
-      : null;
+  // Breadcrumb: section › page (› sub-page), all derived from NAV_SECTIONS.
+  const navMatch = NAV_ITEMS
+    .filter((item) => isActive(item.path))
+    .sort((a, b) => b.path.length - a.path.length)[0];
+  const subPage = SUB_PAGES.find(([path]) => location.pathname.startsWith(path))?.[1];
+  const extraPage = EXTRA_PAGES.find(([path]) => location.pathname.startsWith(path));
+  const sectionLabel = navMatch?.section ?? extraPage?.[1] ?? 'Overview';
+  const routeTitle = subPage ?? navMatch?.label ?? extraPage?.[2] ?? 'Dashboard';
+
+  const renderNav = (collapsed: boolean, onNavigate?: () => void) =>
+    NAV_SECTIONS.map((section) => (
+      <div key={section.label}>
+        <SectionLabel label={section.label} sidebarOpen={!collapsed} />
+        {section.items.map((item) => (
+          <NavItem
+            key={item.path}
+            item={item}
+            isCollapsed={collapsed}
+            isActive={isActive(item.path)}
+            onClick={onNavigate}
+          />
+        ))}
+      </div>
+    ));
+
+  // Call logs has its own search next to the list, so only Appointments uses the top-bar search.
+  const searchPlaceholder = location.pathname.startsWith('/dashboard/appointments') ? 'Search appointments…' : null;
   const callDetailMatch = location.pathname.match(/^\/dashboard\/calls\/([^/]+)/);
 
   const firstLetter = (userFullName || businessName).charAt(0).toUpperCase();
@@ -278,8 +322,8 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
 
           {/* Logo Header */}
           <div className={cn(
-            "h-[72px] flex items-center transition-all duration-300 border-b border-slate-100",
-            sidebarOpen ? 'justify-between px-5' : 'justify-center px-3'
+            "h-[72px] shrink-0 flex items-center transition-all duration-300 border-b border-[hsl(var(--ds-border))]",
+            sidebarOpen ? 'px-5' : 'justify-center px-3'
           )}>
             <Link
               to="/dashboard"
@@ -293,118 +337,40 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                 {sidebarOpen && (
                   <div className="flex flex-col">
                     <span className="text-[17px] font-semibold tracking-[-0.03em] text-slate-950 transition-colors">VocalScale</span>
-                    <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-[0.12em]">Operations desk</span>
+                    <span className="text-[11px] text-slate-400">AI phone desk</span>
                   </div>
                 )}
               </div>
             </Link>
 
-            {/* Toggle Button (Only visible when open) */}
-            {sidebarOpen && (
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-[hsl(var(--ds-stone))]"
-                aria-label="Collapse sidebar"
-              >
-                <ChevronRight size={16} className="transform rotate-180" strokeWidth={3} />
-              </button>
-            )}
           </div>
 
+          {/* Edge toggle, visible in both states */}
+          <button
+            onClick={() => setSidebarOpen((open) => !open)}
+            className="absolute -right-3 top-[60px] z-[60] flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 shadow-sm transition-colors hover:text-slate-700"
+            aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            <ChevronRight size={14} strokeWidth={2.5} className={sidebarOpen ? 'rotate-180' : ''} />
+          </button>
+
           {/* Scrollable Nav Area */}
-          <div className="flex-1 overflow-y-auto py-4 overflow-x-hidden scrollbar-hide">
+          <div className="flex-1 overflow-y-auto pb-4 overflow-x-hidden scrollbar-hide">
 
-            <SectionLabel label="General" sidebarOpen={sidebarOpen} />
-            <NavItem
-              item={{ path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/insights', label: 'Performance', icon: TrendingUp }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/insights')}
-            />
+            {renderNav(!sidebarOpen)}
 
-            <SectionLabel label="Operations" sidebarOpen={sidebarOpen} />
-            <NavItem
-              item={{ path: '/dashboard/calls', label: 'Call Logs', icon: PhoneCall }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/calls')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/contacts', label: 'Contacts', icon: Users }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/contacts')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/campaigns', label: 'Campaigns', icon: Megaphone }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/campaigns')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/appointments', label: 'Appointments', icon: Calendar }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/appointments')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/reviews')}
-            />
-
-            <SectionLabel label="Configuration" sidebarOpen={sidebarOpen} />
-            <NavItem
-              item={{ path: '/dashboard/business-details', label: 'Business Profile', icon: Building2 }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/business-details')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/voice-setup', label: 'Voice Setup', icon: Layers }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/voice-setup')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/agents', label: 'Agents', icon: Bot }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/agents')}
-            />
-            <NavItem
-              item={{ path: '/dashboard/knowledge', label: 'Knowledge', icon: BookOpen }}
-              isCollapsed={!sidebarOpen}
-              isActive={isActive('/dashboard/knowledge')}
-            />
-
-            <div className="mt-auto">
-              {/* Sidebar Header for Desktop Only */}
-              <div className="hidden lg:block pt-6 mt-6">
-                <SectionLabel label="System" sidebarOpen={sidebarOpen} />
-                <NavItem
-                  item={{ path: '/dashboard/settings', label: 'Settings', icon: Settings }}
-                  isCollapsed={!sidebarOpen}
-                  isActive={isActive('/dashboard/settings')}
-                />
-                <NavItem
-                  item={{ path: '/dashboard/billing', label: 'Billing', icon: CreditCard }}
-                  isCollapsed={!sidebarOpen}
-                  isActive={isActive('/dashboard/billing')}
-                />
-                <NavItem
-                  item={{ path: '/dashboard/help', label: 'Help & Docs', icon: HelpCircle }}
-                  isCollapsed={!sidebarOpen}
-                  isActive={isActive('/dashboard/help')}
-                />
-              </div>
-
-              {/* Sign Out Button */}
-              <button
-                onClick={handleSignOut}
-                className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-5' : 'justify-center'} py-3 text-sm font-medium rounded-[10px] transition-all duration-300 group text-slate-400 hover:bg-rose-50 hover:text-rose-600`}
-              >
-                <LogOut size={18} strokeWidth={2.5} className={sidebarOpen ? 'mr-3 group-hover:-translate-x-1 transition-transform' : ''} />
-                {sidebarOpen && <span>Log Out</span>}
-              </button>
-            </div>
+            <button
+              onClick={handleSignOut}
+              className={cn(
+                "mt-6 mx-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-lg py-2 text-[13px] font-medium text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-600",
+                sidebarOpen ? 'justify-start px-4' : 'justify-center px-3'
+              )}
+              title={sidebarOpen ? undefined : 'Sign out'}
+            >
+              <LogOut size={17} strokeWidth={2.1} />
+              {sidebarOpen && <span>Sign out</span>}
+            </button>
           </div>
 
           {/* Bottom Plan Status */}
@@ -415,23 +381,23 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
             )}>
               {hasActiveSubscription ? (
                 sidebarOpen ? (
-                  <div className="rounded-lg border border-emerald-100 bg-white p-3 shadow-sm">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
                     <div className="mb-1.5 flex items-center gap-2">
                       <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600">
                         <CheckCircle2 size={12} strokeWidth={2.5} />
                       </div>
-                      <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-900">
+                      <h4 className="text-xs font-semibold text-slate-900">
                         {subscriptionStatusLabel}
                       </h4>
                     </div>
 
                     <div>
-                      <p className="mb-2 text-[10px] font-medium leading-snug text-slate-500">Usage, invoices, and plan details are in Billing.</p>
+                      <p className="mb-2.5 text-[11px] leading-snug text-slate-500">Usage, invoices, and plan details are in Billing.</p>
                       <Link
                         to="/dashboard/billing"
-                        className="flex w-full items-center justify-center rounded-md border border-slate-200 bg-white py-1.5 text-[9px] font-black uppercase tracking-wider text-slate-700 no-underline transition-colors hover:bg-slate-50"
+                        className="flex h-8 w-full items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 no-underline transition-colors hover:bg-slate-50"
                       >
-                        Open Billing
+                        Open billing
                       </Link>
                     </div>
                   </div>
@@ -446,23 +412,23 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                   </Link>
                 )
               ) : sidebarOpen ? (
-                <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition-colors hover:border-slate-300">
+                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 text-slate-600">
                       <Gauge size={12} strokeWidth={2.5} />
                     </div>
-                    <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-900">
-                      Call Capacity
+                    <h4 className="text-xs font-semibold text-slate-900">
+                      No active plan
                     </h4>
                   </div>
 
                   <div>
-                    <p className="mb-2 text-[10px] font-medium leading-snug text-slate-500">Review your plan when call volume starts climbing.</p>
+                    <p className="mb-2.5 text-[11px] leading-snug text-slate-500">Choose a plan so your agent can keep answering calls.</p>
                     <Link
                       to="/dashboard/billing/plans"
-                      className="flex w-full items-center justify-center rounded-md bg-slate-900 py-1.5 text-[9px] font-black uppercase tracking-wider text-white no-underline transition-colors hover:bg-slate-700"
+                      className="flex h-8 w-full items-center justify-center rounded-lg bg-blue-600 text-xs font-semibold text-white no-underline transition-colors hover:bg-blue-700"
                     >
-                      Review Plans
+                      View plans
                     </Link>
                   </div>
                 </div>
@@ -470,9 +436,9 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                 /* Collapsed: icon-only button (matches NavItem collapsed pattern) */
                 <Link
                   to="/dashboard/billing/plans"
-                  title="Review plans"
-                  aria-label="Review plans"
-                  className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-900 text-white no-underline transition-colors hover:bg-slate-700"
+                  title="View plans"
+                  aria-label="View plans"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-600 text-white no-underline transition-colors hover:bg-blue-700"
                 >
                   <Gauge size={18} strokeWidth={2.5} />
                 </Link>
@@ -486,30 +452,37 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
         <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
 
           {/* TOP NAVIGATION BAR — hidden for fullscreen pages like Chat */}
-          {!hideHeader && <header className="vs-app-header h-[72px] backdrop-blur-xl border-b border-[hsl(var(--ds-border))] shrink-0 z-50 px-2 md:px-7 flex items-center justify-between transition-all duration-300 bg-[hsl(var(--ds-off-white)/0.85)]">
+          {!hideHeader && <header className="vs-app-header h-[72px] backdrop-blur-xl border-b border-[hsl(var(--ds-border))] shrink-0 z-50 gap-3 px-4 md:px-6 lg:px-8 flex items-center justify-between transition-all duration-300 bg-[hsl(var(--ds-off-white)/0.85)]">
 
             {/* Mobile Menu Toggle - Always visible on mobile, positioned at start */}
             <button
-              className="md:hidden p-2.5 rounded-xl flex-shrink-0 text-[hsl(var(--ds-charcoal))] bg-[hsl(var(--ds-white))]"
+              className="md:hidden flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
-            {/* Top Logo - Mobile Only */}
-            <div className="md:hidden flex items-center gap-2 mr-2">
-              <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-8 h-8 object-contain" />
-            </div>
-
-            {/* Route context keeps users oriented on dense and nested workflows. */}
-            <div className="vs-route-context hidden lg:flex flex-col gap-1 mr-7">
-              <span className="vs-route-context__eyebrow">Workspace</span>
-              <span className="vs-route-context__title">{routeTitle}</span>
-            </div>
+            {/* Breadcrumb: section › page (› sub-page). Keeps users oriented on nested pages. */}
+            <nav aria-label="Breadcrumb" className="vs-route-context flex min-w-0 shrink-0 flex-col gap-1 lg:mr-4">
+              <span className="vs-route-context__eyebrow hidden sm:block">{sectionLabel}</span>
+              <span className="vs-route-context__title flex min-w-0 items-center gap-1.5">
+                {subPage && navMatch ? (
+                  <>
+                    <Link to={navMatch.path} className="hidden truncate text-slate-500 no-underline hover:text-slate-900 sm:inline">
+                      {navMatch.label}
+                    </Link>
+                    <ChevronRight size={13} className="hidden shrink-0 text-slate-300 sm:block" />
+                    <span className="truncate">{subPage}</span>
+                  </>
+                ) : (
+                  <span className="truncate">{routeTitle}</span>
+                )}
+              </span>
+            </nav>
 
             {/* Search only appears on pages wired to the shared query. */}
-            {searchPlaceholder ? <div className="flex-1 max-w-xl flex items-center">
+            {searchPlaceholder ? <div className="hidden sm:flex flex-1 max-w-xl items-center">
               <div className="relative w-full group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
                   <Search size={18} strokeWidth={2.5} className="text-[hsl(var(--ds-subtle-text))] group-focus-within:text-blue-500 transition-colors" />
@@ -549,10 +522,10 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
             )}
 
             {/* Right: Actions & Profile */}
-            <div className="flex items-center gap-2 md:gap-4 ml-4">
+            <div className="flex shrink-0 items-center gap-2 md:gap-3">
 
               {/* Icon Actions */}
-              <div className="flex items-center gap-1 border-r pr-2 md:pr-4 border-[hsl(var(--ds-border))]">
+              <div className="flex items-center gap-1 border-r pr-2 md:pr-3 border-[hsl(var(--ds-border))]">
                 <button
                   type="button"
                   onClick={() => openCopilot({
@@ -560,41 +533,31 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                     entityId: callDetailMatch?.[1],
                     title: routeTitle,
                   })}
-                  className="flex h-10 items-center justify-center gap-2 rounded-xl border border-blue-100 bg-blue-50 px-2.5 text-xs font-bold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100 sm:px-3"
-                  aria-label="Ask VocalScale Copilot"
-                  title="Ask VocalScale Copilot"
+                  className="flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-2.5 text-[13px] font-semibold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100 sm:px-3"
+                  aria-label="Ask Copilot about this page"
+                  title="Ask Copilot about this page"
                 >
                   <Sparkles size={16} />
-                  <span className="hidden xl:inline">Ask VocalScale</span>
+                  <span className="hidden xl:inline">Ask Copilot</span>
                 </button>
                 <button
                   onClick={toggleTheme}
                   aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
                   title={theme === 'dark' ? 'Light theme' : 'Dark theme'}
-                  className="p-2.5 rounded-xl transition-all text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg transition-all text-slate-500 hover:bg-slate-100 hover:text-slate-700"
                 >
-                  {theme === 'dark' ? <Sun size={20} strokeWidth={2.25} /> : <Moon size={20} strokeWidth={2.25} />}
+                  {theme === 'dark' ? <Sun size={18} strokeWidth={2.1} /> : <Moon size={18} strokeWidth={2.1} />}
                 </button>
-                <Link
-                  to="/dashboard/billing"
-                  className={cn(
-                    "hidden sm:flex items-center justify-center p-2.5 rounded-xl transition-all relative group border border-transparent hover:bg-slate-50 no-underline",
-                    isActive('/dashboard/billing') ? 'text-blue-600 bg-blue-50 border-blue-100' : 'text-slate-500 hover:border-slate-200'
-                  )}
-                  aria-label="Billing"
-                >
-                  <CreditCard size={20} strokeWidth={isActive('/dashboard/billing') ? 2.5 : 2} />
-                </Link>
                 <div className="relative">
                   <button
                     onClick={() => setNotificationPanelOpen(!notificationPanelOpen)}
                     aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''} `}
                     className={cn(
-                      "p-2.5 rounded-xl transition-all relative outline-none group",
-                      notificationPanelOpen ? 'bg-blue-50 text-blue-600' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
+                      "flex h-10 w-10 items-center justify-center rounded-lg transition-all relative outline-none group",
+                      notificationPanelOpen ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
                     )}
                   >
-                    <Bell size={20} strokeWidth={2.5} />
+                    <Bell size={18} strokeWidth={2.1} />
                     {unreadCount > 0 && (
                       <span className="absolute top-2 right-2 flex h-2.5 w-2.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -634,16 +597,16 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                   aria-haspopup="true"
                   aria-expanded={profileDropdownOpen}
                   className={cn(
-                    "flex items-center gap-3 p-1 pl-3 rounded-full transition-all duration-200",
+                    "flex items-center gap-3 p-1 lg:pl-3 rounded-full transition-all duration-200",
                     profileDropdownOpen ? 'bg-slate-100 ring-2 ring-slate-100' : 'bg-transparent hover:bg-slate-50'
                   )}
                 >
                   <div className="hidden lg:flex flex-col items-end text-right">
-                    <span className="text-xs font-bold text-slate-900 leading-tight">{businessName}</span>
-                    <span className="text-[10px] font-medium text-slate-500 leading-tight">{userFullName}</span>
+                    <span className="text-xs font-semibold text-slate-900 leading-tight">{businessName}</span>
+                    <span className="text-[11px] text-slate-500 leading-tight">{userFullName}</span>
                   </div>
 
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white ring-2 ring-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white ring-2 ring-white">
                     {firstLetter}
                   </div>
                 </button>
@@ -676,12 +639,12 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
         {/* MOBILE MENU OVERLAY */}
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-50 md:hidden backdrop-blur-sm animate-in fade-in duration-200" style={{ backgroundColor: 'rgba(31, 41, 55, 0.4)' }} onClick={() => setMobileMenuOpen(false)}>
-            <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-6 flex flex-col animate-in slide-in-from-left duration-300 bg-[hsl(var(--ds-surface))]" onClick={e => e.stopPropagation()}>
-              <div className="flex items-center justify-between mb-8">
+            <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] shadow-2xl p-4 flex flex-col animate-in slide-in-from-left duration-300 bg-[hsl(var(--ds-surface))]" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-2 px-1">
                 <div className="flex items-center">
                   <div className="flex items-center gap-3">
                     <img src="/logo.png" alt="VocalScale" width="428" height="428" className="w-10 h-10 object-contain" />
-                    <span className="text-2xl font-black tracking-tight text-slate-900">VocalScale</span>
+                    <span className="text-lg font-semibold tracking-tight text-slate-900">VocalScale</span>
                   </div>
                 </div>
                 <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-xl text-[hsl(var(--ds-stone))] bg-[hsl(var(--ds-surface))]" aria-label="Close menu">
@@ -689,104 +652,19 @@ export const DashboardChrome: React.FC<DashboardLayoutProps> = ({
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto space-y-6">
-                <div>
-                  <SectionLabel label="General" sidebarOpen={true} />
-                  <NavItem
-                    item={{ path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }}
-                    isActive={isActive('/dashboard')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/insights', label: 'Performance', icon: TrendingUp }}
-                    isActive={isActive('/dashboard/insights')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                </div>
+              <div className="-mx-2 flex-1 overflow-y-auto">
+                {renderNav(false, () => setMobileMenuOpen(false))}
 
-                <div>
-                  <SectionLabel label="Operations" sidebarOpen={true} />
-                  <NavItem
-                    item={{ path: '/dashboard/calls', label: 'Call Logs', icon: PhoneCall }}
-                    isActive={isActive('/dashboard/calls')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/contacts', label: 'Contacts', icon: Users }}
-                    isActive={isActive('/dashboard/contacts')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/campaigns', label: 'Campaigns', icon: Megaphone }}
-                    isActive={isActive('/dashboard/campaigns')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/appointments', label: 'Appointments', icon: Calendar }}
-                    isActive={isActive('/dashboard/appointments')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/reviews', label: 'Reviews', icon: Star }}
-                    isActive={isActive('/dashboard/reviews')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                </div>
-
-                <div>
-                  <SectionLabel label="Configuration" sidebarOpen={true} />
-                  <NavItem
-                    item={{ path: '/dashboard/business-details', label: 'Business Profile', icon: Building2 }}
-                    isActive={isActive('/dashboard/business-details')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/voice-setup', label: 'Voice Setup', icon: Layers }}
-                    isActive={isActive('/dashboard/voice-setup')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/agents', label: 'Agents', icon: Bot }}
-                    isActive={isActive('/dashboard/agents')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/knowledge', label: 'Knowledge', icon: BookOpen }}
-                    isActive={isActive('/dashboard/knowledge')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                </div>
-
-                <div className="pt-6 border-t mt-6 border-[hsl(var(--ds-border))]">
-                  <SectionLabel label="System" sidebarOpen={true} />
-                  <NavItem
-                    item={{ path: '/dashboard/settings', label: 'Settings', icon: Settings }}
-                    isActive={isActive('/dashboard/settings')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/billing', label: 'Billing', icon: CreditCard }}
-                    isActive={isActive('/dashboard/billing')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <NavItem
-                    item={{ path: '/dashboard/help', label: 'Help & Docs', icon: HelpCircle }}
-                    isActive={isActive('/dashboard/help')}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-
-                  {/* Sign Out Button */}
-                  <button
-                    onClick={() => {
-                      handleSignOut();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full flex items-center justify-start px-5 py-3 mx-2 text-sm font-medium rounded-[10px] transition-colors group mt-4 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
-                  >
-                    <LogOut size={18} strokeWidth={2.5} className="mr-3 group-hover:translate-x-1 transition-transform" />
-                    <span>Log Out</span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    handleSignOut();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="mt-6 mx-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-lg px-4 py-2 text-[13px] font-medium text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                >
+                  <LogOut size={17} strokeWidth={2.1} />
+                  <span>Sign out</span>
+                </button>
               </div>
             </div>
           </div>

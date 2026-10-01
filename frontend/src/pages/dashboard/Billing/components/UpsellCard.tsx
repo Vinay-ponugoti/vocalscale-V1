@@ -1,32 +1,27 @@
 import React from 'react';
-import { ShoppingCart, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '../../../../components/ui/Button';
 
 const UpsellCard: React.FC = () => {
   return (
-    <div className="relative flex flex-1 flex-col gap-6 overflow-hidden rounded-lg bg-slate-900 p-8 shadow-sm">
-      <div className="relative z-10">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-slate-700 bg-slate-800 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-slate-200">
-          <TrendingUp size={12} strokeWidth={2.5} />
-          <span>Scale Faster</span>
-        </div>
-        <h4 className="font-black text-white text-3xl leading-tight tracking-tight">Expand Your<br />Capabilities</h4>
-        <p className="text-sm text-slate-400 font-bold mt-4 leading-relaxed max-w-[200px]">
-          Upgrade to unlock premium features and higher minute limits for your business.
+    <div className="flex flex-1 flex-col gap-4 rounded-xl border border-blue-100 bg-blue-50/60 p-5 shadow-sm">
+      <div>
+        <h2 className="text-base font-semibold text-slate-950">Need more minutes?</h2>
+        <p className="mt-1 text-sm leading-relaxed text-slate-600">
+          Upgrade for higher minute limits and premium features, or add a one-time minute pack.
         </p>
       </div>
 
-      <div className="mt-auto flex flex-col gap-3 relative z-10">
-        <button className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-white py-4 text-[11px] font-black text-slate-900 transition-all hover:bg-blue-50 shadow-xl shadow-black/10 active:scale-95 group/btn uppercase tracking-widest">
-          <ShoppingCart size={16} strokeWidth={2.5} className="group-hover/btn:translate-x-0.5 transition-transform" />
-          Buy Extra Pack
-        </button>
-        <Link
-          to="/dashboard/billing/plans"
-          className="w-full flex items-center justify-center rounded-xl border border-white/10 bg-white/5 py-4 text-[11px] font-black text-white transition-all hover:bg-white/10 hover:border-white/20 backdrop-blur-md active:scale-95 uppercase tracking-widest"
-        >
-          Upgrade Plan
-        </Link>
+      <div className="mt-auto flex flex-col gap-2">
+        <Button asChild>
+          <Link to="/dashboard/billing/plans" className="no-underline">
+            Upgrade plan <ArrowUpRight size={15} />
+          </Link>
+        </Button>
+        <Button variant="outline">
+          <ShoppingCart size={15} /> Buy extra minutes
+        </Button>
       </div>
     </div>
   );

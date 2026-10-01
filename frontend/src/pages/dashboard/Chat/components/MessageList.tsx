@@ -71,7 +71,7 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, isStreaming,
                         <button
                             key={idx}
                             onClick={() => onSuggestionClick?.(q)}
-                            className="text-[13px] px-3.5 py-1.5 rounded-2xl border border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50 transition-colors shadow-sm font-medium"
+                            className="text-[13px] px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 transition-colors shadow-sm font-medium"
                         >
                             {q}
                         </button>

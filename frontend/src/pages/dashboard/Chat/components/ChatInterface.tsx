@@ -125,9 +125,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
           "absolute left-1/2 -translate-x-1/2 z-40",
           "bottom-[96px]",
           "flex items-center gap-1.5 px-3.5 py-2 rounded-full",
-          "bg-white border border-gray-200",
+          "bg-white border border-slate-200",
           "shadow-[0_2px_12px_rgba(0,0,0,0.10)]",
-          "text-gray-600 text-xs font-medium",
+          "text-slate-600 text-xs font-medium",
           "hover:border-blue-200 hover:shadow-[0_4px_16px_rgba(59,130,246,0.15)] hover:text-blue-600",
           "transition-all duration-200",
           showScrollButton
@@ -158,7 +158,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
             onRemoveFile={removeFile}
             placeholder={isAppLoading ? "Authenticating..." : "Ask anything — try: 'Create a 20% off Instagram post'"}
           />
-          <p className="text-center text-[10px] text-gray-400 mt-2 select-none tracking-wide">
+          <p className="text-center text-[10px] text-slate-400 mt-2 select-none tracking-wide">
             VocalScale AI can make mistakes. Verify important information.
           </p>
         </div>

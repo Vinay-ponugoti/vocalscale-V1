@@ -150,7 +150,7 @@ export default function Record() {
 
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
+      <div className="h-full w-full overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">
         <div className="w-full h-full flex flex-col">
           <ProgressBar step={2} totalSteps={4} title="Voice Sample" progress={50} />
 
@@ -160,32 +160,32 @@ export default function Record() {
             <div className="flex-1 flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="flex justify-between items-center mb-4 shrink-0">
                  <div 
-                   className="flex items-center gap-2 text-slate-400 text-sm font-medium cursor-pointer hover:text-indigo-600 transition-colors"
+                   className="flex items-center gap-2 text-slate-400 text-sm font-medium cursor-pointer hover:text-blue-600 transition-colors"
                    onClick={() => navigate('/dashboard/voice-model/method')}
                  >
                    <ArrowRight size={16} className="rotate-180" /> Back
                  </div> 
                  <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-1 rounded-full shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                    <span className="text-slate-600 text-xs font-bold tracking-wide uppercase">Script 1 of 1</span>
+                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span className="text-slate-600 text-xs font-semibold tracking-wider uppercase">Script 1 of 1</span>
                  </div>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm flex flex-col flex-1 min-h-0 relative overflow-hidden">
+              <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm flex flex-col flex-1 min-h-0 relative overflow-hidden">
                 
                 {/* Header */}
                 <div className="flex justify-between items-start mb-6 shrink-0 relative z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
+                    <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
                       <FileText size={20} />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-900 text-lg">Business Greeting</h3>
+                      <h3 className="font-semibold text-slate-900 text-lg">Business Greeting</h3>
                       <p className="text-xs text-slate-500">Read the script clearly and naturally</p>
                     </div>
                   </div>
                   {audioBlob && (
-                    <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200 shadow-sm animate-in fade-in zoom-in duration-300">
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-200 shadow-sm animate-in fade-in zoom-in duration-300">
                       <CheckCircle2 size={14} /> RECORDED
                     </div>
                   )}
@@ -194,12 +194,12 @@ export default function Record() {
                 {/* Dynamic Script Text */}
                 <div className="flex-1 flex items-center justify-center text-center px-8 mb-6">
                    <div className="text-2xl md:text-4xl text-slate-800 leading-tight font-medium">
-                    "Hi, thanks for calling <span className="text-indigo-600 bg-indigo-50 px-2 rounded-lg decoration-clone box-decoration-clone">Acme Corp</span>. My name is <span className="text-indigo-600 bg-indigo-50 px-2 rounded-lg decoration-clone box-decoration-clone">Sarah</span>, and I'm an AI assistant capable of handling your booking."
+                    "Hi, thanks for calling <span className="text-blue-600 bg-blue-50 px-2 rounded-lg decoration-clone box-decoration-clone">Acme Corp</span>. My name is <span className="text-blue-600 bg-blue-50 px-2 rounded-lg decoration-clone box-decoration-clone">Sarah</span>, and I'm an AI assistant capable of handling your booking."
                    </div>
                 </div>
 
                 {/* Recording Controls / Visualizer Box */}
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 shrink-0 relative z-10">
+                <div className="bg-slate-50 border border-slate-100 rounded-xl p-6 shrink-0 relative z-10">
                   
                   {!audioBlob ? (
                     // Recording State
@@ -211,13 +211,13 @@ export default function Record() {
                           <button
                           onClick={isRecording ? stopRecording : startRecording}
                           className={`relative w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg transition-all transform active:scale-95 ${
-                              isRecording ? 'bg-red-500 hover:bg-red-600 scale-110' : 'bg-indigo-600 hover:bg-indigo-700'
+                              isRecording ? 'bg-red-500 hover:bg-red-600 scale-110' : 'bg-blue-600 hover:bg-blue-700'
                           }`}
                           >
                           {isRecording ? <Square size={24} fill="currentColor" /> : <Mic size={28} />}
                           </button>
                       </div>
-                      <p className={`mt-4 text-sm font-bold tracking-wide ${isRecording ? 'text-red-500 animate-pulse' : 'text-slate-500'}`}>
+                      <p className={`mt-4 text-sm font-semibold tracking-wide ${isRecording ? 'text-red-500 animate-pulse' : 'text-slate-500'}`}>
                         {isRecording ? `RECORDING · ${formatTime(recordingTime)}` : 'Click Mic to Start'}
                       </p>
                     </div>
@@ -227,7 +227,7 @@ export default function Record() {
                       <div className="flex items-center gap-6">
                         <button 
                             onClick={togglePlayback}
-                            className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center text-white hover:bg-indigo-700 shadow-md transition-transform active:scale-95 shrink-0"
+                            className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 shadow-md transition-transform active:scale-95 shrink-0"
                           >
                             {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} className="ml-1" fill="currentColor" />}
                         </button>
@@ -236,7 +236,7 @@ export default function Record() {
                           <AudioVisualizer isPlaying={isPlaying} />
                         </div>
                         
-                        <div className="font-mono text-slate-900 font-bold text-sm bg-white px-3 py-1 rounded-md border border-slate-200 shadow-sm">
+                        <div className="font-mono text-slate-900 font-semibold text-sm bg-white px-3 py-1 rounded-md border border-slate-200 shadow-sm">
                           {formatTime(recordingTime)}
                         </div>
                       </div>
@@ -244,14 +244,14 @@ export default function Record() {
                       <div className="h-px bg-slate-200 w-full my-4"></div>
 
                       <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-emerald-600 text-sm font-bold">
+                        <div className="flex items-center gap-2 text-emerald-600 text-sm font-semibold">
                            <div className="bg-emerald-100 p-1 rounded-full"><CheckCircle2 size={14} /></div>
                            Good Audio Quality
                         </div>
                         
                         <button 
                           onClick={deleteRecording}
-                          className="flex items-center gap-2 text-slate-400 hover:text-red-500 transition-colors text-xs font-bold uppercase tracking-wide group"
+                          className="flex items-center gap-2 text-slate-400 hover:text-red-500 transition-colors text-xs font-semibold uppercase tracking-wider group"
                         >
                           <Trash2 size={14} className="group-hover:scale-110 transition-transform" /> Delete & Retry
                         </button>
@@ -265,9 +265,9 @@ export default function Record() {
                  <button 
                    onClick={handleNext}
                    disabled={!audioBlob}
-                   className={`px-8 py-3.5 rounded-xl font-bold flex items-center gap-3 shadow-lg text-base transition-all ${
+                   className={`px-8 py-3.5 rounded-xl font-semibold flex items-center gap-3 shadow-lg text-base transition-all ${
                      audioBlob 
-                       ? 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200 hover:-translate-y-1' 
+                       ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-200 hover:-translate-y-1' 
                        : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                    }`}
                  >
@@ -278,27 +278,27 @@ export default function Record() {
 
             {/* Sidebar - Tips */}
             <div className="w-80 hidden xl:block shrink-0 animate-in fade-in slide-in-from-right-8 duration-700 delay-100">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 h-full shadow-sm sticky top-6">
+              <div className="bg-white border border-slate-200 rounded-xl p-6 h-full shadow-sm sticky top-6">
                 <div className="flex items-center gap-2 mb-6">
                    <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center text-amber-500">
                       <FileText size={16} />
                    </div>
-                   <h3 className="font-bold text-slate-900">Pro Tips</h3>
+                   <h3 className="font-semibold text-slate-900">Pro Tips</h3>
                 </div>
                 
                 <div className="space-y-4">
-                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:border-indigo-200 transition-colors">
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:border-blue-200 transition-colors">
                     <div className="flex gap-3 mb-2">
-                      <div className="bg-white p-1.5 rounded-lg shadow-sm text-indigo-600 group-hover:text-indigo-700 group-hover:scale-110 transition-all"><BarChart2 size={18} /></div>
-                      <h4 className="text-sm font-bold text-slate-900 mt-0.5">Speak Naturally</h4>
+                      <div className="bg-white p-1.5 rounded-lg shadow-sm text-blue-600 group-hover:text-blue-700 group-hover:scale-110 transition-all"><BarChart2 size={18} /></div>
+                      <h4 className="text-sm font-semibold text-slate-900 mt-0.5">Speak Naturally</h4>
                     </div>
                     <p className="text-xs text-slate-500 leading-relaxed pl-10">Imagine you're having coffee with a friend. Don't sound like you're reading.</p>
                   </div>
 
-                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:border-indigo-200 transition-colors">
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:border-blue-200 transition-colors">
                     <div className="flex gap-3 mb-2">
-                      <div className="bg-white p-1.5 rounded-lg shadow-sm text-indigo-600 group-hover:text-indigo-700 group-hover:scale-110 transition-all"><VolumeX size={18} /></div>
-                      <h4 className="text-sm font-bold text-slate-900 mt-0.5">Quiet Room</h4>
+                      <div className="bg-white p-1.5 rounded-lg shadow-sm text-blue-600 group-hover:text-blue-700 group-hover:scale-110 transition-all"><VolumeX size={18} /></div>
+                      <h4 className="text-sm font-semibold text-slate-900 mt-0.5">Quiet Room</h4>
                     </div>
                     <p className="text-xs text-slate-500 leading-relaxed pl-10">Echo and background noise ruin the AI model. Find a carpeted room if possible.</p>
                   </div>

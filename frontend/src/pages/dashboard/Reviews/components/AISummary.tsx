@@ -23,24 +23,21 @@ export const AISummary = ({ summary, loading }: AISummaryProps) => {
   }
 
   return (
-    <Card className="group relative overflow-hidden rounded-lg border-slate-200 bg-white shadow-sm">
-      <CardContent className="p-6 sm:p-8">
-        <div className="relative z-10 mb-6 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50 text-cyan-700">
-              <FileText className="h-5 w-5" />
-            </div>
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-black tracking-tight text-slate-950">
-                Review Summary
-              </h2>
-            </div>
+    <Card className="group relative overflow-hidden rounded-xl border-slate-200 bg-white shadow-sm">
+      <CardContent className="p-5">
+        <div className="relative z-10 mb-4 flex items-center gap-3">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <FileText className="h-4 w-4" />
+          </span>
+          <div>
+            <h2 className="text-base font-semibold text-slate-950">Review summary</h2>
+            <p className="text-sm text-slate-500">What reviewers mention most, summarised by AI.</p>
           </div>
         </div>
         <div className="relative z-10 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-5">
-            <h3 className="mb-5 flex items-center gap-3 text-sm font-black uppercase tracking-wider text-slate-950">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-100">
+          <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
+            <h3 className="mb-4 flex items-center gap-2.5 text-sm font-semibold text-slate-950">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-100">
                 <TrendingUp className="h-4 w-4 text-emerald-600" strokeWidth={3} />
               </div>
               Positives
@@ -63,12 +60,12 @@ export const AISummary = ({ summary, loading }: AISummaryProps) => {
               )}
             </ul>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-5">
-            <h3 className="mb-5 flex items-center gap-3 text-sm font-black uppercase tracking-wider text-slate-950">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-amber-100">
+          <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
+            <h3 className="mb-4 flex items-center gap-2.5 text-sm font-semibold text-slate-950">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-100">
                 <AlertTriangle className="h-4 w-4 text-amber-600" strokeWidth={3} />
               </div>
-              Areas for Improvement
+              Areas to improve
             </h3>
             <ul className="space-y-4">
               {(summary?.improvements || []).length > 0 ? summary?.improvements.map((text, i) => (

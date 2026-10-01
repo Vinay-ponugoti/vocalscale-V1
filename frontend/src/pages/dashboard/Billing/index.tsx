@@ -6,7 +6,11 @@ import UsageAlert from './components/UsageAlert';
 import BillingHistory from './components/BillingHistory';
 import PaymentMethod from './components/PaymentMethod';
 import UpsellCard from './components/UpsellCard';
-import { CheckCircle2, XCircle, Loader2, Star, Clock, PhoneCall, ChevronRight } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, Star, Clock, PhoneCall, ArrowUpRight } from 'lucide-react';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { StatCard } from '../../../components/ui/StatCard';
+import { Button } from '../../../components/ui/Button';
+import { PAGE_CONTAINER, GRID_GAP } from '../../../constants/layout';
 import { billingApi } from '../../../api/billing';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 
@@ -250,135 +254,83 @@ const Billing: React.FC = () => {
 
 
   return (
-    <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full custom-scrollbar">
+    <DashboardLayout>
+      <div className={PAGE_CONTAINER}>
+        <PageHeader
+          title="Billing"
+          description="Your plan, minutes used, invoices, and payment method."
+          actions={
+            <Button asChild variant={isProfessional ? 'outline' : 'default'}>
+              <Link to="/dashboard/billing/plans" className="no-underline">
+                {isProfessional ? 'View plans' : 'Upgrade plan'} <ArrowUpRight size={15} />
+              </Link>
+            </Button>
+          }
+        />
 
-        {/* Mobile Navigation Tabs */}
-        <div className="md:hidden flex-none bg-white border-b border-slate-200 p-2 z-10 sticky top-0">
-          <div className="flex bg-slate-100/80 p-1 rounded-xl">
-            {mobileTabs.map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${isActive
-                    ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-900/5'
-                    : 'text-slate-500 hover:text-slate-700'
-                    }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+        {/* Mobile tabs */}
+        <div className="flex gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 md:hidden">
+          {mobileTabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 rounded-md py-2 text-xs font-semibold transition-colors ${activeTab === tab.id
+                ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200'
+                : 'text-slate-500 hover:text-slate-900'
+                }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        {/* Top Bar: Integrated Stats (Plan & Usage) - Desktop Only or Mobile Overview */}
-        <div className={`w-full bg-white px-8 py-5 rounded-3xl border border-slate-100 shadow-sm shrink-0 overflow-x-auto no-scrollbar ${activeTab === 'overview' ? 'flex' : 'hidden md:flex'} items-center gap-8`}>
-          {/* Plan Info */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 ring-1 ring-blue-500/10">
-              <Star size={16} />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Current Plan</p>
-                {hasSubscription && (
-                  <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">Active</span>
-                )}
-              </div>
-              <span className="text-sm font-black text-slate-900">{planName}</span>
-            </div>
-          </div>
-
-          <div className="h-8 w-px bg-slate-100" />
-
-          {/* Cycle Info */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 ring-1 ring-indigo-500/10">
-              <Clock size={16} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Billing Cycle</p>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-slate-900">{cycleStart} - {cycleEnd}</span>
-                {!hasSubscription && <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">(No Plan)</span>}
-              </div>
-            </div>
-          </div>
-
-          <div className="h-8 w-px bg-slate-100" />
-
-          {/* Usage Stats */}
-          <div className="flex items-center gap-3 shrink-0 min-w-[200px]">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ring-1 ${overageMinutes > 0 ? 'bg-amber-50 text-amber-600 ring-amber-500/10' : 'bg-slate-50 text-slate-600 ring-slate-200'}`}>
-              <PhoneCall size={16} />
-            </div>
-            <div className="flex-1">
-              <div className="flex justify-between items-center mb-0.5">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Billable Minutes</p>
-                <span className={`text-[10px] font-black ${overageMinutes > 0 ? 'text-amber-600' : 'text-slate-600'}`}>
-                  {usedMinutes.toFixed(2)} / {totalMinutes}
+        {/* Plan, cycle, and minutes at a glance */}
+        <div className={`grid-cols-1 sm:grid-cols-3 ${GRID_GAP} ${activeTab === 'overview' ? 'grid' : 'hidden md:grid'}`}>
+          <StatCard
+            icon={Star}
+            label="Current plan"
+            value={planName}
+            description={hasSubscription ? 'Active' : 'No active plan'}
+          />
+          <StatCard
+            icon={Clock}
+            tint="slate"
+            label="Billing cycle"
+            value={`${cycleStart} – ${cycleEnd}`}
+            description={hasSubscription ? 'Current period' : 'No plan'}
+          />
+          <StatCard
+            icon={PhoneCall}
+            tint={overageMinutes > 0 ? 'amber' : 'emerald'}
+            label="Minutes used"
+            value={`${Math.round(usedMinutes)} / ${totalMinutes}`}
+            description={
+              <span className="flex w-full flex-col gap-1.5">
+                <span className="block h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                  <span
+                    className={`block h-full rounded-full transition-all duration-1000 ${overageMinutes > 0 ? 'bg-amber-500' : remainingPercentage < 20 ? 'bg-rose-500' : 'bg-blue-600'}`}
+                    style={{ width: `${usagePercentage}%` }}
+                  />
                 </span>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-1000 ${overageMinutes > 0 ? 'bg-amber-500' :
-                    remainingPercentage < 20 ? 'bg-rose-500' :
-                      'bg-blue-600'
-                    }`}
-                  style={{ width: `${usagePercentage}%` }}
-                />
-              </div>
-              <p className="mt-1 text-[9px] font-bold text-slate-400">
-                {(normalizedUsage.inbound_minutes ?? 0).toFixed(2)}m inbound · {(normalizedUsage.outbound_minutes ?? 0).toFixed(2)}m outbound
-              </p>
-            </div>
-          </div>
-
-          {overageMinutes > 0 && (
-            <>
-              <div className="h-8 w-px bg-slate-100" />
-              <div className="flex items-center gap-2 shrink-0">
-                <div className="px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-100 text-amber-700 flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                  </span>
-                  <span className="text-[10px] font-black uppercase tracking-wider">Overage: {overageMinutes.toFixed(2)}m</span>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Upgrade Button - pushed to right */}
-          {!isProfessional && (
-            <div className="ml-auto shrink-0">
-              <Link
-                to="/dashboard/billing/plans"
-                className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95 flex items-center gap-2 no-underline"
-              >
-                Upgrade <ChevronRight size={10} strokeWidth={3} />
-              </Link>
-            </div>
-          )}
-
+                {overageMinutes > 0
+                  ? <span className="font-medium text-amber-700">Overage: {overageMinutes.toFixed(1)} min</span>
+                  : <span>{(normalizedUsage.inbound_minutes ?? 0).toFixed(0)} inbound · {(normalizedUsage.outbound_minutes ?? 0).toFixed(0)} outbound</span>}
+              </span>
+            }
+          />
         </div>
 
         {/* Main Content Area */}
-        <div className="w-full space-y-8 pb-10">
+        <div className="w-full space-y-6">
 
           {/* Notifications */}
           {(success || canceled) && (
             <div className="animate-in fade-in slide-in-from-top-4 duration-300">
               {success && (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-xl flex items-center justify-between gap-3 shadow-sm mb-6">
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700">
                   <div className="flex items-center gap-3">
                     <CheckCircle2 size={20} className="text-emerald-500" />
-                    <span className="text-sm font-bold">
+                    <span className="text-sm font-medium">
                       {isPolling
                         ? `Payment received! Checking subscription status (attempt ${pollCount + 1}/10)...`
                         : subscribed
@@ -392,9 +344,9 @@ const Billing: React.FC = () => {
               )}
 
               {canceled && (
-                <div className="bg-amber-50 border border-amber-200 text-amber-700 px-6 py-4 rounded-xl flex items-center gap-3 shadow-sm mb-6">
+                <div className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-amber-700">
                   <XCircle size={20} className="text-amber-500" />
-                  <span className="text-sm font-bold">Payment canceled. No changes were made to your plan.</span>
+                  <span className="text-sm font-medium">Payment canceled. No changes were made to your plan.</span>
                 </div>
               )}
             </div>
@@ -402,7 +354,7 @@ const Billing: React.FC = () => {
 
           {/* Mobile: Overview Tab | Desktop: Always Show */}
           <div className={`${activeTab === 'overview' ? 'block' : 'hidden md:block'}`}>
-            <div className="mb-6">
+            <div className="mb-4 lg:mb-6">
               <UsageAlert
                 usedMinutes={normalizedUsage.used_minutes ?? normalizedUsage.minutes_used ?? 0}
                 totalMinutes={normalizedUsage.total_minutes ?? normalizedUsage.minutes_limit ?? 0}
@@ -414,10 +366,8 @@ const Billing: React.FC = () => {
             <UsageBreakdown hasSubscription={hasSubscription} usage={normalizedUsage} />
           </div>
 
-          <div className="hidden md:block w-full h-px bg-slate-100 my-8" />
-
           {/* Billing & Payment Grid */}
-          <div className={`grid gap-8 lg:grid-cols-3 ${activeTab === 'overview' ? 'hidden md:grid' : ''}`}>
+          <div className={`grid lg:grid-cols-3 ${GRID_GAP} ${activeTab === 'overview' ? 'hidden md:grid' : ''}`}>
 
             {/* Mobile: History Tab | Desktop: Col Span 2 */}
             <div className={`lg:col-span-2 ${activeTab === 'history' ? 'block' : 'hidden md:block'}`}>
@@ -425,7 +375,7 @@ const Billing: React.FC = () => {
             </div>
 
             {/* Mobile: Payment Tab | Desktop: Col Span 1 */}
-            <div className={`flex flex-col gap-6 ${activeTab === 'payment' ? 'block' : 'hidden md:flex'}`}>
+            <div className={`flex flex-col gap-4 lg:gap-6 ${activeTab === 'payment' ? 'block' : 'hidden md:flex'}`}>
               <PaymentMethod />
               {(isStarter || isNoPlan) && <UpsellCard />}
             </div>
@@ -433,30 +383,6 @@ const Billing: React.FC = () => {
 
         </div>
 
-        <style>{`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgb(var(--twc-slate-200));
-            border-radius: 10px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgb(var(--twc-slate-300));
-            border-radius: 10px;
-          }
-           /* Hide Scrollbar for Horizontal Scroll Areas */
-           .no-scrollbar::-webkit-scrollbar {
-               display: none;
-           }
-           .no-scrollbar {
-               -ms-overflow-style: none;
-               scrollbar-width: none;
-           }
-        `}</style>
       </div>
     </DashboardLayout>
   );

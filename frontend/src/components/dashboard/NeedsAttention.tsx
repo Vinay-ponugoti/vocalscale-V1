@@ -47,7 +47,7 @@ const NeedsAttention = ({ calls }: { calls: AttentionCall[] }) => {
   if (visible.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-amber-200/70 bg-amber-50/60 p-4">
+    <div className="rounded-xl border border-amber-200/70 bg-amber-50/60 p-4">
       <div className="mb-3 flex items-center gap-2">
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
           <AlertTriangle size={15} />
@@ -65,7 +65,7 @@ const NeedsAttention = ({ calls }: { calls: AttentionCall[] }) => {
           <li key={c.id} className="group flex items-center gap-1">
             <button
               onClick={() => navigate(`/dashboard/calls/${c.id}`)}
-              className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl bg-white/70 px-3 py-2.5 text-left transition hover:bg-white"
+              className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg bg-white/70 px-3 py-2.5 text-left transition hover:bg-white"
             >
               <span className="shrink-0">
                 {c.is_urgent ? (

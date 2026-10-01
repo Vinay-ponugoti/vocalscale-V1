@@ -34,7 +34,7 @@ const ChatAnalytics: React.FC = () => {
   if (isLoading && !analytics) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-12">
-        <Loader2 size={28} className="text-indigo-500 animate-spin mb-4" />
+        <Loader2 size={28} className="text-blue-500 animate-spin mb-4" />
         <p className="text-sm text-slate-500 font-medium">Loading analytics...</p>
       </div>
     );
@@ -44,14 +44,14 @@ const ChatAnalytics: React.FC = () => {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-12 text-center">
-        <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
+        <div className="w-14 h-14 rounded-xl bg-red-50 flex items-center justify-center mb-4">
           <BarChart3 size={24} className="text-red-400" />
         </div>
         <h3 className="text-base font-semibold text-slate-900 mb-1">Failed to load analytics</h3>
         <p className="text-sm text-slate-500 mb-4 max-w-xs">{error}</p>
         <button
           onClick={() => refetch()}
-          className="flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-all"
+          className="flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
         >
           <RefreshCw size={12} /> Retry
         </button>
@@ -63,7 +63,7 @@ const ChatAnalytics: React.FC = () => {
   if (!analytics || (summary?.total_messages === 0 && periodTotal === 0)) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-12 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center mb-4">
           <BarChart3 size={28} className="text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold text-slate-900 mb-2">No Data Yet</h2>
@@ -105,7 +105,7 @@ const ChatAnalytics: React.FC = () => {
   ];
 
   const colorMap: Record<string, { bg: string; icon: string; badge: string }> = {
-    indigo:  { bg: 'bg-indigo-50',  icon: 'text-indigo-500',  badge: 'bg-indigo-100 text-indigo-700' },
+    indigo:  { bg: 'bg-blue-50',  icon: 'text-blue-500',  badge: 'bg-blue-100 text-blue-700' },
     violet:  { bg: 'bg-violet-50',  icon: 'text-violet-500',  badge: 'bg-violet-100 text-violet-700' },
     amber:   { bg: 'bg-amber-50',   icon: 'text-amber-500',   badge: 'bg-amber-100 text-amber-700' },
     emerald: { bg: 'bg-emerald-50', icon: 'text-emerald-500', badge: 'bg-emerald-100 text-emerald-700' },
@@ -172,7 +172,7 @@ const ChatAnalytics: React.FC = () => {
                 <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">{stat.label}</span>
               </div>
               <div className="flex items-end gap-2">
-                <span className="text-2xl font-black text-slate-900">
+                <span className="text-2xl font-semibold text-slate-900">
                   {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
                 </span>
                 {stat.trend !== undefined && stat.trend !== 0 && (
@@ -210,7 +210,7 @@ const ChatAnalytics: React.FC = () => {
                   <div className="w-full flex items-end" style={{ height: 100 }}>
                     <div
                       className={`w-full rounded-t-md transition-all duration-300 ${
-                        isToday ? 'bg-indigo-500' : 'bg-indigo-200 group-hover:bg-indigo-400'
+                        isToday ? 'bg-blue-500' : 'bg-blue-200 group-hover:bg-blue-400'
                       }`}
                       style={{
                         height: `${Math.max(heightPercent, d.messages > 0 ? 4 : 0)}%`,
@@ -219,8 +219,8 @@ const ChatAnalytics: React.FC = () => {
                     />
                   </div>
                   {/* Day label */}
-                  <span className={`text-[9px] font-semibold uppercase tracking-wider ${
-                    isToday ? 'text-indigo-600' : 'text-slate-400'
+                  <span className={`text-[11px] font-semibold uppercase tracking-wider ${
+                    isToday ? 'text-blue-600' : 'text-slate-400'
                   }`}>
                     {formatDayLabel(d.date)}
                   </span>
@@ -253,7 +253,7 @@ const ChatAnalytics: React.FC = () => {
                     </div>
                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-indigo-400 rounded-full transition-all duration-500"
+                        className="h-full bg-blue-400 rounded-full transition-all duration-500"
                         style={{ width: `${pct}%` }}
                       />
                     </div>

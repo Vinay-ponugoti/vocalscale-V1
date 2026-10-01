@@ -362,18 +362,18 @@ export default function Processing() {
   if (error) {
     return (
       <DashboardLayout fullWidth>
-        <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full flex items-center justify-center">
-          <div className="max-w-2xl w-full p-8 bg-white border border-slate-200 rounded-2xl text-center shadow-sm">
+        <div className="h-full w-full overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6 flex items-center justify-center">
+          <div className="max-w-2xl w-full p-8 bg-white border border-slate-200 rounded-xl text-center shadow-sm">
             <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">⚠️</span>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Processing Failed</h2>
+            <h2 className="text-xl font-semibold text-slate-900 mb-2">Processing Failed</h2>
             <p className="text-slate-500 mb-6 font-medium">{error}</p>
 
             <div className="flex justify-center gap-4">
               <button
                 onClick={handleTryAgain}
-                className="px-6 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 font-black text-[11px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm"
+                className="px-6 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-[11px] uppercase tracking-wider hover:bg-slate-50 transition-all shadow-sm"
               >
                 Try Again
               </button>
@@ -389,7 +389,7 @@ export default function Processing() {
   // ============================================================================
   return (
     <DashboardLayout fullWidth>
-      <div className="w-full p-4 md:p-8 2xl:p-12 space-y-8 2xl:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-y-auto h-full">
+      <div className="h-full w-full overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">
         <div className="w-full">
           <ProgressBar
             step={3}
@@ -399,11 +399,11 @@ export default function Processing() {
           />
 
           <div className="mt-12 text-center">
-            <div className="bg-white border border-slate-200 rounded-3xl p-12 shadow-2xl shadow-slate-100/50 relative overflow-hidden max-w-3xl mx-auto">
+            <div className="bg-white border border-slate-200 rounded-xl p-12 shadow-2xl shadow-slate-100/50 relative overflow-hidden max-w-3xl mx-auto">
             
             {/* Animated Background Blob */}
             <div 
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-50/50 rounded-full blur-[100px] -z-10 animate-pulse-slow"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-50/50 rounded-full blur-[100px] -z-10 animate-pulse-slow"
               aria-hidden="true"
             />
 
@@ -418,17 +418,17 @@ export default function Processing() {
 
                     {/* Spinning Gradient Ring */}
                     <div
-                      className="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-500 border-l-indigo-500 animate-spin"
+                      className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 border-l-blue-500 animate-spin"
                       style={{ animationDuration: '1.5s' }}
                     />
 
                     {/* Inner Icon */}
                     <div className="absolute inset-0 flex items-center justify-center bg-white rounded-full m-2 shadow-inner">
-                      <RefreshCw className="text-indigo-500 animate-spin-slow" size={40} />
+                      <RefreshCw className="text-blue-500 animate-spin-slow" size={40} />
                     </div>
                   </div>
 
-                  <h2 className="text-3xl font-bold text-slate-900 mb-3 tracking-tight">
+                  <h2 className="text-3xl font-semibold text-slate-900 mb-3 tracking-tight">
                     {Math.round(progress)}% Complete
                   </h2>
                   <p className="text-slate-500 text-lg animate-pulse font-medium">
@@ -438,7 +438,7 @@ export default function Processing() {
                   {/* Progress Bar Detail */}
                   <div className="w-64 mx-auto mt-8 h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
                     <div
-                      className="h-full bg-indigo-600 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(79,70,229,0.5)]"
+                      className="h-full bg-blue-600 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(79,70,229,0.5)]"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -453,7 +453,7 @@ export default function Processing() {
                     </div>
                   </div>
 
-                  <h1 className="text-4xl font-bold text-slate-900 mb-4 tracking-tight">
+                  <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-4">
                     Your Voice is Ready!
                   </h1>
                   <p className="text-slate-500 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
@@ -461,8 +461,8 @@ export default function Processing() {
                   </p>
 
                   {/* Audio Card */}
-                  <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200 mb-10 text-left relative overflow-hidden group hover:border-indigo-200 transition-colors">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500" />
+                  <div className="bg-slate-50 rounded-xl p-8 border border-slate-200 mb-10 text-left relative overflow-hidden group hover:border-blue-200 transition-colors">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
 
                     <div className="flex items-start gap-4 mb-6">
                       <div className="text-4xl">❝</div>
@@ -474,7 +474,7 @@ export default function Processing() {
                     <div className="flex items-center gap-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                       <button
                         onClick={togglePlay}
-                        className="w-14 h-14 bg-indigo-600 rounded-full flex items-center justify-center text-white hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-transform active:scale-95 flex-shrink-0"
+                        className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 shadow-lg shadow-blue-200 transition-transform active:scale-95 flex-shrink-0"
                         aria-label={isPlaying ? "Pause audio" : "Play audio"}
                       >
                         {isPlaying ? (
@@ -491,7 +491,7 @@ export default function Processing() {
                             <div
                               key={id}
                               className={`w-1.5 rounded-full transition-all duration-100 ${
-                                isEven ? 'bg-indigo-400' : 'bg-indigo-200'
+                                isEven ? 'bg-blue-400' : 'bg-blue-200'
                               } ${isPlaying ? 'animate-music-bar' : ''}`}
                               style={{
                                 height: isPlaying ? `${height}%` : '20%',
@@ -508,13 +508,13 @@ export default function Processing() {
                   <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <button
                       onClick={handleTryAgain}
-                      className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-bold hover:border-slate-300 hover:text-slate-800 hover:bg-slate-50 flex items-center justify-center gap-2 transition-all"
+                      className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-semibold hover:border-slate-300 hover:text-slate-800 hover:bg-slate-50 flex items-center justify-center gap-2 transition-all"
                     >
                       <RefreshCw size={18} /> Record Again
                     </button>
                     <button
                       onClick={handleSoundsGreat}
-                      className="px-10 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-xl shadow-indigo-200 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-1"
+                      className="px-10 py-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-xl shadow-blue-200 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-1"
                     >
                       <ThumbsUp size={18} /> Sounds Great
                     </button>

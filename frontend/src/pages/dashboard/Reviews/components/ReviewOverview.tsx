@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, RefreshCw, Lock } from 'lucide-react';
+import { Lock, Star, MessageSquare, Reply } from 'lucide-react';
 import { StarRating } from '../../../../components/ui/StarRating';
 import {
   Card,
@@ -7,9 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from '../../../../components/ui/Card';
-import { Button } from '../../../../components/ui/Button';
-import { Badge } from '../../../../components/ui/Badge';
-import { Progress } from '../../../../components/ui/Progress';
+import { StatCard } from '../../../../components/ui/StatCard';
+import { GRID_GAP } from '../../../../constants/layout';
 import {
   BarChart,
   Bar,
@@ -27,23 +26,20 @@ import type { ReviewStats } from '../../../../types/review';
 interface ReviewOverviewProps {
   stats?: ReviewStats;
   loading?: boolean;
-  onSync?: () => void;
-  isSyncing?: boolean;
 }
 
-export const ReviewOverview = ({ stats, loading, onSync, isSyncing }: ReviewOverviewProps) => {
+export const ReviewOverview = ({ stats, loading }: ReviewOverviewProps) => {
   const isPaid = stats?.isPaid ?? false;
 
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="mb-4 h-10 w-48 rounded-lg bg-slate-100"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => <div key={i} className="h-32 rounded-lg border border-slate-200 bg-white"></div>)}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-28 rounded-xl border border-slate-200 bg-white"></div>)}
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="h-80 rounded-lg border border-slate-200 bg-white lg:col-span-2"></div>
-          <div className="h-80 rounded-lg border border-slate-200 bg-white"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+          <div className="h-80 rounded-xl border border-slate-200 bg-white lg:col-span-2"></div>
+          <div className="h-80 rounded-xl border border-slate-200 bg-white"></div>
         </div>
       </div>
     );
@@ -55,119 +51,60 @@ export const ReviewOverview = ({ stats, loading, onSync, isSyncing }: ReviewOver
   const hasSentimentData = sentimentData.some(s => s.value > 0);
 
   return (
-    <div className="space-y-5 select-none">
-      {/* Header */}
-      <div className="flex flex-col justify-between gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-cyan-100 bg-cyan-50 text-cyan-700">
-            <TrendingUp className="h-5 w-5" />
-          </div>
-          <div>
-            <h2 className="text-xl font-black tracking-tight text-slate-950 md:text-2xl">Review Analytics</h2>
-            <p className="text-sm font-medium text-slate-500">Monitor performance and trends</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {isPaid && onSync && (
-            <Button
-              size="sm"
-              onClick={onSync}
-              disabled={isSyncing}
-              className="flex h-10 items-center gap-2 rounded-md bg-slate-950 px-4 text-xs font-bold text-white hover:bg-slate-800"
-            >
-              <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-              {isSyncing ? 'Syncing...' : 'Sync Google Reviews'}
-            </Button>
-          )}
-        </div>
-      </div>
-
+    <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="rounded-lg border-slate-200 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-bold uppercase tracking-wider text-slate-400">Overall Rating</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-3">
-              <span className="text-4xl font-black text-slate-950">{stats?.overallRating?.toFixed(1) || '0.0'}</span>
-              <div>
-                <StarRating rating={stats?.overallRating || 0} />
-                <Badge variant="secondary" className="mt-1 rounded-md bg-slate-100 text-slate-500">
-                  {stats?.totalReviews ? 'Verified' : 'No Rating'}
-                </Badge>
+      <div className={`grid grid-cols-2 lg:grid-cols-4 ${GRID_GAP}`}>
+        <StatCard
+          icon={Star}
+          tint="amber"
+          label="Overall rating"
+          value={stats?.overallRating?.toFixed(1) || '0.0'}
+          footer={<StarRating rating={stats?.overallRating || 0} size={12} />}
+          description={stats?.totalReviews ? 'Verified' : 'No rating yet'}
+        />
+        <StatCard
+          icon={MessageSquare}
+          label="Total reviews"
+          value={stats?.totalReviews || 0}
+          trend={trends.reviews !== 0 ? { value: trends.reviews, isPositive: trends.reviews >= 0 } : undefined}
+          description="vs previous period"
+        />
+        <StatCard
+          icon={Reply}
+          tint="emerald"
+          label="Response rate"
+          value={`${stats?.responseRate || 0}%`}
+          trend={trends.responseRate !== 0 ? { value: Math.round(trends.responseRate), isPositive: trends.responseRate >= 0 } : undefined}
+          description="Reviews with a reply"
+        />
+
+        <div className="flex h-full min-h-[112px] flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <span className="text-[11px] font-semibold uppercase leading-5 tracking-wider text-slate-500">Rating breakdown</span>
+          <div className="mt-2 space-y-1">
+            {(stats?.ratingDistribution || []).map((item) => (
+              <div key={item.stars} className="flex items-center gap-2">
+                <span className="w-6 text-xs font-medium text-slate-500">{item.stars}★</span>
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className="h-full rounded-full bg-amber-400 transition-all duration-700"
+                    style={{ width: `${item.percent}%` }}
+                  />
+                </div>
+                <span className="w-8 text-right text-[11px] font-medium text-slate-500">{item.percent}%</span>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-lg border-slate-200 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Reviews</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <span className="text-4xl font-black text-slate-950">{stats?.totalReviews || 0}</span>
-              {trends.reviews !== 0 && (
-                <div className={`flex items-center ${trends.reviews >= 0 ? 'text-emerald-600' : 'text-rose-600'} text-sm font-medium`}>
-                  {trends.reviews >= 0 ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
-                  {Math.abs(trends.reviews)}%
-                </div>
-              )}
-            </div>
-            <p className="text-xs text-slate-500 mt-1">vs previous period</p>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-lg border-slate-200 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-bold uppercase tracking-wider text-slate-400">Response Rate</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <span className="text-4xl font-black text-slate-950">{stats?.responseRate || 0}%</span>
-              {trends.responseRate !== 0 && (
-                <div className={`flex items-center ${trends.responseRate >= 0 ? 'text-emerald-600' : 'text-rose-600'} text-sm font-medium`}>
-                  {trends.responseRate >= 0 ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
-                  {Math.abs(Math.round(trends.responseRate))}%
-                </div>
-              )}
-            </div>
-            <Progress value={stats?.responseRate || 0} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-lg border-slate-200 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-bold uppercase tracking-wider text-slate-400">Rating Distribution</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1.5">
-              {(stats?.ratingDistribution || []).map((item) => (
-                <div key={item.stars} className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-slate-500 w-6">{item.stars}★</span>
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-full rounded-full bg-amber-400 transition-all duration-700"
-                      style={{ width: `${item.percent}%` }}
-                    />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 w-8 text-right">{item.percent}%</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+      <div className={`grid grid-cols-1 lg:grid-cols-3 ${GRID_GAP}`}>
         {/* Review Volume Chart */}
-        <Card className="rounded-lg border-slate-200 shadow-sm lg:col-span-2">
+        <Card className="rounded-xl border-slate-200 shadow-sm lg:col-span-2">
           <CardHeader>
             <div>
-              <CardTitle className="text-lg font-black tracking-tight text-slate-950">Review Volume</CardTitle>
-              <CardDescription>Reviews over the selected period</CardDescription>
+              <CardTitle className="text-sm font-semibold text-slate-900">Review volume</CardTitle>
+              <CardDescription className="mt-0.5 text-xs text-slate-500">Reviews over the selected period</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
@@ -222,11 +159,11 @@ export const ReviewOverview = ({ stats, loading, onSync, isSyncing }: ReviewOver
         </Card>
 
         {/* Sentiment Pie Chart — gated for free users */}
-        <Card className="rounded-lg border-slate-200 shadow-sm">
+        <Card className="rounded-xl border-slate-200 shadow-sm">
           <CardHeader>
             <div>
-              <CardTitle className="text-lg font-black tracking-tight text-slate-950">Sentiment</CardTitle>
-              <CardDescription>Overall sentiment breakdown</CardDescription>
+              <CardTitle className="text-sm font-semibold text-slate-900">Sentiment</CardTitle>
+              <CardDescription className="mt-0.5 text-xs text-slate-500">How reviewers felt overall</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
@@ -235,7 +172,7 @@ export const ReviewOverview = ({ stats, loading, onSync, isSyncing }: ReviewOver
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-slate-100">
                   <Lock className="h-6 w-6 text-slate-400" />
                 </div>
-                <h4 className="font-semibold text-slate-900 mb-1">Sentiment Analysis</h4>
+                <h4 className="font-semibold text-slate-900 mb-1">Sentiment analysis</h4>
                 <p className="text-sm text-slate-500 max-w-[200px]">
                   Upgrade to a paid plan to unlock AI-powered sentiment analysis
                 </p>

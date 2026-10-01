@@ -75,7 +75,7 @@ const StatusStrip = () => {
   const nearLimit = limit > 0 && pct >= 80;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
       {/* Live indicator */}
       <span className="flex items-center gap-2">
         <span className="relative flex h-2.5 w-2.5">

@@ -19,6 +19,8 @@ import {
   Volume2,
 } from 'lucide-react';
 import { DashboardLayout } from '../../layouts/DashboardLayout';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { PAGE_CONTAINER } from '../../../constants/layout';
 import { agentsAPI, type Agent, type AgentContextDocument, type PhoneNumber } from '../../../api/agents';
 import { GeneratedContext } from './GeneratedContext';
 import { VoicePicker } from './VoicePicker';
@@ -291,13 +293,17 @@ const Agents = () => {
     : 'Business default voice';
 
   return (
-    <DashboardLayout fullWidth>
-      <div className="h-full overflow-y-auto bg-[hsl(var(--ds-off-white))] text-slate-950">
-        <div className="mx-auto grid min-h-full w-full max-w-[1480px] grid-cols-1 gap-4 px-4 py-5 lg:grid-cols-[280px_minmax(0,1fr)_360px]">
-          <aside className="rounded-xl border border-slate-200 bg-white">
+    <DashboardLayout>
+      <div className={PAGE_CONTAINER}>
+        <PageHeader
+          title="Agents"
+          description="Set how each agent sounds, what it knows, and which number it answers."
+        />
+        <div className="grid grid-cols-1 items-start gap-4 lg:gap-6 xl:grid-cols-[260px_minmax(0,1fr)_320px]">
+          <aside className="rounded-xl border border-slate-200 bg-white shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
               <div>
-                <h1 className="text-base font-semibold text-slate-900">Agents</h1>
+                <h2 className="text-sm font-semibold text-slate-900">All agents</h2>
                 <p className="text-xs text-slate-500">{agents.length} configured</p>
               </div>
               <button
@@ -362,7 +368,7 @@ const Agents = () => {
                         <button
                           onClick={() => deleteAgent(agent)}
                           disabled={deletingId === agent.id}
-                          className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-300 opacity-0 transition hover:bg-red-50 hover:text-red-600 focus:opacity-100 group-hover:opacity-100"
+                          className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-300 opacity-0 transition hover:bg-rose-50 hover:text-rose-600 focus:opacity-100 group-hover:opacity-100"
                           aria-label={`Delete ${agent.name}`}
                           title="Delete agent"
                         >
@@ -380,22 +386,22 @@ const Agents = () => {
             </div>
           </aside>
 
-          <main className="space-y-4">
+          <main className="min-w-0 space-y-4">
             {error && (
-              <div className="rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              <div className="rounded-lg border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
                 {error}
               </div>
             )}
 
-            <section className="rounded-xl border border-slate-200 bg-white p-4">
+            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-white">
-                    <Network size={18} />
-                  </div>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                    <Network size={16} />
+                  </span>
                   <div className="min-w-0">
-                    <h2 className="truncate text-lg font-semibold text-slate-900">
-                      {selected?.name || 'Agent Builder'}
+                    <h2 className="truncate text-base font-semibold text-slate-900">
+                      {selected?.name || 'Select an agent'}
                     </h2>
                     <p className="text-sm text-slate-500">
                       {selected?.description || 'Default hybrid call runtime'}
@@ -411,7 +417,7 @@ const Agents = () => {
                     className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
                   >
                     <RefreshCw size={15} className={syncing ? 'animate-spin' : ''} />
-                    Recompile context
+                    Rebuild context
                   </button>
                   <button
                     onClick={saveAgent}
@@ -465,7 +471,7 @@ const Agents = () => {
             </section>
 
             {selected && (
-              <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <button
                   type="button"
                   onClick={() => setVoiceOpen((v) => !v)}
@@ -505,10 +511,10 @@ const Agents = () => {
           </main>
 
           <aside className="space-y-4">
-            <section className="rounded-xl border border-slate-200 bg-white p-4">
+            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
                 <Settings2 size={17} className="text-slate-400" />
-                <h2 className="text-sm font-semibold text-slate-900">Inspector</h2>
+                <h2 className="text-sm font-semibold text-slate-900">Agent settings</h2>
               </div>
 
               {selected ? (
@@ -638,14 +644,14 @@ const Agents = () => {
               )}
             </section>
 
-            <section className="rounded-xl border border-slate-200 bg-white p-4">
+            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="mb-3 flex items-center gap-2">
                 <Phone size={17} className="text-slate-400" />
-                <h2 className="text-sm font-semibold text-slate-900">Phone Assignment</h2>
+                <h2 className="text-sm font-semibold text-slate-900">Phone number</h2>
               </div>
               <div className="space-y-2">
                 {phones.length === 0 ? (
-                  <p className="text-sm text-slate-400">No numbers found.</p>
+                  <p className="text-sm text-slate-500">No phone numbers yet.</p>
                 ) : (
                   phones.map((phone) => {
                     const assigned = selected && phone.agent_id === selected.id;
@@ -720,7 +726,7 @@ const FlowStep = ({
 
 const Field = ({ label, children }: { label: string; children: ReactNode }) => (
   <label className="block">
-    <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</span>
+    <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">{label}</span>
     {children}
   </label>
 );

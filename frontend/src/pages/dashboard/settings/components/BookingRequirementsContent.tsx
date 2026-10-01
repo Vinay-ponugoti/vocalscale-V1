@@ -112,7 +112,7 @@ export const BookingRequirementsContent: React.FC = () => {
       <div className="flex flex-col items-center justify-center gap-4 py-20">
         <div className="relative h-10 w-10">
           <div className="absolute inset-0 rounded-full border-4 border-slate-100" />
-          <div className="absolute inset-0 animate-spin rounded-full border-4 border-cyan-600 border-t-transparent" />
+          <div className="absolute inset-0 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
         </div>
         <div className="flex flex-col items-center">
           <span className="text-xs font-semibold text-slate-600">Loading booking rules</span>
@@ -154,9 +154,9 @@ export const BookingRequirementsContent: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.98 }}
-                className={`group relative flex items-center gap-4 rounded-lg border p-4 transition
+                className={`group relative flex items-center gap-4 rounded-xl border p-4 transition
                   ${req.required
-                    ? 'border-cyan-200 bg-white shadow-sm shadow-cyan-100/50'
+                    ? 'border-blue-200 bg-white shadow-sm shadow-blue-100/50'
                     : 'border-slate-200 bg-white hover:border-slate-300'
                   }
                 `}
@@ -167,7 +167,7 @@ export const BookingRequirementsContent: React.FC = () => {
 
                 <div className={`
                   rounded-lg p-2.5 transition
-                  ${req.required ? 'bg-cyan-50 text-cyan-700' : 'border border-slate-200 bg-slate-50 text-slate-400'}
+                  ${req.required ? 'bg-blue-50 text-blue-700' : 'border border-slate-200 bg-slate-50 text-slate-400'}
                 `}>
                   <Icon size={18} />
                 </div>
@@ -175,7 +175,7 @@ export const BookingRequirementsContent: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <h4 className="truncate text-sm font-semibold text-slate-950">{req.field_name}</h4>
                   <div className="mt-1 flex items-center gap-2">
-                    <span className={`text-xs font-medium ${req.required ? 'text-cyan-700' : 'text-slate-500'
+                    <span className={`text-xs font-medium ${req.required ? 'text-blue-700' : 'text-slate-500'
                       }`}>
                       {req.required ? 'Required before booking' : 'Optional detail'}
                     </span>
@@ -193,8 +193,8 @@ export const BookingRequirementsContent: React.FC = () => {
                     onClick={() => handleToggleStatus(idx)}
                     className={`rounded-lg border px-4 py-2 text-xs font-semibold transition
                       ${req.required
-                        ? 'border-cyan-600 bg-cyan-600 text-white hover:bg-cyan-700'
-                        : 'border-slate-200 bg-white text-slate-600 hover:border-cyan-500 hover:text-cyan-700'
+                        ? 'border-blue-600 bg-blue-600 text-white hover:bg-blue-700'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-blue-500 hover:text-blue-700'
                       }
                     `}
                   >
@@ -224,9 +224,9 @@ export const BookingRequirementsContent: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsAddingField(true)}
-              className="group flex items-center justify-center gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5 text-slate-500 transition hover:border-cyan-500 hover:bg-cyan-50 hover:text-cyan-700"
+              className="group flex items-center justify-center gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5 text-slate-500 transition hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700"
             >
-              <div className="rounded-lg bg-white p-2 transition group-hover:bg-cyan-600 group-hover:text-white">
+              <div className="rounded-lg bg-white p-2 transition group-hover:bg-blue-600 group-hover:text-white">
                 <Plus size={18} strokeWidth={3} />
               </div>
               <span className="text-sm font-semibold">Add custom field</span>
@@ -237,9 +237,9 @@ export const BookingRequirementsContent: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="flex flex-col gap-3 rounded-lg border border-cyan-200 bg-white p-3 shadow-sm shadow-cyan-100/50 sm:flex-row sm:items-center"
+              className="flex flex-col gap-3 rounded-xl border border-blue-200 bg-white p-3 shadow-sm shadow-blue-100/50 sm:flex-row sm:items-center"
             >
-              <div className="rounded-lg bg-cyan-50 p-2.5 text-cyan-700">
+              <div className="rounded-lg bg-blue-50 p-2.5 text-blue-700">
                 <Settings2 size={18} />
               </div>
               <input
@@ -252,7 +252,7 @@ export const BookingRequirementsContent: React.FC = () => {
                   if (e.key === 'Enter') handleAdd();
                   if (e.key === 'Escape') setIsAddingField(false);
                 }}
-                className="min-h-10 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-950 outline-none placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+                className="min-h-10 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-950 outline-none placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               />
               <div className="flex items-center justify-end gap-2">
                 <button
@@ -264,7 +264,7 @@ export const BookingRequirementsContent: React.FC = () => {
                 <button
                   onClick={handleAdd}
                   disabled={!newFieldName.trim()}
-                  className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-cyan-100 hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-100 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Add
                 </button>
@@ -275,7 +275,7 @@ export const BookingRequirementsContent: React.FC = () => {
       </div>
 
       <div className="flex items-start gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
-        <div className="rounded-lg border border-slate-200 bg-white p-2.5 text-cyan-700">
+        <div className="rounded-lg border border-slate-200 bg-white p-2.5 text-blue-700">
           <ShieldCheck size={20} className="shrink-0" />
         </div>
         <div>
